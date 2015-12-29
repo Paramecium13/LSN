@@ -1,0 +1,38 @@
+/*Scenes: called in scripts; no return value; 'performed' by actors, which bind to some engine dependent representation that can do
+stuff like walk/move, turn, navigate (using some kind of pathfinding),etc. */
+sc DuelToTheDeath(actor1: Actor, actor2 : Actor)
+{
+	actor1 WALK FORWARDS;
+	actor2 TURN LEFT;
+	actor2 WALK FORWARDS 5;
+	sim
+	{
+		{
+			actor1 NAVIGATE TO 10, 15;
+			actor1 TURN UP;/* relative to the screen*/
+		}
+		{
+			actor2 NAVIGATE TO 10, 19;
+			actor2 TURN DOWN;/* relative to the screen*/
+		}
+	}
+	PLAY "dramatic" BGM;
+	SAY "..." WITH FACE "actor1_face";
+	SAY "..." WITH FACE "actor2_face";
+	sim
+	{
+		{
+			actor1 WALK FORWARDS;
+			actor1 WALK LEFT;/* relative to the screen*/
+			actor1 WALK FORWARDS;
+			actor1 TURN RIGHT;
+		}
+		{
+			actor2 WALK FORWARDS;
+			actor2 WALK RIGHT;
+			actor2 WALK FORWARDS;
+			actor2 TURN LEFT;
+		}
+	}
+	PLAY "battle" BGM;
+}

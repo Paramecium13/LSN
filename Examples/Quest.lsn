@@ -1,0 +1,98 @@
+/* Some quest I made up to help come up with the syntax and logic for quests.*/
+
+inline BNTFACE “RescuePrincess_BanditLeaderFace”;
+inline PRSFACE “RescuePrincess_PrincessFace”;
+quest RescuePrincess
+{
+	Title: “Rescue The Princess”;
+	banditsKilled: mut int;
+	fn Start() -> ()
+	{
+		SetStage(GoToTower); //Calls the stage’s Start() method.
+		Say “The quest has been started!”;
+	}
+	stage GoToTower
+	{
+		Title: “Go to the tower.”;
+		Description: “Travel to the tower where the princess is being held.”;
+		let towerId = “rescuePrincessTower”;
+		fn Start()-> ()
+		{
+			register event “Travel” -> OnTravel();
+		}
+		fn OnTravel(loc: Location)-> ()
+		{
+			if(loc.Id == towerId) { quest.SetStage(ReachTheTop); }
+		}
+	}
+	stage ReachTheTop
+	{
+		Title: “Reach the top of the tower”;
+		Description: “Reach the top of the tower to rescue the princess.”;
+		let banditTag = “rescuePrincessBandit”; // A stage constant.
+	fn Start() ->
+		{
+			register event “Kill” -> OnKill();
+		}
+	fn OnKill(enemy: Actor)
+		{
+			if(enemy.HasTag(banditTag)) { quest.banditsKilled += 1; }
+		}
+		
+	fn ReachedTop()->()
+		{
+			quest.SetStage(ConfrontBandit);
+		}
+	}
+	stage ConfrontBandit
+	{
+		Title: “Face The bandit leader and rescue the princess.”;
+		fn Start()->
+		{
+			Say “Look princess, it seems a valiant hero has come to rescue you. But I 
+			bet you don’t know why I kidnapped her, do you?” with face BNTFACE;
+			Say “For ransom? Or, ummm other reasons?” with face “playerFace”;
+			Say “No. This woman is a monster! She ate my best friend and two of my other men!” with face BNTFACE;
+			Say “Is this true princess?” with face “playerFace”;
+			Say “Yeah, but they were just bandits. It not like they were important or anything. So are you going to rescue me or just talk?” with face PRSFACE;
+			choice
+			{
+				“Let the bandits keep her.” ->
+				{
+					KeepHer();
+				}
+				“Turn her over to the authorities.” ->
+				{
+				Legal();
+				}
+				“Return the cannibal princess to her family” ->
+				{
+					
+				}
+			}
+		}
+		fn KeepHer() -> ()
+		{
+			Say “She’s all yours. Just don’t eat her” with face “playerFace”;
+			Say “We won’t. Here’s some stuff for your trouble.” with face BNTFACE;
+			/*Give some jewelry and money.*/
+		}
+		fn Legal()-> ()
+		{
+			Say “She is a monster but there are laws for thee things. I am going to	turn her over to the authorities.” with face “playerFace”;
+			Say “If you haven’t noticed, I don’t have much respect for the law.” with face BNTFACE;
+			if(quest.banditsKilled >= 10)
+			{
+				
+			}else
+			{
+				
+			}
+		}
+	}
+	stage FightBanditLeader
+	fn End()->()
+	{
+		// Give some xp.
+	}
+}

@@ -1,0 +1,109 @@
+struct Point {x: int , y: int }
+
+struct Color {Red: int ,Green: int ,Blue: int ,Opacity: int }
+
+struct Sound {name: string, volume: int , pitch: int }
+
+struct GameItem {type : string , id : int , amount : int}
+
+fn Downcase(s: string)->string { return #subs.downcase#endsub;}
+
+fn GiveGameItem(i : GameItem)
+{
+	LET t = Downcase( i.type);
+	if(t == "item")
+	{
+		GIVE i.amount item i.id;
+		SAY "You got " + i.amount +" " + GetItemName(i.id)
+			+ "!";
+	}else if (t == "armour" || t == "armor")
+	{
+		GIVE i.amount armor i.id;
+		SAY "You got " + i.amount +" " + GetArmorName(i.id)
+			+ "!";
+	}else if (t == "weapon")
+	{
+		GIVE i.amount weapon i.id;
+		SAY "You got " + i.amount +" " + GetWeaponName(i.id)
+			+ "!";
+	}
+}
+
+struct Chest {Items: List<GameItem>, _gold : int}
+
+inline DEFAULT_CHEST_SOUND = "...";
+
+fn OpenChest(c : Chest, s : string = DEFAULT_CHEST_SOUND)
+{
+	PLAY SE s AT VOLUME 80 PITCH 100;
+	foreach(i in c.Items)
+	{
+		GiveGameItem(i);
+	}
+	GIVE c._gold G;
+	SAY "You got " + c._gold + " gold!";
+}
+
+
+EXTERN inline _DOWN = 2;/* These inline substitutions are exported to be used in other files. */
+EXTERN inline _LEFT = 4;
+EXTERN inline _RIGHT = 6;
+EXTERN inline _UP = 8;
+
+
+fn Distance(a:Point,b:Point)->num
+{
+	return Sqrt((a.x-b.x)^2 - (a.y-b.y)^2 );
+}
+
+fn InvertColour(c : Color)->Color
+{
+	return new Colour(Red: 255 - c.Red, Blue: 255 - c.Blue, Green: 255 - c.Green);
+}
+
+
+inline INN_MESSAGE_1 = "Hello! Welcome to ";/* These inline substitutions are just for this file. They are removed during compilation. */
+inline INN_MESSAGE_2 = ". It will cost ";
+inline INN_MESSAGE_3 = " for one night. Would you like to 
+stay?";
+inline INN_MESSAGE_NO = "No thankyou";
+inline INN_MESSAGE_CANNOT_AFFORD = "You don't have enough money.";
+inline INN_SOUND = "...";
+inline INN_WAIT = 300;
+
+fn Inn(price : int = 10, inn_name : string = "", f: Face = none )
+{
+	LET message = INN_MESSAGE_1 + inn_name + INN_MESSAGE_2 + price + GetCurrency()
+		+ INN_MESSAGE_3;
+	SAY message WITH FACE f;
+	choice 
+	{
+		"Yes"	->
+		{
+			if(get g >= price)
+			{
+				REMOVE price G;
+				FADEOUT SCREEN;
+				RECOVER ALL;
+				WAIT
+				PLAY INN_SOUND;
+			} else
+			{
+				SAY INN_MESSAGE_CANNOT_AFFORD;
+			}
+		}
+		"No"	->
+		{
+			SAY INN_MESSAGE_NO WITH FACE f;
+		}
+	}
+}
+
+fn Transfer(m : int = -1, x : int, y : int , dir : int = 0, s = none)
+{
+	IF(NOT s){s = new Sound("Move",80,100);}
+	PLAY s;
+	LET mut _map = m;
+	IF(m == -1){_map = currentmap;}
+	GOTO _map x y FACING dir;
+}
