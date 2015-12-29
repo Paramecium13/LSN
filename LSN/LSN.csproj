@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C1269507-B8FD-4668-8D5A-0819DEAAFE89}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LSN</RootNamespace>
+    <AssemblyName>LSN</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Compile\IToken.cs" />
+    <Compile Include="Compile\Tokens\Ambiguous.cs" />
+    <Compile Include="Compile\Tokens\Assignment.cs" />
+    <Compile Include="Compile\Tokens\FloatToken.cs" />
+    <Compile Include="Compile\Tokens\Identifier.cs" />
+    <Compile Include="Compile\Tokens\IntToken.cs" />
+    <Compile Include="Compile\Tokens\Keyword.cs" />
+    <Compile Include="Compile\Tokens\Operator.cs" />
+    <Compile Include="Compile\Tokens\StringToken.cs" />
+    <Compile Include="Compile\Tokens\SubToken.cs" />
+    <Compile Include="Compile\Tokens\SyntaxSymbol.cs" />
+    <Compile Include="Compile\Tokens\TokenFactory.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Interpretation\IActor.cs" />
+    <Compile Include="Interpretation\IInterpreter.cs" />
+    <Compile Include="Interpretation\Interpreter.cs" />
+    <Compile Include="Interpretation\IScope.cs" />
+    <Compile Include="Interpretation\LSN_Environment.cs" />
+    <Compile Include="Interpretation\Scope.cs" />
+    <Compile Include="LSN_Core\BoundedFunction.cs" />
+    <Compile Include="LSN_Core\BoundedMethod.cs" />
+    <Compile Include="LSN_Core\Component.cs" />
+    <Compile Include="LSN_Core\ControlStructures\ControlStructure.cs" />
+    <Compile Include="LSN_Core\ControlStructures\IfElseControl.cs" />
+    <Compile Include="LSN_Core\Expressions\ComponentExpression.cs" />
+    <Compile Include="LSN_Core\Expressions\CompoundExpression.cs" />
+    <Compile Include="LSN_Core\Expressions\Expression.cs" />
+    <Compile Include="LSN_Core\Expressions\FunctionCall.cs" />
+    <Compile Include="LSN_Core\Expressions\GetExpression.cs" />
+    <Compile Include="LSN_Core\Expressions\IComponentExpression.cs" />
+    <Compile Include="LSN_Core\Expressions\IExpression.cs" />
+    <Compile Include="LSN_Core\Expressions\LSN_ExpresionTree.cs" />
+    <Compile Include="LSN_Core\Expressions\LSN_Expression.cs" />
+    <Compile Include="LSN_Core\Expressions\VariableExpression.cs" />
+    <Compile Include="LSN_Core\Function.cs" />
+    <Compile Include="LSN_Core\LSN_Function.cs" />
+    <Compile Include="LSN_Core\LSN_List.cs" />
+    <Compile Include="LSN_Core\LSN_ReferenceValue.cs" />
+    <Compile Include="LSN_Core\Method.cs" />
+    <Compile Include="LSN_Core\MethodCall.cs" />
+    <Compile Include="LSN_Core\Statements\AssignmentStatement.cs" />
+    <Compile Include="LSN_Core\Statements\ChangeScopeStatement.cs" />
+    <Compile Include="LSN_Core\Statements\GiveStatement.cs" />
+    <Compile Include="LSN_Core\Statements\ReassignmentStatement.cs" />
+    <Compile Include="LSN_Core\Statements\Statement.cs" />
+    <Compile Include="LSN_Core\Types\BoolType.cs" />
+    <Compile Include="LSN_Core\Types\LSN_BoundedType.cs" />
+    <Compile Include="LSN_Core\Types\LSN_ListType.cs" />
+    <Compile Include="LSN_Core\Types\LSN_ReferenceType.cs" />
+    <Compile Include="LSN_Core\Types\LSN_StructType.cs" />
+    <Compile Include="LSN_Core\Types\LSN_Type.cs" />
+    <Compile Include="LSN_Core\Types\VectorType.cs" />
+    <Compile Include="LSN_Core\Values\BoundedValue.cs" />
+    <Compile Include="LSN_Core\Values\ILSN_Value.cs" />
+    <Compile Include="LSN_Core\Values\LSN_Reference.cs" />
+    <Compile Include="LSN_Core\Values\LSN_Value.cs" />
+    <Compile Include="LSN_Core\Values\StructValue.cs" />
+    <Compile Include="LSN_Core\Values\VectorInstance.cs" />
+    <Compile Include="LSN_ResourceThing.cs" />
+    <Compile Include="LSN_Script.cs" />
+    <Compile Include="LSN_ScriptBase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
