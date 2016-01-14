@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,13 +17,16 @@ namespace LSNr
 		private const int NO_FILE = -1;
 		private const int FILE_NOT_FOUND = -2;
 		private const int ERROR_IN_SOURCE = -3;
+		private const int CONFIG_EXISTS = -4;
+
+		private const string END_OF_COMMENTS = "⌧";
+		private const string COMMENTS = "~~~Remarks Section~~~\n\n\n\n~~~Do not edit below this line~~~\n";
 
 		static int Main(string[] args)
 		{
-			if (args.Length == 0) //throw new ApplicationException("No file given.");
+			if (args.Length == 0 || args[0].ToLower() == "setup") // Set up the workspace.
 			{
-				Console.WriteLine("No file given.");
-				return NO_FILE;
+				return SetUp();
 			}
 			if (!File.Exists(args[0]))
 			{
@@ -79,6 +84,32 @@ namespace LSNr
 			return -10;
 		}
 
+
+		private static int SetUp()
+		{
+			const string file = "lsn.config";
+            if (File.Exists(file)) return CONFIG_EXISTS;
+			var config = new Config();
+			using (var writer = new StreamWriter(File.Create(file)))
+			{
+				writer.Write(COMMENTS + END_OF_COMMENTS + JsonConvert.SerializeObject(config, Formatting.Indented));
+			}
+			Directory.CreateDirectory("src");
+			Directory.CreateDirectory("obj");
+
+			Directory.CreateDirectory(@"src\script");
+			Directory.CreateDirectory(@"src\scriptlet");
+			Directory.CreateDirectory(@"src\resource");
+			Directory.CreateDirectory(@"src\scene");
+			Directory.CreateDirectory(@"src\quest");
+
+			Directory.CreateDirectory(@"obj\script");
+			Directory.CreateDirectory(@"obj\scriptlet");
+			Directory.CreateDirectory(@"obj\resource");
+			Directory.CreateDirectory(@"obj\scene");
+			Directory.CreateDirectory(@"obj\quest");
+			return 0;
+		}
 
 	}
 }
