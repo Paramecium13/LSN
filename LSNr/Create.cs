@@ -24,24 +24,27 @@ namespace LSNr
 				script.CurrentScope = new Scope(script.CurrentScope);
 				Parser p = new Parser(body, script);
 				p.Parse();
-				script.CurrentScope = script.CurrentScope.Pop();
-				return new IfControl(Express(head.Skip(1).ToList(),script), Parser.Consolidate(p.Components));
+				var components = Parser.Consolidate(p.Components);
+                script.CurrentScope = script.CurrentScope.Pop(components);
+				return new IfControl(Express(head.Skip(1).ToList(), script), components);
 			}
 			else if (h == "elsif")
 			{
 				script.CurrentScope = new Scope(script.CurrentScope);
 				Parser p = new Parser(body, script);
 				p.Parse();
-				script.CurrentScope = script.CurrentScope.Pop();
-				return new ElsifControl(Express(head.Skip(1).ToList(),script), Parser.Consolidate(p.Components));
+				var components = Parser.Consolidate(p.Components);
+				script.CurrentScope = script.CurrentScope.Pop(components);
+				return new ElsifControl(Express(head.Skip(1).ToList(),script), components);
 			}
 			else if (h == "else")
 			{
 				script.CurrentScope = new Scope(script.CurrentScope);
 				Parser p = new Parser(body,script);
 				p.Parse();
-				script.CurrentScope = script.CurrentScope.Pop();
-				return new ElseControl(Express(head.Skip(1).ToList(), script), Parser.Consolidate(p.Components));
+				var components = Parser.Consolidate(p.Components);
+				script.CurrentScope = script.CurrentScope.Pop(components);
+				return new ElseControl(Express(head.Skip(1).ToList(), script), components);
 			}
 			return null;
 		}
@@ -64,7 +67,7 @@ namespace LSNr
 
 		public static Expression CreateGet(List<IToken> tokens, PreScript script)
 		{
-			return null;
+			throw new NotImplementedException();
 		}
 
 
@@ -96,10 +99,10 @@ namespace LSNr
 			string name = tokens[nameindex].Value;
 			IExpression value = Express(tokens.Skip(nameindex + 2).ToList(), script);
 			LSN_Type type = value.Type;
-			var v = new Variable(name, type, mutable, value);
+			var st = new AssignmentStatement(name, value);
+            var v = new Variable(name, mutable, value, st);
 			script.CurrentScope.AddVariable(v);
-			return new AssignmentStatement(name, value);
-			throw new NotImplementedException();
+			return st;
 		}
 
 		private static Statement Reassignment(List<IToken> tokens, PreScript script)

@@ -28,6 +28,10 @@ namespace LSNr
 			{
 				return SetUp();
 			}
+			if(args[0].ToLower() == "build")
+			{
+				return Build(args);
+			}
 			if (!File.Exists(args[0]))
 			{
 				Console.WriteLine($"The file {args[0]} could not be found.");
@@ -108,6 +112,13 @@ namespace LSNr
 			Directory.CreateDirectory(@"obj\resource");
 			Directory.CreateDirectory(@"obj\scene");
 			Directory.CreateDirectory(@"obj\quest");
+			return 0;
+		}
+
+
+		private static int Build(string[] args)
+		{
+
 			return 0;
 		}
 

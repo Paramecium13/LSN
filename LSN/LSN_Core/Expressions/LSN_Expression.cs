@@ -10,7 +10,7 @@ namespace LSN_Core.Expressions
 
 	public abstract class LSN_Expression
 	{
-		public virtual LSN_Type MyType { get; set; }
+		public virtual LSN_Type Type { get; set; }
 
 		public abstract bool IsCompileConst();
 
@@ -53,9 +53,9 @@ namespace LSN_Core.Expressions
 		{
 			if (LeftSide.IsCompileConst() && RightSide.IsCompileConst())
 			{
-				if (LSN_Type.Adders.ContainsKey(LeftSide.MyType))
+				if (LSN_Type.Adders.ContainsKey(LeftSide.Type))
 				{
-					return LSN_Type.Adders[LeftSide.MyType](LeftSide.Eval(), RightSide.Eval());
+					return LSN_Type.Adders[LeftSide.Type](LeftSide.Eval(), RightSide.Eval());
 				}
 			}
 			return null;
@@ -67,9 +67,9 @@ namespace LSN_Core.Expressions
 			var r = RightSide.Fold();
 			if(l.IsCompileConst() && r.IsCompileConst())
 			{
-				if (LSN_Type.Adders.ContainsKey(l.MyType))
+				if (LSN_Type.Adders.ContainsKey(l.Type))
 				{
-					return LSN_Type.Adders[l.MyType](l.Eval(), r.Eval());
+					return LSN_Type.Adders[l.Type](l.Eval(), r.Eval());
 				}
 			}
 			return new LSN_Addition(l, r);
@@ -85,11 +85,11 @@ namespace LSN_Core.Expressions
 
 		public LSN_BoundedInstance(LSN_Type ty,object value)
 		{
-			if (!MyType.IsBounded)
+			if (!Type.IsBounded)
 			{
 				throw new Exception();
 			}
-			MyBoundType = MyType.GetType().GetGenericArguments()[0];
+			MyBoundType = Type.GetType().GetGenericArguments()[0];
 			if(value.GetType() != MyBoundType)
 			{
 				throw new Exception();
@@ -107,7 +107,7 @@ namespace LSN_Core.Expressions
 
 		public override string Translate(int n = 0)
 		{
-			return new string('\t', n) + LSN_Type.Translators[MyType](this); 
+			return new string('\t', n) + LSN_Type.Translators[Type](this); 
         }
 	}
 

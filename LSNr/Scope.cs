@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LSN_Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -53,7 +54,14 @@ namespace LSNr
 		/// Returns this scope's parent.
 		/// </summary>
 		/// <returns> The parent of this scope.</returns>
-		public Scope Pop() => Parent;
-
+		public Scope Pop(List<Component> components)
+		{
+			// Optimize contained variables...
+			/*foreach(var variable in Variables)
+			{
+				if (!variable.Value.Used) components.Remove(variable.Value.Assignment);
+			}*/
+			return Parent;
+		}
 	}
 }

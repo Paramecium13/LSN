@@ -9,11 +9,8 @@ using System.Threading.Tasks;
 namespace LSN_Core.Expressions
 {
 	[Serializable]
-	abstract class GetExpression : Expression
+	public abstract class GetExpression : Expression
 	{
-		public static Expression CreateGet(List<IToken> tokens)
-		{
-			return null;
-		}
+		
 	}
 }

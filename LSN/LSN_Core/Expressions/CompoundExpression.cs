@@ -25,12 +25,13 @@ namespace LSN_Core.Expressions
 			return this;
 		}
 
-		public CompoundExpression(List<IToken> tokens)
+		public CompoundExpression(List<IToken> tokens, Dictionary<IToken, ComponentExpression> components)
 		{
 			foreach(var token in tokens)
 			{
 				Tokens.Add(token);
 			}
+			Components = components;
 		}
 
 		/// <summary>
