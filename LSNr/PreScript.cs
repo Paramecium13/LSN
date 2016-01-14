@@ -56,11 +56,22 @@ namespace LSNr
 			Text = Source;
 		}
 
-		public LSN_Script Reify()
+		/// <summary>
+		/// Reifies the source...
+		/// </summary>
+		public void Reify()
 		{
 			ProcessDirectives();
 			Tokenize();
 			Parse();
+		}
+
+		/// <summary>
+		/// Gets the script. Clients must call Reify() and check if this is Valid before calling GetScript().
+		/// </summary>
+		/// <returns></returns>
+		public LSN_Script GetScript()
+		{
 			return new LSN_Script(Components);
 		}
 
