@@ -9,6 +9,12 @@ LSN is meant to be used for higher level mechanics of a game, such as specific d
 LSN is procedural and somewhat object oriented. All values, (strings, integers, doubles, etc.) are objects and will have methods. Users will be able to create custom value types, structs, which contain read only fields. I may make it possible to make a mutable struct type--note that making the variable containing the struct mutable will not make the struct itself mutable.
 All values in LSN are passed by value. I am still working on reference type variables.
 
+###Types
+...
+####Structs
+Immutable. ...
+####Records
+Like structs but are mutable.
 ###Statements
 LSN will have many different statements, though currently only a few are implemented.
 
