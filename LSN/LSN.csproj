@@ -73,7 +73,6 @@
     <Compile Include="LSN_Core\Expressions\IExpression.cs" />
     <Compile Include="LSN_Core\Expressions\LSN_ExpresionTree.cs" />
     <Compile Include="LSN_Core\Expressions\LSN_Expression.cs" />
-    <Compile Include="LSN_Core\Expressions\ValueExpression.cs" />
     <Compile Include="LSN_Core\Expressions\VariableExpression.cs" />
     <Compile Include="LSN_Core\Function.cs" />
     <Compile Include="LSN_Core\LSN_Function.cs" />
