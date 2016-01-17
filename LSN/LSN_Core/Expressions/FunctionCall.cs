@@ -4,7 +4,7 @@ using System.Text;
 
 namespace LSN_Core.Expressions
 {
-	public class FunctionCall : Expression
+	public class FunctionCall : ComponentExpression
 	{
 		private Function Fn;
 
@@ -25,5 +25,10 @@ namespace LSN_Core.Expressions
 		public override IExpression Fold() => this;
 
 		public override bool IsReifyTimeConst() => false;
+
+		public override string TranslateUniversal()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

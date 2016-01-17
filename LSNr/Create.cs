@@ -121,6 +121,8 @@ namespace LSNr
 		/// <returns> ...</returns>
 		private static CompoundExpression Compound(List<IToken> list, PreScript script)
 		{
+			const string sub = "Σ";
+			int subCount = 0;
 			var dict = new Dictionary<IToken, ComponentExpression>();
 			var vars = new List<Variable>();
 			foreach(var token in list)
@@ -132,6 +134,53 @@ namespace LSNr
 					dict.Add(token, new VariableExpression(token.Value, v.Type));
 				}
 			}
+
+			var ls = new List<IToken>();
+
+			for(int i = 0; i < list.Count; i++)
+			{
+				var val = list[i].Value;
+				if (script.CurrentScope.VariableExists(val))
+				{
+					var v = script.CurrentScope.GetVariable(val);
+					var name = sub + subCount++;
+					vars.Add(v);
+					dict.Add(new Identifier(name), new VariableExpression(val, v.Type));
+					ls.Add(new Identifier(name));
+				}
+				else if(script.FunctionExists(val)) // It's the start of a function call.
+				{
+					if (list[i + 1].Value != "(") return null; // Or throw or log something...
+					i += 2;  // Move to the right twice, now looking at token after the opening '('.
+					int lCount = 1;
+					int rCount = 0;
+					var fnTokens = new List<IToken>();
+					while(lCount != rCount)
+					{
+						if(list[i].Value == ")")
+						{
+							lCount++;
+							if (lCount == rCount) break;
+						}
+						else if(list[i].Value == "(")
+						{
+							rCount++;
+						}
+						fnTokens.Add(list[i]);
+						i++;
+					}
+					// Create the function call, add it to the dictionary, and add its identifier to the list (ls).
+					var name = sub + subCount++;
+					var fnCall = CreateFunctionCall(fnTokens, script.GetFunction(val), script);
+					dict.Add(new Identifier(name), fnCall);
+					ls.Add(new Identifier(name));
+				}
+				else
+				{
+					ls.Add(list[i]);
+				}
+			}
+
 			var expr = new CompoundExpression(list, dict);
 			foreach (var v in vars) v.Users.Add(expr);
 			return expr;
@@ -140,6 +189,45 @@ namespace LSNr
 		public static Expression CreateGet(List<IToken> tokens, PreScript script)
 		{
 			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tokens"> The tokens, without the function name and containing parenthesis</param>
+		/// <param name="fn"></param>
+		/// <returns></returns>
+		private static FunctionCall CreateFunctionCall(List<IToken> tokens, Function fn, PreScript script)
+		{
+			var ls = new List<Tuple<string, IExpression>>();
+			var parameters = new List<List<IToken>>();
+			parameters.Add(new List<IToken>());
+			int paramIndex = 0;
+
+			// Split the list of tokens into multiple lists by commas.
+			for (int i = 0; i < tokens.Count; i++)
+			{
+				if(tokens[i].Value == ",")
+				{
+					parameters.Add(new List<IToken>());
+					++paramIndex;
+					continue;
+				}
+				parameters[paramIndex].Add(tokens[i]);
+			}
+			for(int i = 0; i < parameters.Count; i++)
+			{
+				var p = parameters[i];
+				if(p.Count > 2 && p[1].Value == "=") // It's named
+				{
+					ls.Add(new Tuple<string, IExpression>(p[0].Value , Express(p.Skip(2).ToList(), script) ) );
+				}
+				else
+				{
+					ls.Add(new Tuple<string, IExpression>("", Express(p, script) ) );
+				}
+			}
+			return fn.CreateCall(ls);
 		}
 
 		/// <summary>

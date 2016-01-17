@@ -34,6 +34,8 @@ namespace LSNr
 		private Dictionary<string, string> Strings = new Dictionary<string, string>();
 		private Dictionary<Identifier, IToken> InlineLiterals;
 
+		private Dictionary<string, Function> Functions = new Dictionary<string, Function>();
+
 		/// <summary>
 		/// The current scope.
 		/// </summary>
@@ -87,6 +89,14 @@ namespace LSNr
 				Mutable = true;
 				source = source.Replace("#mut", "");
 			}
+			if(source.Contains("#no_std"))
+			{
+				source = source.Replace("#no_std", "");
+            }
+			else
+			{
+				// Load the standard library.
+			}
 			source = Tokenizer.ReplaceAndStore(source, @"(?s)#sub(.(?<!#endsub))*#endsub", SUBN, Subs);
 			var x = new string[Subs.Count];
 			Subs.Keys.CopyTo(x, 0);
@@ -109,6 +119,12 @@ namespace LSNr
 			parser.Parse();
 			Components = Parser.Consolidate(parser.Components);
 		}
+
+
+		public bool FunctionExists(string name) => Functions.ContainsKey(name);
+
+
+		public Function GetFunction(string name) => Functions[name];
 
 	}
 }
