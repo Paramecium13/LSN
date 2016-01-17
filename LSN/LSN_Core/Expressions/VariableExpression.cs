@@ -9,19 +9,17 @@ namespace LSN_Core.Expressions
 	{
 		public string Name { get; private set; }
 
-		public VariableExpression(string name)
+		public VariableExpression(string name, LSN_Type type)
 		{
 			Name = name;
+			Type = type;
 		}
 
 		public override ILSN_Value Eval(IInterpreter i) => i.GetValue(Name);
 
 		public override IExpression Fold() => this;
 
-		public override bool IsReifyTimeConst()
-		{
-			throw new NotImplementedException();
-		}
+		public override bool IsReifyTimeConst() => false;
 
 		public override string TranslateUniversal() => Name;
 	}

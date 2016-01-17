@@ -10,7 +10,9 @@ namespace LSN_Core.Expressions
 	[Serializable]
 	public abstract class Expression : IExpression
 	{
-		public virtual LSN_Type Type { get; protected set; }
+		private LSN_Type _Type = LSN_Type.dynamic_;
+
+		public virtual LSN_Type Type { get { return _Type; } protected set { _Type = value; } }
 
 		public abstract bool IsReifyTimeConst();
 

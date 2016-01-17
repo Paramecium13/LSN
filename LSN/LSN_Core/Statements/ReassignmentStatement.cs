@@ -14,11 +14,13 @@ namespace LSN_Core.Statements
 	{
 		protected string Name { get; set; }
 
-		protected IExpression Value { get; set; }
+		private IExpression _Value;
+		protected IExpression Value { get { return _Value; } set { _Value = value; } }
 
-		public ReassignmentStatement(List<IToken> tokens)
+		public ReassignmentStatement(string name, IExpression value)
 		{
-			Name = tokens[0].Value;
+			Name = name;
+			Value = value;
 		}
 
 		public override bool Interpret(IInterpreter i)
