@@ -14,6 +14,8 @@ namespace LSN_Core
 
 		private LSN_ResourceThing Resource;
 
+		public override bool HandlesScope { get { return true; } }
+
 		public override ILSN_Value Eval(Dictionary<string, IExpression> args, IInterpreter i)
 		{
 			i.EnterFunctionScope(Resource.GetEnvironment());

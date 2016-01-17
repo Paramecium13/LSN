@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace LSN_Core.Expressions
 {
@@ -15,21 +15,31 @@ namespace LSN_Core.Expressions
 		public FunctionCall(Function fn, Dictionary<string,IExpression> args, bool include = false)
 		{
 			if (include) Fn = fn;
-			else FnName = fn.Name;
+			FnName = fn.Name;
 			Args = args;
 		}
 
+		private FunctionCall(string fnName, Dictionary<string,IExpression> args)
+		{
+			FnName = fnName;
+			Args = args;
+		}
 
 		public override ILSN_Value Eval(IInterpreter i)
 		{
 			var fn = Fn ?? i.GetFunction(FnName);
-			i.EnterFunctionScope(fn.Environment);
+			if (! fn.HandlesScope) i.EnterFunctionScope(fn.Environment);
 			var val = fn.Eval(Args, i);
-			i.ExitFunctionScope();
+			if (! fn.HandlesScope) i.ExitFunctionScope();
 			return val;
 		}
 
-		public override IExpression Fold() => this;
+		public override IExpression Fold()
+		{
+			var dict = Args.Select(p => new KeyValuePair<string, IExpression>(p.Key, p.Value.Fold())).ToDictionary();
+			if (Fn != null) return new FunctionCall(Fn, dict, true);
+			return new FunctionCall(FnName,dict);
+		}
 
 		public override bool IsReifyTimeConst() => false;
 

@@ -9,6 +9,7 @@ namespace LSN_Core
 	{
 		private Func<Dictionary<string, ILSN_Value>, ILSN_Value> Bound;
 
+		public override bool HandlesScope { get { return false; } }
 
 		public BoundedFunction(Func<Dictionary<string, ILSN_Value>, ILSN_Value> b)
 		{
@@ -20,7 +21,7 @@ namespace LSN_Core
 			var argVals = new Dictionary<string, ILSN_Value>();
 			foreach (var pair in args) argVals.Add(pair.Key, pair.Value.Eval(i));
 			return Bound(argVals);
-        }
+		}
 
 	}
 }

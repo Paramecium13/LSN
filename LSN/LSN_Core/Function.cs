@@ -15,6 +15,9 @@ namespace LSN_Core
 		public string Name;
 		public LSN_Type ReturnType;
 		public List<Parameter> Parameters;
+		
+
+		public abstract bool HandlesScope { get; }
 
 		protected LSN_Environment _Environment;
         public LSN_Environment Environment { get { return _Environment; } protected set { _Environment = value; } }

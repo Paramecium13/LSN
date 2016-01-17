@@ -29,6 +29,11 @@ namespace LSN_Core
 		public LSN_Environment(LSN_ScriptBase script)
 		{
 			foreach (var pair in script.Functions) Functions.Add(pair.Key, pair.Value);
+			Functions.Add("Sqrt", LSN_Math.Sqrt);
+			Functions.Add("Sin", LSN_Math.Sin);
+			Functions.Add("Cos", LSN_Math.Cos);
+			Functions.Add("Tan", LSN_Math.Tan);
+
 			foreach (var pair in script.StructTypes) StructTypes.Add(pair.Key, pair.Value);
 			foreach (var rs in script.Usings) LoadResource(rs + ".dat"); 
 		}

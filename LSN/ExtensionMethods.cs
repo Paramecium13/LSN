@@ -21,5 +21,14 @@ namespace LSN_Core
 			return NewIEnum;
 		}
 
+		/// <summary>
+		/// Converts a list of key-value pairs into a dictionary, no parameters needed.
+		/// </summary>
+		/// <typeparam name="TKey"></typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		/// <param name="self"></param>
+		/// <returns></returns>
+		public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> self)
+			=> self.ToDictionary(pair => pair.Key, pair => pair.Value);
 	}
 }
