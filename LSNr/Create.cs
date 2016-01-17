@@ -125,16 +125,6 @@ namespace LSNr
 			int subCount = 0;
 			var dict = new Dictionary<IToken, ComponentExpression>();
 			var vars = new List<Variable>();
-			foreach(var token in list)
-			{
-				if(script.CurrentScope.VariableExists(token.Value))
-				{
-					var v = script.CurrentScope.GetVariable(token.Value);
-                    vars.Add(v);
-					dict.Add(token, new VariableExpression(token.Value, v.Type));
-				}
-			}
-
 			var ls = new List<IToken>();
 
 			for(int i = 0; i < list.Count; i++)
