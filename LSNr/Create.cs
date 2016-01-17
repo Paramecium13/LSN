@@ -176,7 +176,7 @@ namespace LSNr
 			return expr;
 		}
 
-		public static Expression CreateGet(List<IToken> tokens, PreScript script)
+		private static Expression CreateGet(List<IToken> tokens, PreScript script)
 		{
 			throw new NotImplementedException();
 		}
@@ -320,7 +320,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="tokens"></param>
 		/// <returns></returns>
-		public static GiveStatement Give(List<IToken> tokens, PreScript script)
+		private static GiveStatement Give(List<IToken> tokens, PreScript script)
 		{
 			if (tokens.Any(t => t.Value.ToLower() == "item"))
 			{

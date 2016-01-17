@@ -102,6 +102,14 @@ namespace LSN_Core
 			CurrentEnvironment = EnvStack.Pop();
 		}
 
+		/// <summary>
+		/// Get a function.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public virtual Function GetFunction(string name)
+			=> CurrentEnvironment.Functions[name];
+		
 		/*
 		#region unsafe
 		// Test for using unmanaged stuff...

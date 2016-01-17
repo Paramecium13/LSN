@@ -8,18 +8,25 @@ namespace LSN_Core.Expressions
 	{
 		private Function Fn;
 
+		private string FnName;
+
 		private Dictionary<string, IExpression> Args;
 
-		public FunctionCall(Function fn, Dictionary<string,IExpression> args)
+		public FunctionCall(Function fn, Dictionary<string,IExpression> args, bool include = false)
 		{
-			Fn = fn;
+			if (include) Fn = fn;
+			else FnName = fn.Name;
 			Args = args;
 		}
 
 
 		public override ILSN_Value Eval(IInterpreter i)
 		{
-			throw new NotImplementedException();
+			var fn = Fn ?? i.GetFunction(FnName);
+			i.EnterFunctionScope(fn.Environment);
+			var val = fn.Eval(Args, i);
+			i.ExitFunctionScope();
+			return val;
 		}
 
 		public override IExpression Fold() => this;

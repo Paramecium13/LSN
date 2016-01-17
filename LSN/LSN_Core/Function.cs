@@ -16,6 +16,9 @@ namespace LSN_Core
 		public LSN_Type ReturnType;
 		public List<Parameter> Parameters;
 
+		protected LSN_Environment _Environment;
+        public LSN_Environment Environment { get { return _Environment; } protected set { _Environment = value; } }
+
 		//Todo: create a function call expression.
 		public virtual Expression CreateCall(Dictionary<string,IExpression> args, bool throwOnInvalidName = false)
 		{

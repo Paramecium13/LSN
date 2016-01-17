@@ -61,6 +61,12 @@
 		/// <returns>The value of the variable.</returns>
 		ILSN_Value GetValue(string name);
 
+		/// <summary>
+		/// Get a function.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		Function GetFunction(string name);
 
 		void GivArmorTo(ILSN_Value id, int amount, ILSN_Value target);
 

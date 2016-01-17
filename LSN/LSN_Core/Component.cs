@@ -12,6 +12,11 @@ namespace LSN_Core
 	[Serializable]
 	public abstract class Component
 	{
+		/// <summary>
+		/// The return value is false when the script, function or loop should stop (e.g. break or return.).
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
 		public abstract bool Interpret(IInterpreter i);
 	}
 }
