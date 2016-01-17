@@ -11,7 +11,7 @@ namespace LSN_Core.ControlStructures
 {
 	public class IfElseControl : ControlStructure
 	{
-		public Expression Condition;
+		public IExpression Condition;
 		public List<Component> Body;
 		public List<ElsifControl> Elsifs = new List<ElsifControl>();
 		public List<Component> ElseBlock;
@@ -23,10 +23,10 @@ namespace LSN_Core.ControlStructures
 	}
 	public class IfControl : ControlStructure
 	{
-		public Expression Condition;
+		public IExpression Condition;
 		public List<Component> Body;
 
-		public IfControl(Expression c, List<Component> body)
+		public IfControl(IExpression c, List<Component> body)
 		{
 			Condition = c;
 			Body = body;
@@ -39,7 +39,7 @@ namespace LSN_Core.ControlStructures
 	}
 	public class ElsifControl : ControlStructure
 	{
-		internal Expression Condition;
+		internal IExpression Condition;
 		internal List<Component> Body;
 		/*public string Translate()
 		{
@@ -48,7 +48,7 @@ namespace LSN_Core.ControlStructures
 			translation += TranslateBody(Body);
 			return translation;
 		}*/
-		public ElsifControl(Expression c, List<Component> body)
+		public ElsifControl(IExpression c, List<Component> body)
 		{
 			Condition = c;
 			Body = body;
@@ -61,11 +61,11 @@ namespace LSN_Core.ControlStructures
 	}
 	public class ElseControl : ControlStructure
 	{
-		public Expression Condition;
+		public IExpression Condition;
 
 		public List<Component> Body;
 
-		public ElseControl(Expression c, List<Component> body)
+		public ElseControl(IExpression c, List<Component> body)
 		{
 			Condition = c;
 			Body = body;

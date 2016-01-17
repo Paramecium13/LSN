@@ -14,17 +14,7 @@ namespace LSN_Core
 	{
 		public string Name;
 		public LSN_Type ReturnType;
-		public List<Parameter> parameters;
-
-		/// <summary>
-		/// A parameter.
-		/// </summary>
-		public class Parameter
-		{
-			public string Name;
-			public LSN_Type Type;
-			public ILSN_Value DefaultValue;
-		}
+		public List<Parameter> Parameters;
 
 		//Todo: create a function call expression.
 		public virtual Expression CreateCall(Dictionary<string,IExpression> args, bool throwOnInvalidName = false)
@@ -34,13 +24,13 @@ namespace LSN_Core
 			{
 				foreach(var name in args.Keys)
 				{
-					if (!parameters.Any(p => p.Name == name))
+					if (!Parameters.Any(p => p.Name == name))
 						throw new ApplicationException($"No argument named {name} was found for {this.Name}.");
 				}
 			}
 			// Check type.
 			Dictionary<string, IExpression> fullArgs = new Dictionary<string, IExpression>();
-			foreach(var param in parameters)
+			foreach(var param in Parameters)
 			{
 				var name = param.Name;
 				if(args.ContainsKey(name))
@@ -55,10 +45,64 @@ namespace LSN_Core
 					throw new ApplicationException($"The parameter {param.Name} of {this.Name} must be provided a value.");
 				fullArgs.Add(name, param.DefaultValue);
 			}
-			return  new FunctionCall(this, fullArgs);
+			return new FunctionCall(this, fullArgs);
+		}
+
+
+		public virtual FunctionCall CreateCall(List<Tuple<string,IExpression>> args)
+		{
+			var dict = new Dictionary<string, IExpression>();
+			for(int i = 0; i < args.Count; i++)
+			{
+				if(args[i].Item1 != null && args[i].Item1 != "")
+				{
+					if (!Parameters.Any(p => p.Name == args[i].Item1)) return null;// Log an error or something.
+					var param = Parameters.Where(p => p.Name == args[i].Item1).First();
+					if (!param.Type.Subsumes(args[i].Item2.Type)) throw new ApplicationException(
+						$"Expected {param.Type.Name} or a valid subtype for parameter {args[i].Item1} recieved {args[i].Item2.Type.Name}.");
+					dict.Add(args[i].Item1, args[i].Item2);
+				} else
+				{
+					var param = Parameters.Where(p => p.Index == i).FirstOrDefault() ?? Parameters[i];
+					if (!param.Type.Subsumes(args[i].Item2.Type)) throw new ApplicationException(
+						$"Expected {param.Type.Name} or a valid subtype for parameter {args[i].Item1} recieved {args[i].Item2.Type.Name}.");
+					dict.Add(param.Name, args[i].Item2);
+				}
+			}
+			if(dict.Count < Parameters.Count)
+			{
+				foreach(var param in Parameters)
+				{
+					if (dict.ContainsKey(param.Name)) continue;
+					if (param.DefaultValue == null) // This argument does not have a default value.
+						throw new ApplicationException($"The parameter {param.Name} of {this.Name} must be provided a value.");
+					dict.Add(param.Name, param.DefaultValue);
+				}
+			}
+			return new FunctionCall(this,dict);
 		}
 
 		public abstract ILSN_Value Eval(Dictionary<string, IExpression> args, IInterpreter i);
+
+	}
+
+	/// <summary>
+	/// A parameter for a function or method.
+	/// </summary>
+	public class Parameter
+	{
+		public string Name;
+		public LSN_Type Type;
+		public ILSN_Value DefaultValue;
+		public ushort Index;
+
+		public Parameter(string name, LSN_Type type, ILSN_Value val, ushort i)
+		{
+			Name = name;
+			Type = type;
+			DefaultValue = val;
+			Index = i;
+		}
 
 	}
 }

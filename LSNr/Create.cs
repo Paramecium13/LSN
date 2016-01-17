@@ -75,7 +75,7 @@ namespace LSNr
 		/// <param name="list"> The list of tokens.</param>
 		/// <param name="script"> The script.</param>
 		/// <returns></returns>
-		public static Expression Express(List<IToken> list, PreScript script)
+		public static IExpression Express(List<IToken> list, PreScript script)
 		{
 			if (list[0].Value.ToLower() == "get")
 			{
@@ -90,15 +90,15 @@ namespace LSNr
 				}
 				else if (list[0].GetType() == typeof(FloatToken))
 				{
-					return new ValueExpression(new DoubleValue(((FloatToken)list[0]).DVal));
+					return new DoubleValue(((FloatToken)list[0]).DVal);
 				}
 				else if (list[0].GetType() == typeof(IntToken))
 				{
-					return new ValueExpression(new IntValue(((IntToken)list[0]).IVal));
+					return new IntValue(((IntToken)list[0]).IVal);
 				}
 				else if (list[0].GetType() == typeof(StringToken))
 				{
-					return new ValueExpression(new StringValue(list[0].Value));
+					return new StringValue(list[0].Value);
 				}
 				else
 				{
