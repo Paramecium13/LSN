@@ -84,6 +84,7 @@
     <Compile Include="LSN_Core\Statements\AssignmentStatement.cs" />
     <Compile Include="LSN_Core\Statements\GiveStatement.cs" />
     <Compile Include="LSN_Core\Statements\ReassignmentStatement.cs" />
+    <Compile Include="LSN_Core\Statements\SimpleStatements.cs" />
     <Compile Include="LSN_Core\Statements\Statement.cs" />
     <Compile Include="LSN_Core\Types\BoolType.cs" />
     <Compile Include="LSN_Core\Types\LSN_BoundedType.cs" />

@@ -223,27 +223,20 @@ namespace LSNr
 		/// <summary>
 		/// Creates a statement.
 		/// </summary>
-		/// <param name="tokens"></param>
-		/// <param name="script"></param>
+		/// <param name="tokens"> The tokens of the statement, not including the ';'.</param>
+		/// <param name="script"> The script.</param>
 		/// <returns></returns>
 		public static Statement State(List<IToken> tokens, PreScript script)
 		{
-			if (tokens[0].Value.ToLower() == "give")
-			{
-				return Give(tokens,script);
-			}
-			else if (tokens[0].Value.ToLower() == "let")
-			{
-				return Assignment(tokens,script);
-			}
-			else if (tokens.Count > 1 && tokens[1].Value == "=")
-			{
-				return Reassignment(tokens,script);
-			}
-			else
-			{
-				return null;
-			}
+			var v = tokens[0].Value.ToLower();
+            if (v == "give")	return Give(tokens,script);
+			if (v == "let")		return Assignment(tokens,script);			
+			if (tokens.Count > 1 && tokens[1].Value == "=")	return Reassignment(tokens,script);
+			if (v == "break")	return new BreakStatement();
+			if (v == "next")	return new NextStatement();
+
+		
+			return null;
 		}
 
 		/// <summary>
