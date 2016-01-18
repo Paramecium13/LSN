@@ -27,6 +27,7 @@ namespace LSNr
 		public static ControlStructure ControlStructure(List<IToken> head, List<IToken> body, IPreScript script)
 		{
 			string h = head[0].Value;
+			int n = head.Count;
 			if (h == "if")
 			{
 				script.CurrentScope = new Scope(script.CurrentScope);
@@ -36,7 +37,7 @@ namespace LSNr
                 script.CurrentScope = script.CurrentScope.Pop(components);
 				return new IfControl(Express(head.Skip(1).ToList(), script), components);
 			}
-			else if (h == "elsif")
+			if (h == "elsif")
 			{
 				script.CurrentScope = new Scope(script.CurrentScope);
 				Parser p = new Parser(body, script);
@@ -45,7 +46,7 @@ namespace LSNr
 				script.CurrentScope = script.CurrentScope.Pop(components);
 				return new ElsifControl(Express(head.Skip(1).ToList(),script), components);
 			}
-			else if (h == "else")
+			if (h == "else")
 			{
 				script.CurrentScope = new Scope(script.CurrentScope);
 				Parser p = new Parser(body,script);
@@ -54,18 +55,37 @@ namespace LSNr
 				script.CurrentScope = script.CurrentScope.Pop(components);
 				return new ElseControl(Express(head.Skip(1).ToList(), script), components);
 			}
-			else if(h == "choice")
+			if(h == "choice")
 			{
 				// It's a choice block.
+				Parser p = new Parser(body, script);
+				p.Parse();
+				var components = Parser.Consolidate(p.Components);
+				return new ChoicesBlockControl(components);
 			}
-			else if(h == "?")
-			{
+			if(h == "?")
+			{ /* ? [expression (condition)] ? [expression] -> [block] */
 				// It's a conditional choice (inside a choice block).
+				int endOfCondition = head.Skip(1).ToList().IndexOf("?");
+				var cnd = Express(head.Skip(1).Take(endOfCondition - 1),script);
+				var endOfStr = head.IndexOf("->");
+				var str = Express(head.Skip(endOfCondition).Take(endOfStr - endOfCondition), script);
+				Parser p = new Parser(body, script);
+				p.Parse();
+				var components = Parser.Consolidate(p.Components);
+				return new Choice(str, components, cnd);
 			}
-			else if(head.Count > 1 && head[1].Value == "->")
+			if(n > 1 && head.Last().Value == "->")
 			{
 				// It's a choice (inside a choice block).
-			}
+				Parser p = new Parser(body, script);
+				p.Parse();
+				var components = Parser.Consolidate(p.Components);
+				var endOfStr = head.IndexOf("->");
+				var str = Express(head.Take(n - 1), script);
+
+				return new Choice(str, components);
+            }
 			return null;
 		}
 		

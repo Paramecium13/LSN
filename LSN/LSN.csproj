@@ -62,6 +62,8 @@
     <Compile Include="LSN_Core\BoundedFunction.cs" />
     <Compile Include="LSN_Core\BoundedMethod.cs" />
     <Compile Include="LSN_Core\Component.cs" />
+    <Compile Include="LSN_Core\ControlStructures\Choice.cs" />
+    <Compile Include="LSN_Core\ControlStructures\ChoicesBlockControl.cs" />
     <Compile Include="LSN_Core\ControlStructures\ControlStructure.cs" />
     <Compile Include="LSN_Core\ControlStructures\IfElseControl.cs" />
     <Compile Include="LSN_Core\Expressions\ComponentExpression.cs" />

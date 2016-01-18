@@ -14,7 +14,7 @@ namespace LSNr
 	{
 		private List<IToken> Tokens;
 		private int i = 0;
-		private List<IToken> tempTokens = new List<IToken>();
+		private List<IToken> TempTokens = new List<IToken>();
 		internal List<Component> Components = new List<Component>();
 		private IPreScript Script;
 
@@ -36,12 +36,12 @@ namespace LSNr
 				}
 				else if (t == ";")
 				{
-					Components.Add(Create.State(tempTokens,Script));
-					tempTokens.Clear();
+					Components.Add(Create.State(TempTokens,Script));
+					TempTokens.Clear();
 				}
 				else
 				{
-					tempTokens.Add(token);
+					TempTokens.Add(token);
 				}
 			}
 		}
@@ -67,8 +67,8 @@ namespace LSNr
 				i++;
 			} while (openCount != closeCount);
 			var x = bodyTokens.Skip(1).Reverse().Skip(1).Reverse().ToList();
-			Components.Add(Create.ControlStructure(tempTokens, x, Script));
-			tempTokens.Clear();i--;
+			Components.Add(Create.ControlStructure(TempTokens, x, Script));
+			TempTokens.Clear();i--;
 		}
 
 		public static List<Component> Consolidate(List<Component> components)

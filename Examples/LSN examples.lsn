@@ -71,11 +71,11 @@ inline INN_MESSAGE_CANNOT_AFFORD = "You don't have enough money.";
 inline INN_SOUND = "...";
 inline INN_WAIT = 300;
 
-fn Inn(price : int = 10, inn_name : string = "", f: Face = none )
+fn Inn(price : int = 10, inn_name : string = "my Inn", f: string = none )
 {
 	LET message = INN_MESSAGE_1 + inn_name + INN_MESSAGE_2 + price + GetCurrency()
 		+ INN_MESSAGE_3;
-	SAY message WITH FACE f;
+	SAY message WITH f;
 	choice 
 	{
 		"Yes"	->

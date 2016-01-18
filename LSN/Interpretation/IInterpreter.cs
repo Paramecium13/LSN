@@ -1,4 +1,6 @@
-﻿namespace LSN_Core
+﻿using System.Collections.Generic;
+
+namespace LSN_Core
 {
 	public interface IInterpreter
 	{
@@ -99,6 +101,13 @@
 		/// <param name="graphic"> The id of the graphic to display, null if no graphic should be displayed.</param>
 		/// <param name="title">The title to display, null if no title should be displayed.</param>
 		void Say(string message, ILSN_Value graphic, string title);
+
+		/// <summary>
+		/// Has the player make a choice and returns the index of that choice.
+		/// </summary>
+		/// <param name="choices"></param>
+		/// <returns></returns>
+		int Choice(List<string> choices);
 
 	}
 }

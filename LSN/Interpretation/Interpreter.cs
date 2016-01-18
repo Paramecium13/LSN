@@ -187,5 +187,6 @@ namespace LSN_Core
 		}
 
 		public abstract void Say(string message, ILSN_Value graphic, string title);
+		public abstract int Choice(List<string> choices);
 	}
 }

@@ -10,10 +10,27 @@ namespace LSN_Core.ControlStructures
 {
 	public abstract class ControlStructure : Component
 	{
-		internal List<string> HeaderTokens;
-		internal List<string> BodyTokens;
-		
-		public Scope _Scope { get; protected set; }
+		protected virtual InterpretValue Interpret(List<Component> components, IInterpreter i)
+		{
+			for(int j = 0; j < components.Count; j++)
+			{
+				var val = components[j].Interpret(i);
+				switch (val)
+				{
+					case InterpretValue.Base:
+						break;
+					case InterpretValue.Next:
+						return InterpretValue.Next;
+					case InterpretValue.Break:
+						return InterpretValue.Break;
+					case InterpretValue.Return:
+						return InterpretValue.Return;
+					default:
+						break;
+				}
+			}
 
+			return InterpretValue.Base;
+		}
 	}
 }
