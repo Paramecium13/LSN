@@ -24,7 +24,7 @@ namespace LSNr
 		/// <param name="body"> The body tokens.</param>
 		/// <param name="script"> The script.</param>
 		/// <returns></returns>
-		public static ControlStructure ControlStructure(List<IToken> head, List<IToken> body, PreScript script)
+		public static ControlStructure ControlStructure(List<IToken> head, List<IToken> body, IPreScript script)
 		{
 			string h = head[0].Value;
 			if (h == "if")
@@ -70,7 +70,7 @@ namespace LSNr
 		}
 		
 
-		private static IExpression Express(IEnumerable<IToken> tokens, PreScript script)
+		private static IExpression Express(IEnumerable<IToken> tokens, IPreScript script)
 			=> Express(tokens.ToList(), script);
 
 		/// <summary>
@@ -79,7 +79,7 @@ namespace LSNr
 		/// <param name="list"> The list of tokens.</param>
 		/// <param name="script"> The script.</param>
 		/// <returns></returns>
-		public static IExpression Express(List<IToken> list, PreScript script)
+		public static IExpression Express(List<IToken> list, IPreScript script)
 		{
 			if (list[0].Value.ToLower() == "get")
 			{
@@ -123,7 +123,7 @@ namespace LSNr
 		/// <param name="list"> The list of tokens.</param>
 		/// <param name="script"> The script.</param>
 		/// <returns> ...</returns>
-		private static CompoundExpression Compound(List<IToken> list, PreScript script)
+		private static CompoundExpression Compound(List<IToken> list, IPreScript script)
 		{
 			const string sub = "Σ";
 			int subCount = 0;
@@ -180,7 +180,7 @@ namespace LSNr
 			return expr;
 		}
 
-		private static Expression CreateGet(List<IToken> tokens, PreScript script)
+		private static Expression CreateGet(List<IToken> tokens, IPreScript script)
 		{
 			throw new NotImplementedException();
 		}
@@ -191,7 +191,7 @@ namespace LSNr
 		/// <param name="tokens"> The tokens, without the function name and containing parenthesis</param>
 		/// <param name="fn"></param>
 		/// <returns></returns>
-		private static FunctionCall CreateFunctionCall(List<IToken> tokens, Function fn, PreScript script)
+		private static FunctionCall CreateFunctionCall(List<IToken> tokens, Function fn, IPreScript script)
 		{
 			var ls = new List<Tuple<string, IExpression>>();
 			var parameters = new List<List<IToken>>();

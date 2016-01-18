@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LSNr
 {
-	public class PreScript
+	public class PreScript : IPreScript
 	{
 		internal const string STRN = "Στρ";
 		internal const string SUBN = "SUB";
@@ -17,10 +17,12 @@ namespace LSNr
 
 		private List<Component> Components;
 
+		private bool _Mutable = false;
+
 		/// <summary>
 		/// 
 		/// </summary>
-		public bool Mutable = false;
+		public bool Mutable {get { return _Mutable; } set { _Mutable = value; } }
 
 		/// <summary>
 		/// 

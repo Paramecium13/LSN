@@ -16,9 +16,9 @@ namespace LSNr
 		private int i = 0;
 		private List<IToken> tempTokens = new List<IToken>();
 		internal List<Component> Components = new List<Component>();
-		private PreScript Script;
+		private IPreScript Script;
 
-		public Parser(List<IToken> tokens, PreScript script)
+		public Parser(List<IToken> tokens, IPreScript script)
 		{
 			Tokens = tokens;
 			Script = script;
