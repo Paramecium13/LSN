@@ -68,6 +68,10 @@ namespace LSNr
 			}
 			return null;
 		}
+		
+
+		private static IExpression Express(IEnumerable<IToken> tokens, PreScript script)
+			=> Express(tokens.ToList(), script);
 
 		/// <summary>
 		/// Create an expression.
@@ -229,12 +233,13 @@ namespace LSNr
 		public static Statement State(List<IToken> tokens, PreScript script)
 		{
 			var v = tokens[0].Value.ToLower();
+			int n = tokens.Count;
             if (v == "give")	return Give(tokens,script);
 			if (v == "let")		return Assignment(tokens,script);			
-			if (tokens.Count > 1 && tokens[1].Value == "=")	return Reassignment(tokens,script);
+			if (n > 1 && tokens[1].Value == "=")	return Reassignment(tokens,script);
 			if (v == "break")	return new BreakStatement();
 			if (v == "next")	return new NextStatement();
-
+			if (v == "return")	return new ReturnStatement(n > 1 ? Express(tokens.Skip(1), script) : null);
 		
 			return null;
 		}
