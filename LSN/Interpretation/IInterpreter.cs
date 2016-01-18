@@ -90,6 +90,15 @@
 		//void SetArrayValue(int id, int index, ILSN_Value value);
 
 		ILSN_Value Eval(string expression);
-		
+
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="graphic"> The id of the graphic to display, null if no graphic should be displayed.</param>
+		/// <param name="title">The title to display, null if no title should be displayed.</param>
+		void Say(string message, ILSN_Value graphic, string title);
+
 	}
 }

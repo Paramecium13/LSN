@@ -185,5 +185,7 @@ namespace LSN_Core
 		{
 			throw new NotImplementedException();
 		}
+
+		public abstract void Say(string message, ILSN_Value graphic, string title);
 	}
 }

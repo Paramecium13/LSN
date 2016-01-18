@@ -49,6 +49,8 @@
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="Create.cs" />
+    <Compile Include="Create_Statements.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Preprocessor.cs" />
     <Compile Include="PreScript.cs" />
