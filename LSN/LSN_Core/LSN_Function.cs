@@ -20,9 +20,24 @@ namespace LSN_Core
 		{
 			i.EnterFunctionScope(Resource.GetEnvironment());
 			foreach (var pair in args) i.AddVariable(pair.Key, pair.Value.Eval(i));
-			int index = 0;
-			while (Components[index++].Interpret(i)) ;
-			//for (int x = 0; x < Components.Count; x++) Components[x].Interpret(i); 
+			for (int x = 0; x < Components.Count; x++)
+			{
+				var val = Components[x].Interpret(i);
+				switch (val)
+				{
+					case InterpretValue.Base:
+						break;
+					case InterpretValue.Next:
+						throw new ApplicationException("This should not happen.");
+					case InterpretValue.Break:
+						throw new ApplicationException("This should not happen.");
+					case InterpretValue.Return: //Exit the function.
+						x = Components.Count; // This breaks the for loop.
+						break;
+					default:
+						throw new ApplicationException("This should not happen.");
+				}
+			}
 			i.ExitFunctionScope();
 			return i.ReturnValue;
 		}

@@ -23,10 +23,10 @@ namespace LSN_Core.Statements
 			Value = value;
 		}
 
-		public override bool Interpret(IInterpreter i)
+		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.ReAssignVariable(Name, Value.Eval(i));
-			return true;
+			return InterpretValue.Base;
 		}
 
 		public void Optimise()

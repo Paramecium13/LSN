@@ -42,10 +42,10 @@ namespace LSN_Core.Statements
 			//Program.Variables.Add(VariableName, new Variable(VariableName,Type,Mutable));
 		}*/
 
-		public override bool Interpret(IInterpreter i)
+		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.AddVariable(VariableName,Value.Eval(i));
-			return true;
+			return InterpretValue.Base;
 		}
 	}
 }

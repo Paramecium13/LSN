@@ -25,10 +25,10 @@ namespace LSN_Core.Statements
 			Amount = a;
 		}
 
-		public override bool Interpret(IInterpreter i)
+		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.GiveItemTo(Id.Eval(i), ((IntValue)Amount.Eval(i)).Value, Reciever.Eval(i));
-			return true;
+			return InterpretValue.Base;
 		}
 	}
 	[Serializable]
@@ -42,10 +42,10 @@ namespace LSN_Core.Statements
 			Amount = a;
 		}
 
-		public override bool Interpret(IInterpreter i)
+		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.GivArmorTo(Id.Eval(i), ((IntValue)Amount.Eval(i)).Value, Reciever.Eval(i));
-			return true;
+			return InterpretValue.Base;
 		}
 	}
 	[Serializable]
@@ -59,10 +59,10 @@ namespace LSN_Core.Statements
 			Amount = a;
 		}
 
-		public override bool Interpret(IInterpreter i)
+		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.GiveWeaponTo(Id.Eval(i), ((IntValue)Amount.Eval(i)).Value, Reciever.Eval(i));
-			return true;
+			return InterpretValue.Base;
 		}
 	}
 	[Serializable]
@@ -73,10 +73,10 @@ namespace LSN_Core.Statements
 			Amount = a;
 		}
 
-		public override bool Interpret(IInterpreter i)
+		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.GiveGoldTo(((IntValue)Amount.Eval(i)).Value,Reciever.Eval(i));
-			return true;
+			return InterpretValue.Base;
 		}
 	}
 }

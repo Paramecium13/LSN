@@ -16,7 +16,7 @@ namespace LSN_Core.ControlStructures
 		public List<ElsifControl> Elsifs = new List<ElsifControl>();
 		public List<Component> ElseBlock;
 
-		public override bool Interpret(IInterpreter i)
+		public override InterpretValue Interpret(IInterpreter i)
 		{
 			throw new NotImplementedException();
 		}
@@ -32,7 +32,7 @@ namespace LSN_Core.ControlStructures
 			Body = body;
 		}
 
-		public override bool Interpret(IInterpreter i)
+		public override InterpretValue Interpret(IInterpreter i)
 		{
 			throw new NotImplementedException();
 		}
@@ -54,7 +54,7 @@ namespace LSN_Core.ControlStructures
 			Body = body;
 		}
 
-		public override bool Interpret(IInterpreter i)
+		public override InterpretValue Interpret(IInterpreter i)
 		{
 			throw new NotImplementedException();
 		}
@@ -71,7 +71,7 @@ namespace LSN_Core.ControlStructures
 			Body = body;
 		}
 
-		public override bool Interpret(IInterpreter i)
+		public override InterpretValue Interpret(IInterpreter i)
 		{
 			throw new NotImplementedException();
 		}
