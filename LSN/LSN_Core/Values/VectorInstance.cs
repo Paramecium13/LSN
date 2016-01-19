@@ -14,6 +14,11 @@ namespace LSN_Core
 
 		private ILSN_Value[] Values;
 
+		/// <summary>
+		/// Get the value at an index.
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
 		public ILSN_Value this [int index] { get { return Values[index].Clone(); } }
 
 		public VectorInstance(VectorType type, ILSN_Value[] values)
@@ -25,9 +30,10 @@ namespace LSN_Core
 
 		public override ILSN_Value Clone()
 		{
-			var vals = new ILSN_Value[Size];
+			/*var vals = new ILSN_Value[Size];
 			for(int i = 0; i < Size; i++) vals[i] = Values[i].Clone();
-			return new VectorInstance((VectorType)Type, vals);
+			return new VectorInstance((VectorType)Type, vals);*/
+			return this; // Because it is immutable, there is no difference...
 		}
 
 		public override int GetSize()
