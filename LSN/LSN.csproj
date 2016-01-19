@@ -96,11 +96,13 @@
     <Compile Include="LSN_Core\Types\LSN_ReferenceType.cs" />
     <Compile Include="LSN_Core\Types\LSN_StructType.cs" />
     <Compile Include="LSN_Core\Types\LSN_Type.cs" />
+    <Compile Include="LSN_Core\Types\RecordType.cs" />
     <Compile Include="LSN_Core\Types\VectorType.cs" />
     <Compile Include="LSN_Core\Values\BoundedValue.cs" />
     <Compile Include="LSN_Core\Values\ILSN_Value.cs" />
     <Compile Include="LSN_Core\Values\LSN_Reference.cs" />
     <Compile Include="LSN_Core\Values\LSN_Value.cs" />
+    <Compile Include="LSN_Core\Values\RecordValue.cs" />
     <Compile Include="LSN_Core\Values\StructValue.cs" />
     <Compile Include="LSN_Core\Values\VectorInstance.cs" />
     <Compile Include="LSN_ResourceThing.cs" />
