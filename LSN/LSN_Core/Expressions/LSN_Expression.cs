@@ -53,10 +53,10 @@ namespace LSN_Core.Expressions
 		{
 			if (LeftSide.IsCompileConst() && RightSide.IsCompileConst())
 			{
-				if (LSN_Type.Adders.ContainsKey(LeftSide.Type))
+				/*if (LSN_Type.Adders.ContainsKey(LeftSide.Type))
 				{
 					return LSN_Type.Adders[LeftSide.Type](LeftSide.Eval(), RightSide.Eval());
-				}
+				}*/
 			}
 			return null;
 		}
@@ -67,10 +67,10 @@ namespace LSN_Core.Expressions
 			var r = RightSide.Fold();
 			if(l.IsCompileConst() && r.IsCompileConst())
 			{
-				if (LSN_Type.Adders.ContainsKey(l.Type))
+				/*if (LSN_Type.Adders.ContainsKey(l.Type))
 				{
 					return LSN_Type.Adders[l.Type](l.Eval(), r.Eval());
-				}
+				}*/
 			}
 			return new LSN_Addition(l, r);
 		}
