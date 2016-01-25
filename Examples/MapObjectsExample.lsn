@@ -1,0 +1,58 @@
+MapObject FountainOfBlood
+{
+	FountainOfBlood(){}
+	int Blood = 10;
+	string Name;
+	
+	virtual fn Foo() -> int; /* A virtual method must be defined in every state.*/
+
+	
+	state auto
+	{
+		
+		fn Foo() -> int
+		{
+			return Blood*2;
+		}
+		
+		fn Activate(actor : IActor)
+		{
+			Name = actor.Name;
+			if(Foo() > 200)
+			{
+				SetState(State2);
+			}
+			else if(actor.Health > 10)
+			{
+				Damage actor by 10;
+				Blood += 10;
+			}
+		}
+		
+	}
+	
+	state State2
+	{
+		fn Foo() -> int
+		{
+			return Blood^2;
+		}
+		
+		fn Activate(actor : IActor)
+		{
+			Name = actor.Name;
+			if(Foo < 100)
+			{
+				SetState(auto);
+			}
+			else if(actor.Health < actor.MaxHP)
+			{
+				let blood = Min(actor.MaxHP - actor.Health, 10);
+				Heal actor by blood;
+				Blood -= blood;
+			}
+		}
+		
+	}
+	
+}
