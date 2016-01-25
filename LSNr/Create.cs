@@ -211,7 +211,7 @@ namespace LSNr
 		/// <param name="tokens"> The tokens, without the function name and containing parenthesis</param>
 		/// <param name="fn"></param>
 		/// <returns></returns>
-		private static FunctionCall CreateFunctionCall(List<IToken> tokens, Function fn, IPreScript script)
+		public static FunctionCall CreateFunctionCall(List<IToken> tokens, Function fn, IPreScript script)
 		{
 			var ls = new List<Tuple<string, IExpression>>();
 			var parameters = new List<List<IToken>>();
