@@ -9,6 +9,10 @@ namespace LSN_Core
 	{
 
 		private IExpression _Value;
+
+		/// <summary>
+		/// The object that is calling this method.
+		/// </summary>
 		public IExpression Value { get { return _Value; } set { _Value = value; } }
 		private Dictionary<string, IExpression> Args;
 

@@ -27,9 +27,10 @@ namespace LSN_Core.Expressions
 
 		public override ILSN_Value Eval(IInterpreter i)
 		{
-			var fn = Fn ?? i.GetFunction(FnName);
+			var args = Args.Select(p => new KeyValuePair<string, ILSN_Value>(p.Key, p.Value.Eval(i))).ToDictionary();
+            var fn = Fn ?? i.GetFunction(FnName);
 			if (! fn.HandlesScope) i.EnterFunctionScope(fn.Environment);
-			var val = fn.Eval(Args, i);
+			var val = fn.Eval(args, i);
 			if (! fn.HandlesScope) i.ExitFunctionScope();
 			return val;
 		}

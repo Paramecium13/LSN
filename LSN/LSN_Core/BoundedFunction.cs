@@ -16,12 +16,9 @@ namespace LSN_Core
 			Bound = b;
 		}
 
-		public override ILSN_Value Eval(Dictionary<string, IExpression> args, IInterpreter i)
-		{
-			var argVals = new Dictionary<string, ILSN_Value>();
-			foreach (var pair in args) argVals.Add(pair.Key, pair.Value.Eval(i));
-			return Bound(argVals);
-		}
+		public override ILSN_Value Eval(Dictionary<string, ILSN_Value> args, IInterpreter i)
+			=> Bound(args);
+		
 
 	}
 }

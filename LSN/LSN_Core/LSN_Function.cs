@@ -16,10 +16,10 @@ namespace LSN_Core
 
 		public override bool HandlesScope { get { return true; } }
 
-		public override ILSN_Value Eval(Dictionary<string, IExpression> args, IInterpreter i)
+		public override ILSN_Value Eval(Dictionary<string, ILSN_Value> args, IInterpreter i)
 		{
 			i.EnterFunctionScope(Resource.GetEnvironment());
-			foreach (var pair in args) i.AddVariable(pair.Key, pair.Value.Eval(i));
+			foreach (var pair in args) i.AddVariable(pair.Key, pair.Value);
 			for (int x = 0; x < Components.Count; x++)
 			{
 				var val = Components[x].Interpret(i);

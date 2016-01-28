@@ -23,7 +23,7 @@ namespace LSN_Core
         public LSN_Environment Environment { get { return _Environment; } protected set { _Environment = value; } }
 
 		//Todo: create a function call expression.
-		public virtual Expression CreateCall(Dictionary<string,IExpression> args, bool throwOnInvalidName = false)
+		public virtual IExpression CreateCall(Dictionary<string,IExpression> args, bool throwOnInvalidName = false)
 		{
 			// Check for invalid names.
 			if(throwOnInvalidName)
@@ -88,7 +88,7 @@ namespace LSN_Core
 			return new FunctionCall(this,dict);
 		}
 
-		public abstract ILSN_Value Eval(Dictionary<string, IExpression> args, IInterpreter i);
+		public abstract ILSN_Value Eval(Dictionary<string, ILSN_Value> args, IInterpreter i);
 
 	}
 

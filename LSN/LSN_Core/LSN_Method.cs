@@ -1,18 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using LSN_Core.Expressions;
 
 namespace LSN_Core
 {
-	public class BoundedMethod : Method
+	/// <summary>
+	/// A method written in LSN
+	/// </summary>
+	public class LSN_Method : Method
 	{
 		public override bool HandlesScope { get { return false; } }
 
-		private Func<Dictionary<string, ILSN_Value>, ILSN_Value> Bound;
+
 
 		public override ILSN_Value Eval(Dictionary<string, ILSN_Value> args, IInterpreter i)
-			=> Bound(args);
-		
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

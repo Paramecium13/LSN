@@ -80,6 +80,7 @@
     <Compile Include="LSN_Core\LSN_Function.cs" />
     <Compile Include="LSN_Core\LSN_List.cs" />
     <Compile Include="LSN_Core\LSN_Math.cs" />
+    <Compile Include="LSN_Core\LSN_Method.cs" />
     <Compile Include="LSN_Core\LSN_ReferenceValue.cs" />
     <Compile Include="LSN_Core\Method.cs" />
     <Compile Include="LSN_Core\MethodCall.cs" />
