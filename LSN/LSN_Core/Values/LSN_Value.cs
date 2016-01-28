@@ -25,7 +25,6 @@ namespace LSN_Core
 			return this;
 		}
 
-		public abstract int GetSize();
 		public override bool IsReifyTimeConst() => true;
 
 	}

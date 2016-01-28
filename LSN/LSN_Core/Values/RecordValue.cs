@@ -41,11 +41,6 @@ namespace LSN_Core.Values
 			Values[name] = value;
 		}
 
-		public override int GetSize()
-		{
-			throw new NotImplementedException();
-		}
-
 		public override string TranslateUniversal()
 		{
 			throw new NotImplementedException();

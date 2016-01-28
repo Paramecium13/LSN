@@ -20,11 +20,6 @@ namespace LSN_Core
 
 		public override ILSN_Value Clone() => new LSN_Reference(Value, (LSN_ReferenceType) Type);
 
-		public override int GetSize()
-		{
-			throw new NotImplementedException();
-		}
-
 		public override string TranslateUniversal()
 		{
 			throw new NotImplementedException();

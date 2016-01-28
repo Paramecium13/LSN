@@ -38,11 +38,6 @@ namespace LSN_Core
 			return this; // Because it is immutable, there is no difference...
 		}
 
-		public override int GetSize()
-		{
-			throw new NotImplementedException();
-		}
-
 		public override string TranslateUniversal()
 		{
 			var str = new StringBuilder("[");
