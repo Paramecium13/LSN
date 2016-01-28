@@ -11,7 +11,6 @@ namespace LSN_Core.Types
 
 		private readonly Dictionary<string, LSN_Type> Members;
 		public IReadOnlyDictionary<string, LSN_Type> GetMembers() => Members;
-		public override bool BoolVal { get { return true; } }
 
 		public RecordType(string name, Dictionary<string,LSN_Type> members)
 		{

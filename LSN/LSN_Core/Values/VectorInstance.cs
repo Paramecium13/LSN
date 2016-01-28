@@ -14,6 +14,8 @@ namespace LSN_Core
 
 		private ILSN_Value[] Values;
 
+		public override bool BoolValue { get { return true;/*Values != null;*/ } }
+
 		/// <summary>
 		/// Get the value at an index.
 		/// </summary>

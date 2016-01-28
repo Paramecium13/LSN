@@ -130,8 +130,6 @@ namespace LSN_Core
 
 		public virtual bool IsBounded { get { return false; } }
 
-		public abstract bool BoolVal { get; }
-
 		public List<string> Aliases = new List<string>();
 
 		public string Name { get; protected set; }

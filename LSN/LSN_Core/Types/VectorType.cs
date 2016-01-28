@@ -22,8 +22,6 @@ namespace LSN_Core
 
 
 
-		public override bool BoolVal { get { return true; } }
-
 		private LSN_Type _Generic;
 		public LSN_Type GenericType { get { return _Generic; } private set { _Generic = value; } }
 

@@ -11,6 +11,7 @@ namespace LSN_Core
 	[Serializable]
 	public abstract class LSN_Value : ComponentExpression, ILSN_Value
 	{
+		public abstract bool BoolValue { get; }
 
 		public abstract ILSN_Value Clone();
 

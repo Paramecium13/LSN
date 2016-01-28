@@ -23,8 +23,6 @@ namespace LSN_Core
 		public override bool IsBounded { get { return true; } }
 		protected int Size;
 
-		public override bool BoolVal { get { return true;} }
-
 		public Func<ILSN_Value> CreateDefault { get; set; }
 
 		public LSN_BoundedType(string name, int size, params string[] args)

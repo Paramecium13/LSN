@@ -8,6 +8,8 @@ namespace LSN_Core
 	{
 		private List<ILSN_Value> Values = new List<ILSN_Value>();
 
+		public override bool BoolValue { get { return true; } }
+
 		public ILSN_Value this[int index] { get { return Values[index]; } set { Values[index] = value; } }
 
 		public LSN_List(LSN_ListType type)

@@ -23,7 +23,7 @@ namespace LSN_Core.ControlStructures
 			=> Interpret(_Components, i);
 
 
-		public bool Check(IInterpreter i) => Condition?.Eval(i)?.Type?.BoolVal ?? true;
+		public bool Check(IInterpreter i) => Condition?.Eval(i)?.BoolValue ?? true;
 
 	}
 }

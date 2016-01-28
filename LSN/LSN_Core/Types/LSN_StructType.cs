@@ -12,8 +12,6 @@ namespace LSN_Core
 	{
 		public Dictionary<String, LSN_Type> Members = new Dictionary<string, LSN_Type>();
 
-		public override bool BoolVal => true;
-
 		public override ILSN_Value CreateDefaultValue()
 		{
 			var dict = new Dictionary<string, ILSN_Value>();

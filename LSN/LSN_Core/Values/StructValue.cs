@@ -12,6 +12,8 @@ namespace LSN_Core
 
 		public LSN_Type Type { get; set; }
 
+		public bool BoolValue { get{ return true; } }
+
 		public StructValue(LSN_StructType type, Dictionary<string, ILSN_Value> values)
 		{
 			Members = new Dictionary<string, ILSN_Value>();

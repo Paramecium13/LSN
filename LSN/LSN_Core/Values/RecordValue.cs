@@ -10,6 +10,7 @@ namespace LSN_Core.Values
 	public class RecordValue : LSN_Value
 	{
 		private RecordType _Type;
+		public override bool BoolValue { get { return true; } }
 
 		private Dictionary<string, ILSN_Value> Values = new Dictionary<string, ILSN_Value>();
 
