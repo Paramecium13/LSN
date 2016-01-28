@@ -72,10 +72,6 @@ namespace LSN_Core
 			return true;
 		}
 
-		public int GetSize()
-		{
-			return Type.GetSize();
-		}
 		/*
 		public static StructValue operator + (StructValue a, StructValue b)
 		{

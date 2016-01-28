@@ -31,11 +31,11 @@ namespace LSN_Core
 		static LSN_Type()
 		{
 			BaseTypes = new List<LSN_Type>();
-			int_ = new LSN_BoundedType<int>("int",sizeof(int),"Integer");
-			double_ = new LSN_BoundedType<double>("double",sizeof(double));
-			string_ = new LSN_BoundedType<string>("string", IntPtr.Size);
-			dynamic_ = new LSN_BoundedType<Object>("dynamic", IntPtr.Size);
-			object_ = new LSN_BoundedType<object>("object", IntPtr.Size);
+			int_ = new LSN_BoundedType<int>("int",()=> new IntValue(0),"Integer");
+			double_ = new LSN_BoundedType<double>("double", () => new DoubleValue(0.0));
+			string_ = new LSN_BoundedType<string>("string", () => new StringValue(""));
+			dynamic_ = new LSN_BoundedType<Object>("dynamic",()=> null);
+			object_ = new LSN_BoundedType<object>("object", () => null);
 
 			BaseTypes.Add(int_);
 			BaseTypes.Add(double_);
@@ -159,8 +159,6 @@ namespace LSN_Core
 		}
 
 		public abstract ILSN_Value CreateDefaultValue();
-
-		public abstract int GetSize();
 
 	}
 }

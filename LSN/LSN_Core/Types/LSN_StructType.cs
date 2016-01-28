@@ -22,14 +22,6 @@ namespace LSN_Core
 			return new StructValue(this, dict);
 		}
 
-		public override int GetSize()
-		{
-			int size = 0;
-			foreach(var type in Members.Values)
-			{
-				size += type.GetSize();
-			}
-			return size;
-		}
+
 	}
 }

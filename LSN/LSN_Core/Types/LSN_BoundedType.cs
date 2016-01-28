@@ -25,13 +25,12 @@ namespace LSN_Core
 
 		public Func<ILSN_Value> CreateDefault { get; set; }
 
-		public LSN_BoundedType(string name, int size, params string[] args)
+		public LSN_BoundedType(string name, Func<ILSN_Value> createDefault, params string[] args)
 		{
 			Name = name;
-			Size = size;
+			CreateDefault = createDefault;
 		}
 
 		public override ILSN_Value CreateDefaultValue() => CreateDefault();
-		public override int GetSize() => Size;
 	}
 }

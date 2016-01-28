@@ -22,9 +22,5 @@ namespace LSN_Core.Types
 			throw new NotImplementedException();
 		}
 
-		public override int GetSize()
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

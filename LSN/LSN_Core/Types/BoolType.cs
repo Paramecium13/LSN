@@ -8,7 +8,7 @@ namespace LSN_Core
 {
 	public class BoolType : LSN_BoundedType<bool>
 	{
-		internal BoolType(string name, params string[] args):base(name,sizeof(bool),args) { }
+		internal BoolType(string name, params string[] args):base(name,null,args) { }
 
 		public override ILSN_Value CreateDefaultValue() => LSN_BoolValue.GetBoolValue(false);
 	}

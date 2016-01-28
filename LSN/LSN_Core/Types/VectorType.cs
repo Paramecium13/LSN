@@ -36,9 +36,5 @@ namespace LSN_Core
 			throw new NotImplementedException();
 		}
 
-		public override int GetSize()
-		{
-			throw new NotImplementedException();
-		}
 	}
 }
