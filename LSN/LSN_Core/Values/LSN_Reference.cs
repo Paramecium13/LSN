@@ -10,7 +10,7 @@ namespace LSN_Core
 	public class LSN_Reference : LSN_Value
 	{
 		public readonly LSN_ReferenceValue Value;
-		public override bool BoolValue { get { return Value.BoolValue; } }
+		public override bool BoolValue { get { return Value?.BoolValue ?? false; } }
 
 		public LSN_Reference(LSN_ReferenceValue value, LSN_ReferenceType type)
 		{
