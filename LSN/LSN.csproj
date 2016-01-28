@@ -83,7 +83,7 @@
     <Compile Include="LSN_Core\LSN_Method.cs" />
     <Compile Include="LSN_Core\LSN_ReferenceValue.cs" />
     <Compile Include="LSN_Core\Method.cs" />
-    <Compile Include="LSN_Core\MethodCall.cs" />
+    <Compile Include="LSN_Core\Expressions\MethodCall.cs" />
     <Compile Include="LSN_Core\Statements\AssignmentStatement.cs" />
     <Compile Include="LSN_Core\Statements\GiveStatement.cs" />
     <Compile Include="LSN_Core\Statements\ReassignmentStatement.cs" />

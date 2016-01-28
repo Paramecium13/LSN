@@ -19,11 +19,8 @@ namespace LSN_Core
 					return new DoubleValue(Math.Sqrt(((IntValue)v).Value));
 				}
 				return new DoubleValue(Math.Sqrt(((DoubleValue)v).Value));
-			});
-			Sqrt.Parameters = new List<Parameter>();
-			Sqrt.Parameters.Add(new Parameter("x", LSN_Type.double_, null, 0));
-			Sqrt.ReturnType = LSN_Type.double_;
-
+			}, new List<Parameter>() { new Parameter("x", LSN_Type.double_, null, 0) },LSN_Type.double_);
+			
 			Sin = new BoundedFunction(d =>
 			{
 				var v = d["θ"];
@@ -32,10 +29,7 @@ namespace LSN_Core
 					return new DoubleValue(Math.Sin(((IntValue)v).Value));
 				}
 				return new DoubleValue(Math.Sin(((DoubleValue)v).Value));
-			});
-			Sin.Parameters = new List<Parameter>();
-			Sin.Parameters.Add(new Parameter("θ", LSN_Type.double_, null, 0));
-			Sin.ReturnType = LSN_Type.double_;
+			}, new List<Parameter>() { new Parameter("θ", LSN_Type.double_, null, 0) }, LSN_Type.double_);
 
 			Cos = new BoundedFunction(d =>
 			{
@@ -45,10 +39,7 @@ namespace LSN_Core
 					return new DoubleValue(Math.Cos(((IntValue)v).Value));
 				}
 				return new DoubleValue(Math.Cos(((DoubleValue)v).Value));
-			});
-			Cos.Parameters = new List<Parameter>();
-			Cos.Parameters.Add(new Parameter("θ", LSN_Type.double_, null, 0));
-			Cos.ReturnType = LSN_Type.double_;
+			}, new List<Parameter>() { new Parameter("θ", LSN_Type.double_, null, 0) }, LSN_Type.double_);
 
 			Tan = new BoundedFunction(d =>
 			{
@@ -58,10 +49,8 @@ namespace LSN_Core
 					return new DoubleValue(Math.Sin(((IntValue)v).Value));
 				}
 				return new DoubleValue(Math.Sin(((DoubleValue)v).Value));
-			});
-			Tan.Parameters = new List<Parameter>();
-			Tan.Parameters.Add(new Parameter("θ", LSN_Type.double_, null, 0));
-			Tan.ReturnType = LSN_Type.double_;
+			}, new List<Parameter>() { new Parameter("θ", LSN_Type.double_, null, 0) }, LSN_Type.double_);
+			
 		}
 
 		public readonly static Function Sqrt;

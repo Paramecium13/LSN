@@ -18,7 +18,7 @@ namespace LSN_Core
 
 		public override ILSN_Value Eval(Dictionary<string, ILSN_Value> args, IInterpreter i)
 		{
-			i.EnterFunctionScope(Resource.GetEnvironment());
+			i.EnterFunctionScope(Resource?.GetEnvironment() ?? LSN_Environment.Default);
 			foreach (var pair in args) i.AddVariable(pair.Key, pair.Value);
 			for (int x = 0; x < Components.Count; x++)
 			{

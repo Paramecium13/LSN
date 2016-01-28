@@ -45,8 +45,8 @@ namespace LSN_Core
 			Translators[double_]	= i => ((double)i.Value).ToString();
 			Translators[string_]	= i => (string)	i.Value;
 			Translators[Bool_]		= i => (bool) i.Value ? "true" : "false";
-			SetUpOperators();
-		}
+			SetUpOperators(); SetUpMethods();
+        }
 
 		private static void SetUpOperators()
 		{
@@ -126,6 +126,51 @@ namespace LSN_Core
 			string_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Multiply, int_),
 				(a, b) => new StringValue((new StringBuilder()).Append(((StringValue)a).Value,0,((IntValue)b).Value).ToString()));
 
+		}
+
+		private static void SetUpMethods()
+		{
+			int_.Methods.Add("Abs", new BoundedMethod(int_,int_,(args)=>new IntValue(Math.Abs(((IntValue)args["self"]).Value))));
+			double_.Methods.Add("Abs", new BoundedMethod(double_, double_, 
+				(args) => new DoubleValue
+				(
+					Math.Abs
+					(
+						((DoubleValue)args["self"]).Value
+					)
+				)
+			));
+
+			double_.Methods.Add("Floor", new BoundedMethod(double_, int_,
+				(args) => new IntValue
+				(
+					(int)((DoubleValue)args["self"]).Value
+				)
+			));
+
+			double_.Methods.Add("Ceil", new BoundedMethod(double_, int_,
+				(args) => new IntValue
+				(
+					(int)Math.Ceiling
+					(
+						((DoubleValue)args["self"]).Value
+					)
+				)
+			));
+
+			string_.Methods.Add("ToLower", new BoundedMethod(string_, string_,
+				(args) => new StringValue
+				(
+					((StringValue)args["self"]).Value.ToLower()
+				)
+			));
+
+			string_.Methods.Add("Length", new BoundedMethod(string_, int_,
+				(args) => new IntValue
+				(
+					((StringValue)args["self"]).Value.Length
+				)
+			));
 		}
 
 		public virtual bool IsBounded { get { return false; } }

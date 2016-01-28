@@ -13,6 +13,9 @@ namespace LSN_Core
 	{
 		// When a function from a used resource is loaded, the interpreter should enter the environment for that resource file.
 
+		public static readonly LSN_Environment Default = new LSN_Environment();
+		
+		
 		private Dictionary<string, Function> _Functions = new Dictionary<string, Function>();
 		/// <summary>
 		/// 
@@ -23,17 +26,24 @@ namespace LSN_Core
 		public Dictionary<string, LSN_StructType> StructTypes { get { return _StructTypes; } set { _StructTypes = value; } }
 
 		/// <summary>
-		/// Sets up the environment for the provided script.
+		/// Sets up the default environment.
 		/// </summary>
-		/// <param name="script"></param>
-		public LSN_Environment(LSN_ScriptBase script)
+		private LSN_Environment()
 		{
-			foreach (var pair in script.Functions) Functions.Add(pair.Key, pair.Value);
 			Functions.Add("Sqrt", LSN_Math.Sqrt);
 			Functions.Add("Sin", LSN_Math.Sin);
 			Functions.Add("Cos", LSN_Math.Cos);
 			Functions.Add("Tan", LSN_Math.Tan);
+		}
 
+		/// <summary>
+		/// Sets up the environment for the provided script.
+		/// </summary>
+		/// <param name="script"></param>
+		public LSN_Environment(LSN_ScriptBase script)
+			:this()
+		{
+			foreach (var pair in script.Functions) Functions.Add(pair.Key, pair.Value);
 			foreach (var pair in script.StructTypes) StructTypes.Add(pair.Key, pair.Value);
 			foreach (var rs in script.Usings) LoadResource(rs + ".dat"); 
 		}
