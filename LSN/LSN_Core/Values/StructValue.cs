@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using LSN_Core.Expressions;
+using LSN_Core.Types;
 
 namespace LSN_Core
 {
 	[Serializable]
-	public struct StructValue : ILSN_Value
+	public struct StructValue : ILSN_Value, IHasFieldsValue
 	{
 		private Dictionary<string, ILSN_Value> Members;
 
@@ -18,7 +19,7 @@ namespace LSN_Core
 		{
 			Members = new Dictionary<string, ILSN_Value>();
 			Type = type;
-			foreach(var pair in type.Members)
+			foreach(var pair in type.Fields)
 			{
 				Members.Add(pair.Key, pair.Value.CreateDefaultValue());
 			}

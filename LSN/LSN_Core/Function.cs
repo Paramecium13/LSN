@@ -23,7 +23,7 @@ namespace LSN_Core
         public LSN_Environment Environment { get { return _Environment; } protected set { _Environment = value; } }
 
 		//Todo: create a function call expression.
-		public virtual IExpression CreateCall(Dictionary<string,IExpression> args, bool throwOnInvalidName = false)
+		public virtual IExpression CreateCall(Dictionary<string,IExpression> args, bool throwOnInvalidName = false, bool included = false)
 		{
 			// Check for invalid names.
 			if(throwOnInvalidName)
@@ -51,31 +51,38 @@ namespace LSN_Core
 					throw new ApplicationException($"The parameter {param.Name} of {this.Name} must be provided a value.");
 				fullArgs.Add(name, param.DefaultValue);
 			}
-			return new FunctionCall(this, fullArgs);
+			return new FunctionCall(this, fullArgs, included);
 		}
 
 
-		public virtual FunctionCall CreateCall(List<Tuple<string,IExpression>> args)
+		public virtual FunctionCall CreateCall(List<Tuple<string,IExpression>> args, bool included = false)
 		{
 			var dict = new Dictionary<string, IExpression>();
-			for(int i = 0; i < args.Count; i++)
+			string name;
+			for (int i = 0; i < args.Count; i++)
 			{
-				if(args[i].Item1 != null && args[i].Item1 != "")
+				IExpression expr = args[i].Item2;
+				if (args[i].Item1 != null && args[i].Item1 != "")
 				{
-					if (!Parameters.Any(p => p.Name == args[i].Item1)) return null;// Log an error or something.
-					var param = Parameters.Where(p => p.Name == args[i].Item1).First();
-					if (!param.Type.Subsumes(args[i].Item2.Type)) throw new ApplicationException(
-						$"Expected {param.Type.Name} or a valid subtype for parameter {args[i].Item1} recieved {args[i].Item2.Type.Name}.");
-					dict.Add(args[i].Item1, args[i].Item2);
-				} else
+					name = args[i].Item1;
+					if (!Parameters.Any(p => p.Name == name))
+						throw new ApplicationException($"Cannot find a parameter named {name}.");//return null;// Log an error or something.
+					var param = Parameters.Where(p => p.Name == name).First();
+					if (!param.Type.Subsumes(args[i].Item2.Type))
+						throw new ApplicationException(
+						$"Expected {param.Type.Name} or a valid subtype for parameter {name} recieved {expr.Type.Name}.");
+					dict.Add(name, args[i].Item2);
+				}
+				else
 				{
 					var param = Parameters.Where(p => p.Index == i).FirstOrDefault() ?? Parameters[i];
-					if (!param.Type.Subsumes(args[i].Item2.Type)) throw new ApplicationException(
-						$"Expected {param.Type.Name} or a valid subtype for parameter {args[i].Item1} recieved {args[i].Item2.Type.Name}.");
+					if (!param.Type.Subsumes(args[i].Item2.Type))
+						throw new ApplicationException(
+							$"Expected {param.Type.Name} or a valid subtype for parameter {args[i].Item1} recieved {expr.Type.Name}.");
 					dict.Add(param.Name, args[i].Item2);
 				}
 			}
-			if(dict.Count < Parameters.Count)
+			if (dict.Count < Parameters.Count)
 			{
 				foreach(var param in Parameters)
 				{
@@ -85,7 +92,7 @@ namespace LSN_Core
 					dict.Add(param.Name, param.DefaultValue);
 				}
 			}
-			return new FunctionCall(this,dict);
+			return new FunctionCall(this,dict, included);
 		}
 
 		public abstract ILSN_Value Eval(Dictionary<string, ILSN_Value> args, IInterpreter i);

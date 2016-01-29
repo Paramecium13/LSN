@@ -69,6 +69,7 @@
     <Compile Include="LSN_Core\Expressions\ComponentExpression.cs" />
     <Compile Include="LSN_Core\Expressions\CompoundExpression.cs" />
     <Compile Include="LSN_Core\Expressions\Expression.cs" />
+    <Compile Include="LSN_Core\Expressions\FieldAccessExpression.cs" />
     <Compile Include="LSN_Core\Expressions\FunctionCall.cs" />
     <Compile Include="LSN_Core\Expressions\GetExpression.cs" />
     <Compile Include="LSN_Core\Expressions\IComponentExpression.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="LSN_Core\Statements\SimpleStatements.cs" />
     <Compile Include="LSN_Core\Statements\Statement.cs" />
     <Compile Include="LSN_Core\Types\BoolType.cs" />
+    <Compile Include="LSN_Core\Types\IHasFields.cs" />
     <Compile Include="LSN_Core\Types\LSN_BoundedType.cs" />
     <Compile Include="LSN_Core\Types\LSN_ListType.cs" />
     <Compile Include="LSN_Core\Types\LSN_ReferenceType.cs" />

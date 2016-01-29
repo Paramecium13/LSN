@@ -1,4 +1,5 @@
 ﻿using LSN_Core.Compile;
+using LSN_Core.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace LSN_Core.Types
 {
-	public class RecordType : LSN_Type
+	public class RecordType : LSN_Type, IHasFieldsType
 	{
 
-		private readonly Dictionary<string, LSN_Type> Members;
-		public IReadOnlyDictionary<string, LSN_Type> GetMembers() => Members;
+		private readonly Dictionary<string, LSN_Type> _Fields;
+		public IReadOnlyDictionary<string, LSN_Type> Fields { get { return _Fields; } }
 
 		public RecordType(string name, Dictionary<string,LSN_Type> members)
 		{
-			Name = name; Members = members;
+			Name = name; _Fields = members;
 		}
 
 		public override ILSN_Value CreateDefaultValue()

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LSN_Core.Values
 {
-	public class RecordValue : LSN_Value
+	public class RecordValue : LSN_Value, IHasFieldsValue
 	{
 		private RecordType _Type;
 		public override bool BoolValue { get { return true; } }
@@ -26,7 +26,7 @@ namespace LSN_Core.Values
 		public RecordValue(RecordType type)
 		{
 			Type = type; _Type = type;
-			foreach (var pair in _Type.GetMembers())
+			foreach (var pair in _Type.Fields)
 				Values.Add(pair.Key, pair.Value.CreateDefaultValue());
 		}
 

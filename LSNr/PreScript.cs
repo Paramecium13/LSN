@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace LSNr
@@ -20,9 +21,9 @@ namespace LSNr
 		private bool _Mutable = false;
 
 		/// <summary>
-		/// 
+		/// Are variables defined in this script mutable?
 		/// </summary>
-		public bool Mutable {get { return _Mutable; } set { _Mutable = value; } }
+		public bool Mutable {get { return _Mutable; } private set { _Mutable = value; } }
 
 		/// <summary>
 		/// 
@@ -84,8 +85,17 @@ namespace LSNr
 		/// </summary>
 		public void ProcessDirectives() { Text = ProcessDirectives(Text); }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="source"></param>
+		/// <returns></returns>
 		protected string ProcessDirectives(string source)
 		{
+			if(Regex.IsMatch(source, "#include",RegexOptions.IgnoreCase))
+			{
+				//Process #include statements
+			}
 			if (source.Contains("#mut"))
 			{
 				Mutable = true;
@@ -114,7 +124,9 @@ namespace LSNr
 		/// </summary>
 		public void Tokenize() { Tokens = Tokenizer.Tokenize(Text); }
 
-
+		/// <summary>
+		/// 
+		/// </summary>
 		public void Parse()
 		{
 			var parser = new Parser(Tokens, this);
@@ -122,11 +134,30 @@ namespace LSNr
 			Components = Parser.Consolidate(parser.Components);
 		}
 
-
+		/// <summary>
+		/// Does a function with the provided name exist.
+		/// </summary>
+		/// <param name="name"> The name to check.</param>
+		/// <returns></returns>
 		public bool FunctionExists(string name) => Functions.ContainsKey(name);
 
-
+		/// <summary>
+		/// Get the function with the given name. WARNING: The function may or may not be included in the script.
+		/// This can be determined using the 'FuncionIsIncluded(string name)' method. If it is not included, function calls
+		/// to it must be constructed using its name, otherwise they will end up including it in this script.
+		/// </summary>
+		/// <param name="name">The name of the function to get.</param>
+		/// <returns></returns>
 		public Function GetFunction(string name) => Functions[name];
 
+		/// <summary>
+		/// Is the function included (#include) in this script?
+		/// </summary>
+		/// <param name="name">The name of the function.</param>
+		/// <returns></returns>
+		public bool FunctionIsIncluded(string name)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -244,6 +244,11 @@ namespace LSNr
 			return fn.CreateCall(ls);
 		}
 
+
+		public static MethodCall CreateMethodCall(List<IToken> tokens, Method method, IPreScript script)
+		{
+			return null;
+		}
 		
 	}
 }
