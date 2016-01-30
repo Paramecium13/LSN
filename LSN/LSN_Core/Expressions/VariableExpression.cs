@@ -5,7 +5,7 @@ using System.Text;
 namespace LSN_Core.Expressions
 {
 	[Serializable]
-	public class VariableExpression : ComponentExpression
+	public class VariableExpression : Expression
 	{
 		public string Name { get; private set; }
 
@@ -20,7 +20,6 @@ namespace LSN_Core.Expressions
 		public override IExpression Fold() => this;
 
 		public override bool IsReifyTimeConst() => false;
-
-		public override string TranslateUniversal() => Name;
+		
 	}
 }

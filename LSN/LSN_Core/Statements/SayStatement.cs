@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace LSN_Core.Statements
 {
+	[Serializable]
 	public class SayStatement : Statement
 	{
 

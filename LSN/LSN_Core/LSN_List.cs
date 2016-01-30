@@ -4,6 +4,7 @@ using System.Text;
 
 namespace LSN_Core
 {
+	[Serializable]
 	public class LSN_List : LSN_ReferenceValue
 	{
 		private List<ILSN_Value> Values = new List<ILSN_Value>();

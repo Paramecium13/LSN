@@ -4,6 +4,7 @@ using System.Text;
 
 namespace LSN_Core
 {
+	[Serializable]
 	public class VectorType : LSN_Type
 	{
 

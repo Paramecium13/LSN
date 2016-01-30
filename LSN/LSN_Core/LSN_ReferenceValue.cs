@@ -7,6 +7,7 @@ namespace LSN_Core
 	/// <summary>
 	/// An LSN object that is passed by reference;
 	/// </summary>
+	[Serializable]
 	public abstract class LSN_ReferenceValue
 	{
 		public abstract bool BoolValue { get; }

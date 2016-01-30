@@ -10,6 +10,7 @@ namespace LSN_Core
 	/// <summary>
 	/// A function.
 	/// </summary>
+	[Serializable]
 	public abstract class Function
 	{
 		public string Name;

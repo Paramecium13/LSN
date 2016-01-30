@@ -7,6 +7,7 @@ namespace LSN_Core
 	/// <summary>
 	/// A readonly collection passed by value.
 	/// </summary>
+	[Serializable]
 	public class VectorInstance : LSN_Value
 	{
 
@@ -38,12 +39,12 @@ namespace LSN_Core
 			return this; // Because it is immutable, there is no difference...
 		}
 
-		public override string TranslateUniversal()
+		/*public override string TranslateUniversal()
 		{
 			var str = new StringBuilder("[");
 			foreach (var val in Values) str.Append(val.TranslateUniversal() + ",");
 			str.Append("]");
 			return str.ToString();	
-		}
+		}*/
 	}
 }

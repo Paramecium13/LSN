@@ -13,7 +13,7 @@ namespace LSNr
 	public class Scope
 	{
 		private Scope Parent;
-		private Dictionary<string, Variable> Variables;
+		private Dictionary<string, Variable> Variables = new Dictionary<string, Variable>();
 
 		public Scope() { }
 
@@ -41,7 +41,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public bool VariableExists(string name) => HasVariable(name) || Parent.VariableExists(name);
+		public bool VariableExists(string name) => HasVariable(name) || (Parent?.VariableExists(name) ?? false);
 
 		/// <summary>
 		/// 

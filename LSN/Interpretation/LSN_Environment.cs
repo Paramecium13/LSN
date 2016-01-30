@@ -10,6 +10,7 @@ namespace LSN_Core
 	/// <summary>
 	/// Contains the loaded functions and types.
 	/// </summary>
+	[Serializable]
 	public class LSN_Environment
 	{
 		// When a function from a used resource is loaded, the interpreter should enter the environment for that resource file.

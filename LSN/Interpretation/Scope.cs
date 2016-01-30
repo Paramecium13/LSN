@@ -4,6 +4,7 @@ using System.Text;
 
 namespace LSN_Core
 {
+	[Serializable]
 	public class Scope : IScope<Scope>
 	{
 		protected Scope Parent;

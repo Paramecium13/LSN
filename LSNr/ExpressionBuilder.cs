@@ -237,6 +237,9 @@ namespace LSNr
 						j++;
 					}
 					var expr = Build(pTokens, Script, Substitutions.Where(p => pTokens.Contains(p.Key)).ToDictionary(),SubCount);
+					var name = SUB + SubCount++;
+					Substitutions.Add(new Identifier(name), expr);
+					newTokens.Add(new Identifier(name));
 					nextIndex += j;
 					i = nextIndex - 1; // In the next iteration, i == nextIndex.
 				}
@@ -276,8 +279,9 @@ namespace LSNr
 					var opr = left.Type.Operators[key];
 					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2);
 					var name = SUB + SubCount++;
+					newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
-					CurrentTokens.Add(new Identifier(name));
+					newTokens.Add(new Identifier(name));
 					i++; // This skips to the token after the right hand side of this expression.
 				}
 				else newTokens.Add(CurrentTokens[i]);
@@ -304,8 +308,9 @@ namespace LSNr
 					var opr = left.Type.Operators[key];
 					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2);
 					var name = SUB + SubCount++;
+					newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
-					CurrentTokens.Add(new Identifier(name));
+					newTokens.Add(new Identifier(name));
 					i++; // This skips to the token after the right hand side of this expression.
 				}
 				else newTokens.Add(CurrentTokens[i]);
@@ -336,8 +341,9 @@ namespace LSNr
 					var opr = left.Type.Operators[key];
 					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2);
 					var name = SUB + SubCount++;
+					newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
-					CurrentTokens.Add(new Identifier(name));
+					newTokens.Add(new Identifier(name));
 					i++; // This skips to the token after the right hand side of this expression.
 				}
 				else newTokens.Add(CurrentTokens[i]);
@@ -372,8 +378,9 @@ namespace LSNr
 					var opr = left.Type.Operators[key];
 					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2);
 					var name = SUB + SubCount++;
+					newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
-					CurrentTokens.Add(new Identifier(name));
+					newTokens.Add(new Identifier(name));
 					i++; // This skips to the token after the right hand side of this expression.
 				}
 				else newTokens.Add(CurrentTokens[i]);

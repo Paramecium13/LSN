@@ -5,6 +5,7 @@ using LSN_Core.Expressions;
 
 namespace LSN_Core
 {
+	[Serializable]
 	public class BoundedFunction : Function
 	{
 		private Func<Dictionary<string, ILSN_Value>, ILSN_Value> Bound;

@@ -4,7 +4,8 @@ using System.Linq;
 
 namespace LSN_Core.Expressions
 {
-	public class FunctionCall : ComponentExpression
+	[Serializable]
+	public class FunctionCall : Expression
 	{
 		private Function Fn;
 
@@ -44,9 +45,5 @@ namespace LSN_Core.Expressions
 
 		public override bool IsReifyTimeConst() => false;
 
-		public override string TranslateUniversal()
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

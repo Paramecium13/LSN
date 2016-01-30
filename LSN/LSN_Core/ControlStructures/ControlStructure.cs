@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace LSN_Core.ControlStructures
 {
+	[Serializable]
 	public abstract class ControlStructure : Component
 	{
 		protected virtual InterpretValue Interpret(List<Component> components, IInterpreter i)

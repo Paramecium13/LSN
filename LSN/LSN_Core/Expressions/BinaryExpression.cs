@@ -9,6 +9,7 @@ namespace LSN_Core.Expressions
 	/// <summary>
 	/// 
 	/// </summary>
+	[Serializable]
 	public class BinaryExpression : Expression
 	{
 		private IExpression _Left;

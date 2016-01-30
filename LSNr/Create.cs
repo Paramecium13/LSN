@@ -128,68 +128,6 @@ namespace LSNr
 			return ExpressionBuilder.Build(list, script);
 		}
 
-		/// <summary>
-		/// Create a compound expression.
-		/// </summary>
-		/// <param name="list"> The list of tokens.</param>
-		/// <param name="script"> The script.</param>
-		/// <returns> ...</returns>
-		private static CompoundExpression Compound(List<IToken> list, IPreScript script)
-		{
-			const string sub = "Σ";
-			int subCount = 0;
-			var dict = new Dictionary<IToken, ComponentExpression>();
-			var vars = new List<Variable>();
-			var ls = new List<IToken>();
-
-			for(int i = 0; i < list.Count; i++)
-			{
-				var val = list[i].Value;
-				if (script.CurrentScope.VariableExists(val))
-				{
-					var v = script.CurrentScope.GetVariable(val);
-					var name = sub + subCount++;
-					vars.Add(v);
-					dict.Add(new Identifier(name), new VariableExpression(val, v.Type));
-					ls.Add(new Identifier(name));
-				}
-				else if(script.FunctionExists(val)) // It's the start of a function call.
-				{
-					if (list[i + 1].Value != "(") return null; // Or throw or log something...
-					i += 2;  // Move to the right twice, now looking at token after the opening '('.
-					int lCount = 1;
-					int rCount = 0;
-					var fnTokens = new List<IToken>();
-					while(lCount != rCount)
-					{
-						if(list[i].Value == ")")
-						{
-							lCount++;
-							if (lCount == rCount) break;
-						}
-						else if(list[i].Value == "(")
-						{
-							rCount++;
-						}
-						fnTokens.Add(list[i]);
-						i++;
-					}
-					// Create the function call, add it to the dictionary, and add its identifier to the list (ls).
-					var name = sub + subCount++;
-					var fnCall = CreateFunctionCall(fnTokens, script.GetFunction(val), script);
-					dict.Add(new Identifier(name), fnCall);
-					ls.Add(new Identifier(name));
-				}
-				else
-				{
-					ls.Add(list[i]);
-				}
-			}
-
-			var expr = new CompoundExpression(list, dict);
-			foreach (var v in vars) v.Users.Add(expr);
-			return expr;
-		}
 
 		private static Expression CreateGet(List<IToken> tokens, IPreScript script)
 		{

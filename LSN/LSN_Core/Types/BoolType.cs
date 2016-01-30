@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace LSN_Core
 {
+	[Serializable]
 	public class BoolType : LSN_BoundedType<bool>
 	{
 		internal BoolType(string name, params string[] args):base(name,null,args) { }

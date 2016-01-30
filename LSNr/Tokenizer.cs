@@ -31,8 +31,8 @@ namespace LSNr
 
 		private readonly static List<string> OPERATORS = new List<string> {
 			"+","-","*","/","%","^","=",">","<","~","!","(",
-			")","{","}","[","]",",",".",";",":","?","@","$",
-			"∈","∊","∋","∍","⊂","⊃","",""
+			")","{","}","[","]",",",";",":","?","@","$",
+			"∈","∊","∋","∍","⊂","⊃"
 		};
 
 		private static Converter<string, string> MCSConv = MCSConvM;
@@ -54,7 +54,7 @@ namespace LSNr
 			//source = ProcessDirectives(source);
 			source = RemoveComments(source);
 			source = ProcessOperators(source);
-			var tokens = Regex.Split(source, @"\s").ToList();
+			var tokens = Regex.Split(source, @"\s").Where(t => t!= "").ToList();
 			return tokens.ConvertAll(MCSConv).ConvertAll(TokenFactory.getToken);
 		}
 
@@ -66,6 +66,7 @@ namespace LSNr
 		{
 			//'else if' -> 'elsif'
 			source = Regex.Replace(source, @"(?i)else\s*if", "elsif");
+			source = Regex.Replace(source, @"(?<a>\S)\.(?<b>\D)", @"\k<a> . \k<b>");
 			StringBuilder src = new StringBuilder(source);
 			foreach (KeyValuePair<string,string> pair in MCHARSYM)
 			{
@@ -75,7 +76,7 @@ namespace LSNr
 			{
 				src.Replace(op, $" {op} ");
 			}
-            return source;
+            return src.ToString();
 		}
 
 		internal static string ReplaceAndStore(string source, string rx, string name0, Dictionary<string,string> dict)

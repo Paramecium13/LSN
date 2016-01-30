@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace LSN_Core.Types
 {
+	[Serializable]
 	public class RecordType : LSN_Type, IHasFieldsType
 	{
 

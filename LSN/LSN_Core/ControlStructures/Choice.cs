@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace LSN_Core.ControlStructures
 {
+	[Serializable]
 	public class Choice : ControlStructure
 	{
 		private List<Component> _Components;

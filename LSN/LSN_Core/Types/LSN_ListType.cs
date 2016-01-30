@@ -7,6 +7,7 @@ namespace LSN_Core
 	/// <summary>
 	/// The type of a generic LSN_List.
 	/// </summary>
+	[Serializable]
 	public class LSN_ListType : LSN_ReferenceType
 	{
 		private LSN_Type _Generic;

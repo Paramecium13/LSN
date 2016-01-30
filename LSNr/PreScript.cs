@@ -42,12 +42,12 @@ namespace LSNr
 		/// <summary>
 		/// The current scope.
 		/// </summary>
-		public Scope CurrentScope { get; set; }
+		public Scope CurrentScope { get; set; } = new Scope();
 
 		/// <summary>
 		/// Is this script valid (free of errors)?
 		/// </summary>
-		public bool Valid { get; set; }
+		public bool Valid { get; set; } = true;
 
 		private List<IToken> Tokens;
 

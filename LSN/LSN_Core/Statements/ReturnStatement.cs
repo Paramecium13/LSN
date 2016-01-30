@@ -10,6 +10,7 @@ namespace LSN_Core.Statements
 	/// <summary>
 	/// Returns from a function, possibly with a value
 	/// </summary>
+	[Serializable]
 	public class ReturnStatement : Statement
 	{
 		private IExpression _Value;

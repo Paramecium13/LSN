@@ -6,6 +6,7 @@ using System.Text;
 
 namespace LSN_Core.Expressions
 {
+	[Serializable]
 	public class MethodCall : Expression
 	{
 

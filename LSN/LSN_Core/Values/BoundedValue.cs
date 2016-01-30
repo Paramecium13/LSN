@@ -17,6 +17,7 @@ namespace LSN_Core
 	/// <summary>
 	/// LSN value that contains a 32 bit integer.
 	/// </summary>
+	[Serializable]
 	public struct IntValue : IBoundValue<int>
 	{
 		public int Value { get; private set; }
@@ -39,6 +40,7 @@ namespace LSN_Core
 	/// <summary>
 	/// LSN value that contains a string, is still passed by value.
 	/// </summary>
+	[Serializable]
 	public struct StringValue : IBoundValue<string>
 	{
 		public LSN_Type Type {get { return LSN_Type.string_; } }
@@ -67,6 +69,7 @@ namespace LSN_Core
 	/// <summary>
 	/// LSN value that contains a Double.
 	/// </summary>
+	[Serializable]
 	public struct DoubleValue : IBoundValue<double>
 	{
 		public double Value { get; private set; }
@@ -85,6 +88,7 @@ namespace LSN_Core
 		public string TranslateUniversal() => Value.ToString();
     }
 
+	[Serializable]
 	public class LSN_BoolValue : IBoundValue<bool>
 	{
 		private static LSN_BoolValue True = new LSN_BoolValue(true);

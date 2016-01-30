@@ -10,6 +10,7 @@ namespace LSN_Core
 	/// <summary>
 	/// A method written in LSN
 	/// </summary>
+	[Serializable]
 	public class LSN_Method : Method
 	{
 		private List<Component> Components;

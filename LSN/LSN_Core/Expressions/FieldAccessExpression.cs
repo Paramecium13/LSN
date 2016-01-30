@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace LSN_Core.Expressions
 {
+	[Serializable]
 	public class FieldAccessExpression : Expression
 	{
 		private IExpression Value;

@@ -9,6 +9,7 @@ namespace LSN_Core.Statements
 	/// <summary>
 	/// Exit the innermost loop.
 	/// </summary>
+	[Serializable]
 	public class BreakStatement : Statement
 	{
 		public override InterpretValue Interpret(IInterpreter i) => InterpretValue.Break;
@@ -17,6 +18,7 @@ namespace LSN_Core.Statements
 	/// <summary>
 	/// Move on to the next iteration of the innermost loop.
 	/// </summary>
+	[Serializable]
 	public class NextStatement : Statement
 	{
 		public override InterpretValue Interpret(IInterpreter i) => InterpretValue.Next;

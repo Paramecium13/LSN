@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace LSN_Core.ControlStructures
 {
+	[Serializable]
 	public class ChoicesBlockControl : ControlStructure
 	{
 		private List<Choice> Choices = new List<Choice>();

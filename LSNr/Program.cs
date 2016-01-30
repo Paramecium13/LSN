@@ -24,6 +24,7 @@ namespace LSNr
 
 		static int Main(string[] args)
 		{
+			var tem = LSN_Core.LSN_Type.int_;
 			if (args.Length == 0 || args[0].ToLower() == "setup") // Set up the workspace.
 			{
 				return SetUp();
@@ -38,7 +39,7 @@ namespace LSNr
 				return FILE_NOT_FOUND;
 			}
 			string src;
-			using (var s = new StringReader(args[0]))
+			using (var s = new StreamReader(args[0],Encoding.UTF8))
 			{
 				src = s.ReadToEnd();
 			}

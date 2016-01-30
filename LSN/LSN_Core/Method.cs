@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace LSN_Core
 {
+	[Serializable]
 	public abstract class Method : Function
 	{
 		/// <summary>

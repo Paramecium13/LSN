@@ -2,7 +2,7 @@
 
 namespace LSN_Core
 {
-	public interface ILSN_Value : IComponentExpression
+	public interface ILSN_Value : IExpression
 	{
 		bool BoolValue { get; }
 

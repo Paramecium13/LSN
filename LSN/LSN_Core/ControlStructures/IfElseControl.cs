@@ -9,6 +9,7 @@ using LSN_Core.Compile;
 
 namespace LSN_Core.ControlStructures
 {
+	[Serializable]
 	public class IfElseControl : ControlStructure
 	{
 		public IExpression Condition;

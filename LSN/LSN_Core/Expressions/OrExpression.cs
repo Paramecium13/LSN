@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace LSN_Core.Expressions
 {
+	[Serializable]
 	public class OrExpression : Expression
 	{
 		private IExpression _Left;

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace LSN_Core.Values
 {
+	[Serializable]
 	public class RecordValue : LSN_Value, IHasFieldsValue
 	{
 		private RecordType _Type;
@@ -39,11 +40,6 @@ namespace LSN_Core.Values
 		public void SetValue(string name, ILSN_Value value)
 		{
 			Values[name] = value;
-		}
-
-		public override string TranslateUniversal()
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

@@ -5,6 +5,7 @@ using LSN_Core.Expressions;
 
 namespace LSN_Core
 {
+	[Serializable]
 	public class BoundedMethod : Method
 	{
 		public override bool HandlesScope { get { return false; } }
