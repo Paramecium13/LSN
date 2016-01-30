@@ -67,6 +67,7 @@ namespace LSNr
 		public void Reify()
 		{
 			ProcessDirectives();
+			//TODO: Process strings. 
 			Tokenize();
 			Parse();
 		}

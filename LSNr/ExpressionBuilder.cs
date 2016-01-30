@@ -53,7 +53,7 @@ namespace LSNr
 				ParseMultDivMod();
 			if (CurrentTokens.Any(t => { var v = t.Value; return v == "+" || v == "-"; }))
 				ParseAddSubtract();
-			//ParseComparisons();
+			ParseComparisons();
 			if(CurrentTokens.Count != 1) { throw new ApplicationException("This should not happen."); }
 			var expr = Substitutions[CurrentTokens[0]];
 			foreach (var v in Variables) v.Users.Add(expr);
@@ -255,6 +255,7 @@ namespace LSNr
 			for(int i = 0; i < CurrentTokens.Count; i++)
 			{
 				var val = CurrentTokens[i].Value;
+				if (val.Length > 2) continue;
 				LSN_Core.Operator op = LSN_Core.Operator.Add;
 				if (val == "*")
 					op = LSN_Core.Operator.Multiply;
@@ -339,7 +340,44 @@ namespace LSNr
 					CurrentTokens.Add(new Identifier(name));
 					i++; // This skips to the token after the right hand side of this expression.
 				}
-            }
+				else newTokens.Add(CurrentTokens[i]);
+			}
+			CurrentTokens = newTokens;
+		}
+
+
+		private void ParseComparisons()
+		{
+			var newTokens = new List<IToken>();
+			for (int i = 0; i < CurrentTokens.Count; i++)
+			{
+				var val = CurrentTokens[i].Value;
+				if (val.Length > 2) continue;
+				LSN_Core.Operator op = LSN_Core.Operator.Multiply;
+				if (val == "<") op = LSN_Core.Operator.LessThan;
+				else if (val == ">") op = LSN_Core.Operator.GreaterThan;
+				else if (val == "==") op = LSN_Core.Operator.Equals;
+				else if (val == ">=") op = LSN_Core.Operator.GTE;
+				else if (val == "<=") op = LSN_Core.Operator.LTE;
+
+				if (op != LSN_Core.Operator.Multiply)
+				{
+					var left = GetExpression(CurrentTokens[i - 1]);
+					var right = GetExpression(CurrentTokens[i + 1]);
+					var key = new Tuple<LSN_Core.Operator, LSN_Type>(op, right.Type);
+
+					if (!left.Type.Operators.ContainsKey(key))
+						throw new ApplicationException(
+							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
+					var opr = left.Type.Operators[key];
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2);
+					var name = SUB + SubCount++;
+					Substitutions.Add(new Identifier(name), expr);
+					CurrentTokens.Add(new Identifier(name));
+					i++; // This skips to the token after the right hand side of this expression.
+				}
+				else newTokens.Add(CurrentTokens[i]);
+			}
 			CurrentTokens = newTokens;
 		}
 

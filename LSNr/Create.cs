@@ -105,7 +105,7 @@ namespace LSNr
 			{
 				return CreateGet(list,script);
 			}
-			else if(list.Count == 1)
+			if(list.Count == 1)
 			{
 				if(script.CurrentScope.VariableExists(list[0].Value))
 				{
@@ -124,17 +124,8 @@ namespace LSNr
 				{
 					return new StringValue(list[0].Value);
 				}
-				else
-				{
-					Console.WriteLine($"Cannot parse expression {list[0]}.");
-					script.Valid = false;
-					return null; // Use a "Null expression" here instead so the reifier can check for more errors.
-				}
 			}
-			else
-			{
-				return Compound(list, script);
-			}
+			return ExpressionBuilder.Build(list, script);
 		}
 
 		/// <summary>

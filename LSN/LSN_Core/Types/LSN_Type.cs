@@ -18,7 +18,7 @@ namespace LSN_Core
 	/// <returns></returns>
 	public delegate ILSN_Value BinOp(ILSN_Value left, ILSN_Value right);
 
-	public enum Operator { Add, Subtract, Multiply, Divide, Mod, Power}
+	public enum Operator { Add, Subtract, Multiply, Divide, Mod, Power, LessThan, GreaterThan, Equals, NotEquals, LTE, GTE}
 
 	[Serializable]
 	public abstract class LSN_Type
@@ -75,6 +75,24 @@ namespace LSN_Core
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Subtract, int_),
 				new Tuple<BinOp, LSN_Type>((a, b) => new IntValue(((IntValue)a).Value - ((IntValue)b).Value), int_));
 
+			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.GreaterThan, int_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((IntValue)a).Value > ((IntValue)b).Value), Bool_));
+
+			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.LessThan, int_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((IntValue)a).Value < ((IntValue)b).Value), Bool_));
+
+			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Equals, int_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((IntValue)a).Value == ((IntValue)b).Value), Bool_));
+
+			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.GTE, int_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((IntValue)a).Value >= ((IntValue)b).Value), Bool_));
+
+			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.LTE, int_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((IntValue)a).Value <= ((IntValue)b).Value), Bool_));
+
+			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.NotEquals, int_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((IntValue)a).Value != ((IntValue)b).Value), Bool_));
+
 
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Add, double_),
 				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((IntValue)a).Value + ((DoubleValue)b).Value),double_));
@@ -93,6 +111,24 @@ namespace LSN_Core
 
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Subtract, double_),
 				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((IntValue)a).Value - ((DoubleValue)b).Value),double_));
+
+			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.GreaterThan, int_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((IntValue)a).Value > ((DoubleValue)b).Value), Bool_));
+
+			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.LessThan, int_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((IntValue)a).Value < ((DoubleValue)b).Value), Bool_));
+
+			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Equals, int_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((IntValue)a).Value == ((DoubleValue)b).Value), Bool_));
+
+			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.LTE, int_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((IntValue)a).Value <= ((DoubleValue)b).Value), Bool_));
+
+			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.GTE, int_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((IntValue)a).Value >= ((DoubleValue)b).Value), Bool_));
+
+			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.NotEquals, int_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((IntValue)a).Value != ((DoubleValue)b).Value), Bool_));
 
 
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Add, double_),
@@ -113,6 +149,33 @@ namespace LSN_Core
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Subtract, double_),
 				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((DoubleValue)a).Value - ((DoubleValue)b).Value),double_));
 
+			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.LessThan, double_),
+				new Tuple<BinOp, LSN_Type>((a, b) => 
+				LSN_BoolValue.GetBoolValue(((DoubleValue)a).Value < ((DoubleValue)b).Value), Bool_));
+
+			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.GreaterThan, double_),
+				new Tuple<BinOp, LSN_Type>((a, b) =>
+				LSN_BoolValue.GetBoolValue(((DoubleValue)a).Value > ((DoubleValue)b).Value), Bool_));
+
+			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Equals, double_),
+				new Tuple<BinOp, LSN_Type>((a, b) =>
+				LSN_BoolValue.GetBoolValue(((DoubleValue)a).Value == ((DoubleValue)b).Value), Bool_));
+
+			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.LTE, double_),
+				new Tuple<BinOp, LSN_Type>((a, b) =>
+				LSN_BoolValue.GetBoolValue(((DoubleValue)a).Value <= ((DoubleValue)b).Value), Bool_));
+
+			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.GTE, double_),
+				new Tuple<BinOp, LSN_Type>((a, b) =>
+				LSN_BoolValue.GetBoolValue(((DoubleValue)a).Value >= ((DoubleValue)b).Value), Bool_));
+
+			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.NotEquals, double_),
+				new Tuple<BinOp, LSN_Type>((a, b) =>
+				LSN_BoolValue.GetBoolValue(((DoubleValue)a).Value != ((DoubleValue)b).Value), Bool_));
+
+
+			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Add, int_),
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((DoubleValue)a).Value - ((IntValue)b).Value), double_));
 
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Subtract, int_),
 				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((DoubleValue)a).Value - ((IntValue)b).Value),double_));
@@ -123,16 +186,45 @@ namespace LSN_Core
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Mod, int_),
 				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((DoubleValue)a).Value % ((IntValue)b).Value),double_));
 
+			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Multiply, int_),
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((DoubleValue)a).Value * ((IntValue)b).Value), double_));
+
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Power, int_),
 				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(Math.Pow(((DoubleValue)a).Value, ((IntValue)b).Value)), double_));
+
+			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.LessThan, double_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((DoubleValue)a).Value < ((IntValue)b).Value), Bool_));
+
+			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.GreaterThan, double_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((DoubleValue)a).Value > ((IntValue)b).Value), Bool_));
+
+			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Equals, double_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((DoubleValue)a).Value == ((IntValue)b).Value), Bool_));
+
+			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.LTE, double_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((DoubleValue)a).Value <= ((IntValue)b).Value), Bool_));
+
+			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.GTE, double_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((DoubleValue)a).Value >= ((IntValue)b).Value), Bool_));
+
+			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.NotEquals, double_),
+				new Tuple<BinOp, LSN_Type>((a, b) => LSN_BoolValue.GetBoolValue(((DoubleValue)a).Value != ((IntValue)b).Value), Bool_));
 
 
 			string_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Add, string_),
 				new Tuple<BinOp, LSN_Type>((a, b) => new StringValue(((StringValue)a).Value + ((StringValue)a).Value),string_));
 
 			string_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Multiply, int_),
-				new Tuple<BinOp, LSN_Type>((a, b) => new StringValue((new StringBuilder()).Append(((StringValue)a).Value,0,((IntValue)b).Value).ToString()), string_) );
+				new Tuple<BinOp, LSN_Type>((a, b) => 
+				new StringValue((new StringBuilder()).Append(((StringValue)a).Value,0,((IntValue)b).Value).ToString()), string_) );
 
+			string_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Equals, string_),
+				new Tuple<BinOp, LSN_Type>((a, b) => 
+				LSN_BoolValue.GetBoolValue(((StringValue)a).Value == ((StringValue)b).Value), Bool_));
+
+			string_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.NotEquals, string_),
+				new Tuple<BinOp, LSN_Type>((a, b) =>
+				LSN_BoolValue.GetBoolValue(((StringValue)a).Value != ((StringValue)b).Value), Bool_));
 		}
 
 		private static void SetUpMethods()
