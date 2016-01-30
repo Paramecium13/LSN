@@ -66,6 +66,7 @@
     <Compile Include="LSN_Core\ControlStructures\ChoicesBlockControl.cs" />
     <Compile Include="LSN_Core\ControlStructures\ControlStructure.cs" />
     <Compile Include="LSN_Core\ControlStructures\IfElseControl.cs" />
+    <Compile Include="LSN_Core\Expressions\BinaryExpression.cs" />
     <Compile Include="LSN_Core\Expressions\ComponentExpression.cs" />
     <Compile Include="LSN_Core\Expressions\CompoundExpression.cs" />
     <Compile Include="LSN_Core\Expressions\Expression.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="LSN_Core\Expressions\IExpression.cs" />
     <Compile Include="LSN_Core\Expressions\LSN_ExpresionTree.cs" />
     <Compile Include="LSN_Core\Expressions\LSN_Expression.cs" />
+    <Compile Include="LSN_Core\Expressions\OrExpression.cs" />
     <Compile Include="LSN_Core\Expressions\VariableExpression.cs" />
     <Compile Include="LSN_Core\Function.cs" />
     <Compile Include="LSN_Core\LSN_Function.cs" />

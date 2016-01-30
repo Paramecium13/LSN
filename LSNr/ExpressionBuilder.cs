@@ -31,15 +31,6 @@ namespace LSNr
 		{
 			InitialTokens = tokens;
 			Script = script;
-			ParseVariablesAndFunctions();
-			ParseParenthesis();
-			//ParseInexers(); // Put this with functions and variables?
-			//ParseExponents();
-			//ParseMultDivMod();
-			//ParseAddSubtract();
-			//ParseBooleans();//Includes comparisons.
-			//...
-			//foreach (var v in Variables) v.Users.Add(expr);
 		}
 
 
@@ -49,15 +40,24 @@ namespace LSNr
 			Script = script;
 			Substitutions = subs;
 			SubCount = count;
+			
+		}
+
+		private IExpression Parse()
+		{
 			ParseVariablesAndFunctions();
 			ParseParenthesis();
 			//ParseInexers();// Put this with functions and variables?
-			//ParseExponents();
-			//ParseMultDivMod();
-			//ParseAddSubtract();
-			//ParseBooleans();//Includes comparisons.
-			//...
-			//foreach (var v in Variables) v.Users.Add(expr);
+			if (CurrentTokens.Any(t => t.Value == "^")) ParseExponents();
+			if (CurrentTokens.Any(t => { var v = t.Value; return v == "*" || v == "/" || v == "%"; }))
+				ParseMultDivMod();
+			if (CurrentTokens.Any(t => { var v = t.Value; return v == "+" || v == "-"; }))
+				ParseAddSubtract();
+			//ParseComparisons();
+			if(CurrentTokens.Count != 1) { throw new ApplicationException("This should not happen."); }
+			var expr = Substitutions[CurrentTokens[0]];
+			foreach (var v in Variables) v.Users.Add(expr);
+			return expr;
 		}
 
 		/// <summary>
@@ -270,11 +270,76 @@ namespace LSNr
 					var key = new Tuple<LSN_Core.Operator, LSN_Type>(op, right.Type);
 
 					if (!left.Type.Operators.ContainsKey(key))
-						throw new ApplicationException("");
+						throw new ApplicationException(
+							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
+					var opr = left.Type.Operators[key];
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2);
+					var name = SUB + SubCount++;
+					Substitutions.Add(new Identifier(name), expr);
+					CurrentTokens.Add(new Identifier(name));
+					i++; // This skips to the token after the right hand side of this expression.
 				}
 				else newTokens.Add(CurrentTokens[i]);
 				
 			}
+			CurrentTokens = newTokens;
+		}
+
+
+		private void ParseExponents()
+		{
+			var newTokens = new List<IToken>();
+			for (int i = 0; i < CurrentTokens.Count; i++)
+			{
+				if (CurrentTokens[i].Value == "^")
+				{
+					var left = GetExpression(CurrentTokens[i - 1]);
+					var right = GetExpression(CurrentTokens[i + 1]);
+					var key = new Tuple<LSN_Core.Operator, LSN_Type>(LSN_Core.Operator.Power, right.Type);
+
+					if (!left.Type.Operators.ContainsKey(key))
+						throw new ApplicationException(
+							$"The operator ^ is not defined for type {left.Type.Name} and {right.Type.Name}.");
+					var opr = left.Type.Operators[key];
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2);
+					var name = SUB + SubCount++;
+					Substitutions.Add(new Identifier(name), expr);
+					CurrentTokens.Add(new Identifier(name));
+					i++; // This skips to the token after the right hand side of this expression.
+				}
+				else newTokens.Add(CurrentTokens[i]);
+			}
+			CurrentTokens = newTokens;
+		}
+
+
+		private void ParseAddSubtract()
+		{
+			var newTokens = new List<IToken>();
+			for (int i = 0; i < CurrentTokens.Count; i++)
+			{
+				var val = CurrentTokens[i].Value;
+				LSN_Core.Operator op = LSN_Core.Operator.Multiply;
+				if (val == "+") op = LSN_Core.Operator.Add;
+				else if (val == "-") op = LSN_Core.Operator.Subtract;
+
+				if(op != LSN_Core.Operator.Multiply)
+				{
+					var left = GetExpression(CurrentTokens[i - 1]);
+					var right = GetExpression(CurrentTokens[i + 1]);
+					var key = new Tuple<LSN_Core.Operator, LSN_Type>(op, right.Type);
+
+					if (!left.Type.Operators.ContainsKey(key))
+						throw new ApplicationException(
+							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
+					var opr = left.Type.Operators[key];
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2);
+					var name = SUB + SubCount++;
+					Substitutions.Add(new Identifier(name), expr);
+					CurrentTokens.Add(new Identifier(name));
+					i++; // This skips to the token after the right hand side of this expression.
+				}
+            }
 			CurrentTokens = newTokens;
 		}
 
@@ -295,14 +360,14 @@ namespace LSNr
 		public static IExpression Build(List<IToken> tokens, IPreScript script)
 		{
 			var b = new ExpressionBuilder(tokens, script);
-			return null;
+			return b.Parse();
 		}
 
 
 		private static IExpression Build(List<IToken> tokens, IPreScript script, Dictionary<IToken,IExpression> subs, int i)
 		{
 			var b = new ExpressionBuilder(tokens, script, subs, i);
-			return null;
+			return b.Parse();
 		}
 
 	}

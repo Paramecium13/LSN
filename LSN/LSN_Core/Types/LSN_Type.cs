@@ -10,6 +10,13 @@ namespace LSN_Core
 	public delegate LSN_BoundedInstance LSN_BinDel(LSN_BoundedInstance a, LSN_BoundedInstance b);
 	public delegate string TypeTranlator(LSN_BoundedInstance i);
 
+	/// <summary>
+	/// A binary operator delegate.
+	/// </summary>
+	/// <param name="left"></param>
+	/// <param name="right"></param>
+	/// <returns></returns>
+	public delegate ILSN_Value BinOp(ILSN_Value left, ILSN_Value right);
 
 	public enum Operator { Add, Subtract, Multiply, Divide, Mod, Power}
 
@@ -51,80 +58,80 @@ namespace LSN_Core
 		private static void SetUpOperators()
 		{
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Add, int_),
-				(a, b) => new IntValue(((IntValue)a).Value + ((IntValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new IntValue(((IntValue)a).Value + ((IntValue)b).Value),int_));
 
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Divide, int_),
-				(a, b) => new IntValue(((IntValue)a).Value / ((IntValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new IntValue(((IntValue)a).Value / ((IntValue)b).Value), int_));
 
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Mod, int_),
-				(a, b) => new IntValue(((IntValue)a).Value % ((IntValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new IntValue(((IntValue)a).Value % ((IntValue)b).Value), int_));
 
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Multiply, int_),
-				(a, b) => new IntValue(((IntValue)a).Value * ((IntValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new IntValue(((IntValue)a).Value * ((IntValue)b).Value), int_));
 
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Power, int_),
-				(a, b) => new IntValue((int)Math.Pow(((IntValue)a).Value,((IntValue)b).Value)));
+				new Tuple<BinOp, LSN_Type>((a, b) => new IntValue((int)Math.Pow(((IntValue)a).Value,((IntValue)b).Value)), int_));
 
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Subtract, int_),
-				(a, b) => new IntValue(((IntValue)a).Value - ((IntValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new IntValue(((IntValue)a).Value - ((IntValue)b).Value), int_));
 
 
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Add, double_),
-				(a, b) => new DoubleValue(((IntValue)a).Value + ((DoubleValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((IntValue)a).Value + ((DoubleValue)b).Value),double_));
 
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Divide, double_),
-				(a, b) => new DoubleValue(((IntValue)a).Value / ((DoubleValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((IntValue)a).Value / ((DoubleValue)b).Value),double_));
 
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Mod, double_),
-				(a, b) => new DoubleValue(((IntValue)a).Value % ((DoubleValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((IntValue)a).Value % ((DoubleValue)b).Value),double_));
 
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Multiply, double_),
-				(a, b) => new DoubleValue(((IntValue)a).Value * ((DoubleValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((IntValue)a).Value * ((DoubleValue)b).Value),double_));
 
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Power, double_),
-				(a, b) => new DoubleValue(Math.Pow(((IntValue)a).Value,((DoubleValue)b).Value)));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(Math.Pow(((IntValue)a).Value,((DoubleValue)b).Value)),double_));
 
 			int_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Subtract, double_),
-				(a, b) => new DoubleValue(((IntValue)a).Value - ((DoubleValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((IntValue)a).Value - ((DoubleValue)b).Value),double_));
 
 
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Add, double_),
-				(a, b) => new DoubleValue(((DoubleValue)a).Value - ((DoubleValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((DoubleValue)a).Value - ((DoubleValue)b).Value),double_));
 
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Divide, double_),
-				(a, b) => new DoubleValue(((DoubleValue)a).Value / ((DoubleValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((DoubleValue)a).Value / ((DoubleValue)b).Value),double_));
 
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Mod, double_),
-				(a, b) => new DoubleValue(((DoubleValue)a).Value % ((DoubleValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((DoubleValue)a).Value % ((DoubleValue)b).Value),double_));
 
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Multiply, double_),
-				(a, b) => new DoubleValue(((DoubleValue)a).Value * ((DoubleValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((DoubleValue)a).Value * ((DoubleValue)b).Value),double_));
 
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Power, double_),
-				(a, b) => new DoubleValue(Math.Pow(((DoubleValue)a).Value, ((DoubleValue)b).Value)));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(Math.Pow(((DoubleValue)a).Value, ((DoubleValue)b).Value)),double_));
 
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Subtract, double_),
-				(a, b) => new DoubleValue(((DoubleValue)a).Value - ((DoubleValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((DoubleValue)a).Value - ((DoubleValue)b).Value),double_));
 
 
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Subtract, int_),
-				(a, b) => new DoubleValue(((DoubleValue)a).Value - ((IntValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((DoubleValue)a).Value - ((IntValue)b).Value),double_));
 
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Divide, int_),
-				(a, b) => new DoubleValue(((DoubleValue)a).Value / ((IntValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((DoubleValue)a).Value / ((IntValue)b).Value),double_));
 
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Mod, int_),
-				(a, b) => new DoubleValue(((DoubleValue)a).Value % ((IntValue)b).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(((DoubleValue)a).Value % ((IntValue)b).Value),double_));
 
 			double_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Power, int_),
-				(a, b) => new DoubleValue(Math.Pow(((DoubleValue)a).Value, ((IntValue)b).Value)));
+				new Tuple<BinOp, LSN_Type>((a, b) => new DoubleValue(Math.Pow(((DoubleValue)a).Value, ((IntValue)b).Value)), double_));
 
 
 			string_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Add, string_),
-				(a, b) => new StringValue(((StringValue)a).Value + ((StringValue)a).Value));
+				new Tuple<BinOp, LSN_Type>((a, b) => new StringValue(((StringValue)a).Value + ((StringValue)a).Value),string_));
 
 			string_._Operators.Add(new Tuple<Operator, LSN_Type>(Operator.Multiply, int_),
-				(a, b) => new StringValue((new StringBuilder()).Append(((StringValue)a).Value,0,((IntValue)b).Value).ToString()));
+				new Tuple<BinOp, LSN_Type>((a, b) => new StringValue((new StringBuilder()).Append(((StringValue)a).Value,0,((IntValue)b).Value).ToString()), string_) );
 
 		}
 
@@ -187,13 +194,13 @@ namespace LSN_Core
 		/// <summary>
 		/// Operators...
 		/// </summary>
-		private readonly Dictionary<Tuple<Operator, LSN_Type>, Func<ILSN_Value, ILSN_Value, ILSN_Value>> _Operators
-			= new Dictionary<Tuple<Operator, LSN_Type>, Func<ILSN_Value, ILSN_Value, ILSN_Value>>();
+		private readonly Dictionary<Tuple<Operator, LSN_Type>, Tuple<BinOp, LSN_Type>> _Operators
+			= new Dictionary<Tuple<Operator, LSN_Type>, Tuple<BinOp,LSN_Type>>();
 
 		/// <summary>
 		/// Operators...
 		/// </summary>
-		public IReadOnlyDictionary<Tuple<Operator, LSN_Type>, Func<ILSN_Value, ILSN_Value, ILSN_Value>> Operators
+		public IReadOnlyDictionary<Tuple<Operator, LSN_Type>, Tuple<BinOp, LSN_Type>> Operators
 			{ get { return _Operators; } }
 
 		public bool IsName(string name) => Name == name || Aliases.Contains(name);

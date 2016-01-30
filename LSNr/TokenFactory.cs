@@ -14,7 +14,8 @@ namespace LSNr
 		{
 			//Core Language stuff
 			"if", "else","elsif","let","mut","unless","struct","fn","for","match",
-			"foreach","return","new","choose","turn",
+			"foreach","return","new","choose","turn","quest","virtual","stage","state",
+			"record",
 
 			//Statement headers
 			"give","rotate","publish","add","remove","callcommonevent","cce","recover",
@@ -24,7 +25,7 @@ namespace LSNr
 			//Statement stuff
 			"item","weapon","armor","armour","actor","video","image","me","se","bgm",
 			"screen","moveroute","animation","ballon","picture","battle","shop","menu",
-			"encounter","graphic","with","face","down","left","right","up","graphic",
+			"encounter","graphic","with","as","down","left","right","up","graphic",
 			"direction","fix","route",
 
 			//both

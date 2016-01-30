@@ -14,18 +14,25 @@ namespace LSNr
 	{
 		private readonly static Dictionary<string, string> MCHARSYM = new Dictionary<string, string>
 		{
+			["->"] = " → ",
 			["=="] = " ≡ ",
+			[">="] = " ≥ ",
+			["<="] = " ≤ ",
 			["!="] = " ≠ ",
 			["++"] = " ‡ ",
 			["--"] = " † ",
 			["+="] = " ± ",
 			["-="] = " ╧ ",
-			["/="] = " ╤ "
+			["/="] = " ╤ ",
+			["||"] = " ∨ ",
+			["&&"] = " ∧ ",
+			["??"] = " ⁇ "
 		};
 
 		private readonly static List<string> OPERATORS = new List<string> {
-			"+","-","*","/","%","=","~","!","(",
-			")","{","}","[","]",",",".",";","^"
+			"+","-","*","/","%","^","=",">","<","~","!","(",
+			")","{","}","[","]",",",".",";",":","?","@","$",
+			"∈","∊","∋","∍","⊂","⊃","",""
 		};
 
 		private static Converter<string, string> MCSConv = MCSConvM;
@@ -53,12 +60,12 @@ namespace LSNr
 
 		
 
-		private static string RemoveComments(string source) => Regex.Replace(source, @"(?s)\/\*.*\*\/", "");
+		private static string RemoveComments(string source) => Regex.Replace(source, @"(?s)\/\*.*\*\/", "",RegexOptions.Singleline);
 
 		private static string ProcessOperators(string source)
 		{
 			//'else if' -> 'elsif'
-			source = Regex.Replace(source, @"(?i)else\s+if", "elsif");
+			source = Regex.Replace(source, @"(?i)else\s*if", "elsif");
 			StringBuilder src = new StringBuilder(source);
 			foreach (KeyValuePair<string,string> pair in MCHARSYM)
 			{
@@ -66,7 +73,7 @@ namespace LSNr
 			}
 			foreach (string op in OPERATORS)
 			{
-				src.Replace(op, " " + op + " ");
+				src.Replace(op, $" {op} ");
 			}
             return source;
 		}
