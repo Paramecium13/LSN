@@ -57,10 +57,10 @@ namespace LSNr
 		public Scope Pop(List<Component> components)
 		{
 			// Optimize contained variables...
-			/*foreach(var variable in Variables)
+			foreach(var variable in Variables)
 			{
 				if (!variable.Value.Used) components.Remove(variable.Value.Assignment);
-			}*/
+			}
 			return Parent;
 		}
 	}

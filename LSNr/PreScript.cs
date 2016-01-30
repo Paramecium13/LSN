@@ -133,6 +133,7 @@ namespace LSNr
 			var parser = new Parser(Tokens, this);
 			parser.Parse();
 			Components = Parser.Consolidate(parser.Components);
+			//CurrentScope.Pop(Components);
 		}
 
 		/// <summary>

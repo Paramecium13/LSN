@@ -55,8 +55,9 @@ namespace LSNr
 				ParseAddSubtract();
 			ParseComparisons();
 			if(CurrentTokens.Count != 1) { throw new ApplicationException("This should not happen."); }
-			var expr = Substitutions[CurrentTokens[0]];
-			foreach (var v in Variables) v.Users.Add(expr);
+			var expr = Substitutions[CurrentTokens[0]].Fold();
+			if(! expr.IsReifyTimeConst())
+				foreach (var v in Variables) v.Users.Add(expr);
 			return expr;
 		}
 
@@ -156,9 +157,13 @@ namespace LSNr
 				else if (Script.CurrentScope.VariableExists(val))
 				{
 					var v = Script.CurrentScope.GetVariable(val);
-					var name = SUB + SubCount++;
+					IExpression expr;
+					if (!v.Mutable && v.InitialValue.IsReifyTimeConst())
+						expr = v.InitialValue.Fold();
+					else expr = new VariableExpression(val, v.Type);
+                    var name = SUB + SubCount++;
 					Variables.Add(v);
-					Substitutions.Add(new Identifier(name), new VariableExpression(val, v.Type));
+					Substitutions.Add(new Identifier(name), expr);
 					CurrentTokens.Add(new Identifier(name));
 				}
 				#region Function

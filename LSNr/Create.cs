@@ -110,6 +110,8 @@ namespace LSNr
 				if(script.CurrentScope.VariableExists(list[0].Value))
 				{
 					var v = script.CurrentScope.GetVariable(list[0].Value);
+					if (!v.Mutable && v.InitialValue.IsReifyTimeConst())
+						return v.InitialValue.Fold();
 					return new VariableExpression(v.Name, v.Type);
 				}
 				else if (list[0].GetType() == typeof(FloatToken))
@@ -126,7 +128,7 @@ namespace LSNr
 				}
 			}
 			return ExpressionBuilder.Build(list, script);
-		}
+        }
 
 
 		private static Expression CreateGet(List<IToken> tokens, IPreScript script)
