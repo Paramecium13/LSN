@@ -4,21 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSN_Core.Compile.Tokens
+namespace Tokens.Tokens
 {
-	public struct SubToken : IToken
+	public struct Assignment : IToken
 	{
 		public string Value { get; set; }
 
-		public SubToken(string value)
+		public Assignment(string s)
 		{
-			Value = value;
-			//Value = Preprocessor.Subs[s];
+			Value = s;
 		}
 
 		public bool Equals(IToken other)
 		{
-			return TokenExtensions.Equals(this, other);
+			return TokenExtensions.Equals(this,other);
 		}
 
 	}

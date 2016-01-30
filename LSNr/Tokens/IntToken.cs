@@ -4,14 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSN_Core.Compile.Tokens
+namespace Tokens.Tokens
 {
-	public struct Keyword : IToken
+	public struct IntToken : IToken
 	{
 		public string Value { get; set; }
-		public Keyword(string t)
+		public int IVal;
+
+		public IntToken(string s)
 		{
-			Value = t;
+			Value = s;
+			IVal = int.Parse(s);
+		}
+
+		public IntToken(int i)
+		{
+			Value = i.ToString();
+			IVal = i;
 		}
 
 		public bool Equals(IToken other)

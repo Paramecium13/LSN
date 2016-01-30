@@ -1,5 +1,5 @@
 ﻿using LSN_Core;
-using LSN_Core.Compile;
+using Tokens;
 using LSN_Core.ControlStructures;
 using LSN_Core.Statements;
 using System;

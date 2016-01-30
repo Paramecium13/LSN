@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSN_Core.Compile.Tokens
+namespace Tokens.Tokens
 {
 	public struct FloatToken : IToken
 	{

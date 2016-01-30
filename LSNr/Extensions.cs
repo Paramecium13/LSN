@@ -1,5 +1,5 @@
 ﻿using LSN_Core;
-using LSN_Core.Compile;
+using Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,7 +1,7 @@
 ﻿using LSN_Core;
 using LSN_Core.Expressions;
-using LSN_Core.Compile;
-using LSN_Core.Compile.Tokens;
+using Tokens;
+using Tokens.Tokens;
 using LSN_Core.Types;
 using LSN_Core.Values;
 using System;

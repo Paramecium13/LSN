@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSN_Core.Compile.Tokens
+namespace Tokens.Tokens
 {
-	public struct Operator : IToken
+	public struct SubToken : IToken
 	{
 		public string Value { get; set; }
 
-		public Operator(string t)
+		public SubToken(string value)
 		{
-			Value = t;
+			Value = value;
+			//Value = Preprocessor.Subs[s];
 		}
-
 
 		public bool Equals(IToken other)
 		{

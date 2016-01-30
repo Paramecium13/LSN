@@ -4,21 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSN_Core.Compile.Tokens
+namespace Tokens.Tokens
 {
-	public struct StringToken : IToken
+	public struct Ambiguous : IToken
 	{
 		public string Value { get; set; }
 
-		public StringToken(string s)
+		public Ambiguous(string s)
 		{
 			Value = s;
 		}
 
 		public bool Equals(IToken other)
 		{
-			return TokenExtensions.Equals(this, other);
+			throw new NotImplementedException();
 		}
-
 	}
 }
