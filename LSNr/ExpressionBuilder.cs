@@ -265,6 +265,52 @@ namespace LSNr
 		}
 
 
+		private void ParseInexers()
+		{
+			var newTokens = new List<IToken>();
+			for (int i = 0; i < CurrentTokens.Count; i++)
+			{
+				var val = CurrentTokens[i].Value;
+				if (val == "[")
+				{
+					int nextIndex = i + 1;
+					int lCount = 1;
+					int rCount = 0;
+					int j = 1;
+					List<IToken> iTokens = new List<IToken>();
+					while (lCount != rCount)
+					{
+						if (CurrentTokens[i + j].Value == "]")
+							rCount++;
+						else if (CurrentTokens[i + j].Value == "[")
+							lCount++;
+						if (lCount == rCount) break;
+						iTokens.Add(CurrentTokens[i + j]);
+						j++;
+					}
+					var expr = Build(iTokens, Script, Substitutions.Where(p => iTokens.Contains(p.Key)).ToDictionary(), SubCount);
+					var name = SUB + SubCount++;
+					var coll = GetExpression(CurrentTokens[CurrentTokens.Count - 1]);
+					CurrentTokens.RemoveAt(CurrentTokens.Count - 1);
+					if(!typeof(ICollectionType).IsAssignableFrom(coll.Type.GetType()))
+						throw new ApplicationException($"{coll.Type.Name} cannot be indexed.");
+					var t = (ICollectionType)coll.Type;
+					if (t.IndexType != expr.Type)
+						throw new ApplicationException($"{coll.Type.Name} cannot be indexed by type {expr.Type.Name}.");
+                    Substitutions.Add(new Identifier(name), new CollectionValueAccessExpression(coll,expr, t.ContentsType));
+					newTokens.Add(new Identifier(name));
+					nextIndex += j;
+					i = nextIndex - 1; // In the next iteration, i == nextIndex.
+				}
+				else
+				{
+					newTokens.Add(CurrentTokens[i]);
+				}
+			}
+			CurrentTokens = newTokens;
+		}
+
+
 		private void ParseMultDivMod()
 		{
 			var newTokens = new List<IToken>();

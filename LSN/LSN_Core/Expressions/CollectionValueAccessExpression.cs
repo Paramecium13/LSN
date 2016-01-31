@@ -15,6 +15,12 @@ namespace LSN_Core.Expressions
 		private IExpression Collection;
 		private IExpression Index;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="collection"> The collection expression.</param>
+		/// <param name="index"> The index expression.</param>
+		/// <param name="type"> The type of the value contained in the collection.</param>
 		public CollectionValueAccessExpression(IExpression collection, IExpression index, LSN_Type type)
 		{
 			Collection = collection; Index = index; Type = type;
@@ -38,10 +44,9 @@ namespace LSN_Core.Expressions
 					{
 						expr = ((ICollectionValue)c).GetValue((ILSN_Value)i);
 					}
-					catch (Exception e)
+					catch (Exception)
 					{
 						expr = new CollectionValueAccessExpression(c, i, Type);
-						throw;
 					}
 				}
 				else expr = new CollectionValueAccessExpression(c, i, Type);
