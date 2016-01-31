@@ -46,7 +46,8 @@ namespace LSNr
 		private IExpression Parse()
 		{
 			ParseVariablesAndFunctions();
-			ParseParenthesis();
+			if(CurrentTokens.Count != 1)
+				ParseParenthesis();
 			//ParseInexers();// Put this with functions and variables?
 			if (CurrentTokens.Any(t => t.Value == "^")) ParseExponents();
 			if (CurrentTokens.Any(t => { var v = t.Value; return v == "*" || v == "/" || v == "%"; }))
@@ -62,7 +63,7 @@ namespace LSNr
 		}
 
 		/// <summary>
-		/// Parse variables, functions, methods, and fields.
+		/// Parse variables, boolean and null/nil/none/nothing literals, functions, methods, and fields.
 		/// </summary>
 		private void ParseVariablesAndFunctions()
 		{
@@ -103,6 +104,7 @@ namespace LSNr
 					else
 					{
 						expr = GetExpression(InitialTokens[i - 1]);
+						CurrentTokens.RemoveAt(CurrentTokens.Count - 1); // Remove the value to the left.
 					}
 
 					var name = InitialTokens[i + 1].Value;
@@ -135,7 +137,7 @@ namespace LSNr
 								j++;
 							}
 							nextIndex += j;
-							expr2 = Create.CreateMethodCall(fnTokens, method, Script);
+							expr2 = Create.CreateMethodCall(fnTokens, method, expr, Script);
 						}
 					}
 					else if (expr.Type.GetType().IsAssignableFrom(typeof(IHasFieldsType))) // It's a field access expression.
@@ -210,6 +212,12 @@ namespace LSNr
 					i = nextIndex -1; // In the next iteration, i == nextIndex.
 				}
 				#endregion
+				else if(val == "true" || val == "false")
+				{
+					var name = SUB + SubCount++;
+					Substitutions.Add(new Identifier(name), LSN_BoolValue.GetBoolValue(bool.Parse(val)));
+					CurrentTokens.Add(new Identifier(name));
+				}
 				else
 				{
 					CurrentTokens.Add(InitialTokens[i]);

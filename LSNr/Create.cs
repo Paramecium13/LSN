@@ -107,12 +107,14 @@ namespace LSNr
 			}
 			if(list.Count == 1)
 			{
-				if(script.CurrentScope.VariableExists(list[0].Value))
+				if (script.CurrentScope.VariableExists(list[0].Value))
 				{
 					var v = script.CurrentScope.GetVariable(list[0].Value);
 					if (!v.Mutable && v.InitialValue.IsReifyTimeConst())
 						return v.InitialValue.Fold();
-					return new VariableExpression(v.Name, v.Type);
+					var expr = new VariableExpression(v.Name, v.Type);
+					v.Users.Add(expr);
+					return expr;
 				}
 				else if (list[0].GetType() == typeof(FloatToken))
 				{
@@ -126,6 +128,8 @@ namespace LSNr
 				{
 					return new StringValue(list[0].Value);
 				}
+				else if (list[0].Value == "true") return LSN_BoolValue.GetBoolValue(true);
+				else if (list[0].Value == "false") return LSN_BoolValue.GetBoolValue(false);
 			}
 			return ExpressionBuilder.Build(list, script);
         }
@@ -160,6 +164,8 @@ namespace LSNr
 				}
 				parameters[paramIndex].Add(tokens[i]);
 			}
+
+			// Parse the parameters
 			for(int i = 0; i < parameters.Count; i++)
 			{
 				var p = parameters[i];
@@ -176,9 +182,39 @@ namespace LSNr
 		}
 
 
-		public static MethodCall CreateMethodCall(List<IToken> tokens, Method method, IPreScript script)
+		public static MethodCall CreateMethodCall(List<IToken> tokens, Method method, IExpression obj, IPreScript script)
 		{
-			return null;
+			var ls = new List<Tuple<string, IExpression>>();
+			var parameters = new List<List<IToken>>();
+			parameters.Add(new List<IToken>());
+			int paramIndex = 0;
+
+			// Split the list of tokens into multiple lists by commas.
+			for (int i = 0; i < tokens.Count; i++)
+			{
+				if (tokens[i].Value == ",")
+				{
+					parameters.Add(new List<IToken>());
+					++paramIndex;
+					continue;
+				}
+				parameters[paramIndex].Add(tokens[i]);
+			}
+
+			// Parse the parameters
+			for (int i = 0; i < parameters.Count; i++)
+			{
+				var p = parameters[i];
+				if (p.Count > 2 && p[1].Value == "=") // It's named
+				{
+					ls.Add(new Tuple<string, IExpression>(p[0].Value, Express(p.Skip(2).ToList(), script)));
+				}
+				else
+				{
+					ls.Add(new Tuple<string, IExpression>("", Express(p, script)));
+				}
+			}
+			return method.CreateMethodCall(ls,obj/*script.TypeIsIncluded(obj.Type)*/);
 		}
 		
 	}
