@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace LSN_Core.ControlStructures
 {
+	/// <summary>
+	/// A(n) LSN for loop...
+	/// </summary>
 	public class ForLoop : ControlStructure
 	{
 

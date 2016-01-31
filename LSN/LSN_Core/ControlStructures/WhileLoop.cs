@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace LSN_Core.ControlStructures
 {
+	/// <summary>
+	/// A(n) LSN while loop...
+	/// </summary>
 	public class WhileLoop : ControlStructure
 	{
 		private IExpression Condition;
