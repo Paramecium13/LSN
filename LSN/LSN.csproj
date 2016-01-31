@@ -62,7 +62,9 @@
     <Compile Include="LSN_Core\ControlStructures\Choice.cs" />
     <Compile Include="LSN_Core\ControlStructures\ChoicesBlockControl.cs" />
     <Compile Include="LSN_Core\ControlStructures\ControlStructure.cs" />
+    <Compile Include="LSN_Core\ControlStructures\ForLoop.cs" />
     <Compile Include="LSN_Core\ControlStructures\IfElseControl.cs" />
+    <Compile Include="LSN_Core\ControlStructures\WhileLoop.cs" />
     <Compile Include="LSN_Core\Expressions\BinaryExpression.cs" />
     <Compile Include="LSN_Core\Expressions\Expression.cs" />
     <Compile Include="LSN_Core\Expressions\FieldAccessExpression.cs" />
