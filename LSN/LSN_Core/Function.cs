@@ -14,7 +14,7 @@ namespace LSN_Core
 	public abstract class Function
 	{
 		public string Name;
-		public LSN_Type ReturnType;
+		public LSN_Type ReturnType { get; protected set; }
 		public List<Parameter> Parameters;
 		
 

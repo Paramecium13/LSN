@@ -10,11 +10,19 @@ namespace LSN_Core
 	/// </summary>
 	public class LSN_Function : Function
 	{
-		private List<Component> Components;
+		public List<Component> Components;
 
-		private LSN_ResourceThing Resource;
+		public LSN_ResourceThing Resource;
 
 		public override bool HandlesScope { get { return true; } }
+
+
+		public LSN_Function(List<Parameter> parameters,LSN_Type returnType)
+		{
+			Parameters = parameters;
+			ReturnType = returnType;
+		}
+
 
 		public override ILSN_Value Eval(Dictionary<string, ILSN_Value> args, IInterpreter i)
 		{

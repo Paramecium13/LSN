@@ -35,7 +35,7 @@ namespace LSNr
 
 		private Dictionary<string, string> Subs = new Dictionary<string, string>();
 		private Dictionary<string, string> Strings = new Dictionary<string, string>();
-		private Dictionary<Identifier, IToken> InlineLiterals;
+		private Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
 
 		private Dictionary<string, Function> Functions = new Dictionary<string, Function>();
 

@@ -86,6 +86,7 @@
     <Compile Include="IToken.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Preprocessor.cs" />
+    <Compile Include="PreResource.cs" />
     <Compile Include="PreScript.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

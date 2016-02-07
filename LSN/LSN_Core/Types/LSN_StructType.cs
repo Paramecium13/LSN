@@ -14,6 +14,11 @@ namespace LSN_Core.Types
 		private Dictionary<string, LSN_Type> _Fields = new Dictionary<string, LSN_Type>();
 		public IReadOnlyDictionary<string, LSN_Type> Fields { get { return _Fields; } }
 
+		public LSN_StructType(string name, Dictionary<string, LSN_Type> fields)
+		{
+			Name = name; _Fields = fields;
+		}
+
 		public override ILSN_Value CreateDefaultValue()
 		{
 			var dict = new Dictionary<string, ILSN_Value>();

@@ -11,6 +11,5 @@ namespace LSNr
 		bool FunctionExists(string name);
 		bool FunctionIsIncluded(string name);
 		Function GetFunction(string name);
-		LSN_Script GetScript();
 	}
 }

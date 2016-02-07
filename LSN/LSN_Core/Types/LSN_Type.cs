@@ -263,6 +263,16 @@ namespace LSN_Core
 			));
 		}
 
+		public static List<LSN_Type> GetBaseTypes()
+		{
+			var types = new List<LSN_Type>();
+			types.Add(int_);
+			types.Add(double_);
+			types.Add(string_);
+			types.Add(Bool_);
+			return types;
+		}
+
 		public virtual bool IsBounded { get { return false; } }
 
 		public List<string> Aliases = new List<string>();
