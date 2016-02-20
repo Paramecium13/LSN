@@ -140,7 +140,7 @@ namespace LSNr
 							expr2 = Create.CreateMethodCall(fnTokens, method, expr, Script);
 						}
 					}
-					else if (expr.Type.GetType().IsAssignableFrom(typeof(IHasFieldsType))) // It's a field access expression.
+					else if (typeof(IHasFieldsType).IsAssignableFrom(expr.Type.GetType())) // It's a field access expression.
 					{
 						var type = (IHasFieldsType)expr.Type;
 						if (!type.Fields.ContainsKey(name))
