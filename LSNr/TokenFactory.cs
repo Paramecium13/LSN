@@ -84,7 +84,7 @@ namespace LSNr
 			Strings = strings;
 		}
 
-		public IToken getToken(string pre_token)
+		public IToken GetToken(string pre_token)
 		{
 			if (KEYWORDS.Contains(pre_token.ToLower())) return new Keyword(pre_token.ToLower());
 			else if (SYMBOLS.Contains(pre_token)) return new SyntaxSymbol(pre_token);
