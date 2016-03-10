@@ -23,7 +23,7 @@ namespace LSNr
 				: self.Any(t => t.Value == value);
 
 		/// <summary>
-		/// Gets the index of the first token with the provided value.
+		/// Gets the index of the first token with the provided value, returns -1 if it cannot be found.
 		/// </summary>
 		/// <param name="self"></param>
 		/// <param name="value"> The value to look for. If ignore case is true, this should be all lowercase.</param>

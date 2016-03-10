@@ -11,7 +11,7 @@ using Tokens.Tokens;
 
 namespace LSNr
 {
-	public class PreResource : IPreScript
+	public class PreResource : IPreScript, ITypeContainer
 	{
 		internal const string STRN = "Στρ";
 		internal const string SUBN = "SUB";
