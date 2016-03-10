@@ -1,0 +1,10 @@
+﻿
+fn Dice(number: int, sides: int)-> int
+{
+	let mut Σ = 0;
+	repeat number times
+	{
+		Σ += SysRand(1,sides+1);	// The last argument is sides + 1 because the max is exclusive.
+	}
+	return Σ;
+}
