@@ -49,16 +49,27 @@ namespace LSNr
 		}
 
 
-		public static List<IToken> Tokenize(string source)
-		{			
-			//source = ProcessDirectives(source);
-			source = RemoveComments(source);
-			source = ProcessOperators(source);
-			var tokens = Regex.Split(source, @"\s").Where(t => t!= "").ToList();
-			return tokens.ConvertAll(MCSConv).ConvertAll(TokenFactory.getToken);
+		public static string ProcessStrings(string source, out Dictionary<string, string> strings)
+		{
+			strings = new Dictionary<string, string>();
+			//var matches = Regex.Matches(source, "\"(.*?)\"");
+			//matches.
+			return ReplaceAndStore(source, "\"(.*?)\"", PreScript.STRN, strings);
 		}
 
-		
+		public static List<IToken> Tokenize(string source)
+		{
+			//source = ProcessDirectives(source);
+			source = RemoveComments(source);
+			Dictionary<string, string> strings = null;
+			source = ProcessStrings(source, out strings);
+			source = ProcessOperators(source);
+			var tokens = Regex.Split(source, @"\s").Where(t => t != "").ToList();
+			var factory = new TokenFactory(strings);
+			return tokens.ConvertAll(MCSConv).ConvertAll(factory.GetToken);
+		}
+
+
 
 		private static string RemoveComments(string source) => Regex.Replace(source, @"(?s)\/\*.*\*\/", "",RegexOptions.Singleline);
 

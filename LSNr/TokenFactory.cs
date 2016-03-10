@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LSNr
 {
-	static class TokenFactory
+	class TokenFactory
 	{
 		private static readonly string[] KEYWORDS = new string[]
 		{
@@ -77,8 +77,14 @@ namespace LSNr
 			"-","call","event","play","key","to","go","save","move"
 		};
 
+		private readonly Dictionary<string, string> Strings;
 
-		public static IToken getToken(string pre_token)
+		public TokenFactory(Dictionary<string, string> strings)
+		{
+			Strings = strings;
+		}
+
+		public IToken getToken(string pre_token)
 		{
 			if (KEYWORDS.Contains(pre_token.ToLower())) return new Keyword(pre_token.ToLower());
 			else if (SYMBOLS.Contains(pre_token)) return new SyntaxSymbol(pre_token);
@@ -95,7 +101,7 @@ namespace LSNr
 			}
 			else if (pre_token.Length > PreScript.STRN.Length &&
 				pre_token.Substring(0, PreScript.STRN.Length) == PreScript.STRN)
-				return new StringToken(pre_token);
+				return new StringToken(Strings[pre_token].Substring(1, Strings[pre_token].Length - 2));
 			else if (pre_token.Length > PreScript.SUBN.Length &&
 				pre_token.Substring(0, PreScript.SUBN.Length) == PreScript.SUBN)
 				throw new NotImplementedException();
