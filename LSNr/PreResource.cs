@@ -97,7 +97,9 @@ namespace LSNr
 		/// </summary>
 		public void Tokenize() { Tokens = Tokenizer.Tokenize(Text); }
 
-
+		/// <summary>
+		/// Go through the source, parsing structs and records.
+		/// </summary>
 		private void ParsestructsAndRecords()
 		{
 			for(int i = 0; i < Tokens.Count; i++)
@@ -105,24 +107,27 @@ namespace LSNr
 				var val = Tokens[i].Value;
 				if(val == "struct")
 				{
-					string name = Tokens[++i].Value;
-					if (Tokens[++i].Value != "{")
+					string name = Tokens[++i].Value; // Move on to the next token, get the name.
+					if (Tokens[++i].Value != "{") // Move on to the next token, make sure it is '{'.
 					{
 						Console.WriteLine($"Error in parsing struct {name}: invalid token: {Tokens[i]}, expected {{.");
 						Valid = false;
+
 					}
+					else ++i; // Move on to the token after '{'.
 					var tokens = new List<IToken>();
 					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
 					MakeStruct(name, tokens);
 				}
 				else if(val == "record")
 				{
-					string name = Tokens[++i].Value;
-					if (Tokens[++i].Value != "{")
+					string name = Tokens[++i].Value; // Move on to the next token, get the name.
+					if (Tokens[++i].Value != "{") // Move on to the next token, make sure it is '{'.
 					{
 						Console.WriteLine($"Error in parsing record {name}: invalid token: {Tokens[i]}, expected {{.");
 						Valid = false;
 					}
+					else ++i; // Move on to the token after '{'.
 					var tokens = new List<IToken>();
 					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
 					MakeRecord(name, tokens);
@@ -130,94 +135,143 @@ namespace LSNr
 			}
 		}
 
-
-		private void MakeStruct(string name, List<IToken> tokens)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="typeOfType">struct or record.</param>
+		/// <param name="tokens"></param>
+		/// <returns></returns>
+		private Dictionary<string, LSN_Type> ParseFields(string name, string typeOfType, List<IToken> tokens)
 		{
-			if (tokens.Count < 3)
+			if (tokens.Count < 3) // struct Circle { Radius : double}
 			{
 				Console.WriteLine($"Error, invalid struct {name}.");
 				Valid = false;
-				return;
-			}
-			var fields = new Dictionary<string, LSN_Type>();
-			for(int i = 0; i < tokens.Count; i++)
-			{
-				string fName = tokens[i++].Value;
-				if(i >= tokens.Count)
-				{
-					Valid = false;
-					Console.WriteLine($"Error in struct {name}: unexpected end of declaration, expected \':\'.");
-					return;
-				}
-				if(tokens[i++].Value != ":")
-				{
-					Valid = false;
-					Console.WriteLine($"Error in struct {name}: unexpected token {tokens[i - 1]}, expected \':\'");
-					return;
-				}
-				if (i >= tokens.Count)
-				{
-					Valid = false;
-					Console.WriteLine($"Error in struct {name}: unexpected end of declaration, expected type.");
-					return;
-				}
-				if(! TypeExists(tokens[i].Value))
-				{
-					Valid = false;
-					Console.WriteLine($"Error in struct {name}: no type named{tokens[i].Value} could be found.");
-					return;
-				}
-				var type = GetType(tokens[i].Value);
-				fields.Add(fName, type);
-				if (i + 1 < tokens.Count && tokens[++i].Value == ",") continue; //Move on to the next field
-				else break;
-			}
-			var structType = new LSN_StructType(name, fields);
-            StructTypes.Add(name, structType);
-		}
-
-
-		private void MakeRecord(string name, List<IToken> tokens)
-		{
-			if (tokens.Count < 3)
-			{
-				Console.WriteLine($"Error, invalid record {name}.");
-				Valid = false;
-				return;
+				return null;
 			}
 			var fields = new Dictionary<string, LSN_Type>();
 			for (int i = 0; i < tokens.Count; i++)
 			{
-				string fName = tokens[i++].Value;
-				if (i >= tokens.Count)
+				string fName = tokens[i++].Value; // Get the name of the field, move on to the next token.
+				if (i >= tokens.Count) // Make sure the definition does not end.
 				{
 					Valid = false;
-					Console.WriteLine($"Error in record {name}: unexpected end of declaration, expected \':\'.");
-					return;
+					Console.WriteLine($"Error in {typeOfType} {name}: unexpected end of declaration, expected \':\'.");
+					return null;
 				}
-				if (tokens[i++].Value != ":")
+				if (tokens[i++].Value != ":") // Make sure the next token is ':', move on to the next token.
 				{
 					Valid = false;
-					Console.WriteLine($"Error in record {name}: unexpected token {tokens[i - 1]}, expected \':\'");
-					return;
+					Console.WriteLine($"Error in {typeOfType} {name}: unexpected token {tokens[i - 1]}, expected \':\'");
+					return null;
 				}
-				if (i >= tokens.Count)
+				if (i >= tokens.Count) // Make sure the definition does not end.
 				{
 					Valid = false;
-					Console.WriteLine($"Error in record {name}: unexpected end of declaration, expected type.");
-					return;
+					Console.WriteLine($"Error in {typeOfType} {name}: unexpected end of declaration, expected type.");
+					return null;
 				}
-				if (!TypeExists(tokens[i].Value))
+				LSN_Type type = null;
+				if (TypeExists(tokens[i].Value))
 				{
-					Valid = false;
-					Console.WriteLine($"Error in record {name}: no type named{tokens[i].Value} could be found.");
-					return;
+					type = GetType(tokens[i].Value);
 				}
-				var type = GetType(tokens[i].Value);
+				else
+				{
+					// Temporary stop gap.
+					if(tokens[i].Value == "Vector")
+					{
+						if(tokens[++i].Value != "<")
+						{
+							Valid = false;
+							Console.WriteLine($"Error in {typeOfType} {name}: expected '<', recieved '{tokens[i].Value}'.");
+							return null;
+						}
+						if (TypeExists(tokens[++i].Value))
+						{
+							type = VectorType.GetVectorType(GetType(tokens[i].Value));
+						}
+						else
+						{
+							Valid = false;
+							Console.WriteLine($"Error in {typeOfType} {name}: no type named {tokens[i].Value} could be found.");
+							return null;
+						}
+						// Todo: Allow Vectors of Vectors:Make a method to get a type from a list of tokens,
+						// use recursion with generics.
+					}
+					/* Todo: Check for generic types, number of generic parameters, etc.
+					if (GenericTypeExists(tokens[i].Value)) 
+					{
+					
+					}
+					*/
+					else
+					{
+						Valid = false;
+						Console.WriteLine($"Error in {typeOfType} {name}: no type named {tokens[i].Value} could be found.");
+						return null;
+					}
+				}
 				fields.Add(fName, type);
-				if (i + 1 < tokens.Count && tokens[++i].Value == ",") continue; //Move on to the next field
+				if (i + 1 < tokens.Count && tokens[++i].Value == ",") // Check if the definition ends, move on to the next token
+																	  // and check that it is ','.
+				{
+					++i; // Move on to the next token, which should be the name of the next token.
+					continue; // Move on to the next field.
+				}
 				else break;
 			}
+			return fields;
+		}
+
+		/// <summary>
+		/// Make a struct.
+		/// </summary>
+		/// <param name="name"> The name of the struct to make.</param>
+		/// <param name="tokens"> The tokens defining the struct.</param>
+		private void MakeStruct(string name, List<IToken> tokens)
+		{
+			Dictionary<string, LSN_Type> fields = null;
+			try
+			{
+				fields = ParseFields(name, "struct", tokens);
+            }
+			catch (Exception e)
+			{
+				Console.WriteLine($"Error in parsing struct {name}.");
+#pragma warning disable 0162
+				if (false/*Show exeption info*/)
+					Console.WriteLine(e.Message);
+#pragma warning restore 0162
+			}
+			if (fields == null) return;
+			var structType = new LSN_StructType(name, fields);
+            StructTypes.Add(name, structType);
+		}
+
+		/// <summary>
+		/// Make a record.
+		/// </summary>
+		/// <param name="name"> The name of the record.</param>
+		/// <param name="tokens"> The tokens defining the record.</param>
+		private void MakeRecord(string name, List<IToken> tokens)
+		{
+			Dictionary<string, LSN_Type> fields = null;
+			try
+			{
+				fields = ParseFields(name, "struct", tokens);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"Error in parsing struct {name}.");
+#pragma warning disable 0162
+				if (false/*ShowExeptionInfo*/)
+					Console.WriteLine(e.Message);
+#pragma warning restore 0162
+			}
+			if (fields == null) return;
 			var recordType = new RecordType(name, fields);
 			RecordTypes.Add(name, recordType);
 		}
