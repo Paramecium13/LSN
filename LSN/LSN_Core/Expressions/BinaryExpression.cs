@@ -43,8 +43,9 @@ namespace LSN_Core.Expressions
 		{
 			Right = Right.Fold();
 			Left = Left.Fold();
-			if(typeof(ILSN_Value).IsAssignableFrom(Left.GetType()) && typeof(ILSN_Value).IsAssignableFrom(Right.GetType()))
-				return Operation((ILSN_Value)Left, (ILSN_Value)Right);
+			//typeof(ILSN_Value).IsAssignableFrom(Left.GetType()) && typeof(ILSN_Value).IsAssignableFrom(Right.GetType())
+			if (Left is ILSN_Value && Right is ILSN_Value)
+				return Operation(Left as ILSN_Value, Right as ILSN_Value);
 			return this;
 		}
 

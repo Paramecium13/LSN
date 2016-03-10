@@ -38,9 +38,9 @@ namespace LSN_Core.Expressions
 		{
 			Right = Right.Fold();
 			Left = Left.Fold();
-			if (typeof(ILSN_Value).IsAssignableFrom(Left.GetType())) // Is the left side constant?
+			if (Left is ILSN_Value) // Is the left side constant? typeof(ILSN_Value).IsAssignableFrom(Left.GetType())
 			{
-				if (((ILSN_Value)Left).BoolValue) return Left;
+				if ((Left as ILSN_Value).BoolValue) return Left;
 				return Right; // "false || Foo(x)" => "Foo(x)"
 			}
 			return this;

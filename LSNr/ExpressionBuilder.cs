@@ -140,7 +140,7 @@ namespace LSNr
 							expr2 = Create.CreateMethodCall(fnTokens, method, expr, Script);
 						}
 					}
-					else if (typeof(IHasFieldsType).IsAssignableFrom(expr.Type.GetType())) // It's a field access expression.
+					else if (expr.Type is IHasFieldsType) // It's a field access expression.typeof(IHasFieldsType).IsAssignableFrom(expr.Type.GetType())
 					{
 						var type = (IHasFieldsType)expr.Type;
 						if (!type.Fields.ContainsKey(name))
@@ -292,9 +292,9 @@ namespace LSNr
 					var name = SUB + SubCount++;
 					var coll = GetExpression(CurrentTokens[CurrentTokens.Count - 1]);
 					CurrentTokens.RemoveAt(CurrentTokens.Count - 1);
-					if(!typeof(ICollectionType).IsAssignableFrom(coll.Type.GetType()))
+					if(!(coll.Type is ICollectionType))// typeof(ICollectionType).IsAssignableFrom(coll.Type.GetType()
 						throw new ApplicationException($"{coll.Type.Name} cannot be indexed.");
-					var t = (ICollectionType)coll.Type;
+					var t = coll.Type as ICollectionType;
 					if (t.IndexType != expr.Type)
 						throw new ApplicationException($"{coll.Type.Name} cannot be indexed by type {expr.Type.Name}.");
                     Substitutions.Add(new Identifier(name), new CollectionValueAccessExpression(coll,expr, t.ContentsType));

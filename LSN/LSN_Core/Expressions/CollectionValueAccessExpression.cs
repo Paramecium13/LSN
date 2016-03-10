@@ -37,12 +37,12 @@ namespace LSN_Core.Expressions
 			var i = Index.Fold();
 			if(i != Index || c != Collection)
 			{
-				IExpression expr;
-				if (i.IsReifyTimeConst() && typeof(ICollectionValue).IsAssignableFrom(c.GetType()))
+				IExpression expr;       // typeof(ICollectionValue).IsAssignableFrom(c.GetType())
+				if (i.IsReifyTimeConst() && c is ICollectionValue)
 				{
 					try
 					{
-						expr = ((ICollectionValue)c).GetValue((ILSN_Value)i);
+						expr = (c as ICollectionValue).GetValue((ILSN_Value)i);
 					}
 					catch (Exception)
 					{
