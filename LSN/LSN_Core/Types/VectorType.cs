@@ -45,7 +45,9 @@ namespace LSN_Core
 	{
 		public override string Name => "Vector";
 
-		internal VectorGeneric() { }
+		internal static readonly VectorGeneric Instance = new VectorGeneric();
+
+		private VectorGeneric() { }
 
 		protected override LSN_Type CreateType(List<LSN_Type> types)
 		{

@@ -1,4 +1,5 @@
 ﻿using LSN_Core;
+using LSN_Core.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,9 @@ namespace LSNr
 	{
 		LSN_Type GetType(string name);
 		bool TypeExists(string name);
-	}
+		bool GenericTypeExists(string name);
+		GenericType GetGenericType(string name);
+    }
 
 	public static class TypeContainerExtensions
 	{
@@ -32,7 +35,7 @@ namespace LSNr
 				return self.GetType(tokens[i].Value);
 			}
 			// Temporary stop gap.
-			else if(tokens[i].Value == "Vector")
+			/*else if(tokens[i].Value == "Vector")
 			{
 				if (tokens[++i].Value != "<")
 				{
@@ -50,8 +53,8 @@ namespace LSNr
 				}
 				endIndex = i + 1; // The index of the token after (the last) '>'.
 				return VectorType.GetVectorType(generic);
-			}
-			/*else if (self.GenericTypeExists(tokens[i].Value))
+			}*/
+			else if (self.GenericTypeExists(tokens[i].Value))
 			{
 				if(tokens[++i].Value != "<")
 				{
@@ -60,17 +63,16 @@ namespace LSNr
 					return null;
 				}
 				++i;
-				LSN_GenericType gType = self.GetGenericType(tokens[i].Value);
-				int n = gType.NumGenerics;
+				GenericType gType = self.GetGenericType(tokens[i].Value);
 				var generics = new List<LSN_Type>();
 				while(tokens[i].Value != ">")
 				{
 					generics.Add(self.ParseType(tokens, i, out i));
-					if(tokens[i].Value == ',') i++; // else error?
+					if(tokens[i].Value == ",") i++; // else error?
 				}
 				endIndex = i + 1;
-				return gType.GetGeneric(generics);
-			}*/
+				return gType.GetType(generics);
+			}
 			endIndex = -1;
 			return null;
 		}

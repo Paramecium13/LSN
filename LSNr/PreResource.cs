@@ -34,14 +34,15 @@ namespace LSNr
 		public string Text;
 		private List<IToken> Tokens;
 
-		private Dictionary<string, string> Subs = new Dictionary<string, string>();
-		private Dictionary<string, string> Strings = new Dictionary<string, string>();
-		private Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
-		private Dictionary<string, LSN_StructType> StructTypes = new Dictionary<string, LSN_StructType>();
-		private Dictionary<string, RecordType> RecordTypes = new Dictionary<string, RecordType>();
+		private readonly Dictionary<string, string> Subs = new Dictionary<string, string>();
+		private readonly Dictionary<string, string> Strings = new Dictionary<string, string>();
+		private readonly Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
+		private readonly Dictionary<string, LSN_StructType> StructTypes = new Dictionary<string, LSN_StructType>();
+		private readonly Dictionary<string, RecordType> RecordTypes = new Dictionary<string, RecordType>();
 
-		private Dictionary<string, Function> Functions = new Dictionary<string, Function>();
-		private List<LSN_Type> Types = LSN_Type.GetBaseTypes();
+		private readonly Dictionary<string, Function> Functions = new Dictionary<string, Function>();
+		private readonly List<LSN_Type> Types = LSN_Type.GetBaseTypes();
+		private readonly List<GenericType> GenericTypes = LSN_Type.GetBaseGenerics();
 
 
 		/// <summary>
@@ -84,6 +85,21 @@ namespace LSNr
 		public LSN_Type GetType(string name)
 			=> Types.Where(t => t.IsName(name)).FirstOrDefault();
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public bool GenericTypeExists(string name)
+			=> GenericTypes.Any(g => g.Name == name);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public GenericType GetGenericType(string name)
+			=> GenericTypes.Where(t => t.Name == name).FirstOrDefault();
 
 		/// <summary>
 		/// 

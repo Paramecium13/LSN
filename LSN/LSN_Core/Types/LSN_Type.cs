@@ -282,7 +282,8 @@ namespace LSN_Core
 		public static List<GenericType> GetBaseGenerics()
 		{
 			var generics = new List<GenericType>();
-			generics.Add(GenericType.Vector);
+			generics.Add(VectorGeneric.Instance);
+			generics.Add(LSN_ListGeneric.Instance);
 			return generics;
         }
 
@@ -293,8 +294,7 @@ namespace LSN_Core
 
 		public string Name { get; protected set; }
 
-		protected List<LSN_Type> SubsumesList = new List<LSN_Type>();
-
+		protected readonly List<LSN_Type> SubsumesList = new List<LSN_Type>();
 
 		public readonly Dictionary<string, Method> Methods = new Dictionary<string, Method>();
 

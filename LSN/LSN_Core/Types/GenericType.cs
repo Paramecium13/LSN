@@ -12,9 +12,6 @@ namespace LSN_Core.Types
 	[Serializable]
 	public abstract class GenericType
 	{
-
-		internal readonly static VectorGeneric Vector = new VectorGeneric();
-
 		private readonly Dictionary<string, LSN_Type> Types = new Dictionary<string, LSN_Type>();
 
 		public abstract string Name { get; }
