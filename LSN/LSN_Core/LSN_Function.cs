@@ -10,6 +10,9 @@ namespace LSN_Core
 	/// </summary>
 	public class LSN_Function : Function
 	{
+		/// <summary>
+		/// This should only be set from within LSNr, where function bodies are parsed.
+		/// </summary>
 		public List<Component> Components;
 
 		public LSN_ResourceThing Resource;
@@ -17,10 +20,11 @@ namespace LSN_Core
 		public override bool HandlesScope { get { return true; } }
 
 
-		public LSN_Function(List<Parameter> parameters,LSN_Type returnType)
+		public LSN_Function(List<Parameter> parameters,LSN_Type returnType, string name)
 		{
 			Parameters = parameters;
 			ReturnType = returnType;
+			Name = name;
 		}
 
 

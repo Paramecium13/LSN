@@ -13,7 +13,7 @@ namespace LSN_Core
 	[Serializable]
 	public abstract class Function
 	{
-		public string Name;
+		public string Name { get; protected set; }
 		public LSN_Type ReturnType { get; protected set; }
 		public List<Parameter> Parameters;
 		

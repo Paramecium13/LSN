@@ -44,6 +44,20 @@ namespace LSNr
 		private readonly List<LSN_Type> Types = LSN_Type.GetBaseTypes();
 		private readonly List<GenericType> GenericTypes = LSN_Type.GetBaseGenerics();
 
+		/*private class PreFunction
+		{
+			public readonly string Name;
+			public readonly List<Parameter> Parameters;
+			public readonly List<IToken> Tokens;
+
+			public PreFunction(string name, List<Parameter> parameters, List<IToken> tokens)
+			{
+				Name = name; Parameters = parameters; Tokens = tokens;
+			}
+
+
+
+		}*/
 
 		/// <summary>
 		/// Reifies the source...
@@ -54,18 +68,31 @@ namespace LSNr
 			Tokenize();
         }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
 		public bool FunctionExists(string name)
-		{
-			throw new NotImplementedException();
-		}
+			=> Functions.ContainsKey(name) || false /*Includes.Any(i => i.Functions.ContainsKey(name))*/;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
 		public bool FunctionIsIncluded(string name)
-		{
-			throw new NotImplementedException();
-		}
+			=> Functions.ContainsKey(name);
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
 		public Function GetFunction(string name)
 		{
+			if (FunctionIsIncluded(name))
+				return Functions[name];
 			throw new NotImplementedException();
 		}
 
@@ -182,6 +209,13 @@ namespace LSNr
 				}
 			}
 		}
+
+		// Parse Functions:
+		//	* Go through source and extract names, parameters, return types, and bodies.
+		//		* Use the names, parameters, and return types to create a(n) LSN_Function and store it in Functions.
+		//		* Store the name and body in a Dictionary<string,List<IToken>> named FunctionBodies.
+		//	* Go through FunctionBodies and parse the tokens.
+		//		* Put the resulting List<Component> in the LSN_Function of the same name stored in Functions.
 
 		/// <summary>
 		/// 
