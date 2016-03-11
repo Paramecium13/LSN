@@ -90,6 +90,7 @@
     <Compile Include="LSN_Core\Statements\SimpleStatements.cs" />
     <Compile Include="LSN_Core\Statements\Statement.cs" />
     <Compile Include="LSN_Core\Types\BoolType.cs" />
+    <Compile Include="LSN_Core\Types\GenericType.cs" />
     <Compile Include="LSN_Core\Types\IHasFields.cs" />
     <Compile Include="LSN_Core\Types\ICollectionType.cs" />
     <Compile Include="LSN_Core\Types\LSN_BoundedType.cs" />

@@ -53,6 +53,38 @@ namespace LSNr
 			Tokenize();
         }
 
+		public bool FunctionExists(string name)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool FunctionIsIncluded(string name)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Function GetFunction(string name)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public bool TypeExists(string name)
+			=> Types.Any(t => t.IsName(name));
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public LSN_Type GetType(string name)
+			=> Types.Where(t => t.IsName(name)).FirstOrDefault();
+
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -172,8 +204,8 @@ namespace LSNr
 					Console.WriteLine($"Error in {typeOfType} {name}: unexpected end of declaration, expected type.");
 					return null;
 				}
-				LSN_Type type = null;
-				if (TypeExists(tokens[i].Value))
+				LSN_Type type = this.ParseType(tokens, i, out i);
+				/*if (TypeExists(tokens[i].Value))
 				{
 					type = GetType(tokens[i].Value);
 				}
@@ -201,19 +233,19 @@ namespace LSNr
 						// Todo: Allow Vectors of Vectors:Make a method to get a type from a list of tokens,
 						// use recursion with generics.
 					}
-					/* Todo: Check for generic types, number of generic parameters, etc.
-					if (GenericTypeExists(tokens[i].Value)) 
-					{
+					//Todo: Check for generic types, number of generic parameters, etc.
+					//if (GenericTypeExists(tokens[i].Value)) 
+					//{
+					//
+					//}
 					
-					}
-					*/
 					else
 					{
 						Valid = false;
 						Console.WriteLine($"Error in {typeOfType} {name}: no type named {tokens[i].Value} could be found.");
 						return null;
 					}
-				}
+				}*/
 				fields.Add(fName, type);
 				if (i + 1 < tokens.Count && tokens[++i].Value == ",") // Check if the definition ends, move on to the next token
 																	  // and check that it is ','.
@@ -276,26 +308,6 @@ namespace LSNr
 			RecordTypes.Add(name, recordType);
 		}
 
-		public bool TypeExists(string name)
-			=> Types.Any(t => t.IsName(name));
-
-		public LSN_Type GetType(string name)
-			=> Types.Where(t => t.IsName(name)).FirstOrDefault();
-
-		public bool FunctionExists(string name)
-		{
-			throw new NotImplementedException();
-		}
-
-		public bool FunctionIsIncluded(string name)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Function GetFunction(string name)
-		{
-			throw new NotImplementedException();
-		}
 
 		public LSN_Script GetScript()
 		{

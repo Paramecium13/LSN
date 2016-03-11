@@ -1,4 +1,5 @@
 ﻿using LSN_Core.Expressions;
+using LSN_Core.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -263,6 +264,10 @@ namespace LSN_Core
 			));
 		}
 
+		/// <summary>
+		/// Get a list of base types.
+		/// </summary>
+		/// <returns></returns>
 		public static List<LSN_Type> GetBaseTypes()
 		{
 			var types = new List<LSN_Type>();
@@ -272,6 +277,15 @@ namespace LSN_Core
 			types.Add(Bool_);
 			return types;
 		}
+
+
+		public static List<GenericType> GetBaseGenerics()
+		{
+			var generics = new List<GenericType>();
+			generics.Add(GenericType.Vector);
+			return generics;
+        }
+
 
 		public virtual bool IsBounded { get { return false; } }
 
