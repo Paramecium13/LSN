@@ -47,12 +47,26 @@ namespace LSN_Core
 		public string Value { get; private set; }
 		public bool BoolValue { get { return true; } }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="val"></param>
 		public StringValue(string val)
 		{
 			Value = val;
 		}
 
-		public ILSN_Value Clone()
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public ILSN_Value Clone() => new StringValue(Value);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public ILSN_Value DeepClone()
 		{
 			char[] c = new char[Value.Length];
 			Value.CopyTo(0, c, 0, 1);
