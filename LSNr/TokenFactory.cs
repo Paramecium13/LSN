@@ -15,7 +15,7 @@ namespace LSNr
 			//Core Language stuff
 			"if", "else","elsif","let","mut","unless","struct","fn","for","match",
 			"foreach","return","new","choose","turn","quest","virtual","stage","state",
-			"record",
+			"record","repeat",
 
 			//Statement headers
 			"give","rotate","publish","add","remove","callcommonevent","cce","recover",
