@@ -9,29 +9,32 @@ namespace LSN_Core
 	[Serializable]
 	public struct StructValue : ILSN_Value, IHasFieldsValue
 	{
-		private Dictionary<string, ILSN_Value> Members;
+		private readonly Dictionary<string, ILSN_Value> Members;
 
-		public LSN_Type Type { get; set; }
+		private readonly LSN_StructType _Type;
+		public LSN_Type Type => _Type;
 
 		public bool BoolValue { get{ return true; } }
 
 		public StructValue(LSN_StructType type, Dictionary<string, ILSN_Value> values)
 		{
-			Members = new Dictionary<string, ILSN_Value>();
-			Type = type;
+			_Type = type;
+			Members = values ?? new Dictionary<string, ILSN_Value>();
 			foreach(var pair in type.Fields)
 			{
-				Members.Add(pair.Key, pair.Value.CreateDefaultValue());
-			}
-			if (values == null) return;
-			foreach(var pair in values)
-			{
-				Members[pair.Key] = pair.Value;
+				if (!Members.ContainsKey(pair.Key))
+					Members.Add(pair.Key, pair.Value.CreateDefaultValue());
 			}
 		}
 
 		public ILSN_Value GetValue(string name) => Members[name];
 
+		/// <summary>
+		/// Create a new struct, 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
 		public StructValue SetValue(string name, ILSN_Value value)
 		{
 			var dict = new Dictionary<string, ILSN_Value>();
@@ -43,7 +46,9 @@ namespace LSN_Core
 			return new StructValue((LSN_StructType)Type, dict);
 		}
 
-		public ILSN_Value Clone()
+		public ILSN_Value Clone() => new StructValue(_Type, Members);
+
+		public ILSN_Value DeepClone()
 		{
 			var dict = new Dictionary<string, ILSN_Value>();
 			foreach (var pair in Members)
@@ -58,20 +63,11 @@ namespace LSN_Core
 			throw new NotImplementedException();
 		}
 
-		public ILSN_Value Eval(IInterpreter i)
-		{
-			return this;
-		}
+		public ILSN_Value Eval(IInterpreter i) => this;
 
-		public IExpression Fold()
-		{
-			return null;
-		}
+		public IExpression Fold() => this;
 
-		public bool IsReifyTimeConst()
-		{
-			return true;
-		}
+		public bool IsReifyTimeConst() => true;
 
 		/*
 		public static StructValue operator + (StructValue a, StructValue b)
