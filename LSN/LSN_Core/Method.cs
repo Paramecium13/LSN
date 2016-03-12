@@ -14,7 +14,8 @@ namespace LSN_Core
 		/// </summary>
 		public readonly LSN_Type Type;
 
-		public Method(LSN_Type type,LSN_Type returnType)
+		public Method(LSN_Type type,LSN_Type returnType, List<Parameter> paramaters)
+			:base(paramaters)
 		{
 			Type = type;
 			ReturnType = returnType;

@@ -1,4 +1,5 @@
 ﻿using LSN_Core.Types;
+using LSN_Core.Values;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Text;
 namespace LSN_Core
 {
 	[Serializable]
-	public class VectorType : LSN_Type
+	public class VectorType : LSN_Type, ICollectionType
 	{
 
 		private static Dictionary<LSN_Type, VectorType> Vectors = new Dictionary<LSN_Type, VectorType>();
@@ -27,9 +28,14 @@ namespace LSN_Core
 		private LSN_Type _Generic;
 		public LSN_Type GenericType { get { return _Generic; } private set { _Generic = value; } }
 
+		public LSN_Type IndexType => int_;
+
+		public LSN_Type ContentsType => GenericType;
+
 		internal VectorType(LSN_Type type)
 		{
 			GenericType = type;
+			// 
 		}
 
 		/// <summary>

@@ -21,8 +21,8 @@ namespace LSN_Core
 
 
 		public LSN_Function(List<Parameter> parameters,LSN_Type returnType, string name)
+			:base(parameters)
 		{
-			Parameters = parameters;
 			ReturnType = returnType;
 			Name = name;
 		}

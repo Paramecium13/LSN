@@ -12,10 +12,10 @@ namespace LSN_Core
 
 		public override bool HandlesScope { get { return false; } }
 
-		public BoundedFunction(Func<Dictionary<string, ILSN_Value>, ILSN_Value> b, List<Parameter> paramaters, LSN_Type returnType)
+		public BoundedFunction(Func<Dictionary<string, ILSN_Value>, ILSN_Value> b, List<Parameter> parameters, LSN_Type returnType)
+			:base(parameters)
 		{
 			Bound = b;
-			Parameters = paramaters;
 			ReturnType = returnType;
 		}
 

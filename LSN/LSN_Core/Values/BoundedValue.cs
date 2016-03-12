@@ -38,7 +38,7 @@ namespace LSN_Core
 	}
 
 	/// <summary>
-	/// LSN value that contains a string, is still passed by value.
+	/// LSN value that contains a string, is effectively passed by reference.
 	/// </summary>
 	[Serializable]
 	public struct StringValue : IBoundValue<string>
@@ -102,6 +102,9 @@ namespace LSN_Core
 		public string TranslateUniversal() => Value.ToString();
     }
 
+	/// <summary>
+	/// 
+	/// </summary>
 	[Serializable]
 	public class LSN_BoolValue : IBoundValue<bool>
 	{

@@ -57,12 +57,7 @@ namespace LSN_Core
 			}
 			return new StructValue((LSN_StructType)Type, dict);
 		}
-
-		public string TranslateUniversal()
-		{
-			throw new NotImplementedException();
-		}
-
+		
 		public ILSN_Value Eval(IInterpreter i) => this;
 
 		public IExpression Fold() => this;

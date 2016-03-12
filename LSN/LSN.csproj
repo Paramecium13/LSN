@@ -76,7 +76,7 @@
     <Compile Include="LSN_Core\Expressions\VariableExpression.cs" />
     <Compile Include="LSN_Core\Function.cs" />
     <Compile Include="LSN_Core\LSN_Function.cs" />
-    <Compile Include="LSN_Core\LSN_List.cs" />
+    <Compile Include="LSN_Core\Values\LSN_List.cs" />
     <Compile Include="LSN_Core\LSN_Math.cs" />
     <Compile Include="LSN_Core\LSN_Method.cs" />
     <Compile Include="LSN_Core\LSN_ReferenceValue.cs" />

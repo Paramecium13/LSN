@@ -15,8 +15,13 @@ namespace LSN_Core
 	{
 		public string Name { get; protected set; }
 		public LSN_Type ReturnType { get; protected set; }
-		public List<Parameter> Parameters;
+		private readonly List<Parameter> _Parameters;
+		public List<Parameter> Parameters => _Parameters;
 		
+		public Function(List<Parameter> parameters)
+		{
+			_Parameters = parameters;
+		}
 
 		public abstract bool HandlesScope { get; }
 

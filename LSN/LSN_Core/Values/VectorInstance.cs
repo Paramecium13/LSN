@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using LSN_Core.Types;
 
-namespace LSN_Core
+namespace LSN_Core.Values
 {
 	/// <summary>
 	/// A readonly collection passed by value.
 	/// </summary>
 	[Serializable]
-	public class VectorInstance : LSN_Value
+	public class VectorInstance : LSN_Value, ICollectionValue
 	{
 
 		public readonly int Size;
@@ -16,6 +17,8 @@ namespace LSN_Core
 		private ILSN_Value[] Values;
 
 		public override bool BoolValue { get { return true;/*Values != null;*/ } }
+
+		public ICollectionType CollectionType => Type as VectorType;
 
 		/// <summary>
 		/// Get the value at an index.
@@ -31,20 +34,22 @@ namespace LSN_Core
 			Values = values;
 		}
 
-		public override ILSN_Value Clone()
-		{
+		public override ILSN_Value Clone() => this;
 			/*var vals = new ILSN_Value[Size];
 			for(int i = 0; i < Size; i++) vals[i] = Values[i].Clone();
 			return new VectorInstance((VectorType)Type, vals);*/
-			return this; // Because it is immutable, there is no difference...
+		
+
+		public LSN_List ToLSN_List()
+		{
+			var vals = new ILSN_Value[Size];
+			for (int i = 0; i < Size; i++) vals[i] = Values[i].Clone();
+			return null;
 		}
 
-		/*public override string TranslateUniversal()
+		public ILSN_Value GetValue(ILSN_Value index)
 		{
-			var str = new StringBuilder("[");
-			foreach (var val in Values) str.Append(val.TranslateUniversal() + ",");
-			str.Append("]");
-			return str.ToString();	
-		}*/
+			throw new NotImplementedException();
+		}
 	}
 }
