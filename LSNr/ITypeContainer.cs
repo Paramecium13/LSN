@@ -34,26 +34,6 @@ namespace LSNr
 				endIndex = i + 1;
 				return self.GetType(tokens[i].Value);
 			}
-			// Temporary stop gap.
-			/*else if(tokens[i].Value == "Vector")
-			{
-				if (tokens[++i].Value != "<")
-				{
-					Console.WriteLine($"Error: expected token '<', recieved '{tokens[i].Value}'.");
-					endIndex = -1;
-					return null;
-				}
-				++i;
-				LSN_Type generic = self.ParseType(tokens, i, out i);
-				if(tokens[i].Value != ">")
-				{
-					Console.WriteLine($"Error: expected token '>', recieved '{tokens[i].Value}'.");
-					endIndex = -1;
-					return null;
-				}
-				endIndex = i + 1; // The index of the token after (the last) '>'.
-				return VectorType.GetVectorType(generic);
-			}*/
 			else if (self.GenericTypeExists(tokens[i].Value))
 			{
 				if(tokens[++i].Value != "<")

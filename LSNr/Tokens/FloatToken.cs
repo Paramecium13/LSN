@@ -8,8 +8,8 @@ namespace Tokens.Tokens
 {
 	public struct FloatToken : IToken
 	{
-		public string Value { get; set; }
-		public double DVal;
+		public string Value { get; private set; }
+		public readonly double DVal;
 
 		public FloatToken(string s)
 		{

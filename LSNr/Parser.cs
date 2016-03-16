@@ -63,7 +63,7 @@ namespace LSNr
 				{
 					closeCount++;
 				}
-				bodyTokens.Add(token);
+				bodyTokens.Add(token); // If this happens when closeCount == openCount, it will add the ending '}'
 				i++;
 			} while (openCount != closeCount);
 			var x = bodyTokens.Skip(1).Reverse().Skip(1).Reverse().ToList();

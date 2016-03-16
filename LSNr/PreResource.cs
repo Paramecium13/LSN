@@ -39,8 +39,9 @@ namespace LSNr
 		private readonly Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
 		private readonly Dictionary<string, LSN_StructType> StructTypes = new Dictionary<string, LSN_StructType>();
 		private readonly Dictionary<string, RecordType> RecordTypes = new Dictionary<string, RecordType>();
-
+		
 		private readonly Dictionary<string, Function> Functions = new Dictionary<string, Function>();
+		private readonly Dictionary<string, List<IToken>> FunctionBodies = new Dictionary<string, List<IToken>>();
 		private readonly List<LSN_Type> Types = LSN_Type.GetBaseTypes();
 		private readonly List<GenericType> GenericTypes = LSN_Type.GetBaseGenerics();
 
@@ -175,8 +176,10 @@ namespace LSNr
 		/// <summary>
 		/// Go through the source, parsing structs and records.
 		/// </summary>
-		private void ParsestructsAndRecords()
+		/// <returns> Tokens that are not part of a struct or record.</returns>
+		private List<IToken> ParsestructsAndRecords()
 		{
+			var otherTokens = new List<IToken>();
 			for(int i = 0; i < Tokens.Count; i++)
 			{
 				var val = Tokens[i].Value;
@@ -207,7 +210,9 @@ namespace LSNr
 					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
 					MakeRecord(name, tokens);
 				}
+				else otherTokens.Add(Tokens[i]);
 			}
+			return otherTokens;
 		}
 
 		// Parse Functions:
@@ -216,6 +221,143 @@ namespace LSNr
 		//		* Store the name and body in a Dictionary<string,List<IToken>> named FunctionBodies.
 		//	* Go through FunctionBodies and parse the tokens.
 		//		* Put the resulting List<Component> in the LSN_Function of the same name stored in Functions.
+		private List<IToken> ParseFunctions(List<IToken> tokens)
+		{
+			var otherTokens = new List<IToken>();
+			for (int i = 0; i < tokens.Count; i++)
+			{
+				if (tokens[i].Value == "fn")
+				{
+					string name = tokens[++i].Value;
+					if(tokens[++i].Value != "(")
+					{
+						Console.WriteLine($"Error in parsing function {name} expected token '(', recieved '{tokens[i].Value}'.");
+						Valid = false; continue;
+					}
+					var paramTokens = new List<IToken>();
+					while (tokens[++i].Value != ")") // This starts with the token after '('.
+						paramTokens.Add(tokens[i]);
+					List<Parameter> paramaters = null;
+					try
+					{
+						paramaters = ParseParameters(paramTokens);
+					}
+					catch (Exception e)
+					{
+						Console.WriteLine($"Error in parsing parameters of function {name}");
+						Console.WriteLine("\t" + e.Message);
+						Valid = false; continue;
+					}
+					// At this point, the current token (i.e. tokens[i].Value) is ')'.
+					LSN_Type returnType = null;
+					if (tokens[++i].Value == "->")
+					{
+						if(tokens[++i].Value == "(")
+						{ // The current token is the token after '->'.
+							if(tokens[++i].Value != ")")
+							{
+								Console.WriteLine($"Error in parsing function {name} expected token '(', recieved '{tokens[i].Value}'.");
+								Valid = false; continue;
+							}
+						}
+						else
+						{ // The current token is the token after '->'.
+							try
+							{
+								returnType = this.ParseType(tokens, i, out i);
+							}
+							catch (Exception e)
+							{
+								Console.WriteLine($"Error in parsing return type of function {name}.");
+								Console.WriteLine("\t" + e.Message);
+								Valid = false; continue;
+							}
+						}
+					}
+					if(tokens[i].Value != "{")
+					{
+						Console.WriteLine($"Error in parsing function {name} expected token '{{', recieved '{tokens[i].Value}'.");
+						Valid = false; continue;
+					}
+					var fnBody = new List<IToken>();
+					int openCount = 1;
+					int closeCount = 0;
+					string v = null;
+					while (true)
+					{
+						v = tokens[++i].Value;
+						if(v == "{") openCount++;
+						else if (v == "}")
+						{
+							closeCount++;
+							if (closeCount == openCount) break;
+						}
+						fnBody.Add(tokens[i]);
+					}
+					Functions.Add(name, new LSN_Function(paramaters, returnType, name));
+					FunctionBodies.Add(name, fnBody);
+				}
+				else otherTokens.Add(tokens[i]);
+				
+			}
+			return otherTokens;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tokens"></param>
+		/// <returns></returns>
+		private List<Parameter> ParseParameters(List<IToken> tokens)
+		{
+			var paramaters = new List<Parameter>();
+			ushort index = 0;
+			for(int i = 0; i < tokens.Count; i++)
+			{
+				string name = tokens[i].Value;
+				if(tokens[++i].Value != ":")
+					throw new ApplicationException($"Error: Expected token ':' after parameter name {name} recieved token '{tokens[i].Value}'.");
+                LSN_Type type = this.ParseType(tokens, ++i, out i);
+				ILSN_Value defaultValue = null;
+				if (tokens[i].Value == "=")
+				{
+					if (tokens[++i] is StringToken)
+					{
+						if (type != LSN_Type.string_)
+							throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type string to a parameter of type {type.Name}");
+						defaultValue = new StringValue(tokens[i].Value);
+						if (i + 1 < tokens.Count) i++;
+					}
+					else if (tokens[i] is IntToken)
+					{
+						if (type != LSN_Type.int_)
+						{
+							if (type == LSN_Type.double_)
+							{
+								defaultValue = new DoubleValue((tokens[i] as IntToken?)?.IVal ?? 0);
+							}
+							else
+								throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type int to a parameter of type {type.Name}");
+						}
+						else defaultValue = new IntValue((tokens[i] as IntToken?)?.IVal ?? 0);
+						if (i + 1 < tokens.Count) i++;
+					}
+					else if (tokens[i] is FloatToken)
+					{
+						if (type != LSN_Type.double_)
+							throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type double to a parameter of type {type.Name}");
+						defaultValue = new DoubleValue((tokens[i] as FloatToken?)?.DVal ?? 0.0);
+						if(i + 1 < tokens.Count) i++;
+					}
+					// Bools and other stuff...
+					else throw new ApplicationException($"Error in parsing default value for parameter {name}.");
+				}
+				paramaters.Add(new Parameter(name, type, defaultValue, index++));
+				if (tokens[i].Value != ",")
+					throw new ApplicationException($"Error: expected token ',' after definition of parameter {name}, recieved '{tokens[i].Value}'.");
+			}
+			return paramaters;
+		}
 
 		/// <summary>
 		/// 
@@ -228,7 +370,7 @@ namespace LSNr
 		{
 			if (tokens.Count < 3) // struct Circle { Radius : double}
 			{
-				Console.WriteLine($"Error, invalid struct {name}.");
+				Console.WriteLine($"Error, invalid {typeOfType} {name}.");
 				Valid = false;
 				return null;
 			}
@@ -255,47 +397,6 @@ namespace LSNr
 					return null;
 				}
 				LSN_Type type = this.ParseType(tokens, i, out i);
-				/*if (TypeExists(tokens[i].Value))
-				{
-					type = GetType(tokens[i].Value);
-				}
-				else
-				{
-					// Temporary stop gap.
-					if(tokens[i].Value == "Vector")
-					{
-						if(tokens[++i].Value != "<")
-						{
-							Valid = false;
-							Console.WriteLine($"Error in {typeOfType} {name}: expected '<', recieved '{tokens[i].Value}'.");
-							return null;
-						}
-						if (TypeExists(tokens[++i].Value))
-						{
-							type = VectorType.GetVectorType(GetType(tokens[i].Value));
-						}
-						else
-						{
-							Valid = false;
-							Console.WriteLine($"Error in {typeOfType} {name}: no type named {tokens[i].Value} could be found.");
-							return null;
-						}
-						// Todo: Allow Vectors of Vectors:Make a method to get a type from a list of tokens,
-						// use recursion with generics.
-					}
-					//Todo: Check for generic types, number of generic parameters, etc.
-					//if (GenericTypeExists(tokens[i].Value)) 
-					//{
-					//
-					//}
-					
-					else
-					{
-						Valid = false;
-						Console.WriteLine($"Error in {typeOfType} {name}: no type named {tokens[i].Value} could be found.");
-						return null;
-					}
-				}*/
 				fields.Add(fName, type);
 				if (i + 1 < tokens.Count && tokens[++i].Value == ",") // Check if the definition ends, move on to the next token
 																	  // and check that it is ','.
@@ -323,10 +424,8 @@ namespace LSNr
 			catch (Exception e)
 			{
 				Console.WriteLine($"Error in parsing struct {name}.");
-#pragma warning disable 0162
-				if (false/*Show exeption info*/)
+				if (true/*Show exeption info*/)
 					Console.WriteLine(e.Message);
-#pragma warning restore 0162
 			}
 			if (fields == null) return;
 			var structType = new LSN_StructType(name, fields);
@@ -343,15 +442,13 @@ namespace LSNr
 			Dictionary<string, LSN_Type> fields = null;
 			try
 			{
-				fields = ParseFields(name, "struct", tokens);
+				fields = ParseFields(name, "record", tokens);
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine($"Error in parsing struct {name}.");
-#pragma warning disable 0162
-				if (false/*ShowExeptionInfo*/)
+				if (true/*ShowExeptionInfo*/)
 					Console.WriteLine(e.Message);
-#pragma warning restore 0162
 			}
 			if (fields == null) return;
 			var recordType = new RecordType(name, fields);
@@ -359,7 +456,7 @@ namespace LSNr
 		}
 
 
-		public LSN_Script GetScript()
+		public LSN_ResourceThing GetResource()
 		{
 			throw new NotImplementedException();
 		}

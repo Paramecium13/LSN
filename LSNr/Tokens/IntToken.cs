@@ -8,8 +8,8 @@ namespace Tokens.Tokens
 {
 	public struct IntToken : IToken
 	{
-		public string Value { get; set; }
-		public int IVal;
+		public string Value { get; private set; }
+		public readonly int IVal;
 
 		public IntToken(string s)
 		{
