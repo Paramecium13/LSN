@@ -14,7 +14,7 @@ namespace LSN_Core.Values
 
 		public readonly int Size;
 
-		private ILSN_Value[] Values;
+		private readonly ILSN_Value[] Values;
 
 		public override bool BoolValue { get { return true;/*Values != null;*/ } }
 
@@ -35,16 +35,24 @@ namespace LSN_Core.Values
 		}
 
 		public override ILSN_Value Clone() => this;
-			/*var vals = new ILSN_Value[Size];
-			for(int i = 0; i < Size; i++) vals[i] = Values[i].Clone();
-			return new VectorInstance((VectorType)Type, vals);*/
-		
 
+
+		/// <summary>
+		/// Get the length of this list.
+		/// </summary>
+		/// <returns></returns>
+		public IntValue Length() => new IntValue(Values.Length);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public LSN_List ToLSN_List()
 		{
 			var vals = new ILSN_Value[Size];
 			for (int i = 0; i < Size; i++) vals[i] = Values[i].Clone();
-			return null;
+			return new LSN_List(LSN_ListGeneric.Instance.GetType(new List<LSN_Type>() { ((VectorType)Type).GenericType })
+				as LSN_ListType, vals);
 		}
 
 		public ILSN_Value GetValue(ILSN_Value index)

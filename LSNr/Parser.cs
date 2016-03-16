@@ -76,7 +76,7 @@ namespace LSNr
 			var c = new List<Component>();
 			for (int i = 0; i < components.Count; i++)
 			{
-				if (components[i].GetType() == typeof(IfControl))
+				if (components[i] is IfControl)
 				{
 					IfElseControl f = new IfElseControl();
 					f.Body = (components[i] as IfControl).Body;
@@ -84,21 +84,21 @@ namespace LSNr
 					i++;
 					while (true)
 					{
-						if (components[i].GetType() == typeof(ElsifControl))
+						if (components[i] is ElsifControl)
 						{
 							f.Elsifs.Add(components[i] as ElsifControl);
 						}
-						else if (components[i].GetType() == typeof(ElseControl))
+						else if (components[i] is ElseControl)
 						{
 							f.ElseBlock = (components[i] as ElseControl).Body;
 							c.Add(f);
-							i++; // ?
+							i++; // Move on to the next non-elseif/else component.
 							break;
 						}
 						else
 						{
 							c.Add(f);
-							i++; // ?
+							//i++; // This component still needs to be analysed.
 							break;
 						}
 						i++;

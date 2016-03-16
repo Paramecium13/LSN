@@ -44,6 +44,12 @@ namespace LSN_Core.Values
 		}
 
 		/// <summary>
+		/// Get the length of this list.
+		/// </summary>
+		/// <returns></returns>
+		public IntValue Length() => new IntValue(Values.Count);
+
+		/// <summary>
 		/// 
 		/// </summary>
 		/// <returns></returns>

@@ -193,8 +193,8 @@ namespace LSN_Core
 
 		private static void SetUpMethods()
 		{
-			int_.Methods.Add("Abs", new BoundedMethod(int_,int_,(args)=>new IntValue(Math.Abs(((IntValue)args["self"]).Value))));
-			double_.Methods.Add("Abs", new BoundedMethod(double_, double_, 
+			int_._Methods.Add("Abs", new BoundedMethod(int_,int_,(args)=>new IntValue(Math.Abs(((IntValue)args["self"]).Value))));
+			double_._Methods.Add("Abs", new BoundedMethod(double_, double_, 
 				(args) => new DoubleValue
 				(
 					Math.Abs
@@ -204,14 +204,14 @@ namespace LSN_Core
 				)
 			));
 
-			double_.Methods.Add("Floor", new BoundedMethod(double_, int_,
+			double_._Methods.Add("Floor", new BoundedMethod(double_, int_,
 				(args) => new IntValue
 				(
 					(int)((DoubleValue)args["self"]).Value
 				)
 			));
 
-			double_.Methods.Add("Ceil", new BoundedMethod(double_, int_,
+			double_._Methods.Add("Ceil", new BoundedMethod(double_, int_,
 				(args) => new IntValue
 				(
 					(int)Math.Ceiling
@@ -221,14 +221,14 @@ namespace LSN_Core
 				)
 			));
 
-			string_.Methods.Add("ToLower", new BoundedMethod(string_, string_,
+			string_._Methods.Add("ToLower", new BoundedMethod(string_, string_,
 				(args) => new StringValue
 				(
 					((StringValue)args["self"]).Value.ToLower()
 				)
 			));
 
-			string_.Methods.Add("Length", new BoundedMethod(string_, int_,
+			string_._Methods.Add("Length", new BoundedMethod(string_, int_,
 				(args) => new IntValue
 				(
 					((StringValue)args["self"]).Value.Length
@@ -268,7 +268,9 @@ namespace LSN_Core
 
 		protected readonly List<LSN_Type> SubsumesList = new List<LSN_Type>();
 
-		public readonly Dictionary<string, Method> Methods = new Dictionary<string, Method>();
+		protected readonly Dictionary<string, Method> _Methods = new Dictionary<string, Method>();
+		public virtual IReadOnlyDictionary<string, Method> Methods => _Methods;
+
 
 		/// <summary>
 		/// Operators...
