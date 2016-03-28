@@ -16,7 +16,7 @@ namespace LSN_Core
 		public string Name { get; protected set; }
 		public LSN_Type ReturnType { get; protected set; }
 		private readonly List<Parameter> _Parameters;
-		public List<Parameter> Parameters => _Parameters;
+		public IReadOnlyList<Parameter> Parameters => _Parameters;
 		
 		public Function(List<Parameter> parameters)
 		{
