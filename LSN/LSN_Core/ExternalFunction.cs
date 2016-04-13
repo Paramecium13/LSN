@@ -16,7 +16,8 @@ namespace LSN_Core
 		{
 			get
 			{
-				throw new NotImplementedException();
+				if (External == null) throw new ApplicationException($"Error: unresolved external function: \"{Name}\".");
+				return External.HandlesScope;
 			}
 		}
 
