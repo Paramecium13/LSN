@@ -1,31 +1,32 @@
-﻿using System;
+﻿using LsnCore.Expressions;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using LsnCore.Expressions;
 
 namespace LsnCore
 {
 	/// <summary>
-	/// A method written in LSN
+	/// A function written in LSN.
 	/// </summary>
-	[Serializable]
-	public class LSN_Method : Method
+	public class LsnFunction : Function
 	{
-		private List<Component> Components;
+		/// <summary>
+		/// This should only be set from within LSNr, where function bodies are parsed.
+		/// </summary>
+		public List<Component> Components;
 
-		private LsnResourceThing Resource;
+		public LsnResourceThing Resource;
 
-		public override bool HandlesScope { get { return false; } }
+		public override bool HandlesScope { get { return true; } }
 
-		public LSN_Method(LsnType type, LsnType returnType, List<Component> components, LsnResourceThing res, 
-			List<Parameter> paramaters = null)
-			:base(type,returnType, paramaters ?? new List<Parameter>() { new Parameter("self", type, null, 0) })
+
+		public LsnFunction(List<Parameter> parameters,LsnType returnType, string name)
+			:base(parameters)
 		{
-			Components = components;
-			Resource = res;
+			ReturnType = returnType;
+			Name = name;
 		}
+
 
 		public override ILsnValue Eval(Dictionary<string, ILsnValue> args, IInterpreter i)
 		{
@@ -52,5 +53,5 @@ namespace LsnCore
 			i.ExitFunctionScope();
 			return i.ReturnValue;
 		}
-	}
+    }
 }

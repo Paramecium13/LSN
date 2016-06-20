@@ -179,7 +179,7 @@ namespace LsnCore
 		public abstract void GiveWeaponTo(ILsnValue id, int amount, ILsnValue target);
 		public abstract void GiveGoldTo(int amount, ILsnValue target);
 
-		public abstract IActor GetActor(LSN_Value id);
+		public abstract IActor GetActor(LsnValue id);
 
 		public ILsnValue Eval(string expression)
 		{

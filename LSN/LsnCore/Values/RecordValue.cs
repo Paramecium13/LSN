@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace LsnCore.Values
 {
 	[Serializable]
-	public class RecordValue : LSN_Value, IHasFieldsValue
+	public class RecordValue : LsnValue, IHasFieldsValue
 	{
 		private RecordType _Type;
 		public override bool BoolValue { get { return true; } }

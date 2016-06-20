@@ -7,7 +7,7 @@ using LsnCore.Types;
 namespace LsnCore.Values
 {
 	[Serializable]
-	public class LSN_List : LSN_Value, ICollectionValue 
+	public class LSN_List : LsnValue, ICollectionValue 
 	{
 		private List<ILsnValue> Values = new List<ILsnValue>();
 

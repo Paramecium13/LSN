@@ -32,10 +32,10 @@ namespace LsnCore
 		/// </summary>
 		private LsnEnvironment()
 		{
-			Functions.Add("Sqrt", LSN_Math.Sqrt);
-			Functions.Add("Sin", LSN_Math.Sin);
-			Functions.Add("Cos", LSN_Math.Cos);
-			Functions.Add("Tan", LSN_Math.Tan);
+			Functions.Add("Sqrt", LsnMath.Sqrt);
+			Functions.Add("Sin", LsnMath.Sin);
+			Functions.Add("Cos", LsnMath.Cos);
+			Functions.Add("Tan", LsnMath.Tan);
 		}
 
 		/// <summary>

@@ -5,21 +5,21 @@ using System.Text;
 namespace LsnCore
 {
 	/// <summary>
-	/// Wraps a .NET reference to an LSN_Object
+	/// Wraps a .NET reference to an LsnObject
 	/// </summary>
 	[Serializable]
-	public class LSN_Reference : LSN_Value
+	public class LsnReference : LsnValue
 	{
-		public readonly LSN_ReferenceValue Value;
+		public readonly LsnReferenceValue Value;
 		public override bool BoolValue { get { return Value?.BoolValue ?? false; } }
 
-		public LSN_Reference(LSN_ReferenceValue value, LsnReferenceType type)
+		public LsnReference(LsnReferenceValue value, LsnReferenceType type)
 		{
 			Value = value;
 			Type = type;
 		}
 
-		public override ILsnValue Clone() => new LSN_Reference(Value, (LsnReferenceType) Type);
+		public override ILsnValue Clone() => new LsnReference(Value, (LsnReferenceType) Type);
 
 	}
 }

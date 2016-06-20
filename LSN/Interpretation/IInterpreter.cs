@@ -51,7 +51,7 @@ namespace LsnCore
 		void ExitScope();
 
 
-		IActor GetActor(LSN_Value id);
+		IActor GetActor(LsnValue id);
 
 
 		//ILSN_Value GetArrayValue(int id, int index);

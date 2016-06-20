@@ -294,7 +294,7 @@ namespace LSNr
 						}
 						fnBody.Add(tokens[i]);
 					}
-					Functions.Add(name, new LSN_Function(paramaters, returnType, name));
+					Functions.Add(name, new LsnFunction(paramaters, returnType, name));
 					FunctionBodies.Add(name, fnBody);
 				}
 				else otherTokens.Add(tokens[i]);

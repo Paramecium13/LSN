@@ -9,7 +9,7 @@ namespace LsnCore.Values
 	/// A readonly collection passed by value.
 	/// </summary>
 	[Serializable]
-	public class VectorInstance : LSN_Value, ICollectionValue
+	public class VectorInstance : LsnValue, ICollectionValue
 	{
 
 		public readonly int Size;

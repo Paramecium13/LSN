@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace LsnCore
 {
-	public static class LSN_Math
+	public static class LsnMath
 	{
 
-		static LSN_Math()
+		static LsnMath()
 		{
 			Sqrt = new BoundedFunction(d =>
 			{

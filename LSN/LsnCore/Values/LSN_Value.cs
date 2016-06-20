@@ -9,7 +9,7 @@ namespace LsnCore
 	/// An object representing an LSN value.
 	/// </summary>
 	[Serializable]
-	public abstract class LSN_Value : Expression, ILsnValue
+	public abstract class LsnValue : Expression, ILsnValue
 	{
 		public abstract bool BoolValue { get; }
 

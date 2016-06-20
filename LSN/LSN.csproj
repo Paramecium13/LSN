@@ -76,11 +76,11 @@
     <Compile Include="LsnCore\Expressions\VariableExpression.cs" />
     <Compile Include="LsnCore\ExternalFunction.cs" />
     <Compile Include="LsnCore\Function.cs" />
-    <Compile Include="LsnCore\LSN_Function.cs" />
+    <Compile Include="LsnCore\LsnFunction.cs" />
     <Compile Include="LsnCore\Values\LSN_List.cs" />
-    <Compile Include="LsnCore\LSN_Math.cs" />
-    <Compile Include="LsnCore\LSN_Method.cs" />
-    <Compile Include="LsnCore\LSN_ReferenceValue.cs" />
+    <Compile Include="LsnCore\LsnMath.cs" />
+    <Compile Include="LsnCore\LsnMethod.cs" />
+    <Compile Include="LsnCore\LsnReferenceValue.cs" />
     <Compile Include="LsnCore\Method.cs" />
     <Compile Include="LsnCore\Expressions\MethodCall.cs" />
     <Compile Include="LsnCore\Statements\AssignmentStatement.cs" />
