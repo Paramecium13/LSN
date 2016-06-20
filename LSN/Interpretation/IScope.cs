@@ -1,11 +1,11 @@
-﻿namespace LSN_Core
+﻿namespace LsnCore
 {
 	public interface IScope<T> where T : IScope<T>
 	{
-		void AddVariable(string name, ILSN_Value val);
-		ILSN_Value GetValue(string name);
+		void AddVariable(string name, ILsnValue val);
+		ILsnValue GetValue(string name);
 		T Pop();
 		T Push();
-		void ReAssignVariable(string name, ILSN_Value val);
+		void ReAssignVariable(string name, ILsnValue val);
 	}
 }

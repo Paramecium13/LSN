@@ -1,6 +1,6 @@
-﻿using LSN_Core;
-using LSN_Core.Expressions;
-using LSN_Core.Statements;
+﻿using LsnCore;
+using LsnCore.Expressions;
+using LsnCore.Statements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ namespace LSNr
 	{
 		public readonly bool Mutable;
 		public string Name;
-		public readonly LSN_Type Type;
+		public readonly LsnType Type;
 
 		public IExpression InitialValue { get; protected set; }
 

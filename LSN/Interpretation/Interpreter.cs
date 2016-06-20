@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace LSN_Core
+namespace LsnCore
 {
 	public abstract class Interpreter : IInterpreter
 	{
@@ -13,10 +13,10 @@ namespace LSN_Core
 		/// </summary>
 		public bool PassVariablesByName { get { return false; } }
 
-		public ILSN_Value ReturnValue { get; set; }
+		public ILsnValue ReturnValue { get; set; }
 		protected Scope Scope = new Scope();
 		protected Stack<Scope> ScopeStack = new Stack<Scope>();
-		protected List<ILSN_Value> LSN_Objects = new List<ILSN_Value>();
+		protected List<ILsnValue> LSN_Objects = new List<ILsnValue>();
 		
 		/// <summary>
 		/// The first 4 bytes at a location store the size of an individual element.
@@ -24,16 +24,16 @@ namespace LSN_Core
 		protected Dictionary<int, IntPtr> Arrays = new Dictionary<int, IntPtr>();
 
 		// Where the current environment is pushed when a new function scope is entered.
-		private Stack<LSN_Environment> EnvStack = new Stack<LSN_Environment>();
+		private Stack<LsnEnvironment> EnvStack = new Stack<LsnEnvironment>();
 
 		// The current environment.
-		private LSN_Environment CurrentEnvironment;
+		private LsnEnvironment CurrentEnvironment;
 
 		/// <summary>
 		/// Run the script.
 		/// </summary>
 		/// <param name="script"></param>
-		public virtual void Run(LSN_Script script)
+		public virtual void Run(LsnScript script)
 		{
 			for(int i = 0; i < script.Components.Count; i++)
 			{
@@ -60,7 +60,7 @@ namespace LSN_Core
 		/// </summary>
 		/// <param name="name">The name of the variable to create.</param>
 		/// <param name="val">The initial value to assign it.</param>
-		public virtual void AddVariable(string name, ILSN_Value val)
+		public virtual void AddVariable(string name, ILsnValue val)
 		{
 			Scope.AddVariable(name, val);			
 		}
@@ -70,7 +70,7 @@ namespace LSN_Core
 		/// </summary>
 		/// <param name="name">The name of the variable.</param>
 		/// <param name="val">The new value to assign it.</param>
-		public virtual void ReAssignVariable(string name, ILSN_Value val)
+		public virtual void ReAssignVariable(string name, ILsnValue val)
 		{
 			Scope.ReAssignVariable(name, val);
 		}
@@ -80,12 +80,12 @@ namespace LSN_Core
 		/// </summary>
 		/// <param name="name">The name of the variable whose value is requested.</param>
 		/// <returns>The value of the variable.</returns>
-		public virtual ILSN_Value GetValue(string name) => Scope.GetValue(name);
+		public virtual ILsnValue GetValue(string name) => Scope.GetValue(name);
 
 		/// <summary>
 		/// Enters a new scope for interpreting a function. Previously defined variables are inaccessable.
 		/// </summary>
-		public virtual void EnterFunctionScope(LSN_Environment env)
+		public virtual void EnterFunctionScope(LsnEnvironment env)
 		{
 			ScopeStack.Push(Scope);
 			Scope = new Scope();
@@ -174,19 +174,19 @@ namespace LSN_Core
 
 		#endregion*/
 
-		public abstract void GiveItemTo(ILSN_Value id, int amount, ILSN_Value target);
-		public abstract void GivArmorTo(ILSN_Value id, int amount, ILSN_Value target);
-		public abstract void GiveWeaponTo(ILSN_Value id, int amount, ILSN_Value target);
-		public abstract void GiveGoldTo(int amount, ILSN_Value target);
+		public abstract void GiveItemTo(ILsnValue id, int amount, ILsnValue target);
+		public abstract void GivArmorTo(ILsnValue id, int amount, ILsnValue target);
+		public abstract void GiveWeaponTo(ILsnValue id, int amount, ILsnValue target);
+		public abstract void GiveGoldTo(int amount, ILsnValue target);
 
 		public abstract IActor GetActor(LSN_Value id);
 
-		public ILSN_Value Eval(string expression)
+		public ILsnValue Eval(string expression)
 		{
 			throw new NotImplementedException();
 		}
 
-		public abstract void Say(string message, ILSN_Value graphic, string title);
+		public abstract void Say(string message, ILsnValue graphic, string title);
 		public abstract int Choice(List<string> choices);
 	}
 }

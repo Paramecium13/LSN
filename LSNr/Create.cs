@@ -1,9 +1,9 @@
-﻿using LSN_Core;
+﻿using LsnCore;
 using Tokens;
 using Tokens.Tokens;
-using LSN_Core.ControlStructures;
-using LSN_Core.Expressions;
-using LSN_Core.Statements;
+using LsnCore.ControlStructures;
+using LsnCore.Expressions;
+using LsnCore.Statements;
 using System;
 using System.Collections.Generic;
 using System.Linq;

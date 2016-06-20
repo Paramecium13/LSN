@@ -1,9 +1,9 @@
-﻿using LSN_Core;
-using LSN_Core.Expressions;
+﻿using LsnCore;
+using LsnCore.Expressions;
 using Tokens;
 using Tokens.Tokens;
-using LSN_Core.Types;
-using LSN_Core.Values;
+using LsnCore.Types;
+using LsnCore.Values;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -318,19 +318,19 @@ namespace LSNr
 			{
 				var val = CurrentTokens[i].Value;
 				if (val.Length > 2) continue;
-				LSN_Core.Operator op = LSN_Core.Operator.Add;
+				LsnCore.Operator op = LsnCore.Operator.Add;
 				if (val == "*")
-					op = LSN_Core.Operator.Multiply;
+					op = LsnCore.Operator.Multiply;
 				else if(val == "/")
-					op = LSN_Core.Operator.Divide;
+					op = LsnCore.Operator.Divide;
 				else if (val == "%")
-					op = LSN_Core.Operator.Mod;
+					op = LsnCore.Operator.Mod;
 
-				if(op != LSN_Core.Operator.Add)
+				if(op != LsnCore.Operator.Add)
 				{
 					IExpression left = GetExpression(CurrentTokens[i - 1]);
 					IExpression right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LSN_Core.Operator, LSN_Type>(op, right.Type);
+					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type);
 
 					if (!left.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
@@ -359,7 +359,7 @@ namespace LSNr
 				{
 					var left = GetExpression(CurrentTokens[i - 1]);
 					var right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LSN_Core.Operator, LSN_Type>(LSN_Core.Operator.Power, right.Type);
+					var key = new Tuple<LsnCore.Operator, LsnType>(LsnCore.Operator.Power, right.Type);
 
 					if (!left.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
@@ -384,15 +384,15 @@ namespace LSNr
 			for (int i = 0; i < CurrentTokens.Count; i++)
 			{
 				var val = CurrentTokens[i].Value;
-				LSN_Core.Operator op = LSN_Core.Operator.Multiply;
-				if (val == "+") op = LSN_Core.Operator.Add;
-				else if (val == "-") op = LSN_Core.Operator.Subtract;
+				LsnCore.Operator op = LsnCore.Operator.Multiply;
+				if (val == "+") op = LsnCore.Operator.Add;
+				else if (val == "-") op = LsnCore.Operator.Subtract;
 
-				if(op != LSN_Core.Operator.Multiply)
+				if(op != LsnCore.Operator.Multiply)
 				{
 					var left = GetExpression(CurrentTokens[i - 1]);
 					var right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LSN_Core.Operator, LSN_Type>(op, right.Type);
+					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type);
 
 					if (!left.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
@@ -418,18 +418,18 @@ namespace LSNr
 			{
 				var val = CurrentTokens[i].Value;
 				if (val.Length > 2) continue;
-				LSN_Core.Operator op = LSN_Core.Operator.Multiply;
-				if (val == "<") op = LSN_Core.Operator.LessThan;
-				else if (val == ">") op = LSN_Core.Operator.GreaterThan;
-				else if (val == "==") op = LSN_Core.Operator.Equals;
-				else if (val == ">=") op = LSN_Core.Operator.GTE;
-				else if (val == "<=") op = LSN_Core.Operator.LTE;
+				LsnCore.Operator op = LsnCore.Operator.Multiply;
+				if (val == "<") op = LsnCore.Operator.LessThan;
+				else if (val == ">") op = LsnCore.Operator.GreaterThan;
+				else if (val == "==") op = LsnCore.Operator.Equals;
+				else if (val == ">=") op = LsnCore.Operator.GTE;
+				else if (val == "<=") op = LsnCore.Operator.LTE;
 
-				if (op != LSN_Core.Operator.Multiply)
+				if (op != LsnCore.Operator.Multiply)
 				{
 					var left = GetExpression(CurrentTokens[i - 1]);
 					var right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LSN_Core.Operator, LSN_Type>(op, right.Type);
+					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type);
 
 					if (!left.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(

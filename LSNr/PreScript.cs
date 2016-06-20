@@ -1,4 +1,4 @@
-﻿using LSN_Core;
+﻿using LsnCore;
 using Tokens;
 using Tokens.Tokens;
 using System;
@@ -75,9 +75,9 @@ namespace LSNr
 		/// Gets the script. Clients must call Reify() and check if this is Valid before calling GetScript().
 		/// </summary>
 		/// <returns></returns>
-		public LSN_Script GetScript()
+		public LsnScript GetScript()
 		{
-			return new LSN_Script(Components);
+			return new LsnScript(Components);
 		}
 
 		/// <summary>

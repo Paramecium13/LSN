@@ -1,0 +1,15 @@
+﻿using LsnCore.Expressions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LsnCore.Expressions
+{
+	[Serializable]
+	public abstract class GetExpression : Expression
+	{
+		
+	}
+}

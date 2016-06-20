@@ -1,4 +1,4 @@
-﻿using LSN_Core;
+﻿using LsnCore;
 
 namespace LSNr
 {

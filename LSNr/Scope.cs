@@ -1,4 +1,4 @@
-﻿using LSN_Core;
+﻿using LsnCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;

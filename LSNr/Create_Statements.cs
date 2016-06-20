@@ -1,9 +1,9 @@
-﻿using LSN_Core;
+﻿using LsnCore;
 using Tokens;
 using Tokens.Tokens;
-using LSN_Core.ControlStructures;
-using LSN_Core.Expressions;
-using LSN_Core.Statements;
+using LsnCore.ControlStructures;
+using LsnCore.Expressions;
+using LsnCore.Statements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +51,7 @@ namespace LSNr
 			ushort nameindex = mut ? (ushort)2 : (ushort)1; // The index of the name.
 			string name = tokens[nameindex].Value;
 			IExpression value = Express(tokens.Skip(nameindex + 2).ToList(), script);
-			LSN_Type type = value.Type;
+			LsnType type = value.Type;
 			var st = new AssignmentStatement(name, value);
 			var v = new Variable(name, mutable, value, st);
 			script.CurrentScope.AddVariable(v);

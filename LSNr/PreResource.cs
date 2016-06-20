@@ -1,5 +1,5 @@
-﻿using LSN_Core;
-using LSN_Core.Types;
+﻿using LsnCore;
+using LsnCore.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,13 +37,13 @@ namespace LSNr
 		private readonly Dictionary<string, string> Subs = new Dictionary<string, string>();
 		private readonly Dictionary<string, string> Strings = new Dictionary<string, string>();
 		private readonly Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
-		private readonly Dictionary<string, LSN_StructType> StructTypes = new Dictionary<string, LSN_StructType>();
+		private readonly Dictionary<string, LsnStructType> StructTypes = new Dictionary<string, LsnStructType>();
 		private readonly Dictionary<string, RecordType> RecordTypes = new Dictionary<string, RecordType>();
 		
 		private readonly Dictionary<string, Function> Functions = new Dictionary<string, Function>();
 		private readonly Dictionary<string, List<IToken>> FunctionBodies = new Dictionary<string, List<IToken>>();
-		private readonly List<LSN_Type> Types = LSN_Type.GetBaseTypes();
-		private readonly List<GenericType> GenericTypes = LSN_Type.GetBaseGenerics();
+		private readonly List<LsnType> Types = LsnType.GetBaseTypes();
+		private readonly List<GenericType> GenericTypes = LsnType.GetBaseGenerics();
 
 		/*private class PreFunction
 		{
@@ -110,7 +110,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public LSN_Type GetType(string name)
+		public LsnType GetType(string name)
 			=> Types.Where(t => t.IsName(name)).FirstOrDefault();
 
 		/// <summary>
@@ -249,7 +249,7 @@ namespace LSNr
 						Valid = false; continue;
 					}
 					// At this point, the current token (i.e. tokens[i].Value) is ')'.
-					LSN_Type returnType = null;
+					LsnType returnType = null;
 					if (tokens[++i].Value == "->")
 					{
 						if(tokens[++i].Value == "(")
@@ -317,22 +317,22 @@ namespace LSNr
 				string name = tokens[i].Value;
 				if(tokens[++i].Value != ":")
 					throw new ApplicationException($"Error: Expected token ':' after parameter name {name} recieved token '{tokens[i].Value}'.");
-                LSN_Type type = this.ParseType(tokens, ++i, out i);
-				ILSN_Value defaultValue = null;
+                LsnType type = this.ParseType(tokens, ++i, out i);
+				ILsnValue defaultValue = null;
 				if (tokens[i].Value == "=")
 				{
 					if (tokens[++i] is StringToken)
 					{
-						if (type != LSN_Type.string_)
+						if (type != LsnType.string_)
 							throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type string to a parameter of type {type.Name}");
 						defaultValue = new StringValue(tokens[i].Value);
 						if (i + 1 < tokens.Count) i++;
 					}
 					else if (tokens[i] is IntToken)
 					{
-						if (type != LSN_Type.int_)
+						if (type != LsnType.int_)
 						{
-							if (type == LSN_Type.double_)
+							if (type == LsnType.double_)
 							{
 								defaultValue = new DoubleValue((tokens[i] as IntToken?)?.IVal ?? 0);
 							}
@@ -344,7 +344,7 @@ namespace LSNr
 					}
 					else if (tokens[i] is FloatToken)
 					{
-						if (type != LSN_Type.double_)
+						if (type != LsnType.double_)
 							throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type double to a parameter of type {type.Name}");
 						defaultValue = new DoubleValue((tokens[i] as FloatToken?)?.DVal ?? 0.0);
 						if(i + 1 < tokens.Count) i++;
@@ -366,7 +366,7 @@ namespace LSNr
 		/// <param name="typeOfType">struct or record.</param>
 		/// <param name="tokens"></param>
 		/// <returns></returns>
-		private Dictionary<string, LSN_Type> ParseFields(string name, string typeOfType, List<IToken> tokens)
+		private Dictionary<string, LsnType> ParseFields(string name, string typeOfType, List<IToken> tokens)
 		{
 			if (tokens.Count < 3) // struct Circle { Radius : double}
 			{
@@ -374,7 +374,7 @@ namespace LSNr
 				Valid = false;
 				return null;
 			}
-			var fields = new Dictionary<string, LSN_Type>();
+			var fields = new Dictionary<string, LsnType>();
 			for (int i = 0; i < tokens.Count; i++)
 			{
 				string fName = tokens[i++].Value; // Get the name of the field, move on to the next token.
@@ -396,7 +396,7 @@ namespace LSNr
 					Console.WriteLine($"Error in {typeOfType} {name}: unexpected end of declaration, expected type.");
 					return null;
 				}
-				LSN_Type type = this.ParseType(tokens, i, out i);
+				LsnType type = this.ParseType(tokens, i, out i);
 				fields.Add(fName, type);
 				if (i + 1 < tokens.Count && tokens[++i].Value == ",") // Check if the definition ends, move on to the next token
 																	  // and check that it is ','.
@@ -416,7 +416,7 @@ namespace LSNr
 		/// <param name="tokens"> The tokens defining the struct.</param>
 		private void MakeStruct(string name, List<IToken> tokens)
 		{
-			Dictionary<string, LSN_Type> fields = null;
+			Dictionary<string, LsnType> fields = null;
 			try
 			{
 				fields = ParseFields(name, "struct", tokens);
@@ -428,7 +428,7 @@ namespace LSNr
 					Console.WriteLine(e.Message);
 			}
 			if (fields == null) return;
-			var structType = new LSN_StructType(name, fields);
+			var structType = new LsnStructType(name, fields);
             StructTypes.Add(name, structType);
 		}
 
@@ -439,7 +439,7 @@ namespace LSNr
 		/// <param name="tokens"> The tokens defining the record.</param>
 		private void MakeRecord(string name, List<IToken> tokens)
 		{
-			Dictionary<string, LSN_Type> fields = null;
+			Dictionary<string, LsnType> fields = null;
 			try
 			{
 				fields = ParseFields(name, "record", tokens);
@@ -456,7 +456,7 @@ namespace LSNr
 		}
 
 
-		public LSN_ResourceThing GetResource()
+		public LsnResourceThing GetResource()
 		{
 			throw new NotImplementedException();
 		}

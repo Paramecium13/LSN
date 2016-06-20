@@ -1,4 +1,4 @@
-﻿namespace LSN_Core
+﻿namespace LsnCore
 {
 	/// <summary>
 	/// Represents a character on the map.

@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LSN_Core
+namespace LsnCore
 {
 	[Serializable]
 	public class Scope : IScope<Scope>
 	{
 		protected Scope Parent;
 
-		protected Dictionary<string, ILSN_Value> Variables = new Dictionary<string, ILSN_Value>();
+		protected Dictionary<string, ILsnValue> Variables = new Dictionary<string, ILsnValue>();
 
 		public Scope() { }
 
@@ -24,20 +24,20 @@ namespace LSN_Core
 		public Scope Push() => new Scope(this);
 		public Scope Pop() => Parent;
 
-		public void AddVariable(string name, ILSN_Value val)
+		public void AddVariable(string name, ILsnValue val)
 		{
 			if (Contains(name))
 				Variables.Add(name, val);
 			else Parent.AddVariable(name, val);
 		}
 
-		public virtual void ReAssignVariable(string name, ILSN_Value val)
+		public virtual void ReAssignVariable(string name, ILsnValue val)
 		{
 			if (Contains(name))
 				Variables[name] = val;
 			else Parent.ReAssignVariable(name, val);
 		}
 
-		public ILSN_Value GetValue(string name) => Variables[name];
+		public ILsnValue GetValue(string name) => Variables[name];
 	}
 }

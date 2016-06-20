@@ -24,7 +24,7 @@ namespace LSNr
 
 		static int Main(string[] args)
 		{
-			var tem = LSN_Core.LSN_Type.int_;
+			var tem = LsnCore.LsnType.int_;
 			if (args.Length == 0 || args[0].ToLower() == "setup") // Set up the workspace.
 			{
 				return SetUp();

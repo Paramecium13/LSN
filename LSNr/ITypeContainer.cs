@@ -1,5 +1,5 @@
-﻿using LSN_Core;
-using LSN_Core.Types;
+﻿using LsnCore;
+using LsnCore.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace LSNr
 {
 	public interface ITypeContainer
 	{
-		LSN_Type GetType(string name);
+		LsnType GetType(string name);
 		bool TypeExists(string name);
 		bool GenericTypeExists(string name);
 		GenericType GetGenericType(string name);
@@ -26,7 +26,7 @@ namespace LSNr
 		/// <param name="startIndex"></param>
 		/// <param name="endIndex"> The index of the token after the last token used in the type.</param>
 		/// <returns></returns>
-		public static LSN_Type ParseType(this ITypeContainer self, List<IToken> tokens, int startIndex, out int endIndex)
+		public static LsnType ParseType(this ITypeContainer self, List<IToken> tokens, int startIndex, out int endIndex)
 		{
 			int i = startIndex;
 			if(self.TypeExists(tokens[i].Value))
@@ -44,7 +44,7 @@ namespace LSNr
 				}
 				++i;
 				GenericType gType = self.GetGenericType(tokens[i].Value);
-				var generics = new List<LSN_Type>();
+				var generics = new List<LsnType>();
 				while(tokens[i].Value != ">")
 				{
 					generics.Add(self.ParseType(tokens, i, out i));
