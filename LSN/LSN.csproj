@@ -60,11 +60,13 @@
     <Compile Include="LsnCore\BoundedFunction.cs" />
     <Compile Include="LsnCore\BoundedMethod.cs" />
     <Compile Include="LsnCore\Component.cs" />
+    <Compile Include="LsnCore\ControlStructures\CaseStructure.cs" />
     <Compile Include="LsnCore\ControlStructures\Choice.cs" />
     <Compile Include="LsnCore\ControlStructures\ChoicesBlockControl.cs" />
     <Compile Include="LsnCore\ControlStructures\ControlStructure.cs" />
     <Compile Include="LsnCore\ControlStructures\ForLoop.cs" />
     <Compile Include="LsnCore\ControlStructures\IfElseControl.cs" />
+    <Compile Include="LsnCore\ControlStructures\MatchStructure.cs" />
     <Compile Include="LsnCore\ControlStructures\WhileLoop.cs" />
     <Compile Include="LsnCore\Expressions\BinaryExpression.cs" />
     <Compile Include="LsnCore\Expressions\CollectionValueAccessExpression.cs" />

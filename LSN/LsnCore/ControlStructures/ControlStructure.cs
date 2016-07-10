@@ -10,7 +10,9 @@ namespace LsnCore.ControlStructures
 	[Serializable]
 	public abstract class ControlStructure : Component
 	{
-		protected virtual InterpretValue Interpret(List<Component> components, IInterpreter i)
+		// ToDo: Add a Components Getter so the components can be optimized.
+
+		protected virtual InterpretValue Interpret(IReadOnlyList<Component> components, IInterpreter i)
 		{
 			for(int j = 0; j < components.Count; j++)
 			{
