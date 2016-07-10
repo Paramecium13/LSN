@@ -78,6 +78,7 @@
     <Compile Include="LsnCore\ExternalFunction.cs" />
     <Compile Include="LsnCore\Function.cs" />
     <Compile Include="LsnCore\LsnFunction.cs" />
+    <Compile Include="LsnCore\Statements\GoToStatement.cs" />
     <Compile Include="LsnCore\Values\LSN_List.cs" />
     <Compile Include="LsnCore\LsnMath.cs" />
     <Compile Include="LsnCore\LsnMethod.cs" />
