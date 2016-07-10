@@ -35,6 +35,11 @@ namespace LsnCore
 		public IExpression Fold() => this;
 		public bool IsReifyTimeConst() => true;
 		public string TranslateUniversal() => Value.ToString();
+
+		public static explicit operator int(IntValue v) => v.Value;
+		public static explicit operator double(IntValue v) => v.Value;
+
+		public static explicit operator DoubleValue(IntValue v) => new DoubleValue(v.Value);
 	}
 
 	/// <summary>
@@ -57,26 +62,29 @@ namespace LsnCore
 		}
 
 		/// <summary>
-		/// 
+		/// Strings are immutable; returns this.
 		/// </summary>
 		/// <returns></returns>
-		public ILsnValue Clone() => new StringValue(Value);
+		public ILsnValue Clone() => this;
 
 		/// <summary>
-		/// 
+		/// Strings are immutable; returns this.
 		/// </summary>
 		/// <returns></returns>
-		public ILsnValue DeepClone()
-		{
+		public ILsnValue DeepClone() => this;
+		/*{
 			char[] c = new char[Value.Length];
 			Value.CopyTo(0, c, 0, 1);
 			return new StringValue(new string(c));
-		}
+		}*/
 
 		public ILsnValue Eval(IInterpreter i) => this;
 		public IExpression Fold() => this;
 		public bool IsReifyTimeConst() => true;
 		public string TranslateUniversal() => Value.ToString();
+
+		public static explicit operator string(StringValue v) => v.Value;
+		public static explicit operator StringValue(string s) => new StringValue(s);
 
 	}
 
@@ -100,7 +108,12 @@ namespace LsnCore
 		public IExpression Fold() => this;
 		public bool IsReifyTimeConst() => true;
 		public string TranslateUniversal() => Value.ToString();
-    }
+
+
+		public static explicit operator double(DoubleValue v) => v.Value;
+
+		public static explicit operator DoubleValue(double v) => new DoubleValue(v);
+	}
 
 	/// <summary>
 	/// 
