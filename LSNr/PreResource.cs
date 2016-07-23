@@ -11,54 +11,35 @@ using Tokens.Tokens;
 
 namespace LSNr
 {
-	public class PreResource : IPreScript, ITypeContainer
+	public class PreResource : BasePreScript, ITypeContainer
 	{
 		internal const string STRN = "Στρ";
 		internal const string SUBN = "SUB";
 
-		public Scope CurrentScope { get; set; }
 
-		private bool _Mutable = false;
-
-		/// <summary>
-		/// Are variables defined in this script mutable?
-		/// </summary>
-		public bool Mutable { get { return _Mutable; } private set { _Mutable = value; } }
-
-		/// <summary>
-		/// Is this script valid (free of errors)?
-		/// </summary>
-		public bool Valid { get; set; } = true;
-
-		private readonly string Source;
-		public string Text;
-		private List<IToken> Tokens;
+		public override Scope CurrentScope { get; set; }
 
 		private readonly Dictionary<string, string> Subs = new Dictionary<string, string>();
+
 		private readonly Dictionary<string, string> Strings = new Dictionary<string, string>();
+
 		private readonly Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
+
 		private readonly Dictionary<string, LsnStructType> StructTypes = new Dictionary<string, LsnStructType>();
+
 		private readonly Dictionary<string, RecordType> RecordTypes = new Dictionary<string, RecordType>();
 		
-		private readonly Dictionary<string, Function> Functions = new Dictionary<string, Function>();
+		private readonly Dictionary<string, Function> MyFunctions = new Dictionary<string, Function>();
+
 		private readonly Dictionary<string, List<IToken>> FunctionBodies = new Dictionary<string, List<IToken>>();
+
 		private readonly List<LsnType> Types = LsnType.GetBaseTypes();
+
 		private readonly List<GenericType> GenericTypes = LsnType.GetBaseGenerics();
 
-		/*private class PreFunction
+		public PreResource(string src) : base(src)
 		{
-			public readonly string Name;
-			public readonly List<Parameter> Parameters;
-			public readonly List<IToken> Tokens;
-
-			public PreFunction(string name, List<Parameter> parameters, List<IToken> tokens)
-			{
-				Name = name; Parameters = parameters; Tokens = tokens;
-			}
-
-
-
-		}*/
+		}
 
 		/// <summary>
 		/// Reifies the source...
@@ -68,34 +49,6 @@ namespace LSNr
 			ProcessDirectives();
 			Tokenize();
         }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public bool FunctionExists(string name)
-			=> Functions.ContainsKey(name) || false /*Includes.Any(i => i.Functions.ContainsKey(name))*/;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public bool FunctionIsIncluded(string name)
-			=> Functions.ContainsKey(name);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public Function GetFunction(string name)
-		{
-			if (FunctionIsIncluded(name))
-				return Functions[name];
-			throw new NotImplementedException();
-		}
 
 		/// <summary>
 		/// 
@@ -143,7 +96,11 @@ namespace LSNr
 		{
 			if (Regex.IsMatch(source, "#include", RegexOptions.IgnoreCase))
 			{
-				//Process #include statements
+				//Process #include directive(s)
+			}
+			if (Regex.IsMatch(source, "#using", RegexOptions.IgnoreCase))
+			{
+				//Process #include directive(s)
 			}
 			if (source.Contains("#mut"))
 			{
@@ -167,11 +124,7 @@ namespace LSNr
 			}
 			return source;
 		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public void Tokenize() { Tokens = Tokenizer.Tokenize(Text); }
+		
 
 		/// <summary>
 		/// Go through the source, parsing structs and records.
@@ -294,8 +247,10 @@ namespace LSNr
 						}
 						fnBody.Add(tokens[i]);
 					}
-					Functions.Add(name, new LsnFunction(paramaters, returnType, name));
+					var fn = new LsnFunction(paramaters, returnType, name);
+					AddFunction(fn);
 					FunctionBodies.Add(name, fnBody);
+					MyFunctions.Add(name,fn);
 				}
 				else otherTokens.Add(tokens[i]);
 				

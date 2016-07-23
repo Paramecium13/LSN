@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LSNr
 {
-	public class PreScript : IPreScript
+	public class PreScript : BasePreScript
 	{
 		internal const string STRN = "Στρ";
 		internal const string SUBN = "SUB";
@@ -18,46 +18,23 @@ namespace LSNr
 
 		private List<Component> Components;
 
-		private bool _Mutable = false;
 
-		/// <summary>
-		/// Are variables defined in this script mutable?
-		/// </summary>
-		public bool Mutable {get { return _Mutable; } private set { _Mutable = value; } }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		private readonly string Source;
-
-
-		public string Text;
 
 		private Dictionary<string, string> Subs = new Dictionary<string, string>();
 		private Dictionary<string, string> Strings = new Dictionary<string, string>();
 		private Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
 
-		private Dictionary<string, Function> Functions = new Dictionary<string, Function>();
-
 		/// <summary>
 		/// The current scope.
 		/// </summary>
-		public Scope CurrentScope { get; set; } = new Scope();
-
-		/// <summary>
-		/// Is this script valid (free of errors)?
-		/// </summary>
-		public bool Valid { get; set; } = true;
-
-		private List<IToken> Tokens;
+		public override Scope CurrentScope { get; set; } = new Scope();
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="src"></param>
-		public PreScript(string src)
+		public PreScript(string src) :base(src)
 		{
-			Source = src;
 			Text = Source;
 		}
 
@@ -119,10 +96,6 @@ namespace LSNr
 			return source;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public void Tokenize() { Tokens = Tokenizer.Tokenize(Text); }
 
 		/// <summary>
 		/// 
@@ -134,31 +107,6 @@ namespace LSNr
 			Components = Parser.Consolidate(parser.Components);
 			//CurrentScope.Pop(Components);
 		}
-
-		/// <summary>
-		/// Does a function with the provided name exist.
-		/// </summary>
-		/// <param name="name"> The name to check.</param>
-		/// <returns></returns>
-		public bool FunctionExists(string name) => Functions.ContainsKey(name);
-
-		/// <summary>
-		/// Get the function with the given name. WARNING: The function may or may not be included in the script.
-		/// This can be determined using the 'FuncionIsIncluded(string name)' method. If it is not included, function calls
-		/// to it must be constructed using its name, otherwise they will end up including it in this script.
-		/// </summary>
-		/// <param name="name">The name of the function to get.</param>
-		/// <returns></returns>
-		public Function GetFunction(string name) => Functions[name];
-
-		/// <summary>
-		/// Is the function included (#include) in this script?
-		/// </summary>
-		/// <param name="name">The name of the function.</param>
-		/// <returns></returns>
-		public bool FunctionIsIncluded(string name)
-		{
-			throw new NotImplementedException();
-		}
+		
 	}
 }

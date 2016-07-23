@@ -12,13 +12,13 @@ namespace LSNr
 {
 	public class Parser
 	{
-		private List<IToken> Tokens;
+		private IReadOnlyList<IToken> Tokens;
 		private int i = 0;
 		private List<IToken> TempTokens = new List<IToken>();
 		internal List<Component> Components = new List<Component>();
 		private IPreScript Script;
 
-		public Parser(List<IToken> tokens, IPreScript script)
+		public Parser(IReadOnlyList<IToken> tokens, IPreScript script)
 		{
 			Tokens = tokens;
 			Script = script;
