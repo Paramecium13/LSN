@@ -55,7 +55,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public bool TypeExists(string name)
+		public override bool TypeExists(string name)
 			=> Types.Any(t => t.IsName(name));
 
 		/// <summary>
@@ -63,7 +63,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public LsnType GetType(string name)
+		public override LsnType GetType(string name)
 			=> Types.Where(t => t.IsName(name)).FirstOrDefault();
 
 		/// <summary>
@@ -71,7 +71,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public bool GenericTypeExists(string name)
+		public override bool GenericTypeExists(string name)
 			=> GenericTypes.Any(g => g.Name == name);
 
 		/// <summary>
@@ -79,7 +79,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public GenericType GetGenericType(string name)
+		public override GenericType GetGenericType(string name)
 			=> GenericTypes.Where(t => t.Name == name).FirstOrDefault();
 
 		/// <summary>

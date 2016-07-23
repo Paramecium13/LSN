@@ -14,7 +14,7 @@ namespace LSNr
 {
 	public class ExpressionBuilder
 	{
-		const string SUB = "Σ";
+		const string SUB = "Ƨ";
 
 		private Dictionary<IToken, IExpression> Substitutions = new Dictionary<IToken, IExpression>();
 		private readonly List<IToken> InitialTokens;
@@ -71,11 +71,11 @@ namespace LSNr
 			{
 				var val = InitialTokens[i].Value;
 				#region .
-				if (val == ".")
+				if (val == ".") //Member Access
 				{
 					if (i == 0)
 						throw new ApplicationException("An expresion cannot start with \'.\'.");
-					if (i + 1 > +InitialTokens.Count)
+					if (i + 1 > InitialTokens.Count)
 						throw new ApplicationException("An expresion cannot end with \'.\'.");
 					IExpression expr;
 
@@ -156,7 +156,7 @@ namespace LSNr
 					i = nextIndex -1; // In the next iteration, i == nextIndex.
 				}
 				#endregion
-				else if (Script.CurrentScope.VariableExists(val))
+				else if (Script.CurrentScope.VariableExists(val)) // Variable
 				{
 					var v = Script.CurrentScope.GetVariable(val);
 					IExpression expr;
@@ -217,6 +217,47 @@ namespace LSNr
 					var name = SUB + SubCount++;
 					Substitutions.Add(new Identifier(name), LSN_BoolValue.GetBoolValue(bool.Parse(val)));
 					CurrentTokens.Add(new Identifier(name));
+				}
+				else if(val == "new") // new
+				{
+					if (i + 1 > InitialTokens.Count)
+						throw new ApplicationException("An expresion cannot end with \'new\'.");
+					IExpression expr = null;
+					int j = i;
+					string typeName = InitialTokens[++j].Value; // j points to the type name;
+					if (!Script.TypeExists(typeName))
+						throw new ApplicationException($"The type \'{typeName}\' could not be found. Are You missing a \'#using\' or \'#include\'?");
+
+					LsnType type = Script.GetType(typeName);
+					var structType = type as LsnStructType;
+					var recordType = type as RecordType;
+
+					if (structType == null && recordType == null)
+						throw new ApplicationException($"Cannot use \'new\' with type \'{typeName}\'.");
+					if (j + 2 >= InitialTokens.Count)
+						throw new ApplicationException("No parenthesis.");
+					var paramTokens = new List<IToken>();
+					/*int lCount = 0;
+					int rCount = 0;*/
+					int pCount = 0;
+					do
+					{
+						if (++j >= InitialTokens.Count)
+							throw new ApplicationException("Mismatched parenthesis...");
+						var t = InitialTokens[j];
+						var v = t.Value;
+						if (v == "(") ++pCount; // ++lCount;
+						if (v == ")") --pCount; // ++rCount
+						paramTokens.Add(t);
+					} while (/*lCount != rCount*/pCount != 0);
+					var parameters = Create.CreateParamList(paramTokens, Script);
+					if (structType != null)
+						expr = new StructConstructor(structType, parameters.ToDictionary());
+					else // recordType != null
+						expr = new RecordConstructor(recordType, parameters.ToDictionary());
+					var sub = SUB + SubCount++;
+					Substitutions.Add(new Identifier(sub), expr);
+					CurrentTokens.Add(new Identifier(sub));
 				}
 				else
 				{

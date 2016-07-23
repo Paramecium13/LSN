@@ -9,14 +9,14 @@ namespace LsnCore
 	[Serializable]
 	public struct StructValue : ILsnValue, IHasFieldsValue
 	{
-		private readonly Dictionary<string, ILsnValue> Members;
+		private readonly IDictionary<string, ILsnValue> Members;
 
 		private readonly LsnStructType _Type;
 		public LsnType Type => _Type;
 
 		public bool BoolValue { get{ return true; } }
 
-		public StructValue(LsnStructType type, Dictionary<string, ILsnValue> values)
+		public StructValue(LsnStructType type, IDictionary<string, ILsnValue> values)
 		{
 			_Type = type;
 			Members = values ?? new Dictionary<string, ILsnValue>();

@@ -140,65 +140,68 @@ namespace LSNr
 			throw new NotImplementedException();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="tokens"> The tokens, without the function name and containing parenthesis</param>
-		/// <param name="fn"></param>
-		/// <returns></returns>
-		public static FunctionCall CreateFunctionCall(List<IToken> tokens, Function fn, IPreScript script)
+		public static IList<Tuple<string,IExpression>> CreateParamList(List<IToken> tokens, IPreScript script)
 		{
 			var ls = new List<Tuple<string, IExpression>>();
 			var parameters = new List<List<IToken>>();
 			parameters.Add(new List<IToken>());
 			int paramIndex = 0;
-
-			// Split the list of tokens into multiple lists by commas.
-			for (int i = 0; i < tokens.Count; i++)
+			if (tokens.Count(t => t.Value == ",") > fn.Parameters.Count)
 			{
-				if(tokens[i].Value == ",")
+				int lPCount = 0;
+				int rPCount = 0;
+				int lBCount = 0;
+				int rBCount = 0;
+				for (int i = 1; i < tokens.Count - 1; i++)
 				{
-					parameters.Add(new List<IToken>());
-					++paramIndex;
-					continue;
+					if (tokens[i].Value == ",")
+					{
+						if (lPCount == rPCount && lBCount == rBCount)
+						{ // This is not inside a nested function or index thing.
+							parameters.Add(new List<IToken>());
+							++paramIndex;
+						}
+						else // This is inside a nested function or index thing.
+							parameters[paramIndex].Add(tokens[i]);
+					}
+					else if (tokens[i].Value == "(")
+					{
+						++lPCount;
+						parameters[paramIndex].Add(tokens[i]);
+					}
+					else if (tokens[i].Value == ")")
+					{
+						++rPCount;
+						parameters[paramIndex].Add(tokens[i]);
+					}
+					else if (tokens[i].Value == "[")
+					{
+						++lBCount;
+						parameters[paramIndex].Add(tokens[i]);
+					}
+					else if (tokens[i].Value == "]")
+					{
+						++rBCount;
+						parameters[paramIndex].Add(tokens[i]);
+					}
+					else
+						parameters[paramIndex].Add(tokens[i]);
 				}
-				parameters[paramIndex].Add(tokens[i]);
 			}
-
-			// Parse the parameters
-			for(int i = 0; i < parameters.Count; i++)
+			else
 			{
-				var p = parameters[i];
-				if(p.Count > 2 && p[1].Value == "=") // It's named
+				// Split the list of tokens into multiple lists by commas.
+				for (int i = 1; i < tokens.Count - 1; i++) // Takes into account starting and closing parenthesis.
+														   // (int i = 0; i < tokens.Count; i++) [old]
 				{
-					ls.Add(new Tuple<string, IExpression>(p[0].Value , Express(p.Skip(2).ToList(), script) ) );
+					if (tokens[i].Value == ",")
+					{
+						parameters.Add(new List<IToken>());
+						++paramIndex;
+					}
+					else
+						parameters[paramIndex].Add(tokens[i]);
 				}
-				else
-				{
-					ls.Add(new Tuple<string, IExpression>("", Express(p, script) ) );
-				}
-			}
-			return fn.CreateCall(ls);
-		}
-
-
-		public static MethodCall CreateMethodCall(List<IToken> tokens, Method method, IExpression obj, IPreScript script)
-		{
-			var ls = new List<Tuple<string, IExpression>>();
-			var parameters = new List<List<IToken>>();
-			parameters.Add(new List<IToken>());
-			int paramIndex = 0;
-
-			// Split the list of tokens into multiple lists by commas.
-			for (int i = 0; i < tokens.Count; i++)
-			{
-				if (tokens[i].Value == ",")
-				{
-					parameters.Add(new List<IToken>());
-					++paramIndex;
-					continue;
-				}
-				parameters[paramIndex].Add(tokens[i]);
 			}
 
 			// Parse the parameters
@@ -214,6 +217,24 @@ namespace LSNr
 					ls.Add(new Tuple<string, IExpression>("", Express(p, script)));
 				}
 			}
+			return ls;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="tokens"> The tokens, without the function name and containing parenthesis</param>
+		/// <param name="fn"></param>
+		/// <returns></returns>
+		public static FunctionCall CreateFunctionCall(List<IToken> tokens, Function fn, IPreScript script)
+		{
+			var ls = CreateParamList(tokens, script);
+			return fn.CreateCall(ls);
+		}
+
+		public static MethodCall CreateMethodCall(List<IToken> tokens, Method method, IExpression obj, IPreScript script)
+		{
+			var ls = CreateParamList(tokens, script);
 			return method.CreateMethodCall(ls,obj/*script.TypeIsIncluded(obj.Type)*/);
 		}
 		

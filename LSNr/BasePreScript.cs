@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
+using LsnCore.Types;
 using Tokens;
 
 namespace LSNr
@@ -115,10 +116,15 @@ namespace LSNr
 			Functions.Add(fn.Name, fn);
 		}
 
+
 		#endregion
 
 		#region Types
 
+		public abstract LsnType GetType(string name);
+		public abstract bool TypeExists(string name);
+		public abstract bool GenericTypeExists(string name);
+		public abstract GenericType GetGenericType(string name);
 		#endregion
 	}
 }
