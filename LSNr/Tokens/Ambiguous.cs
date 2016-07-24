@@ -17,7 +17,7 @@ namespace Tokens.Tokens
 
 		public bool Equals(IToken other)
 		{
-			throw new NotImplementedException();
+			return Value == other.Value;
 		}
 	}
 }

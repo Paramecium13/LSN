@@ -208,7 +208,7 @@ namespace LSNr
 			for (int i = 0; i < parameters.Count; i++)
 			{
 				var p = parameters[i];
-				if (p.Count > 2 && p[1].Value == "=") // It's named
+				if (p.Count > 2 && p[1].Value == ":") // It's named
 				{
 					ls.Add(new Tuple<string, IExpression>(p[0].Value, Express(p.Skip(2).ToList(), script)));
 				}

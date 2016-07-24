@@ -256,6 +256,7 @@ namespace LSNr
 						expr = new StructConstructor(structType, parameters.ToDictionary());
 					else // recordType != null
 						expr = new RecordConstructor(recordType, parameters.ToDictionary());
+					i = j;
 					var sub = SUB + SubCount++;
 					Substitutions.Add(new Identifier(sub), expr);
 					CurrentTokens.Add(new Identifier(sub));
@@ -479,7 +480,7 @@ namespace LSNr
 					var opr = left.Type.Operators[key];
 					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2);
 					var name = SUB + SubCount++;
-					newTokens.RemoveAt(newTokens.Count - 1);
+					if(newTokens.Count > 0) newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
 					newTokens.Add(new Identifier(name));
 					i++; // This skips to the token after the right hand side of this expression.
