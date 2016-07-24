@@ -45,5 +45,10 @@ namespace LsnCore.ControlStructures
 			i.ExitScope();
 			return InterpretValue.Base;
 		}
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (Condition.Equals(oldExpr)) Condition = newExpr;
+		}
 	}
 }

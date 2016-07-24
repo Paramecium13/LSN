@@ -2,7 +2,7 @@
 
 namespace LsnCore.Expressions
 {
-	public interface IExpression
+	public interface IExpression : IExpressionContainer, IEquatable<IExpression>
 	{
 		LsnType Type { get; }
 

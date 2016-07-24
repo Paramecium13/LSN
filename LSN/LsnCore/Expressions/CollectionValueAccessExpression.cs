@@ -27,6 +27,13 @@ namespace LsnCore.Expressions
 			Collection = collection; Index = index; Type = type;
 		}
 
+		public override bool Equals(IExpression other)
+		{
+			var e = other as CollectionValueAccessExpression;
+			if (e == null) return false;
+			return e.Collection == Collection && e.Index == Index;
+		}
+
 		public override ILsnValue Eval(IInterpreter i)
 		{
 			throw new NotImplementedException();
@@ -58,5 +65,11 @@ namespace LsnCore.Expressions
 
 		public override bool IsReifyTimeConst()
 			=> Collection.IsReifyTimeConst() && Index.IsReifyTimeConst();
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (Collection.Equals(oldExpr)) Collection = newExpr;
+			if (Index.Equals( oldExpr)) Index = newExpr;
+		}
 	}
 }

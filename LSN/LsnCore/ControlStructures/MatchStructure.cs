@@ -57,9 +57,6 @@ namespace LsnCore.ControlStructures
 			return InterpretValue.Base;
 		}
 
-		public override void Replace(IExpression oldExpr, IExpression newExpr)
-		{
-			throw new NotImplementedException();
-		}
+		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 	}
 }
