@@ -11,7 +11,7 @@ namespace LsnCore.ControlStructures
 	public class Choice : ControlStructure
 	{
 		private List<Component> _Components;
-		public IReadOnlyList<Component> Components { get { return _Components; } set { _Components = value; } }
+		public IReadOnlyList<Component> Components { get { return _Components; } set { _Components = value.ToList(); } }
 		public readonly IExpression Title;
 		private readonly IExpression Condition;
 

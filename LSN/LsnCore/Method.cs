@@ -22,7 +22,7 @@ namespace LsnCore
 		}
 		
 
-		public MethodCall CreateMethodCall(List<Tuple<string, IExpression>> args, IExpression expression, bool included = false)
+		public MethodCall CreateMethodCall(IList<Tuple<string, IExpression>> args, IExpression expression, bool included = false)
 		{
 			var dict = new Dictionary<string, IExpression>();
 			string name;

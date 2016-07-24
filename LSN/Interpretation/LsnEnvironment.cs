@@ -27,6 +27,9 @@ namespace LsnCore
 		private Dictionary<string, LsnStructType> _StructTypes = new Dictionary<string, LsnStructType>();
 		public Dictionary<string, LsnStructType> StructTypes { get { return _StructTypes; } set { _StructTypes = value; } }
 
+		private Dictionary<string, RecordType> _RecordTypes = new Dictionary<string, RecordType>();
+		public Dictionary<string, RecordType> RecordTypes { get { return _RecordTypes; } set { _RecordTypes = value; } }
+		
 		/// <summary>
 		/// Sets up the default environment.
 		/// </summary>
@@ -47,6 +50,7 @@ namespace LsnCore
 		{
 			foreach (var pair in script.Functions) Functions.Add(pair.Key, pair.Value);
 			foreach (var pair in script.StructTypes) StructTypes.Add(pair.Key, pair.Value);
+			foreach (var pair in script.RecordTypes) RecordTypes.Add(pair.Key, pair.Value);
 			foreach (var rs in script.Usings) LoadResource(rs + ".dat"); 
 		}
 
@@ -56,7 +60,11 @@ namespace LsnCore
 		/// <param name="path"></param>
 		private void LoadResource(string path)
 		{
-			var res = (LsnResourceThing)(new BinaryFormatter().Deserialize(new FileStream(path, FileMode.Open)));
+			LsnResourceThing res;
+			using (var fs = new FileStream(path, FileMode.Open))
+			{
+				res = (LsnResourceThing)(new BinaryFormatter().Deserialize(fs));
+			}
 			foreach(var pair in res.Functions) Functions.Add(pair.Key, pair.Value);
 			foreach(var pair in res.StructTypes) StructTypes.Add(pair.Key, pair.Value);
 		}

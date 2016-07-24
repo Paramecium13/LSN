@@ -140,13 +140,13 @@ namespace LSNr
 			throw new NotImplementedException();
 		}
 
-		public static IList<Tuple<string,IExpression>> CreateParamList(List<IToken> tokens, IPreScript script)
+		public static IList<Tuple<string,IExpression>> CreateParamList(List<IToken> tokens, int paramCount, IPreScript script)
 		{
 			var ls = new List<Tuple<string, IExpression>>();
 			var parameters = new List<List<IToken>>();
 			parameters.Add(new List<IToken>());
 			int paramIndex = 0;
-			if (tokens.Count(t => t.Value == ",") > fn.Parameters.Count)
+			if (tokens.Count(t => t.Value == ",") > paramCount)
 			{
 				int lPCount = 0;
 				int rPCount = 0;
@@ -228,13 +228,13 @@ namespace LSNr
 		/// <returns></returns>
 		public static FunctionCall CreateFunctionCall(List<IToken> tokens, Function fn, IPreScript script)
 		{
-			var ls = CreateParamList(tokens, script);
+			var ls = CreateParamList(tokens, fn.Parameters.Count, script);
 			return fn.CreateCall(ls);
 		}
 
 		public static MethodCall CreateMethodCall(List<IToken> tokens, Method method, IExpression obj, IPreScript script)
 		{
-			var ls = CreateParamList(tokens, script);
+			var ls = CreateParamList(tokens, method.Parameters.Count, script);
 			return method.CreateMethodCall(ls,obj/*script.TypeIsIncluded(obj.Type)*/);
 		}
 		

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
 using Tokens;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace LSNr
 {
@@ -58,7 +60,17 @@ namespace LSNr
 
 		}
 
-		protected void Use(LsnResourceThing resource)
+		protected LsnResourceThing Load(string path)
+		{
+			LsnResourceThing res;
+			using (var fs = new FileStream(path, FileMode.Open))
+			{
+				res = (LsnResourceThing)(new BinaryFormatter().Deserialize(fs));
+			}
+			return res;
+		}
+
+		protected void Use(LsnResourceThing resource, string path)
 		{
 			foreach (var pair in resource.Functions)
 			{
@@ -66,7 +78,7 @@ namespace LSNr
 				LoadedExternalFunctions.Add(pair.Key, pair.Value);
 			}
 			// ToDo: Add types.
-
+			Usings.Add(path);
 		}		
 
 		#region Functions
@@ -86,6 +98,7 @@ namespace LSNr
 		/// </summary>
 		private Dictionary<string, Function> LoadedExternalFunctions = new Dictionary<string, Function>();
 
+		protected List<string> Usings = new List<string>();
 
 		public bool FunctionExists(string name)
 			=> Functions.ContainsKey(name) || LoadedExternalFunctions.ContainsKey(name);

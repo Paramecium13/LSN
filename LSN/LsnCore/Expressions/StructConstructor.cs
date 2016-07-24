@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Expressions
 {
+	[Serializable]
 	public class StructConstructor : IExpression
 	{
 

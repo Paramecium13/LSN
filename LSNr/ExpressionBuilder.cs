@@ -250,7 +250,7 @@ namespace LSNr
 						if (v == ")") --pCount; // ++rCount
 						paramTokens.Add(t);
 					} while (/*lCount != rCount*/pCount != 0);
-					var parameters = Create.CreateParamList(paramTokens, Script);
+					var parameters = Create.CreateParamList(paramTokens, -1, Script);
 					if (structType != null)
 						expr = new StructConstructor(structType, parameters.ToDictionary());
 					else // recordType != null

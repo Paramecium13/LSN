@@ -61,7 +61,7 @@ namespace LsnCore
 		}
 
 
-		public virtual FunctionCall CreateCall(List<Tuple<string,IExpression>> args, bool included = false)
+		public virtual FunctionCall CreateCall(IList<Tuple<string,IExpression>> args, bool included = false)
 		{
 			var dict = new Dictionary<string, IExpression>();
 			string name;

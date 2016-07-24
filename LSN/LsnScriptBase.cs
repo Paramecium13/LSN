@@ -19,6 +19,9 @@ namespace LsnCore
 		private Dictionary<string, LsnStructType> _StructTypes = new Dictionary<string, LsnStructType>();
 		public Dictionary<string, LsnStructType> StructTypes { get { return _StructTypes; } set { _StructTypes = value; } }
 
+		private Dictionary<string, RecordType> _RecordTypes = new Dictionary<string, RecordType>();
+		public Dictionary<string, RecordType> RecordTypes { get { return _RecordTypes; } set { _RecordTypes = value; } }
+
 		private List<string> _Usings = new List<string>();
 		/// <summary>
 		/// The resources this script uses.

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Expressions
 {
+	[Serializable]
 	public class RecordConstructor : IExpression
 	{
 		private readonly IDictionary<string, IExpression> Args;

@@ -25,7 +25,6 @@ namespace LSNr
 
 		static int Main(string[] args)
 		{
-			var tem = LsnCore.LsnType.int_;
 			if (args.Length == 0 || args[0].ToLower() == "setup") // Set up the workspace.
 			{
 				return SetUp();
@@ -50,10 +49,10 @@ namespace LSNr
 			string dest = args.Where(a => Regex.IsMatch(a, @"^\s*destination\s*=.+$", RegexOptions.IgnoreCase))
 				.FirstOrDefault();
 			if (dest != null)
-				destination = Regex.Match(dest, @"^\s*destination\s*=\s*(.+)\s*$", RegexOptions.IgnoreCase).Captures[0].ToString();
+				destination = dest;//Regex.Match(dest, @"^\s*destination\s*=\s*(.+)\s*$", RegexOptions.IgnoreCase).Captures[0].ToString();
 
 			// The argument that specifies
-			string t = args.Where(a => Regex.IsMatch(a,@"^\s*type\s*=\s*\w+\s*$",RegexOptions.IgnoreCase)).FirstOrDefault();
+			string t = args.Where(a => Regex.IsMatch(a,@"^\s*type\s*=\s*(\w+)\s*$",RegexOptions.IgnoreCase)).FirstOrDefault();
 			if (t != null)
 			{ // The type of file is defined.
 				string type = Regex.Match(t, @"^\s*type\s*=\s*(\w+)\s*$", RegexOptions.IgnoreCase).Captures[0].ToString().ToLower();
@@ -78,8 +77,10 @@ namespace LSNr
 				return ERROR_IN_SOURCE;
 			}
 			var res = sc.GetScript();
-			var x = new BinaryFormatter();
-			x.Serialize(new FileStream(args[0].Replace(".lsn", ".dat"), FileMode.Create), res);
+			using (var fs = new FileStream(destination, FileMode.Create))
+			{
+				new BinaryFormatter().Serialize(fs, res);
+			}
 			return 0;
 		}
 
@@ -87,7 +88,20 @@ namespace LSNr
 
 		private static int MakeResource(string src, string destination, string[] args)
 		{
-			return -10;
+			var rs = new PreResource(src);
+			rs.Reify();
+			if(! rs.Valid)
+			{
+				Console.WriteLine("Invalid source.");
+				// Write error messages, if not already done. (Errors should be printed during reification)
+				return ERROR_IN_SOURCE;
+			}
+			var res = rs.GetResource();
+			using (var fs = new FileStream(destination, FileMode.Create))
+			{
+				new BinaryFormatter().Serialize(fs, res);
+			}
+			return 0;
 		}
 
 

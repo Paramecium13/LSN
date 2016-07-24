@@ -13,9 +13,9 @@ namespace LsnCore.Values
 		private RecordType _Type;
 		public override bool BoolValue { get { return true; } }
 
-		private Dictionary<string, ILsnValue> Values = new Dictionary<string, ILsnValue>();
+		private IDictionary<string, ILsnValue> Values = new Dictionary<string, ILsnValue>();
 
-		public RecordValue(RecordType type, Dictionary<string,ILsnValue> values)
+		public RecordValue(RecordType type, IDictionary<string,ILsnValue> values)
 		{
 			Type = type; _Type = type;
 			// Assume 'values' has already been type checked.

@@ -87,6 +87,7 @@
     <Compile Include="IToken.cs" />
     <Compile Include="ITypeContainer.cs" />
     <Compile Include="Parser.cs" />
+    <Compile Include="PreFunction.cs" />
     <Compile Include="Preprocessor.cs" />
     <Compile Include="PreResource.cs" />
     <Compile Include="PreScript.cs" />

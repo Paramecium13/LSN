@@ -45,7 +45,8 @@ namespace LSNr
 			}
 			return -1;
 		}
-		
 
+		public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IList<Tuple<TKey, TValue>> ls)
+			=> ls.ToDictionary(x => x.Item1, x => x.Item2);
 	}
 }

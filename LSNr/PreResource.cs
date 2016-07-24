@@ -11,7 +11,7 @@ using Tokens.Tokens;
 
 namespace LSNr
 {
-	public class PreResource : BasePreScript, ITypeContainer
+	public class PreResource : BasePreScript
 	{
 		internal const string STRN = "Στρ";
 		internal const string SUBN = "SUB";
@@ -29,9 +29,12 @@ namespace LSNr
 
 		private readonly Dictionary<string, RecordType> RecordTypes = new Dictionary<string, RecordType>();
 		
-		private readonly Dictionary<string, Function> MyFunctions = new Dictionary<string, Function>();
+
+
+		private readonly Dictionary<string, LsnFunction> MyFunctions = new Dictionary<string, LsnFunction>();
 
 		private readonly Dictionary<string, List<IToken>> FunctionBodies = new Dictionary<string, List<IToken>>();
+
 
 		private readonly List<LsnType> Types = LsnType.GetBaseTypes();
 
@@ -48,6 +51,8 @@ namespace LSNr
 		{
 			ProcessDirectives();
 			Tokenize();
+			PreParseFunctions(ParseStructsAndRecords());
+			ParseFunctions();
         }
 
 		/// <summary>
@@ -100,7 +105,12 @@ namespace LSNr
 			}
 			if (Regex.IsMatch(source, "#using", RegexOptions.IgnoreCase))
 			{
-				//Process #include directive(s)
+				//Process #using directive(s)
+				foreach (var match in Regex.Matches(source, "#using\\s+\"(.+)\""))
+				{
+					var res = Load(match.ToString());
+					Use(res, match.ToString());
+				}
 			}
 			if (source.Contains("#mut"))
 			{
@@ -130,7 +140,7 @@ namespace LSNr
 		/// Go through the source, parsing structs and records.
 		/// </summary>
 		/// <returns> Tokens that are not part of a struct or record.</returns>
-		private List<IToken> ParsestructsAndRecords()
+		private List<IToken> ParseStructsAndRecords()
 		{
 			var otherTokens = new List<IToken>();
 			for(int i = 0; i < Tokens.Count; i++)
@@ -174,7 +184,7 @@ namespace LSNr
 		//		* Store the name and body in a Dictionary<string,List<IToken>> named FunctionBodies.
 		//	* Go through FunctionBodies and parse the tokens.
 		//		* Put the resulting List<Component> in the LSN_Function of the same name stored in Functions.
-		private List<IToken> ParseFunctions(List<IToken> tokens)
+		private List<IToken> PreParseFunctions(List<IToken> tokens)
 		{
 			var otherTokens = new List<IToken>();
 			for (int i = 0; i < tokens.Count; i++)
@@ -257,6 +267,20 @@ namespace LSNr
 			}
 			return otherTokens;
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		private void ParseFunctions()
+		{
+			foreach(var pair in MyFunctions)
+			{
+				var parser = new Parser(FunctionBodies[pair.Key], new PreFunction(this));
+				parser.Parse();
+				pair.Value.Components = Parser.Consolidate(parser.Components);
+			}
+		}
+		
 
 		/// <summary>
 		/// 
@@ -385,6 +409,7 @@ namespace LSNr
 			if (fields == null) return;
 			var structType = new LsnStructType(name, fields);
             StructTypes.Add(name, structType);
+			Types.Add(structType);
 		}
 
 		/// <summary>
@@ -408,12 +433,18 @@ namespace LSNr
 			if (fields == null) return;
 			var recordType = new RecordType(name, fields);
 			RecordTypes.Add(name, recordType);
+			Types.Add(recordType);
 		}
 
 
 		public LsnResourceThing GetResource()
 		{
-			throw new NotImplementedException();
+			var resource = new LsnResourceThing();
+			resource.Functions = Functions;
+			resource.RecordTypes = RecordTypes;
+			resource.StructTypes = StructTypes;
+			resource.Usings = Usings;
+			return resource;
 		}
 	}
 }
