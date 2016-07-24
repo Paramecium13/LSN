@@ -10,6 +10,7 @@ namespace LsnCore.Expressions
 	/// <summary>
 	/// Access a value in a collection.
 	/// </summary>
+	[Serializable]
 	public class CollectionValueAccessExpression : Expression
 	{
 		private IExpression Collection;

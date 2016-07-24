@@ -59,7 +59,7 @@ namespace LSNr
 			// Optimize contained variables...
 			foreach(var variable in Variables)
 			{
-				if (!variable.Value.Used) components.Remove(variable.Value.Assignment);
+				if (!variable.Value.Used && variable.Value.Assignment != null) components.Remove(variable.Value.Assignment);
 			}
 			return Parent;
 		}

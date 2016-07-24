@@ -88,8 +88,7 @@ namespace LSNr
 				script.Valid = false;
 				return null;
 			}
-			var re = new ReassignmentStatement(v.Name, expr);
-			throw new NotImplementedException();
+			return new ReassignmentStatement(v.Name, expr);
 		}
 
 		/// <summary>

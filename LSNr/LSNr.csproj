@@ -107,6 +107,7 @@
     <Compile Include="Tokens\SubToken.cs" />
     <Compile Include="Tokens\SyntaxSymbol.cs" />
     <Compile Include="Variable.cs" />
+    <Compile Include="VariableTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

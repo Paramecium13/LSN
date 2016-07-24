@@ -12,11 +12,12 @@ namespace LsnCore
 
 		public override bool HandlesScope { get { return false; } }
 
-		public BoundedFunction(Func<Dictionary<string, ILsnValue>, ILsnValue> b, List<Parameter> parameters, LsnType returnType)
+		public BoundedFunction(Func<Dictionary<string, ILsnValue>, ILsnValue> b, List<Parameter> parameters, LsnType returnType, string name)
 			:base(parameters)
 		{
 			Bound = b;
 			ReturnType = returnType;
+			Name = name;
 		}
 
 		public override ILsnValue Eval(Dictionary<string, ILsnValue> args, IInterpreter i)

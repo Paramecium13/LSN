@@ -8,6 +8,7 @@ namespace LsnCore
 	/// <summary>
 	/// A function written in LSN.
 	/// </summary>
+	[Serializable]
 	public class LsnFunction : Function
 	{
 		/// <summary>

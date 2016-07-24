@@ -9,6 +9,7 @@ namespace LsnCore.ControlStructures
 	/// <summary>
 	/// 
 	/// </summary>
+	[Serializable]
 	public class MatchStructure : ControlStructure
 	{
 		private string VariableName;

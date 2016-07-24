@@ -12,18 +12,32 @@ namespace LSNr
 	public class Variable
 	{
 		public readonly bool Mutable;
-		public string Name;
+		public readonly string Name;
 		public readonly LsnType Type;
+		public readonly int Index;
+		private IExpression AccessExpression;
 
-		public IExpression InitialValue { get; protected set; }
+		public IExpression InitialValue { get; private set; }
 
-		public List<IExpression> SubsequentValues { get; private set; } = new List<IExpression>();
 
-		public List<IExpression> Users { get; set; } = new List<IExpression>();
+		private List<IExpression> _SubsequentValues = new List<IExpression>();
+
+		public IReadOnlyList<IExpression> SubsequentValues => _SubsequentValues;
+
+
+		private List<IExpression> _Users = new List<IExpression>();
+
+		public IReadOnlyList<IExpression> Users => _Users;
+
+		private List<IExpressionContainer> _UsersB = new List<IExpressionContainer>();
+
+		public IReadOnlyList<IExpressionContainer> UsersB => _UsersB;
 
 		public AssignmentStatement Assignment { get; private set; }
 
 		public bool Used { get { return Users.Count > 0; } }
+
+		public bool UsedB { get { return UsersB.Count > 0; } }
 
 		public Variable(string name, bool m, IExpression init, AssignmentStatement assignment)
 		{
@@ -32,14 +46,37 @@ namespace LSNr
 			Mutable = m;
 			InitialValue = init;
 			Assignment = assignment;
+			var e = init.Fold();
+			if (e.IsReifyTimeConst())
+				AccessExpression = e;
+			else
+				AccessExpression = new VariableExpressionB(Index, Type);
 		}
 
-		
+		public Variable(string name, bool m, IExpression init, AssignmentStatement assignment, int index)
+		{
+			Name = name;
+			Type = init.Type;
+			Mutable = m;
+			InitialValue = init;
+			Assignment = assignment;
+			Index = index;
+			var e = init.Fold();
+			if (e.IsReifyTimeConst())
+			{
+				AccessExpression = e;
+				Index = -1; // This is a constant.
+			}
+			else
+				AccessExpression = new VariableExpressionB(Index, Type);
+		}
+
 		public Variable(Parameter param)
 		{
 			Name = param.Name;
 			Type = param.Type;
 			Mutable = false;
+			AccessExpression = new VariableExpression(Name, Type);
 		}
 
 		public bool Const()
@@ -47,20 +84,30 @@ namespace LSNr
 			return (!Mutable && InitialValue.IsReifyTimeConst());
 		}
 
-		/// <summary>
-		/// Performs type checking...
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public bool AddValue(IExpression value)
+
+		public void AddUser(IExpressionContainer user) // Include an indication of its position...
 		{
-			if(Type.Subsumes(value.Type))
-			{
-				Users.Add(value);
-				return true;
-			}
-			return false;
+			_UsersB.Add(user);
 		}
+
+		public void AddUser(IExpression expr)
+		{
+			_Users.Add(expr);
+		}
+
+
+		public IExpression GetAccessExpression()
+			=> AccessExpression;
+
+
+		public void Replace(IExpression newExpr)
+		{
+			foreach (var user in _UsersB)
+				user.Replace(AccessExpression, newExpr);
+			AccessExpression = newExpr;
+		}
+
+
 
 	}
 }

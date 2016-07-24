@@ -19,7 +19,7 @@ namespace LsnCore
 				if (v is IntValue)
 					return new DoubleValue(Math.Sqrt(((IntValue)v).Value));
 				return new DoubleValue(Math.Sqrt(((DoubleValue)v).Value));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_, "Sqrt");
 
 			// Triginometric Functions
 
@@ -29,7 +29,7 @@ namespace LsnCore
 				if (v is IntValue)
 					return new DoubleValue(Math.Sin(((IntValue)v).Value));
 				return new DoubleValue(Math.Sin(((DoubleValue)v).Value));
-			}, new List<Parameter>() { new Parameter("θ", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("θ", LsnType.double_, null, 0) }, LsnType.double_, "Sin");
 
 			Cos = new BoundedFunction(d =>
 			{
@@ -37,7 +37,7 @@ namespace LsnCore
 				if (v is IntValue)
 					return new DoubleValue(Math.Cos(((IntValue)v).Value));
 				return new DoubleValue(Math.Cos(((DoubleValue)v).Value));
-			}, new List<Parameter>() { new Parameter("θ", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("θ", LsnType.double_, null, 0) }, LsnType.double_, "Cos");
 
 			Tan = new BoundedFunction(d =>
 			{
@@ -45,7 +45,7 @@ namespace LsnCore
 				if (v is IntValue)
 					return new DoubleValue(Math.Tan(((IntValue)v).Value));
 				return new DoubleValue(Math.Tan(((DoubleValue)v).Value));
-			}, new List<Parameter>() { new Parameter("θ", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("θ", LsnType.double_, null, 0) }, LsnType.double_, "Tan");
 
 
 			Hypot = new BoundedFunction(d =>
@@ -53,7 +53,7 @@ namespace LsnCore
 				var x = (double)((DoubleValue)d["x"]);
 				var y = (double)((DoubleValue)d["y"]);
 				return (DoubleValue)Math.Sqrt(x * x + y * y);
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0), new Parameter("y", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0), new Parameter("y", LsnType.double_, null, 0) }, LsnType.double_, "Hypot");
 
 
 			// Inverse Trigonometric Functions
@@ -64,7 +64,7 @@ namespace LsnCore
 				if (v is IntValue)
 					return new DoubleValue(Math.Sin(((IntValue)v).Value));
 				return new DoubleValue(Math.Asin(((DoubleValue)v).Value));
-			}, new List<Parameter>() { new Parameter("θ", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("θ", LsnType.double_, null, 0) }, LsnType.double_, "ASin");
 
 			ACos = new BoundedFunction(d =>
 			{
@@ -72,7 +72,7 @@ namespace LsnCore
 				if (v is IntValue)
 					return new DoubleValue(Math.Acos(((IntValue)v).Value));
 				return new DoubleValue(Math.Acos(((DoubleValue)v).Value));
-			}, new List<Parameter>() { new Parameter("θ", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("θ", LsnType.double_, null, 0) }, LsnType.double_, "ACos");
 
 			ATan = new BoundedFunction(d =>
 			{
@@ -80,7 +80,7 @@ namespace LsnCore
 				if (v is IntValue)
 					return new DoubleValue(Math.Atan(((IntValue)v).Value));
 				return new DoubleValue(Math.Atan(((DoubleValue)v).Value));
-			}, new List<Parameter>() { new Parameter("θ", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("θ", LsnType.double_, null, 0) }, LsnType.double_, "ATan");
 
 			// Hyperbolic Functions
 
@@ -90,7 +90,7 @@ namespace LsnCore
 				if (v is IntValue)
 					return new DoubleValue(Math.Sinh(((IntValue)v).Value));
 				return new DoubleValue(Math.Sinh(((DoubleValue)v).Value));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_, "Sinh");
 
 			Cosh = new BoundedFunction(d =>
 			{
@@ -98,7 +98,7 @@ namespace LsnCore
 				if (v is IntValue)
 					return new DoubleValue(Math.Cosh(((IntValue)v).Value));
 				return new DoubleValue(Math.Cosh(((DoubleValue)v).Value));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_, "Cosh");
 
 			Tanh = new BoundedFunction(d =>
 			{
@@ -106,7 +106,7 @@ namespace LsnCore
 				if (v is IntValue)
 					return new DoubleValue(Math.Tanh(((IntValue)v).Value));
 				return new DoubleValue(Math.Tanh(((DoubleValue)v).Value));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_, "Tanh");
 
 
 			Log = new BoundedFunction(d =>
@@ -115,7 +115,7 @@ namespace LsnCore
 				if (v is IntValue)
 					return (new DoubleValue(Math.Log(((IntValue)v).Value)));
 				return (new DoubleValue(Math.Log(((DoubleValue)v).Value)));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_, "Log");
 
 			Log10 = new BoundedFunction(d =>
 			{
@@ -123,7 +123,7 @@ namespace LsnCore
 				if (v is IntValue)
 					return (new DoubleValue(Math.Log10(((IntValue)v).Value)));
 				return (new DoubleValue(Math.Log10(((DoubleValue)v).Value)));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_, "Log10");
 
 
 
@@ -135,7 +135,7 @@ namespace LsnCore
 					x = ((IntValue)v).Value;
 				else x = ((DoubleValue)v).Value;
 				return (new DoubleValue(Erf(x)));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_, "ErrorFunction");
 
 			Gamma = new BoundedFunction(d =>
 			{
@@ -145,7 +145,7 @@ namespace LsnCore
 					x = ((IntValue)v).Value;
 				else x = ((DoubleValue)v).Value;
 				return (new DoubleValue(Γ(x)));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_);
+			}, new List<Parameter>() { new Parameter("x", LsnType.double_, null, 0) }, LsnType.double_, "Gamma");
 
 		}
 
