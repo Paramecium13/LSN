@@ -21,6 +21,7 @@ LSN is a strongly typed language and comes with several built in types and allow
 
 #####Collection Types
 Currently, none of the collections are fully functional. The syntax for initializing them has not been decided on and is not implemented by the reifier.
+
 ***Vector<T>***: An immutable collection of values of the same type that appears to be passed by value but is actually passed by reference. I suppose that making a vector of references should not be allowed. It currently has the methods *Length()* and *ToList()*. *Vector<int>* and *Vector<double>* also have the methods *Sum()* and *Mean()*.
 
 ***List<T>***: A mutable collection of variable length that is passed by reference. Like *Vector<T>*, all of its contents must be of the same type. It currently has the methods *Length* and *Add(value : T)*. *List<int>* and *List<double>* also have the methods *Sum()* and *Mean()*.
@@ -44,6 +45,7 @@ The interpretation of these statements must be implemented by the game specific 
 
 * Give item/weapon/armor/gold
 * GOTO: Change the location of the player, or an other character on the current map or a different map.
+
 ###Control Structures
 Control the execution of their contents, which can be statements and/or other control structures.
 
@@ -61,7 +63,7 @@ References are LSN values that contain a .NET reference to an instance of the ab
 I am thinking of just making them like regular values with the only difference being that they are passed by reference.
 
 ##Types of LSN Files
-LSN source files end with the *.lsn* extension and object files end with the *.dat* extension. There are currently five (ten if source and object files are counted separately) different types of LSN files planned. Only three, *script*, *scene* and *scriptlet*, will be able to be directly interpreted, the others will have to be included(#include) or imported(#import). Currently, the reifier can only create *script* object files.
+LSN source files end with the *.lsn* extension and object files end with the *.dat* extension. There are currently five (ten if source and object files are counted separately) different types of LSN files planned. Only three, *script*, *scene* and *scriptlet*, will be able to be directly interpreted, the others will have to be included(#include) or imported(#import). Currently, the reifier can only create *script* and *resource* object files.
 
 All object files can contain a collection of included types and functions that were not defined in it.
 This is done using the #include directive. They can also tell the interpreter to load resource and quest files at runtime, with the #using directive. The reifier will also load these resources to check type and function usage.
