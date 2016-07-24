@@ -187,26 +187,25 @@ namespace LSNr
 					{
 						int lCount = 1;
 						int rCount = 0;
-						int j = 2; // Move to the right twice, now looking at token after the opening '('.
-						var fnTokens = new List<IToken>();
-						while (lCount != rCount)
+						int j = i; // Move to the right twice, now looking at token after the opening '('.
+						var paramTokens = new List<IToken>();
+						/*int lCount = 0;
+						int rCount = 0;*/
+						int pCount = 0;
+						do
 						{
-							if (InitialTokens[i + j].Value == ")")
-							{
-								rCount++;
-								if (lCount == rCount) break;
-							}
-							else if (InitialTokens[i + j].Value == "(")
-							{
-								lCount++;
-							}
-							fnTokens.Add(InitialTokens[i + j]);
-							j++;
-						}
-						nextIndex += j;
+							if (++j >= InitialTokens.Count)
+								throw new ApplicationException("Mismatched parenthesis...");
+							var t = InitialTokens[j];
+							var v = t.Value;
+							if (v == "(") ++pCount; // ++lCount;
+							if (v == ")") --pCount; // ++rCount
+							paramTokens.Add(t);
+						} while (/*lCount != rCount*/pCount != 0);
+						nextIndex = j + 1;
 						// Create the function call, add it to the dictionary, and add its identifier to the list (ls).
 						var name = SUB + SubCount++;
-						var fnCall = Create.CreateFunctionCall(fnTokens, fn, Script);
+						var fnCall = Create.CreateFunctionCall(paramTokens, fn, Script);
 						Substitutions.Add(new Identifier(name), fnCall);
 						CurrentTokens.Add(new Identifier(name));
 					}

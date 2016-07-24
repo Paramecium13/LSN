@@ -86,6 +86,7 @@ namespace LSNr
 
 				return new Choice(str, components);
             }
+			// for
 			return null;
 		}
 		
@@ -152,7 +153,16 @@ namespace LSNr
 				int rPCount = 0;
 				int lBCount = 0;
 				int rBCount = 0;
-				for (int i = 1; i < tokens.Count - 1; i++)
+				int start = 1;
+				int end = tokens.Count - 1;
+
+				if(tokens[0].Value != "(")
+				{
+					start = 0;
+					++end;
+				}
+
+				for (int i = start; i < end; i++)
 				{
 					if (tokens[i].Value == ",")
 					{

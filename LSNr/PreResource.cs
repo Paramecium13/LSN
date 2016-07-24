@@ -201,16 +201,16 @@ namespace LSNr
 					while (tokens[++i].Value != ")") // This starts with the token after '('.
 						paramTokens.Add(tokens[i]);
 					List<Parameter> paramaters = null;
-					try
-					{
+					//try
+					//{
 						paramaters = ParseParameters(paramTokens);
-					}
+					/*}
 					catch (Exception e)
 					{
 						Console.WriteLine($"Error in parsing parameters of function {name}");
 						Console.WriteLine("\t" + e.Message);
 						Valid = false; continue;
-					}
+					}*/
 					// At this point, the current token (i.e. tokens[i].Value) is ')'.
 					LsnType returnType = null;
 					if (tokens[++i].Value == "->")
@@ -275,14 +275,22 @@ namespace LSNr
 		{
 			foreach(var pair in MyFunctions)
 			{
-				var preFn = new PreFunction(this);
-				foreach(var param in pair.Value.Parameters)
+				try
 				{
-					preFn.CurrentScope.AddVariable(new Variable(param));
+					var preFn = new PreFunction(this);
+					foreach(var param in pair.Value.Parameters)
+					{
+						preFn.CurrentScope.AddVariable(new Variable(param));
+					}
+					var parser = new Parser(FunctionBodies[pair.Key], preFn);
+					parser.Parse();
+					pair.Value.Components = Parser.Consolidate(parser.Components);
 				}
-				var parser = new Parser(FunctionBodies[pair.Key], preFn);
-				parser.Parse();
-				pair.Value.Components = Parser.Consolidate(parser.Components);
+				catch (Exception e)
+				{
+					Console.WriteLine($"Error parsing function{pair.Key}.");
+				}
+				
 			}
 		}
 		

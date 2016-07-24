@@ -29,12 +29,13 @@ namespace LSNr
 		public static LsnType ParseType(this ITypeContainer self, List<IToken> tokens, int startIndex, out int endIndex)
 		{
 			int i = startIndex;
-			if(self.TypeExists(tokens[i].Value))
+			var tName = tokens[startIndex].Value;
+			if (self.TypeExists(tName))
 			{
 				endIndex = i + 1;
 				return self.GetType(tokens[i].Value);
 			}
-			else if (self.GenericTypeExists(tokens[i].Value))
+			else if (self.GenericTypeExists(tName))
 			{
 				if(tokens[++i].Value != "<")
 				{
@@ -43,7 +44,7 @@ namespace LSNr
 					return null;
 				}
 				++i;
-				GenericType gType = self.GetGenericType(tokens[i].Value);
+				GenericType gType = self.GetGenericType(tName);
 				var generics = new List<LsnType>();
 				while(tokens[i].Value != ">")
 				{

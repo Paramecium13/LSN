@@ -42,6 +42,21 @@ namespace LSNr
 		public BasePreScript(string src)
 		{
 			Source = src;
+			AddFunction(LsnMath.ACos);
+			AddFunction(LsnMath.ASin);
+			AddFunction(LsnMath.ATan);
+			AddFunction(LsnMath.Cos);
+			AddFunction(LsnMath.Cosh);
+			AddFunction(LsnMath.ErrorFunction);
+			AddFunction(LsnMath.Gamma);
+			AddFunction(LsnMath.Hypot);
+			AddFunction(LsnMath.Log);
+			AddFunction(LsnMath.Log10);
+			AddFunction(LsnMath.Sin);
+			AddFunction(LsnMath.Sinh);
+			AddFunction(LsnMath.Sqrt);
+			AddFunction(LsnMath.Tan);
+			AddFunction(LsnMath.Tanh);
 		}
 
 		/// <summary>
