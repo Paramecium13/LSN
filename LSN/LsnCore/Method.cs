@@ -21,7 +21,13 @@ namespace LsnCore
 			ReturnType = returnType;
 		}
 		
-
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="args"></param>
+		/// <param name="expression"> The object the method is called on</param>
+		/// <param name="included"></param>
+		/// <returns></returns>
 		public MethodCall CreateMethodCall(IList<Tuple<string, IExpression>> args, IExpression expression, bool included = false)
 		{
 			var dict = new Dictionary<string, IExpression>();
@@ -49,17 +55,19 @@ namespace LsnCore
 					dict.Add(param.Name, args[i].Item2);
 				}
 			}
-			if (dict.Count < Parameters.Count)
+			if (dict.Count < Parameters.Count/*-1*/) // -1 for self arg...
 			{
 				foreach (var param in Parameters)
 				{
 					if (dict.ContainsKey(param.Name)) continue;
-					if (param.DefaultValue == null) // This argument does not have a default value.
+					if (param.DefaultValue == null && param.Name != "self") // This argument does not have a default value.
+					{
 						throw new ApplicationException($"The parameter {param.Name} of {this.Name} must be provided a value.");
-					dict.Add(param.Name, param.DefaultValue);
+					} else if (param.Name != "self")
+						dict.Add(param.Name, param.DefaultValue);
 				}
 			}
-			return included ? new MethodCall(this, expression, dict) : new MethodCall(Name, expression, dict);
+			return included ? new MethodCall(this, expression, dict) : new MethodCall(Name, expression, ReturnType, dict);
 		}
 
 	}

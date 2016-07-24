@@ -75,6 +75,80 @@ namespace LSNr
 				var components = Parser.Consolidate(p.Components);
 				return new Choice(str, components, cnd);
 			}
+			if (h == "for")
+			{
+				script.CurrentScope = new Scope(script.CurrentScope);
+				if (head.Count < 10)
+					throw new ApplicationException("Incorrect for loop head thing [incorrectness inferred by too tew tokens].");
+				if (head.Select(t => t.Value).Count(vl => vl == "`") != 2)
+					throw new ApplicationException("Incorrectly formatted for loop...");
+
+				if (head[1].Value != "(") throw new ApplicationException("A for loop must use parenthesis...");//[e.g \'for   (   i = 0` i < cat`i++   )   \']");
+
+				string varName = head[2].Value; // Check if it exists, type, mutable...
+				
+				if (head[3].Value != "=") throw new ApplicationException("...");
+
+				var exprTokens = new List<IToken>();
+				int i = 4;
+				do
+				{
+					exprTokens.Add(head[i]);
+				} while (head[++i].Value != "`");
+				// i points to `.
+				var val = Express(exprTokens, script);
+				if (!script.CurrentScope.HasVariable(varName)) script.CurrentScope.AddVariable(new Variable(varName, true, val, null));
+
+				exprTokens.Clear(); // Recycle the list.
+				i++;
+				do
+				{
+					exprTokens.Add(head[i]);
+				} while (head[++i].Value != "`");
+				// i points to `.
+				var con = Express(exprTokens, script);
+				exprTokens.Clear();
+				i++;
+				var v = head[i].Value;
+				Statement post = null;
+				if ( v == varName)
+				{
+					i++;
+					if(head[i].Value == "=")
+					{
+						for(i = i+1; i < head.Count -1; i++)
+							exprTokens.Add(head[i]);
+						post = new ReassignmentStatement(varName, Express(exprTokens, script));
+					}
+					else if(head[i].Value == "++")
+					{
+						throw new NotImplementedException();
+					}
+					else if (head[i].Value == "--")
+					{
+						throw new NotImplementedException();
+					}
+				}
+				else if (v == "--")
+				{
+					if (head[++i].Value != varName)
+						throw new ApplicationException("...");
+					throw new NotImplementedException();
+				}
+				else if(v == "++")
+				{
+					if (head[++i].Value != varName)
+						throw new ApplicationException("...");
+					throw new NotImplementedException();
+				}
+
+				Parser p = new Parser(body, script);
+				p.Parse();
+				var components = Parser.Consolidate(p.Components);
+				script.CurrentScope = script.CurrentScope.Pop(components);
+
+				return new ForLoop(varName, val, con, components, post);
+			}
 			if(n > 1 && head.Last().Value == "->")
 			{
 				// It's a choice (inside a choice block).
@@ -86,7 +160,6 @@ namespace LSNr
 
 				return new Choice(str, components);
             }
-			// for
 			return null;
 		}
 		
@@ -108,32 +181,40 @@ namespace LSNr
 			}
 			if(list.Count == 1)
 			{
-				if (script.CurrentScope.VariableExists(list[0].Value))
-				{
-					var v = script.CurrentScope.GetVariable(list[0].Value);
-					if (!v.Mutable && v.InitialValue.IsReifyTimeConst())
-						return v.InitialValue.Fold();
-					var expr = new VariableExpression(v.Name, v.Type);
-					v.Users.Add(expr);
-					return expr;
-				}
-				else if (list[0].GetType() == typeof(FloatToken))
-				{
-					return new DoubleValue(((FloatToken)list[0]).DVal);
-				}
-				else if (list[0].GetType() == typeof(IntToken))
-				{
-					return new IntValue(((IntToken)list[0]).IVal);
-				}
-				else if (list[0].GetType() == typeof(StringToken))
-				{
-					return new StringValue(list[0].Value);
-				}
-				else if (list[0].Value == "true") return LSN_BoolValue.GetBoolValue(true);
-				else if (list[0].Value == "false") return LSN_BoolValue.GetBoolValue(false);
+				var token = list[0];
+				return SingleTokenExpress(token, script);
 			}
 			return ExpressionBuilder.Build(list, script);
         }
+
+		public static IExpression SingleTokenExpress(IToken token, IPreScript script)
+		{
+			var val = token.Value;
+			if (script.CurrentScope.VariableExists(val))
+			{
+				var v = script.CurrentScope.GetVariable(val);
+				if (!v.Mutable && v.InitialValue.IsReifyTimeConst())
+					return v.InitialValue.Fold();
+				var expr = new VariableExpression(v.Name, v.Type);
+				v.Users.Add(expr);
+				return expr;
+			}
+			else if (token.GetType() == typeof(FloatToken))
+			{
+				return new DoubleValue(((FloatToken)token).DVal);
+			}
+			else if (token.GetType() == typeof(IntToken))
+			{
+				return new IntValue(((IntToken)token).IVal);
+			}
+			else if (token.GetType() == typeof(StringToken))
+			{
+				return new StringValue(val);
+			}
+			else if (val == "true") return LSN_BoolValue.GetBoolValue(true);
+			else if (val == "false") return LSN_BoolValue.GetBoolValue(false);
+			return null;
+		}
 
 
 		private static Expression CreateGet(List<IToken> tokens, IPreScript script)
@@ -245,7 +326,7 @@ namespace LSNr
 		public static MethodCall CreateMethodCall(List<IToken> tokens, Method method, IExpression obj, IPreScript script)
 		{
 			var ls = CreateParamList(tokens, method.Parameters.Count, script);
-			return method.CreateMethodCall(ls,obj/*script.TypeIsIncluded(obj.Type)*/);
+			return method.CreateMethodCall(ls,obj,true/*script.TypeIsIncluded(obj.Type)*/);
 		}
 		
 	}

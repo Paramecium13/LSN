@@ -45,10 +45,15 @@ namespace LSNr
 
 		private IExpression Parse()
 		{
+			if(InitialTokens.Count == 1)
+			{
+				if (Substitutions.ContainsKey(InitialTokens[0])) return Substitutions[InitialTokens[0]];
+				return Create.SingleTokenExpress(InitialTokens[0], Script);
+			}
 			ParseVariablesAndFunctions();
 			if(CurrentTokens.Count != 1)
 				ParseParenthesis();
-			//ParseInexers();// Put this with functions and variables?
+			ParseInexers();// Put this with functions and variables?
 			if (CurrentTokens.Any(t => t.Value == "^")) ParseExponents();
 			if (CurrentTokens.Any(t => { var v = t.Value; return v == "*" || v == "/" || v == "%"; }))
 				ParseMultDivMod();
@@ -113,9 +118,12 @@ namespace LSNr
 					if(expr.Type.Methods.ContainsKey(name)) // It's a method call.
 					{
 						var method = expr.Type.Methods[name];
-						if (method.Parameters.Count == 0)
+						if (method.Parameters.Count == 1)
+						{
 							expr2 = method.CreateMethodCall
-								(new List<Tuple<string, IExpression>>(), expr, false/*Script.MethodIsIncluded(name)*/);
+								  (new List<Tuple<string, IExpression>>(), expr, true/*Script.MethodIsIncluded(name)*/);
+							nextIndex = i + 4; //Skip the parenthesis.
+						}
 						else
 						{
 							int lCount = 1;
@@ -332,8 +340,8 @@ namespace LSNr
 					}
 					var expr = Build(iTokens, Script, Substitutions.Where(p => iTokens.Contains(p.Key)).ToDictionary(), SubCount);
 					var name = SUB + SubCount++;
-					var coll = GetExpression(CurrentTokens[CurrentTokens.Count - 1]);
-					CurrentTokens.RemoveAt(CurrentTokens.Count - 1);
+					var coll = GetExpression(newTokens[newTokens.Count - 1]);
+					newTokens.RemoveAt(newTokens.Count - 1);
 					if(!(coll.Type is ICollectionType))// typeof(ICollectionType).IsAssignableFrom(coll.Type.GetType()
 						throw new ApplicationException($"{coll.Type.Name} cannot be indexed.");
 					var t = coll.Type as ICollectionType;

@@ -27,14 +27,16 @@ namespace LsnCore.Expressions
 			Args = args ?? new Dictionary<string, IExpression>();
 			M = m;
 			Args.Add("self", Value);
+			Type = m.ReturnType;
 		}
 
-		public MethodCall(string name, IExpression value, Dictionary<string, IExpression> args = null)
+		public MethodCall(string name, IExpression value, LsnType type, Dictionary<string, IExpression> args = null)
 		{
 			Value = value;
 			Args = args ?? new Dictionary<string, IExpression>();
 			MethodName = name;
 			Args.Add("self", Value);
+			Type = type;
 		}
 
 		public override ILsnValue Eval(IInterpreter i)

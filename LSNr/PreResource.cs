@@ -275,8 +275,8 @@ namespace LSNr
 		{
 			foreach(var pair in MyFunctions)
 			{
-				try
-				{
+				//try
+				//{
 					var preFn = new PreFunction(this);
 					foreach(var param in pair.Value.Parameters)
 					{
@@ -285,11 +285,11 @@ namespace LSNr
 					var parser = new Parser(FunctionBodies[pair.Key], preFn);
 					parser.Parse();
 					pair.Value.Components = Parser.Consolidate(parser.Components);
-				}
+				/*}
 				catch (Exception e)
 				{
 					Console.WriteLine($"Error parsing function{pair.Key}.");
-				}
+				}*/
 				
 			}
 		}

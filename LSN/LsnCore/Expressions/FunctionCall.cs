@@ -18,12 +18,14 @@ namespace LsnCore.Expressions
 			if (include) Fn = fn;
 			FnName = fn.Name;
 			Args = args;
+			Type = fn.ReturnType;
 		}
 
-		private FunctionCall(string fnName, Dictionary<string,IExpression> args)
+		private FunctionCall(string fnName, Dictionary<string,IExpression> args, LsnType type = null)
 		{
 			FnName = fnName;
 			Args = args;
+			Type = type;
 		}
 
 		public override ILsnValue Eval(IInterpreter i)

@@ -11,6 +11,7 @@ namespace LsnCore.ControlStructures
 	/// <summary>
 	/// A(n) LSN for loop...
 	/// </summary>
+	[Serializable]
 	public class ForLoop : ControlStructure
 	{
 

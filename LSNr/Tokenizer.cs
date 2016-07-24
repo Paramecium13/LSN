@@ -32,7 +32,7 @@ namespace LSNr
 		private readonly static List<string> OPERATORS = new List<string> {
 			"+","-","*","/","%","^","=",">","<","~","!","(",
 			")","{","}","[","]",",",";",":","?","@","$",
-			"∈","∊","∋","∍","⊂","⊃"
+			"∈","∊","∋","∍","⊂","⊃","`"
 		};
 
 		private static Converter<string, string> MCSConv = MCSConvM;
@@ -64,6 +64,7 @@ namespace LSNr
 			Dictionary<string, string> strings = null;
 			source = ProcessStrings(source, out strings);
 			source = ProcessOperators(source);
+			source = Regex.Replace(source, @"for\s*\((?<a>.*?);(?<b>.*?);(?<c>.*?)\)", "for ( ${a} ` ${b} ` ${c} ) ", RegexOptions.Multiline);
 			var tokens = Regex.Split(source, @"\s").Where(t => t != "").ToList();
 			var factory = new TokenFactory(strings);
 			return tokens.ConvertAll(MCSConv).ConvertAll(factory.GetToken);
@@ -77,7 +78,7 @@ namespace LSNr
 		{
 			//'else if' -> 'elsif'
 			source = Regex.Replace(source, @"(?i)else\s*if", "elsif");
-			source = Regex.Replace(source, @"(?<a>\S)\.(?<b>\D)", @"${a} . ${b}");
+			source = Regex.Replace(source, @"(?<a>\S)\.(?<b>\D)", "${a} . ${b}"); // This weird thing is necessary to parse decimals properly...
 			StringBuilder src = new StringBuilder(source);
 			foreach (KeyValuePair<string,string> pair in MCHARSYM)
 			{
