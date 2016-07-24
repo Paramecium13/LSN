@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LsnCore.Expressions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,7 +36,7 @@ namespace LsnCore
 	/// The basis LSN class, children include control structures and statements.
 	/// </summary>
 	[Serializable]
-	public abstract class Component
+	public abstract class Component : IExpressionContainer
 	{
 		/// <summary>
 		/// The return value is false when the script, function or loop should stop (e.g. break or return.).
@@ -43,5 +44,8 @@ namespace LsnCore
 		/// <param name="i"></param>
 		/// <returns></returns>
 		public abstract InterpretValue Interpret(IInterpreter i);
+
+
+		public abstract void Replace(IExpression oldExpr, IExpression newExpr);
 	}
 }
