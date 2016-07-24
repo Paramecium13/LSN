@@ -91,9 +91,7 @@ namespace LsnCore
 
 		//void SetArrayValue(int id, int index, ILSN_Value value);
 
-		ILsnValue Eval(string expression);
-
-
+		
 		/// <summary>
 		/// 
 		/// </summary>

@@ -181,11 +181,6 @@ namespace LsnCore
 
 		public abstract IActor GetActor(LsnValue id);
 
-		public ILsnValue Eval(string expression)
-		{
-			throw new NotImplementedException();
-		}
-
 		public abstract void Say(string message, ILsnValue graphic, string title);
 		public abstract int Choice(List<string> choices);
 	}

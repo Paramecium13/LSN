@@ -6,7 +6,9 @@ using System.Text;
 namespace LsnCore.Statements
 {
 	/// <summary>
-	/// Assigns a new value to a variable.
+	/// Assigns a new value to a variable. A reassignment statement is valid if and only if 
+	/// the variable already exists and is declared as mutable and its type matches the 
+	/// return type of the expression (which itself must be valid).
 	/// </summary>
 	[Serializable]
 	public class ReassignmentStatement : Statement
