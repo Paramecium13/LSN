@@ -164,7 +164,7 @@ namespace LSNr
 		}
 		
 
-		private static IExpression Express(IEnumerable<IToken> tokens, IPreScript script)
+		private static IExpression Express(IEnumerable<IToken> tokens, IPreScript script/*, IExpressionContainer container*/)
 			=> Express(tokens.ToList(), script);
 
 		/// <summary>
@@ -187,7 +187,7 @@ namespace LSNr
 			return ExpressionBuilder.Build(list, script);
         }
 
-		public static IExpression SingleTokenExpress(IToken token, IPreScript script)
+		public static IExpression SingleTokenExpress(IToken token, IPreScript script, IExpressionContainer container = null, IList<Variable> variables = null)
 		{
 			var val = token.Value;
 			if (script.CurrentScope.VariableExists(val))
@@ -195,8 +195,9 @@ namespace LSNr
 				var v = script.CurrentScope.GetVariable(val);
 				if (!v.Mutable && v.InitialValue.IsReifyTimeConst())
 					return v.InitialValue.Fold();
-				var expr = new VariableExpression(v.Name, v.Type);
-				v.Users.Add(expr);
+				var expr = v.GetAccessExpression();//new VariableExpression(v.Name, v.Type);
+				if (container != null) v.AddUser(container);
+				else variables?.Add(v);
 				return expr;
 			}
 			else if (token.GetType() == typeof(FloatToken))

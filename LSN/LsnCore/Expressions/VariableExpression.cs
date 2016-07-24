@@ -26,17 +26,13 @@ namespace LsnCore.Expressions
 	[Serializable]
 	public class VariableExpressionB : Expression
 	{
-		public readonly int Index;
+		public int Index;
 
 		public VariableExpressionB(int index, LsnType type)
 		{
 			Index = index; Type = type;
 		}
-
-		public override bool Equals(IExpression other)
-		{
-			throw new NotImplementedException();
-		}
+		
 
 		public override ILsnValue Eval(IInterpreter i)
 		{

@@ -107,7 +107,12 @@ namespace LSNr
 			AccessExpression = newExpr;
 		}
 
-
+		public void ChangeIndex(int newIndex)
+		{
+			if (newIndex == Index) return;
+			var v = AccessExpression as VariableExpressionB;
+			if (v != null) v.Index = newIndex;
+		}
 
 	}
 }

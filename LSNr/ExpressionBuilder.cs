@@ -63,7 +63,7 @@ namespace LSNr
 			if(CurrentTokens.Count != 1) { throw new ApplicationException("This should not happen."); }
 			var expr = Substitutions[CurrentTokens[0]].Fold();
 			if(! expr.IsReifyTimeConst())
-				foreach (var v in Variables) v.Users.Add(expr);
+				foreach (var v in Variables) v.AddUser(expr);
 			return expr;
 		}
 
@@ -168,10 +168,11 @@ namespace LSNr
 				else if (Script.CurrentScope.VariableExists(val)) // Variable
 				{
 					var v = Script.CurrentScope.GetVariable(val);
-					IExpression expr;
-					if (!v.Mutable && ( v.InitialValue?.IsReifyTimeConst()?? false ) )
+					IExpression expr = v.GetAccessExpression();
+					/*if (!v.Mutable && ( v.InitialValue?.IsReifyTimeConst()?? false ) )
 						expr = v.InitialValue.Fold();
-					else expr = new VariableExpression(val, v.Type);
+					else expr = new VariableExpression(val, v.Type);*/
+
                     var name = SUB + SubCount++;
 					Variables.Add(v);
 					Substitutions.Add(new Identifier(name), expr);
@@ -501,7 +502,8 @@ namespace LSNr
 		private IExpression GetExpression(IToken token)
 		{
 			if (Substitutions.ContainsKey(token)) return Substitutions[token];
-			if (Script.CurrentScope.VariableExists(token.Value))
+			return Create.SingleTokenExpress(token, Script);
+			/*if (Script.CurrentScope.VariableExists(token.Value))
 				return new VariableExpression(token.Value, Script.CurrentScope.GetVariable(token.Value).Type);
 			var type = token.GetType();
             if (type == typeof(FloatToken)) // It's a double literal.
@@ -510,7 +512,7 @@ namespace LSNr
 				return new IntValue(((IntToken)token).IVal);
 			if (type == typeof(StringToken)) // It's a string literal.
 				return new StringValue(token.Value);
-			return null;
+			return null;*/
 		}
 
 		public static IExpression Build(List<IToken> tokens, IPreScript script)
