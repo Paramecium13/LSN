@@ -108,6 +108,7 @@ namespace LsnCore
 	/// <summary>
 	/// A parameter for a function or method.
 	/// </summary>
+	[Serializable]
 	public class Parameter
 	{
 		public string Name;

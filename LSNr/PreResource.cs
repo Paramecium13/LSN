@@ -90,7 +90,7 @@ namespace LSNr
 		/// <summary>
 		/// 
 		/// </summary>
-		public void ProcessDirectives() { Text = ProcessDirectives(Text); }
+		public void ProcessDirectives() { Text = ProcessDirectives(Source); }
 
 		/// <summary>
 		/// 
@@ -275,7 +275,12 @@ namespace LSNr
 		{
 			foreach(var pair in MyFunctions)
 			{
-				var parser = new Parser(FunctionBodies[pair.Key], new PreFunction(this));
+				var preFn = new PreFunction(this);
+				foreach(var param in pair.Value.Parameters)
+				{
+					preFn.CurrentScope.AddVariable(new Variable(param));
+				}
+				var parser = new Parser(FunctionBodies[pair.Key], preFn);
 				parser.Parse();
 				pair.Value.Components = Parser.Consolidate(parser.Components);
 			}
@@ -298,7 +303,7 @@ namespace LSNr
 					throw new ApplicationException($"Error: Expected token ':' after parameter name {name} recieved token '{tokens[i].Value}'.");
                 LsnType type = this.ParseType(tokens, ++i, out i);
 				ILsnValue defaultValue = null;
-				if (tokens[i].Value == "=")
+				if (i < tokens.Count && tokens[i].Value == "=")
 				{
 					if (tokens[++i] is StringToken)
 					{
@@ -332,7 +337,7 @@ namespace LSNr
 					else throw new ApplicationException($"Error in parsing default value for parameter {name}.");
 				}
 				paramaters.Add(new Parameter(name, type, defaultValue, index++));
-				if (tokens[i].Value != ",")
+				if (i < tokens.Count && tokens[i].Value != ",")
 					throw new ApplicationException($"Error: expected token ',' after definition of parameter {name}, recieved '{tokens[i].Value}'.");
 			}
 			return paramaters;
@@ -377,10 +382,10 @@ namespace LSNr
 				}
 				LsnType type = this.ParseType(tokens, i, out i);
 				fields.Add(fName, type);
-				if (i + 1 < tokens.Count && tokens[++i].Value == ",") // Check if the definition ends, move on to the next token
+				if (i + 1 < tokens.Count && tokens[i].Value == ",") // Check if the definition ends, move on to the next token
 																	  // and check that it is ','.
 				{
-					++i; // Move on to the next token, which should be the name of the next token.
+					// Move on to the next token, which should be the name of the next token.
 					continue; // Move on to the next field.
 				}
 				else break;

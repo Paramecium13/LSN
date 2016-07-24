@@ -29,7 +29,7 @@ namespace LSNr
 			"direction","fix","route",
 
 			//both
-			"hp","level","lvl","exp","mp","skill","ability","g","gvar","gswitch","class","name",
+			"hp","level","lvl","exp","mp","skill","ability","g","gvar","gswitch","class",//"name",
 			"nickname","state","tileset","off","on",
 
 			//Get expression stuff
@@ -63,7 +63,7 @@ namespace LSNr
 			//Arithmatic
 			"+","*","/","%","^","&&","||","!",
 			//Comparison
-			">=","<=","==","!="
+			">=","<=","==","!=", "<", ">"
 		};
 
 		private static readonly string[] ASSIGNMENT = new string[]
@@ -86,11 +86,16 @@ namespace LSNr
 
 		public IToken GetToken(string pre_token)
 		{
-			if (KEYWORDS.Contains(pre_token.ToLower())) return new Keyword(pre_token.ToLower());
-			else if (SYMBOLS.Contains(pre_token)) return new SyntaxSymbol(pre_token);
-			else if (OPERATORS.Contains(pre_token)) return new Operator(pre_token);
-			else if (AMBIGUOUS.Contains(pre_token)) return new Ambiguous(pre_token);
-			else if (ASSIGNMENT.Contains(pre_token)) return new Assignment(pre_token);
+			if (KEYWORDS.Contains(pre_token.ToLower()))
+				return new Keyword(pre_token.ToLower());
+			else if (SYMBOLS.Contains(pre_token))
+				return new SyntaxSymbol(pre_token);
+			else if (OPERATORS.Contains(pre_token))
+				return new Operator(pre_token);
+			else if (AMBIGUOUS.Contains(pre_token))
+				return new Ambiguous(pre_token);
+			else if (ASSIGNMENT.Contains(pre_token))
+				return new Assignment(pre_token);
 			else if (Char.IsDigit(pre_token[0]))
 			{
 				if (pre_token.Contains('.'))

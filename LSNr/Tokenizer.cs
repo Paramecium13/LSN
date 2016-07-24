@@ -77,7 +77,7 @@ namespace LSNr
 		{
 			//'else if' -> 'elsif'
 			source = Regex.Replace(source, @"(?i)else\s*if", "elsif");
-			source = Regex.Replace(source, @"(?<a>\S)\.(?<b>\D)", @"\k<a> . \k<b>");
+			source = Regex.Replace(source, @"(?<a>\S)\.(?<b>\D)", @"${a} . ${b}");
 			StringBuilder src = new StringBuilder(source);
 			foreach (KeyValuePair<string,string> pair in MCHARSYM)
 			{

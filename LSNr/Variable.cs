@@ -34,6 +34,14 @@ namespace LSNr
 			Assignment = assignment;
 		}
 
+		
+		public Variable(Parameter param)
+		{
+			Name = param.Name;
+			Type = param.Type;
+			Mutable = false;
+		}
+
 		public bool Const()
 		{
 			return (!Mutable && InitialValue.IsReifyTimeConst());

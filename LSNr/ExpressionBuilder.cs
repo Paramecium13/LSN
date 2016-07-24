@@ -146,6 +146,7 @@ namespace LSNr
 						if (!type.Fields.ContainsKey(name))
 							throw new ApplicationException($"The type {expr.Type.Name} does not have a field named {name}.");
 						expr2 = new FieldAccessExpression(expr, name, type.Fields[name]);
+						nextIndex++; // Skip over the field name.
 					}
 					else
 						throw new ApplicationException($"The type {expr.Type.Name} does not have a method named {name}.");
@@ -160,7 +161,7 @@ namespace LSNr
 				{
 					var v = Script.CurrentScope.GetVariable(val);
 					IExpression expr;
-					if (!v.Mutable && v.InitialValue.IsReifyTimeConst())
+					if (!v.Mutable && ( v.InitialValue?.IsReifyTimeConst()?? false ) )
 						expr = v.InitialValue.Fold();
 					else expr = new VariableExpression(val, v.Type);
                     var name = SUB + SubCount++;
@@ -492,6 +493,8 @@ namespace LSNr
 		private IExpression GetExpression(IToken token)
 		{
 			if (Substitutions.ContainsKey(token)) return Substitutions[token];
+			if (Script.CurrentScope.VariableExists(token.Value))
+				return new VariableExpression(token.Value, Script.CurrentScope.GetVariable(token.Value).Type);
 			var type = token.GetType();
             if (type == typeof(FloatToken)) // It's a double literal.
 				return new DoubleValue(((FloatToken)token).DVal);

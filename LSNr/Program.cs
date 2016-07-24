@@ -55,7 +55,10 @@ namespace LSNr
 			string t = args.Where(a => Regex.IsMatch(a,@"^\s*type\s*=\s*(\w+)\s*$",RegexOptions.IgnoreCase)).FirstOrDefault();
 			if (t != null)
 			{ // The type of file is defined.
-				string type = Regex.Match(t, @"^\s*type\s*=\s*(\w+)\s*$", RegexOptions.IgnoreCase).Captures[0].ToString().ToLower();
+				string type = Regex.Match(t, @"^\s*type\s*=\s*(\w+)\s*$", RegexOptions.IgnoreCase)
+					.Groups.Cast<Group>()
+					.Select(g => g.Value)
+					.ToArray()[1];
 				if (type == "resource" || type == "res") return MakeResource(src, destination, args);
 
 				if (type == "quest") throw new NotImplementedException();
