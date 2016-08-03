@@ -6,7 +6,7 @@ using LsnCore.Types;
 
 namespace LsnCore
 {
-	[Serializable]
+	[Serializable]// ToDo: change to class, pass by ref...
 	public struct StructValue : ILsnValue, IHasFieldsValue
 	{
 		private readonly IDictionary<string, ILsnValue> Members;
@@ -63,6 +63,10 @@ namespace LsnCore
 		public IExpression Fold() => this;
 
 		public bool IsReifyTimeConst() => true;
+
+		public void Replace(IExpression oldExpr, IExpression newExpr){}
+
+		public bool Equals(IExpression other) => false;
 
 		/*
 		public static StructValue operator + (StructValue a, StructValue b)

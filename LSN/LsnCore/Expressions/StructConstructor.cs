@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace LsnCore.Expressions
 {
 	[Serializable]
-	public class StructConstructor : IExpression
+	public class StructConstructor : Expression
 	{
 
 		private readonly IDictionary<string, IExpression> Args;
@@ -21,12 +21,12 @@ namespace LsnCore.Expressions
 			_Type = type; Args = args;
 		}
 
-		public LsnType Type => _Type;
+		public override LsnType Type => _Type;
 
-		public ILsnValue Eval(IInterpreter i)
+		public override ILsnValue Eval(IInterpreter i)
 			=> new StructValue(_Type, Args.Select(p => new KeyValuePair<string, ILsnValue>(p.Key, p.Value.Eval(i))).ToDictionary());
 
-		public IExpression Fold()
+		public override IExpression Fold()
 		{
 			IDictionary<string, ILsnValue> d;
 			var a = Args.Select(pair => new KeyValuePair<string, IExpression>(pair.Key, pair.Value.Fold())).ToDictionary();
@@ -39,7 +39,7 @@ namespace LsnCore.Expressions
 				return new StructConstructor(_Type, a);		
 		}
 
-		public bool IsReifyTimeConst() => false;
+		public override bool IsReifyTimeConst() => false;
 
 	}
 }

@@ -9,7 +9,7 @@ namespace LsnCore.Expressions
 	[Serializable]
 	public abstract class Expression : IExpression
 	{
-		private LsnType _Type = LsnType.dynamic_;
+		private LsnType _Type;
 
 		public virtual LsnType Type { get { return _Type; } protected set { _Type = value; } }
 
@@ -18,6 +18,7 @@ namespace LsnCore.Expressions
 		public abstract IExpression Fold();
 
 		public abstract ILsnValue Eval(IInterpreter i);
-
+		public virtual void Replace(IExpression oldExpr, IExpression newExpr) { }
+		public virtual bool Equals(IExpression other) => this == other;
 	}
 }

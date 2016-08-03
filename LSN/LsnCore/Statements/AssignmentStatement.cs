@@ -6,7 +6,7 @@ namespace LsnCore.Statements
 	[Serializable]
 	public class AssignmentStatement : Statement
 	{
-		public IExpression Value;
+		private IExpression Value;
 		public string VariableName;
 		//public LSN_Type Type;
 		//public bool Mutable;
@@ -17,29 +17,16 @@ namespace LsnCore.Statements
 			Value = value;
 		}
 
-		/*public AssignmentStatement(List<IToken> tokens,bool mutable=false)
-		{
-			int headTokenCount = 3; // "let" "name" "="
-			Mutable = mutable;
-			if (tokens[1].Value == "mut")
-			{
-				Mutable = true;
-				headTokenCount++;
-			}
-			VariableName = tokens[headTokenCount - 2].Value;
-			//if(Program.Variables.ContainsKey(VariableName))
-			//{
-			//	throw new ApplicationException("The variable {VariableName} has already been declared.");
-			//}
-			Value = Expression.Create(tokens.Skip(headTokenCount).ToList());
-			Type = Value.Type;
-			//Program.Variables.Add(VariableName, new Variable(VariableName,Type,Mutable));
-		}*/
-
+		
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.AddVariable(VariableName,Value.Eval(i));
 			return InterpretValue.Base;
+		}
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (Value.Equals(oldExpr)) Value = newExpr;
 		}
 	}
 }

@@ -47,5 +47,27 @@ namespace LsnCore.Expressions
 
 		public override bool IsReifyTimeConst() => false;
 
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if(Args.Values.Contains(oldExpr))
+			{
+				Args = Args.Select(p =>
+				{
+					if (p.Value.Equals(oldExpr))
+					{
+						return new KeyValuePair<string, IExpression>(p.Key,newExpr);
+					}
+					return p;
+				}
+				).ToDictionary();
+			}
+		}
+
+		public override bool Equals(IExpression other)
+		{
+			var e = other as FunctionCall;
+			if (e == null) return false;
+			return e.Args.SequenceEqual(Args);
+		}
 	}
 }

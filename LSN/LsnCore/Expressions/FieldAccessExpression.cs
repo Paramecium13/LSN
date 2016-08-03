@@ -32,5 +32,17 @@ namespace LsnCore.Expressions
 
 		public override ILsnValue Eval(IInterpreter i)
 			=> ((IHasFieldsValue)Value).GetValue(FieldName);
-    }
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (Value.Equals(oldExpr)) Value = newExpr;
+		}
+
+		public override bool Equals(IExpression other)
+		{
+			var e = other as FieldAccessExpression;
+			if (e == null) return false;
+			return Value.Equals(e.Value);
+		}
+	}
 }

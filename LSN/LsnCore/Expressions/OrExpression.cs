@@ -54,5 +54,18 @@ namespace LsnCore.Expressions
 			if (r.BoolValue) return r;
 			return LSN_BoolValue.GetBoolValue(false);
 		}
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (Left.Equals(oldExpr)) _Left = newExpr;
+			if (Right.Equals(oldExpr)) _Right = newExpr;
+		}
+
+		public override bool Equals(IExpression other)
+		{
+			var e = other as OrExpression;
+			if (e == null) return false;
+			return e.Left.Equals(Left) && e.Right == Right;
+		}
 	}
 }

@@ -30,5 +30,13 @@ namespace LsnCore.Statements
 			i.Say(((StringValue)Message.Eval(i)).Value, Graphic?.Eval(i), Title?.Eval(i)?.ToString());
 			return InterpretValue.Base;
 		}
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (_Message.Equals( oldExpr)) _Message = newExpr;
+			if (_Graphic.Equals( oldExpr)) _Graphic = newExpr;
+			if (_Title.Equals (oldExpr)) _Title = newExpr;
+
+		}
 	}
 }

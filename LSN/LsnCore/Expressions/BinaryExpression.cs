@@ -51,5 +51,18 @@ namespace LsnCore.Expressions
 
 		public override ILsnValue Eval(IInterpreter i)
 			=> Operation(Left.Eval(i), Right.Eval(i));
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (Left.Equals(oldExpr)) _Left = newExpr;
+			if (Right.Equals(oldExpr)) _Right = newExpr;
+		}
+
+		public override bool Equals(IExpression other)
+		{
+			var e = other as BinaryExpression;
+			if (e == null) return false;
+			return Operation == e.Operation && e.Left.Equals(Left) && e.Right == Right;
+		}
 	}
 }

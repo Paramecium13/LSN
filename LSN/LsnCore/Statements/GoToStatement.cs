@@ -117,5 +117,14 @@ namespace LsnCore.Statements
 			}
 			throw new NotImplementedException();
 		}
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (LocLabel.Equals( oldExpr)) LocLabel = newExpr;
+			if (Map.Equals (oldExpr)) Map = newExpr;
+			if (Position.Equals(oldExpr)) Position = newExpr;
+			if (X.Equals(oldExpr)) X = newExpr;
+			if (Y.Equals(oldExpr)) Y = newExpr;
+		}
 	}
 }

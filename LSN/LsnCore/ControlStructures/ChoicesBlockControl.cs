@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LsnCore.Expressions;
 
 namespace LsnCore.ControlStructures
 {
@@ -26,5 +27,8 @@ namespace LsnCore.ControlStructures
 			int index = i.Choice(choices.Select(c => c.Title.Eval(i).ToString()).ToList());
 			return choices[index].Interpret(i);
 		}
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{}
 	}
 }

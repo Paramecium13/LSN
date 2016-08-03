@@ -12,8 +12,8 @@ namespace LsnCore.ControlStructures
 	{
 		private List<Component> _Components;
 		public IReadOnlyList<Component> Components { get { return _Components; } set { _Components = value.ToList(); } }
-		public readonly IExpression Title;
-		private readonly IExpression Condition;
+		public IExpression Title { get; private set; }
+		private IExpression Condition;
 
 		public Choice(IExpression title, List<Component> components, IExpression condition = null)
 		{
@@ -26,5 +26,10 @@ namespace LsnCore.ControlStructures
 
 		public bool Check(IInterpreter i) => Condition?.Eval(i)?.BoolValue ?? true;
 
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (Title.Equals(oldExpr)) Title = newExpr;
+			if (Condition.Equals(oldExpr)) Condition = newExpr;
+		}
 	}
 }

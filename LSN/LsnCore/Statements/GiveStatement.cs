@@ -8,15 +8,15 @@ namespace LsnCore.Statements
 	[Serializable]
 	public abstract class GiveStatement : Statement
 	{
-		public IExpression Amount;
+		protected IExpression Amount;
 
-		public IExpression Reciever;
+		protected IExpression Reciever;
 
 	}
 	[Serializable]
 	public class GiveItemStatement : GiveStatement
 	{
-		public IExpression Id;
+		private IExpression Id;
 
 		public GiveItemStatement(IExpression id, IExpression a)
 		{
@@ -29,11 +29,18 @@ namespace LsnCore.Statements
 			i.GiveItemTo(Id.Eval(i), ((IntValue)Amount.Eval(i)).Value, Reciever.Eval(i));
 			return InterpretValue.Base;
 		}
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (Amount.Equals(oldExpr)) Amount = newExpr;
+			if (Reciever.Equals(oldExpr)) Reciever = newExpr;
+			if (Id.Equals(oldExpr)) Id = newExpr;
+		}
 	}
 	[Serializable]
 	public class GiveArmorStatement : GiveStatement
 	{
-		public IExpression Id;
+		private IExpression Id;
 
 		public GiveArmorStatement(IExpression id, IExpression a)
 		{
@@ -46,11 +53,18 @@ namespace LsnCore.Statements
 			i.GivArmorTo(Id.Eval(i), ((IntValue)Amount.Eval(i)).Value, Reciever.Eval(i));
 			return InterpretValue.Base;
 		}
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (Amount.Equals(oldExpr)) Amount = newExpr;
+			if (Reciever.Equals(oldExpr)) Reciever = newExpr;
+			if (Id.Equals(oldExpr)) Id = newExpr;
+		}
 	}
 	[Serializable]
 	public class GiveWeaponStatement : GiveStatement
 	{
-		public IExpression Id;
+		private IExpression Id;
 
 		public GiveWeaponStatement(IExpression id, IExpression a)
 		{
@@ -62,6 +76,13 @@ namespace LsnCore.Statements
 		{
 			i.GiveWeaponTo(Id.Eval(i), ((IntValue)Amount.Eval(i)).Value, Reciever.Eval(i));
 			return InterpretValue.Base;
+		}
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (Amount.Equals(oldExpr)) Amount = newExpr;
+			if (Reciever.Equals(oldExpr)) Reciever = newExpr;
+			if (Id.Equals(oldExpr)) Id = newExpr;
 		}
 	}
 	[Serializable]
@@ -76,6 +97,12 @@ namespace LsnCore.Statements
 		{
 			i.GiveGoldTo(((IntValue)Amount.Eval(i)).Value,Reciever.Eval(i));
 			return InterpretValue.Base;
+		}
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (Amount.Equals(oldExpr)) Amount = newExpr;
+			if (Reciever.Equals(oldExpr)) Reciever = newExpr;
 		}
 	}
 }

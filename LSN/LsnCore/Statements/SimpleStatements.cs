@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LsnCore.Expressions;
 
 namespace LsnCore.Statements
 {
@@ -13,6 +14,8 @@ namespace LsnCore.Statements
 	public class BreakStatement : Statement
 	{
 		public override InterpretValue Interpret(IInterpreter i) => InterpretValue.Break;
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 	}
 
 	/// <summary>
@@ -22,6 +25,8 @@ namespace LsnCore.Statements
 	public class NextStatement : Statement
 	{
 		public override InterpretValue Interpret(IInterpreter i) => InterpretValue.Next;
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 	}
 
 }

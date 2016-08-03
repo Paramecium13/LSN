@@ -26,5 +26,10 @@ namespace LsnCore.Statements
 			if(Value != null) i.ReturnValue = Value.Eval(i);
 			return InterpretValue.Return;
 		}
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (oldExpr.Equals(Value)) Value = newExpr;
+		}
 	}
 }

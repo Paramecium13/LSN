@@ -40,5 +40,9 @@ namespace LsnCore.Statements
 			Value = Value.Fold();
 		}
 
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (oldExpr.Equals(Value)) Value = newExpr;
+		}
 	}
 }

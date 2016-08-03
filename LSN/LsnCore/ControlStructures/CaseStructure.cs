@@ -22,5 +22,10 @@ namespace LsnCore.ControlStructures
 
 		public override InterpretValue Interpret(IInterpreter i)
 			=> Interpret(Components, i);
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (oldExpr.Equals(Value)) Value = newExpr;
+		}
 	}
 }

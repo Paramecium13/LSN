@@ -36,6 +36,15 @@ namespace LsnCore
 		public bool IsReifyTimeConst() => true;
 		public string TranslateUniversal() => Value.ToString();
 
+		public void Replace(IExpression oldExpr, IExpression newExpr){}
+
+		public bool Equals(IExpression other)
+		{
+			var e = other as IBoundValue<int>;
+			if (e == null) return false;
+			return e.Value == Value;
+		}
+
 		public static explicit operator int(IntValue v) => v.Value;
 		public static explicit operator double(IntValue v) => v.Value;
 
@@ -86,6 +95,14 @@ namespace LsnCore
 		public static explicit operator string(StringValue v) => v.Value;
 		public static explicit operator StringValue(string s) => new StringValue(s);
 
+		public void Replace(IExpression oldExpr, IExpression newExpr) { }
+
+		public bool Equals(IExpression other)
+		{
+			var e = other as IBoundValue<string>;
+			if (e == null) return false;
+			return e.Value == Value;
+		}
 	}
 
 	/// <summary>
@@ -113,6 +130,15 @@ namespace LsnCore
 		public static explicit operator double(DoubleValue v) => v.Value;
 
 		public static explicit operator DoubleValue(double v) => new DoubleValue(v);
+
+		public void Replace(IExpression oldExpr, IExpression newExpr) { }
+
+		public bool Equals(IExpression other)
+		{
+			var e = other as IBoundValue<double>;
+			if (e == null) return false;
+			return e.Value == Value;
+		}
 	}
 
 	/// <summary>
@@ -140,5 +166,15 @@ namespace LsnCore
 		public IExpression Fold() => this;
 		public bool IsReifyTimeConst() => true;
 		public string TranslateUniversal() => Value.ToString();
-    }
+
+
+		public void Replace(IExpression oldExpr, IExpression newExpr) { }
+
+		public bool Equals(IExpression other)
+		{
+			var e = other as IBoundValue<bool>;
+			if (e == null) return false;
+			return e.Value == Value;
+		}
+	}
 }
