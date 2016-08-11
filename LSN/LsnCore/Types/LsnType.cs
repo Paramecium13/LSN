@@ -194,6 +194,8 @@ namespace LsnCore
 		private static void SetUpMethods()
 		{
 			int_._Methods.Add("Abs", new BoundedMethod(int_,int_,(args)=>new IntValue(Math.Abs(((IntValue)args["self"]).Value))));
+
+
 			double_._Methods.Add("Abs", new BoundedMethod(double_, double_, 
 				(args) => new DoubleValue
 				(
@@ -201,13 +203,6 @@ namespace LsnCore
 					(
 						((DoubleValue)args["self"]).Value
 					)
-				)
-			));
-
-			double_._Methods.Add("Floor", new BoundedMethod(double_, int_,
-				(args) => new IntValue
-				(
-					(int)((DoubleValue)args["self"]).Value
 				)
 			));
 
@@ -221,17 +216,43 @@ namespace LsnCore
 				)
 			));
 
-			string_._Methods.Add("ToLower", new BoundedMethod(string_, string_,
-				(args) => new StringValue
+			double_._Methods.Add("Floor", new BoundedMethod(double_, int_,
+				(args) => new IntValue
 				(
-					((StringValue)args["self"]).Value.ToLower()
+					(int)((DoubleValue)args["self"]).Value
 				)
 			));
+
+			double_._Methods.Add("Round", new BoundedMethod(double_, int_,
+				(args) => new IntValue
+				(
+					(int)Math.Round
+					(
+						((DoubleValue)args["self"]).Value
+					)
+				)
+			));
+
 
 			string_._Methods.Add("Length", new BoundedMethod(string_, int_,
 				(args) => new IntValue
 				(
 					((StringValue)args["self"]).Value.Length
+				)
+			));
+
+			string_._Methods.Add("SubString", new BoundedMethod(string_, string_,
+				(args) => new StringValue
+				(
+					((StringValue)args["self"]).Value.Substring(((IntValue)args["start"]).Value,
+						((IntValue)args["length"]).Value)
+				)
+			,new List<Parameter>() { new Parameter("start",int_,null,0), new Parameter("length", int_,null,1)}));
+
+			string_._Methods.Add("ToLower", new BoundedMethod(string_, string_,
+				(args) => new StringValue
+				(
+					((StringValue)args["self"]).Value.ToLower()
 				)
 			));
 		}
