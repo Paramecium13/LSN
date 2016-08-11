@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasePreScript.cs" />
+    <Compile Include="CharStreamTokenizer.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Create.cs" />
     <Compile Include="Create_Statements.cs" />
