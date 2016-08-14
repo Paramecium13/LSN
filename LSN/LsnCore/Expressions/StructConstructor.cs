@@ -13,18 +13,36 @@ namespace LsnCore.Expressions
 
 		private readonly IDictionary<string, IExpression> Args;
 
+		private readonly IExpression[] ArgsB;
+
 		private readonly LsnStructType _Type;
 
 
 		public StructConstructor(LsnStructType type, IDictionary<string,IExpression> args)
 		{
 			_Type = type; Args = args;
+			ArgsB = new IExpression[args.Count];
+			int i = -1;
+			foreach (var pair in args)
+			{
+				i = type.GetIndex(pair.Key);
+				ArgsB[i] = pair.Value;
+			}
 		}
 
 		public override LsnType Type => _Type;
 
 		public override ILsnValue Eval(IInterpreter i)
-			=> new StructValue(_Type, Args.Select(p => new KeyValuePair<string, ILsnValue>(p.Key, p.Value.Eval(i))).ToDictionary());
+		//=> new StructValue(_Type, ArgsB.Select(e => e.Eval(i)).ToArray());
+		{
+			int length = ArgsB.Length;
+			ILsnValue[] values = new ILsnValue[length];
+			for(int j = 0; j < length; j++)
+			{
+				values[j] = ArgsB[j].Eval(i);
+			}
+			return new StructValue(_Type, values);
+		}
 
 		public override IExpression Fold()
 		{

@@ -32,7 +32,7 @@ namespace LSNr
 			SymbolPercent,
 			SymbolAnd,
 			SymbolOr,
-			SymbolAsterisk
+			SymbolAsterisk,
 			SymbolLess,
 			SymbolGreater,
 			SybolAt,

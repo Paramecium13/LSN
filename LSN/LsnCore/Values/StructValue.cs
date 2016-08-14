@@ -7,9 +7,10 @@ using LsnCore.Types;
 namespace LsnCore
 {
 	[Serializable]// ToDo: change to class, pass by ref...
-	public struct StructValue : ILsnValue, IHasFieldsValue
+	public class StructValue : ILsnValue, IHasFieldsValue
 	{
 		private readonly IDictionary<string, ILsnValue> Members;
+		private readonly ILsnValue[] Fields;
 
 		private readonly LsnStructType _Type;
 		public LsnType Type => _Type;
@@ -27,7 +28,15 @@ namespace LsnCore
 			}
 		}
 
-		public ILsnValue GetValue(string name) => Members[name];
+		public StructValue(LsnStructType type, ILsnValue[] values)
+		{
+			_Type = type; Fields = values;
+		}
+
+		public ILsnValue GetValue(string name)
+			=> GetValue(_Type.GetIndex(name));
+
+		public ILsnValue GetValue(int index) => Fields[index];
 
 		/// <summary>
 		/// Create a new struct, 
@@ -46,7 +55,7 @@ namespace LsnCore
 			return new StructValue((LsnStructType)Type, dict);
 		}
 
-		public ILsnValue Clone() => new StructValue(_Type, Members);
+		public ILsnValue Clone() => this;//new StructValue(_Type, Members);
 
 		public ILsnValue DeepClone()
 		{

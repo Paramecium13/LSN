@@ -13,6 +13,7 @@ namespace LsnCore.Expressions
 	{
 		private IExpression Value;
 		private readonly string FieldName;
+		private readonly int Index;
 
 		public FieldAccessExpression(IExpression value, string name, LsnType type)
 		{
