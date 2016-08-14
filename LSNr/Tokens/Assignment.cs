@@ -9,10 +9,11 @@ namespace Tokens.Tokens
 	public struct Assignment : IToken
 	{
 		public string Value { get; set; }
+		public int LineNumber { get; }
 
-		public Assignment(string s)
+		public Assignment(string s, int line = 0)
 		{
-			Value = s;
+			Value = s; LineNumber = line;
 		}
 
 		public bool Equals(IToken other)

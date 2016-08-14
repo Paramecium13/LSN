@@ -9,6 +9,7 @@ namespace Tokens
 	public interface IToken : IEquatable<IToken>
 	{
 		string Value { get; }
+		int LineNumber { get; }
 	}
 
 	public static class TokenExtensions

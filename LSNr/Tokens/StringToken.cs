@@ -9,10 +9,11 @@ namespace Tokens.Tokens
 	public struct StringToken : IToken
 	{
 		public string Value { get; set; }
+		public int LineNumber { get; }
 
-		public StringToken(string s)
+		public StringToken(string s, int line = 0)
 		{
-			Value = s;
+			Value = s; LineNumber = line;
 		}
 
 		public bool Equals(IToken other)

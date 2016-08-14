@@ -9,17 +9,18 @@ namespace Tokens.Tokens
 	public struct IntToken : IToken
 	{
 		public string Value { get; private set; }
+		public int LineNumber { get; }
 		public readonly int IVal;
 
-		public IntToken(string s)
+		public IntToken(string s, int line = 0)
 		{
-			Value = s;
+			Value = s; LineNumber = line;
 			IVal = int.Parse(s);
 		}
 
-		public IntToken(int i)
+		public IntToken(int i, int line = 0)
 		{
-			Value = i.ToString();
+			Value = i.ToString(); LineNumber = line;
 			IVal = i;
 		}
 

@@ -9,11 +9,11 @@ namespace Tokens.Tokens
 	public struct SubToken : IToken
 	{
 		public string Value { get; set; }
+		public int LineNumber { get; }
 
-		public SubToken(string value)
+		public SubToken(string value, int line = 0)
 		{
-			Value = value;
-			//Value = Preprocessor.Subs[s];
+			Value = value; LineNumber = line;
 		}
 
 		public bool Equals(IToken other)

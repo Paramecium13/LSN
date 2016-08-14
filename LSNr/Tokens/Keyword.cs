@@ -9,9 +9,11 @@ namespace Tokens.Tokens
 	public struct Keyword : IToken
 	{
 		public string Value { get; set; }
-		public Keyword(string t)
+		public int LineNumber { get; }
+
+		public Keyword(string t, int line = 0)
 		{
-			Value = t;
+			Value = t; LineNumber = line;
 		}
 
 		public bool Equals(IToken other)

@@ -9,10 +9,11 @@ namespace Tokens.Tokens
 	public struct Operator : IToken
 	{
 		public string Value { get; set; }
+		public int LineNumber { get; }
 
-		public Operator(string t)
+		public Operator(string t, int line = 0)
 		{
-			Value = t;
+			Value = t; LineNumber = line;
 		}
 
 
