@@ -11,6 +11,50 @@ namespace LSNr
 {
 	public class CharStreamTokenizer
 	{
+
+		private readonly static char[] OtherOperators = new char[] {
+			'^','~','∈','∊','∋','∍','⊂','⊃'
+		};
+
+		private readonly static char[] Symbols = new char[] {
+			'+','-','*','/','%',/*'^'*/'>','<','~','!',':','?','@','$','=','|','&'
+		};
+
+		private readonly static char[] SyntaxSymbols = new char[] {
+			'(',')','{','}','[',']',',',';',':','`'
+		};
+
+		private static readonly string[] Keywords = new string[]
+		{
+			//Core Language stuff
+			"if", "else","elsif","let","mut","unless","struct","fn","for","match",
+			"foreach","return","new","choose","turn","quest","virtual","stage","state",
+			"record","repeat","is",
+
+			//Statement headers
+			"give","rotate","publish","add","remove","callcommonevent","cce","recover",
+			"goto","open","fadein","fadeout","tint","flash","shake","play","show","end","exit",
+			"wait","start","stop","change","say","turn",//move
+
+			//Statement stuff
+			"item","weapon","armor","armour","actor","video","image","me","se","bgm",
+			"screen","moveroute","animation","ballon","picture","battle","shop","menu",
+			"encounter","graphic","with","as","down","left","right","up","graphic",
+			"direction","fix","route",
+
+			//both
+			"hp","level","lvl","exp","mp","skill","ability","g","gvar","gswitch","class",//"name",
+			"nickname","state","tileset","off","on",
+
+			//Get expression stuff
+			"get","mapid","playtime","savecount","battlecount","number","of","keyitem","timer",
+			"input","terraintag","region","at","tileid",
+
+			//Things
+			"my","common","all"
+			//"int","double","num","complex","bool","string",
+		};
+
 		protected enum TokenizerState
 		{
 			Begin,
@@ -37,6 +81,7 @@ namespace LSNr
 			SymbolGreater,
 			SybolAt,
 			SymbolSlash,
+			SymbolExclamation,
 			/// <summary>
 			/// The last symbol state.
 			/// </summary>
@@ -70,21 +115,195 @@ namespace LSNr
 
 		protected IToken PreviousToken;
 
+		protected bool CanBeNegativeSign = false;
+
 		protected readonly StringBuilder StrB = new StringBuilder();
 
 		protected readonly StringBuilder UEscStrB = new StringBuilder();
 
 		private readonly Action<IToken> TokenOutput;
 
+		private int LineNumber = 1;
+
+
+
+
 
 		protected void ReadChar(char c)
 		{
-
+			if (c == '\n') LineNumber++;
+			if (State < TokenizerState.CommentSingleLine)
+				BaseReadChar(c);
+			else if (State < TokenizerState.SymbolPlus)
+				CommentReadChar(c);
+			else if (State < TokenizerState.StringBase)
+				SymReadChar(c);
+			else StrReadChar(c);
+			
 		}
 
 		protected void BaseReadChar(char c)
 		{
+			if(char.IsWhiteSpace(c))
+			{
+				Pop();
+				return;
+			}
+			if (Symbols.Contains(c))
+			{
+				Pop();
+				SymReadInitChar(c);
+				return;
+			}
+			if (OtherOperators.Contains(c)) // It's a one char operator.
+			{
+				Pop();
+				tokenType = TokenType.Operator;
+				Push(c);Pop();
+				return;
+			}
+			if (SyntaxSymbols.Contains(c))
+			{
+				Pop();
+				tokenType = TokenType.SyntaxSymbol;
+				Push(c); Pop();
+				return;
+			}
+			switch (State)
+			{
+				case TokenizerState.Begin:
+					if (char.IsDigit(c))
+					{
+						State = TokenizerState.Number;
+						tokenType = TokenType.Int;
+					}
+					else if (c == '.')
+					{
+						Push('.');
+						tokenType = TokenType.SyntaxSymbol;
+						Pop();
+					}
+					else
+					{
+						Push(c);
+						State = TokenizerState.Word;
+						tokenType = TokenType.Word;
+					}
+					break;
+				case TokenizerState.Base:
+					if(char.IsDigit(c))
+					{
+						State = TokenizerState.Number;
+						tokenType = TokenType.Int;
+					}
+					else if (c == '.')
+					{
+						Push('.');
+						tokenType = TokenType.SyntaxSymbol;
+						Pop();
+					}
+					else
+					{
+						Push(c);
+						State = TokenizerState.Word;
+						tokenType = TokenType.Word;
+					}
+					break;
+				case TokenizerState.Word:
+					if (char.IsWhiteSpace(c))
+					{
+						Pop();
+					}
+					else if (c == '.')
+					{
+						Pop();
+						Push('.');
+						tokenType = TokenType.SyntaxSymbol;
+						Pop();
+					}
+					else Push(c);
+					break;
+				case TokenizerState.Number:
+					if (Char.IsDigit(c))
+						Push(c);
+					else if (c == '.')
+					{
+						Push(c);
+						State = TokenizerState.Decimal;
+						tokenType = TokenType.Float;
+					}
+					else if (char.IsWhiteSpace(c))
+					{
+						Pop();
+					}
+					else
+						throw new ApplicationException();
+					break;
+				case TokenizerState.Decimal:
+					if (Char.IsDigit(c))
+						Push(c);
+					else if (char.IsWhiteSpace(c))
+					{
+						Pop();
+					}
+					else
+						throw new ApplicationException();
+					break;
+				default:
+					break;
+			}
+		}
 
+		/// <summary>
+		/// Reads the first symbol char in a possible long symbol.
+		/// </summary>
+		/// <param name="c"></param>
+		protected void SymReadInitChar(char c)
+		{
+			Push(c);
+			tokenType = TokenType.Operator;
+			switch (c)
+			{
+				//'~',':','?','@','$'
+				case '+':
+					State = TokenizerState.SymbolPlus;
+					break;
+				case '-':
+					State = TokenizerState.SymbolMinus;
+					break;
+				case '*':
+					State = TokenizerState.SymbolAsterisk;
+					break;
+				case '/':
+					State = TokenizerState.SymbolSlash;
+					break;
+				case '%':
+					State = TokenizerState.SymbolPercent;
+					break;
+				case '>':
+					State = TokenizerState.SymbolGreater;
+					break;
+				case '<':
+					State = TokenizerState.SymbolLess;
+					break;
+				case '!':
+					State = TokenizerState.SymbolExclamation;
+					break;
+				case '=':
+					State = TokenizerState.SymbolEquals;
+					break;
+				case '|':
+					State = TokenizerState.SymbolOr;
+					break;
+				case '&':
+					State = TokenizerState.SymbolAnd;
+					break;
+				case '@':
+					State = TokenizerState.SybolAt;
+					break;
+				default:
+					break;
+			}
 		}
 
 		protected void StrReadChar(char c)
@@ -183,7 +402,6 @@ namespace LSNr
 			switch (State)
 			{
 				case TokenizerState.SymbolPlus:
-
 					if (c == '=')
 					{
 						Push('+');
@@ -218,22 +436,115 @@ namespace LSNr
 					}
 					break;
 				case TokenizerState.SymbolPercent:
+					if (c == '=')
+					{
+						Push('=');
+						tokenType = TokenType.Assignment;
+						Pop();
+					}
+					else
+					{
+						tokenType = TokenType.Operator;
+						Pop();
+						BaseReadChar(c);
+					}
 					break;
 				case TokenizerState.SymbolAnd:
 					break;
 				case TokenizerState.SymbolOr:
 					break;
 				case TokenizerState.SymbolAsterisk:
+					if (c == '=')
+					{
+						Push('=');
+						tokenType = TokenType.Assignment;
+						Pop();
+					}
+					else
+					{
+						tokenType = TokenType.Operator;
+						Pop();
+						BaseReadChar(c);
+					}
 					break;
 				case TokenizerState.SymbolLess:
+					tokenType = TokenType.Operator;
+					if (c == '=')
+					{
+						Push('=');
+						Pop();
+					}
+					else
+					{
+						Pop();
+						BaseReadChar(c);
+					}
 					break;
 				case TokenizerState.SymbolGreater:
+					if (c == '=')
+					{
+						Push('=');
+						Pop();
+					}
+					else
+					{
+						Pop();
+						BaseReadChar(c);
+					}
 					break;
 				case TokenizerState.SybolAt:
+					if(c=='\"')
+					{
+						throw new NotImplementedException();
+					}
 					break;
 				case TokenizerState.SymbolSlash:
+					if (c == '=')
+					{
+						Push('=');
+						tokenType = TokenType.Assignment;
+						Pop();
+					}
+					else
+					{
+						tokenType = TokenType.Operator;
+						Pop();
+						BaseReadChar(c);
+					}
+					break;
+				case TokenizerState.SymbolExclamation:
+					tokenType = TokenType.Operator;
+					if (c == '=')
+					{
+						Push('=');
+						Pop();
+					}
+					else Pop();
 					break;
 				case TokenizerState.SymbolMinus:
+					if (c == '=')
+					{
+						Push('=');
+						tokenType = TokenType.Assignment;
+						Pop();
+					}
+					else if (c == '-')
+					{
+						Push('-');
+						tokenType = TokenType.Assignment;
+						Pop();
+					}
+					else if(CanBeNegativeSign && char.IsDigit(c))
+					{
+						Push(c);
+						State = TokenizerState.Number;
+					}
+					else
+					{
+						tokenType = TokenType.Operator;
+						Pop();
+						BaseReadChar(c);
+					}
 					break;
 				default:
 					break;
@@ -270,6 +581,7 @@ namespace LSNr
 
 		protected void Pop()
 		{
+			CanBeNegativeSign = false;
 			var str = StrB.ToString();
 			IToken token;
 			switch (tokenType)
@@ -277,24 +589,31 @@ namespace LSNr
 				case TokenType.Unknown:
 					throw new ApplicationException();
 				case TokenType.Word:
-					throw new NotImplementedException();
+					if (Keywords.Contains(str.ToLower()))
+						token = new Keyword(str.ToLower(), LineNumber);
+					else
+						token = new Identifier(str, LineNumber);
+					break;
 				case TokenType.Float:
-					token = new FloatToken(str);
+					token = new FloatToken(str, LineNumber);
 					break;
 				case TokenType.Int:
-					token = new IntToken(str);
+					token = new IntToken(str, LineNumber);
 					break;
 				case TokenType.String:
-					token = new StringToken(str);
+					token = new StringToken(str, LineNumber);
 					break;
 				case TokenType.Assignment:
-					token = new Assignment(str);
+					token = new Assignment(str, LineNumber);
+					CanBeNegativeSign = true;
 					break;
 				case TokenType.Operator:
-					token = new Operator(str);
+					token = new Operator(str, LineNumber);
+					CanBeNegativeSign = true;
 					break;
 				case TokenType.SyntaxSymbol:
-					token = new SyntaxSymbol(str);
+					token = new SyntaxSymbol(str, LineNumber);
+					CanBeNegativeSign = true;
 					break;
 				default:
 					throw new ApplicationException();
