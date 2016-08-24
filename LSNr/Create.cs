@@ -193,7 +193,7 @@ namespace LSNr
 			if (script.CurrentScope.VariableExists(val))
 			{
 				var v = script.CurrentScope.GetVariable(val);
-				if (!v.Mutable && v.InitialValue.IsReifyTimeConst())
+				if (!v.Mutable && (v.InitialValue?.IsReifyTimeConst() ?? false))
 					return v.InitialValue.Fold();
 				var expr = v.GetAccessExpression();//new VariableExpression(v.Name, v.Type);
 				if (container != null) v.AddUser(container);

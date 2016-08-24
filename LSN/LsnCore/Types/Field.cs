@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Types
 {
+	[Serializable]
 	public struct Field
 	{
 		public readonly int Index;

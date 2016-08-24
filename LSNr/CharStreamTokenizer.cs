@@ -18,7 +18,7 @@ namespace LSNr
 		};
 
 		private readonly static char[] Symbols = new char[] {
-			'+','-','*','/','%',/*'^'*/'>','<','~','!',':','?','@','$','=','|','&'
+			'+','-','*','/','%',/*'^'*/'>','<','~','!',/*':',*/'?','@','$','=','|','&'
 		};
 
 		private readonly static char[] SyntaxSymbols = new char[] {
@@ -175,14 +175,23 @@ namespace LSNr
 			{
 				Pop();
 				tokenType = TokenType.Operator;
-				Push(c);Pop();
+				Push(c);
+				Pop();
 				return;
 			}
 			if (SyntaxSymbols.Contains(c))
 			{
 				Pop();
 				tokenType = TokenType.SyntaxSymbol;
-				Push(c); Pop();
+				Push(c);
+				Pop();
+				return;
+			}
+			if(c == '"')
+			{
+				Pop();
+				State = TokenizerState.StringBase;
+				tokenType = TokenType.String;
 				return;
 			}
 			switch (State)
@@ -190,6 +199,7 @@ namespace LSNr
 				case TokenizerState.Begin:
 					if (char.IsDigit(c))
 					{
+						Push(c);
 						State = TokenizerState.Number;
 						tokenType = TokenType.Int;
 					}
@@ -209,6 +219,7 @@ namespace LSNr
 				case TokenizerState.Base:
 					if(char.IsDigit(c))
 					{
+						Push(c);
 						State = TokenizerState.Number;
 						tokenType = TokenType.Int;
 					}
@@ -322,99 +333,15 @@ namespace LSNr
 			}
 		}
 
-		protected void StrReadChar(char c)
-		{
-			switch (State)
-			{
-				case TokenizerState.StringBase:
-					if (c == '\\')
-						State = TokenizerState.StringEsc;
-					else if(c == '\"')
-					{
-						Pop();
-					}
-					else
-						Push(c);
-					break;
-				case TokenizerState.StringEsc:
-					switch (c)
-					{
-						case '\'':
-							Push('\'');
-							State = TokenizerState.StringBase;
-							break;
-						case '\"':
-							Push('\"');
-							State = TokenizerState.StringBase;
-							break;
-						case '\\':
-							Push('\\');
-							State = TokenizerState.StringBase;
-							break;
-						case '0':
-							Push('\0');
-							State = TokenizerState.StringBase;
-							break;
-						case 'a':
-							Push('\a');
-							State = TokenizerState.StringBase;
-							break;
-						case 'f':
-							Push('\f');
-							State = TokenizerState.StringBase;
-							break;
-						case 'n':
-							Push('\n');
-							State = TokenizerState.StringBase;
-							break;
-						case 'r':
-							Push('\r');
-							State = TokenizerState.StringBase;
-							break;
-						case 't':
-							Push('\t');
-							State = TokenizerState.StringBase;
-							break;
-						case 'v':
-							Push('\v');
-							State = TokenizerState.StringBase;
-							break;
-						case 'u':
-							State = TokenizerState.StringU0;
-							break;
-						default:
-							throw new ApplicationException();
-					}
-					break;
-				case TokenizerState.StringU0:
-					UEscStrB.Append(c);
-					State = TokenizerState.StringU1;
-					break;
-				case TokenizerState.StringU1:
-					UEscStrB.Append(c);
-					State = TokenizerState.StringU2;
-					break;
-				case TokenizerState.StringU2:
-					UEscStrB.Append(c);
-					State = TokenizerState.StringU3;
-					break;
-				case TokenizerState.StringU3:
-					UEscStrB.Append(c);
-					int i;
-					if (int.TryParse(UEscStrB.ToString(), System.Globalization.NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out i))
-						Push((char)i);
-					else
-						throw new ApplicationException();
-					UEscStrB.Clear();
-					State = TokenizerState.StringBase;
-					break;
-				default:
-					break;
-			}
-		}
-
 		protected void SymReadChar(char c)
 		{
+			if (c == '"')
+			{
+				Pop();
+				State = TokenizerState.StringBase;
+				tokenType = TokenType.String;
+				return;
+			}
 			switch (State)
 			{
 				case TokenizerState.SymbolPlus:
@@ -550,6 +477,12 @@ namespace LSNr
 						tokenType = TokenType.Assignment;
 						Pop();
 					}
+					else if (c == '>')
+					{
+						Push('>');
+						tokenType = TokenType.SyntaxSymbol;
+						Pop();
+					}
 					else if(CanBeNegativeSign && char.IsDigit(c))
 					{
 						Push(c);
@@ -561,6 +494,97 @@ namespace LSNr
 						Pop();
 						BaseReadChar(c);
 					}
+					break;
+				default:
+					break;
+			}
+		}
+
+		protected void StrReadChar(char c)
+		{
+			switch (State)
+			{
+				case TokenizerState.StringBase:
+					if (c == '\\')
+						State = TokenizerState.StringEsc;
+					else if(c == '\"')
+					{
+						Pop();
+					}
+					else
+						Push(c);
+					break;
+				case TokenizerState.StringEsc:
+					switch (c)
+					{
+						case '\'':
+							Push('\'');
+							State = TokenizerState.StringBase;
+							break;
+						case '\"':
+							Push('\"');
+							State = TokenizerState.StringBase;
+							break;
+						case '\\':
+							Push('\\');
+							State = TokenizerState.StringBase;
+							break;
+						case '0':
+							Push('\0');
+							State = TokenizerState.StringBase;
+							break;
+						case 'a':
+							Push('\a');
+							State = TokenizerState.StringBase;
+							break;
+						case 'f':
+							Push('\f');
+							State = TokenizerState.StringBase;
+							break;
+						case 'n':
+							Push('\n');
+							State = TokenizerState.StringBase;
+							break;
+						case 'r':
+							Push('\r');
+							State = TokenizerState.StringBase;
+							break;
+						case 't':
+							Push('\t');
+							State = TokenizerState.StringBase;
+							break;
+						case 'v':
+							Push('\v');
+							State = TokenizerState.StringBase;
+							break;
+						case 'u':
+							State = TokenizerState.StringU0;
+							break;
+						default:
+							throw new ApplicationException();
+					}
+					break;
+				case TokenizerState.StringU0:
+					UEscStrB.Append(c);
+					State = TokenizerState.StringU1;
+					break;
+				case TokenizerState.StringU1:
+					UEscStrB.Append(c);
+					State = TokenizerState.StringU2;
+					break;
+				case TokenizerState.StringU2:
+					UEscStrB.Append(c);
+					State = TokenizerState.StringU3;
+					break;
+				case TokenizerState.StringU3:
+					UEscStrB.Append(c);
+					int i;
+					if (int.TryParse(UEscStrB.ToString(), System.Globalization.NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out i))
+						Push((char)i);
+					else
+						throw new ApplicationException();
+					UEscStrB.Clear();
+					State = TokenizerState.StringBase;
 					break;
 				default:
 					break;
@@ -603,6 +627,13 @@ namespace LSNr
 			switch (tokenType)
 			{
 				case TokenType.Unknown:
+					if(str == "")
+					{
+						tokenType = TokenType.Unknown;
+						State = TokenizerState.Base;
+						StrB.Clear();
+						return;
+					}
 					throw new ApplicationException();
 				case TokenType.Word:
 					if (Keywords.Contains(str.ToLower()))

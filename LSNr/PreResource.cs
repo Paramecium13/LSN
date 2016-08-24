@@ -379,7 +379,7 @@ namespace LSNr
 				if (tokens[i++].Value != ":") // Make sure the next token is ':', move on to the next token.
 				{
 					Valid = false;
-					Console.WriteLine($"Error in {typeOfType} {name}: unexpected token {tokens[i - 1]}, expected \':\'");
+					Console.WriteLine($"Error in {typeOfType} {name}: unexpected token {tokens[i - 1].Value}, expected \':\'");
 					return null;
 				}
 				if (i >= tokens.Count) // Make sure the definition does not end.
