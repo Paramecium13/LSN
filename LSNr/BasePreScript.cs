@@ -62,7 +62,12 @@ namespace LSNr
 		/// <summary>
 		/// 
 		/// </summary>
-		protected void Tokenize() { Tokens = Tokenizer.Tokenize(Text); }
+		protected void Tokenize()
+		{
+			//Tokens = Tokenizer.Tokenize(Text);
+			var tokenizer = new CharStreamTokenizer();
+			Tokens = tokenizer.Tokenize(Text);
+		}
 
 		protected void Include(LsnResourceThing resource)
 		{

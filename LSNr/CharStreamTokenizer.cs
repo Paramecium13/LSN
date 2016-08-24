@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -113,7 +114,7 @@ namespace LSNr
 
 		protected TokenizerState State;
 
-		protected IToken PreviousToken;
+		//protected IToken PreviousToken;
 
 		protected bool CanBeNegativeSign = false;
 
@@ -123,10 +124,25 @@ namespace LSNr
 
 		private readonly Action<IToken> TokenOutput;
 
+		private readonly List<IToken> Tokens;
+
 		private int LineNumber = 1;
 
 
+		internal CharStreamTokenizer()
+		{
+			Tokens = new List<IToken>();
+			TokenOutput = (t) => Tokens.Add(t);
+		}
 
+
+		internal IReadOnlyList<IToken> Tokenize(string src)
+		{
+			int lngth = src.Length;
+			for (int i = 0; i < lngth; i++)
+				ReadChar(src[i]);
+			return Tokens;
+		}
 
 
 		protected void ReadChar(char c)
@@ -618,7 +634,7 @@ namespace LSNr
 				default:
 					throw new ApplicationException();
 			}
-			PreviousToken = token;
+			//PreviousToken = token;
 			TokenOutput(token);
 			tokenType = TokenType.Unknown;
 			State = TokenizerState.Base;
