@@ -64,11 +64,11 @@ namespace LsnCore
 			if (function.Parameters.Count != Parameters.Count || Parameters.All(p => function.Parameters.Any(q => q.Name == p.Name && q.Type == p.Type))
 				|| function.Parameters.All(p => Parameters.Any(q => q.Name == p.Name && q.Type == p.Type)))
 				throw new ApplicationException("Error: attempted to resolve the external function \"{Name}\" to a function whose parameters do not match its parameters.");
-
-			if (function is ExternalFunction)
+			var extf = function as ExternalFunction;
+			if (extf != null)
 			{
 				// Throw exception?
-				if ((function as ExternalFunction).IsResolved) Resolve((function as ExternalFunction).External, suppressNameMatching);
+				if (extf.IsResolved) Resolve(extf.External, true);
 				else throw new ApplicationException($"Error: attempted to resolve the external function \"{Name}\" with an unresolved external function.");
 			}
 			else
@@ -81,8 +81,10 @@ namespace LsnCore
 
 		public override ILsnValue Eval(Dictionary<string, ILsnValue> args, IInterpreter i)
 		{
+#if DEBUG
 			if (External == null)
 				throw new ApplicationException("Unresolved external function:" + Name);
+#endif
 			return External.Eval(args, i);
 		}
 

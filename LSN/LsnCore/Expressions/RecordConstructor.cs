@@ -16,6 +16,7 @@ namespace LsnCore.Expressions
 		private readonly RecordType _Type;
 
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public RecordConstructor(RecordType type, IDictionary<string, IExpression> args)
 		{
 			Type = type; Args = args;

@@ -13,6 +13,7 @@ namespace LsnCore.Expressions
 
 		private Dictionary<string, IExpression> Args;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public FunctionCall(Function fn, Dictionary<string,IExpression> args, bool include = false)
 		{
 			if (include) Fn = fn;
@@ -21,6 +22,7 @@ namespace LsnCore.Expressions
 			Type = fn.ReturnType;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		private FunctionCall(string fnName, Dictionary<string,IExpression> args, LsnType type = null)
 		{
 			FnName = fnName;

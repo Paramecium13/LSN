@@ -9,6 +9,7 @@ namespace LsnCore.Expressions
 	{
 		public string Name { get; private set; }
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public VariableExpression(string name, LsnType type)
 		{
 			Name = name;

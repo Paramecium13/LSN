@@ -15,6 +15,7 @@ namespace LsnCore.Expressions
 		private readonly string FieldName;
 		private readonly int Index;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public FieldAccessExpression(IExpression value, string name, LsnType type)
 		{
 			Value = value;

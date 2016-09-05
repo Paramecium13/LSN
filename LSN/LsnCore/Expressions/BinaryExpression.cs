@@ -29,6 +29,7 @@ namespace LsnCore.Expressions
 		private BinOp Operation;
 
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public BinaryExpression(IExpression left, IExpression right, BinOp operation,
 			LsnType type)
 		{

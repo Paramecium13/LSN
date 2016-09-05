@@ -22,6 +22,7 @@ namespace LsnCore.Expressions
 		/// <param name="collection"> The collection expression.</param>
 		/// <param name="index"> The index expression.</param>
 		/// <param name="type"> The type of the value contained in the collection.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public CollectionValueAccessExpression(IExpression collection, IExpression index, LsnType type)
 		{
 			Collection = collection; Index = index; Type = type;

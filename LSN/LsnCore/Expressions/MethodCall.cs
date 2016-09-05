@@ -21,6 +21,7 @@ namespace LsnCore.Expressions
 		private readonly Method M;
 		private readonly string MethodName;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public MethodCall(Method m, IExpression value, Dictionary<string, IExpression> args = null)
 		{
 			Value = value;
@@ -30,6 +31,7 @@ namespace LsnCore.Expressions
 			Type = m.ReturnType;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public MethodCall(string name, IExpression value, LsnType type, Dictionary<string, IExpression> args = null)
 		{
 			Value = value;
