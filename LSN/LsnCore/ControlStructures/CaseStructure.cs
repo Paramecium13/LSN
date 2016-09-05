@@ -12,8 +12,8 @@ namespace LsnCore.ControlStructures
 	public class CaseStructure : ControlStructure
 	{
 		private IExpression _Value;
-		internal IExpression Value { get { return _Value; } private set { _Value = value; } }
-		private readonly IReadOnlyList<Component> Components;
+		public IExpression Value { get { return _Value; } private set { _Value = value; } }
+		public readonly IReadOnlyList<Component> Components;
 
 		public CaseStructure(IExpression value, List<Component> components)
 		{

@@ -12,13 +12,13 @@ namespace LsnCore.ControlStructures
 	public class IfElseControl : ControlStructure
 	{
 		public IExpression Condition { get; set; }
-		public List<Component> Body;
-		public List<ElsifControl> Elsifs = new List<ElsifControl>();
-		public List<Component> ElseBlock;
+		public readonly List<Component> Body;
+		public readonly List<ElsifControl> Elsifs = new List<ElsifControl>();
+		public readonly List<Component> ElseBlock;
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException(); //ToDo: Implement
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
@@ -51,8 +51,8 @@ namespace LsnCore.ControlStructures
 	[Serializable]
 	public class ElsifControl : ControlStructure
 	{
-		internal IExpression Condition;
-		internal List<Component> Body;
+		public IExpression Condition;
+		public List<Component> Body;
 
 		public ElsifControl(IExpression c, List<Component> body)
 		{

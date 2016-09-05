@@ -15,15 +15,15 @@ namespace LsnCore.ControlStructures
 	public class ForLoop : ControlStructure
 	{
 
-		private string VarName;
+		public readonly string VarName;
 
-		private IExpression VarValue;
+		public IExpression VarValue;
 
-		private IExpression Condition;
+		public IExpression Condition;
 		
-		private List<Component> Body;
+		public readonly List<Component> Body;
 
-		private Statement Post;
+		public Statement Post;
 
 
 		public ForLoop(string varName,IExpression val, IExpression con, List<Component> body, Statement post)

@@ -29,11 +29,14 @@ namespace LsnCore.Expressions
 		private BinOp Operation;
 
 
+		public readonly Operator Operator;
+
+
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public BinaryExpression(IExpression left, IExpression right, BinOp operation,
-			LsnType type)
+			LsnType type, Operator op)
 		{
-			Left = left; Right = right; Operation = operation; Type = type;
+			Left = left; Right = right; Operation = operation; Type = type; Operator = op;
 		}
 
 		public override bool IsReifyTimeConst()

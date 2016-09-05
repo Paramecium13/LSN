@@ -391,7 +391,7 @@ namespace LSNr
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
 					var opr = left.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2);
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
@@ -420,7 +420,7 @@ namespace LSNr
 						throw new ApplicationException(
 							$"The operator ^ is not defined for type {left.Type.Name} and {right.Type.Name}.");
 					var opr = left.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2);
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, LsnCore.Operator.Power);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
@@ -453,7 +453,7 @@ namespace LSNr
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
 					var opr = left.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2);
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
@@ -490,7 +490,7 @@ namespace LSNr
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
 					var opr = left.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2);
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
 					var name = SUB + SubCount++;
 					if(newTokens.Count > 0) newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);

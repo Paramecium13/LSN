@@ -13,14 +13,18 @@ namespace LsnCore.ControlStructures
 	[Serializable]
 	public class MatchStructure : ControlStructure
 	{
-		private string VariableName;
+		public readonly string VariableName;
+
+		//ToDo: Use variable access expression.
 
 		/// <summary>
 		/// For when variables are assigned to indexes.
 		/// </summary>
 		private int VariableIndex;
 
-		private List<CaseStructure> Cases = new List<CaseStructure>();
+		public readonly List<CaseStructure> Cases = new List<CaseStructure>();
+
+		
 
 
 		public MatchStructure(string variable, IList<Component> components)

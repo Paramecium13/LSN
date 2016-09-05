@@ -10,7 +10,7 @@ namespace LsnCore.ControlStructures
 	[Serializable]
 	public class ChoicesBlockControl : ControlStructure
 	{
-		private List<Choice> Choices = new List<Choice>();
+		public readonly List<Choice> Choices = new List<Choice>();
 
 		public ChoicesBlockControl(List<Component> components)
 		{

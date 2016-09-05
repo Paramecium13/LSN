@@ -12,8 +12,8 @@ namespace LsnCore.ControlStructures
 	/// </summary>
 	public class WhileLoop : ControlStructure
 	{
-		private IExpression Condition;
-		private List<Component> Body;
+		public IExpression Condition;
+		public readonly List<Component> Body;
 
 		public WhileLoop(IExpression condition, List<Component> body)
 		{
