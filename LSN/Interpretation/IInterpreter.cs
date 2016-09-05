@@ -21,7 +21,7 @@ namespace LsnCore
 
 		//void AddVariable(int id, IntValue val, object dummyParam);
 
-
+		
 		//void AllocArray(LSN_Type type, int number, int id);
 
 
@@ -33,7 +33,7 @@ namespace LsnCore
 		/// <summary>
 		/// Enters a new scope for interpreting a function. Previously defined variables are inaccessable.
 		/// </summary>
-		void EnterFunctionScope(LsnEnvironment env);
+		void EnterFunctionScope(LsnEnvironment env, int scopeSize);
 
 		/// <summary>
 		/// Enters a new scope, that still has access to variables defined in the previuos scope.
@@ -62,6 +62,21 @@ namespace LsnCore
 		/// <param name="name">The name of the variable whose value is requested.</param>
 		/// <returns>The value of the variable.</returns>
 		ILsnValue GetValue(string name);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		ILsnValue GetValue(int index);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="index"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		void SetValue(int index, ILsnValue value);
 
 		/// <summary>
 		/// Get a function.

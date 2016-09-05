@@ -53,8 +53,7 @@ namespace LSNr
 			IExpression value = Express(tokens.Skip(nameindex + 2).ToList(), script);
 			LsnType type = value.Type;
 			var st = new AssignmentStatement(name, value);
-			var v = new Variable(name, mutable, value, st);
-			script.CurrentScope.AddVariable(v);
+			script.CurrentScope.CreateVariable(name, mutable, value, st);
 			return st;
 		}
 

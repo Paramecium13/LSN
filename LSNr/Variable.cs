@@ -76,12 +76,13 @@ namespace LSNr
 			Name = param.Name;
 			Type = param.Type;
 			Mutable = false;
-			AccessExpression = new VariableExpression(Name, Type);
+			AccessExpression = new VariableExpressionB(Index, Type);
+			Index = param.Index;
 		}
 
 		public bool Const()
 		{
-			return (!Mutable && InitialValue.IsReifyTimeConst());
+			return (!Mutable && (InitialValue?.IsReifyTimeConst() ?? false));
 		}
 
 

@@ -17,7 +17,9 @@ namespace LsnCore
 		public LsnType ReturnType { get; protected set; }
 		private readonly List<Parameter> _Parameters;
 		public IReadOnlyList<Parameter> Parameters => _Parameters;
-		
+		public int StackSize { get; set; }
+
+
 		public Function(List<Parameter> parameters)
 		{
 			_Parameters = parameters;

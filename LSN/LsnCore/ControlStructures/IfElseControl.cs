@@ -48,7 +48,7 @@ namespace LsnCore.ControlStructures
 			if (Condition.Equals(oldExpr)) Condition = newExpr;
 		}
 	}
-
+	[Serializable]
 	public class ElsifControl : ControlStructure
 	{
 		internal IExpression Condition;

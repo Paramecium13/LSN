@@ -30,7 +30,7 @@ namespace LSNr
 			int n = head.Count;
 			if (h == "if")
 			{
-				script.CurrentScope = new Scope(script.CurrentScope);
+				script.CurrentScope = script.CurrentScope.CreateChild();
 				Parser p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
@@ -39,7 +39,7 @@ namespace LSNr
 			}
 			if (h == "elsif")
 			{
-				script.CurrentScope = new Scope(script.CurrentScope);
+				script.CurrentScope = script.CurrentScope.CreateChild();
 				Parser p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
@@ -48,7 +48,7 @@ namespace LSNr
 			}
 			if (h == "else")
 			{
-				script.CurrentScope = new Scope(script.CurrentScope);
+				script.CurrentScope = script.CurrentScope.CreateChild();
 				Parser p = new Parser(body,script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
@@ -77,7 +77,7 @@ namespace LSNr
 			}
 			if (h == "for")
 			{
-				script.CurrentScope = new Scope(script.CurrentScope);
+				script.CurrentScope = script.CurrentScope.CreateChild();
 				if (head.Count < 10)
 					throw new ApplicationException("Incorrect for loop head thing [incorrectness inferred by too tew tokens].");
 				if (head.Select(t => t.Value).Count(vl => vl == "`") != 2)
@@ -97,7 +97,7 @@ namespace LSNr
 				} while (head[++i].Value != "`");
 				// i points to `.
 				var val = Express(exprTokens, script);
-				if (!script.CurrentScope.HasVariable(varName)) script.CurrentScope.AddVariable(new Variable(varName, true, val, null));
+				if (!script.CurrentScope.HasVariable(varName)) script.CurrentScope.CreateVariable(varName, true, val, null);
 
 				exprTokens.Clear(); // Recycle the list.
 				i++;

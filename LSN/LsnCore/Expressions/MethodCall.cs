@@ -47,7 +47,7 @@ namespace LsnCore.Expressions
 			var self = Value.Eval(i);
 			args.Add("self", self);
 			var fn = M ?? self.Type.Methods[MethodName];
-			if (!fn.HandlesScope) i.EnterFunctionScope(fn.Environment);
+			if (!fn.HandlesScope) i.EnterFunctionScope(fn.Environment, fn.StackSize);
 			var val = fn.Eval(args, i);
 			if (!fn.HandlesScope) i.ExitFunctionScope();
 			return val;

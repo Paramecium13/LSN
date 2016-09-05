@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LsnCore.Expressions;
+using LsnCore.Statements;
 
 namespace LSNr
 {
 	/// <summary>
 	/// Used internally to keep track of scopes.
 	/// </summary>
-	public class Scope
+	public class Scope : IScope
 	{
-		private Scope Parent;
+		private readonly Scope Parent;
 		private Dictionary<string, Variable> Variables = new Dictionary<string, Variable>();
 
 		public Scope() { }
@@ -23,10 +25,18 @@ namespace LSNr
 			Parent = parent;
 		}
 
-
-		public void AddVariable(Variable v)
+		public Variable CreateVariable(string name, bool mutable, IExpression init, AssignmentStatement assign)
 		{
+			var v = new Variable(name, mutable, init, assign);
+			Variables.Add(name,v);
+			return v;
+		}
+
+		public Variable CreateVariable(Parameter param)
+		{
+			var v = new Variable(param);
 			Variables.Add(v.Name, v);
+			return v;
 		}
 
 		/// <summary>
@@ -54,7 +64,7 @@ namespace LSNr
 		/// Returns this scope's parent.
 		/// </summary>
 		/// <returns> The parent of this scope.</returns>
-		public Scope Pop(List<Component> components)
+		public IScope Pop(List<Component> components)
 		{
 			// Optimize contained variables...
 			foreach(var variable in Variables)
@@ -63,5 +73,7 @@ namespace LSNr
 			}
 			return Parent;
 		}
+
+		public IScope CreateChild() => new Scope(this);
 	}
 }

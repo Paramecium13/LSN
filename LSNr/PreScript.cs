@@ -25,10 +25,9 @@ namespace LSNr
 		private Dictionary<string, string> Strings = new Dictionary<string, string>();
 		private Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
 
-		/// <summary>
-		/// The current scope.
-		/// </summary>
-		public override Scope CurrentScope { get; set; } = new Scope();
+		private IScope _CurrentScope = new Scope();
+
+		public override IScope CurrentScope { get { return _CurrentScope; } set { _CurrentScope = value; } }
 
 		/// <summary>
 		/// 

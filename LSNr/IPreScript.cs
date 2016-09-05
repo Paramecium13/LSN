@@ -4,7 +4,7 @@ namespace LSNr
 {
 	public interface IPreScript : ITypeContainer
 	{
-		Scope CurrentScope { get; set; }
+		IScope CurrentScope { get; set; }
 		bool Mutable { get; }
         bool Valid { get; set; }
 

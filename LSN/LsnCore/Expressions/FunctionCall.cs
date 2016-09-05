@@ -34,7 +34,7 @@ namespace LsnCore.Expressions
 		{
 			var args = Args.Select(p => new KeyValuePair<string, ILsnValue>(p.Key, p.Value.Eval(i))).ToDictionary();
             var fn = Fn ?? i.GetFunction(FnName);
-			if (! fn.HandlesScope) i.EnterFunctionScope(fn.Environment);
+			if (! fn.HandlesScope) i.EnterFunctionScope(fn.Environment, fn.StackSize);
 			var val = fn.Eval(args, i);
 			if (! fn.HandlesScope) i.ExitFunctionScope();
 			return val;

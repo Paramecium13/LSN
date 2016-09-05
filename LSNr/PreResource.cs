@@ -17,7 +17,9 @@ namespace LSNr
 		internal const string SUBN = "SUB";
 
 
-		public override Scope CurrentScope { get; set; }
+		private IScope _CurrentScope = new VariableTable(new List<Variable>());
+
+		public override IScope CurrentScope { get { return _CurrentScope; } set { _CurrentScope = value; } }
 
 		private readonly Dictionary<string, string> Subs = new Dictionary<string, string>();
 
@@ -280,11 +282,12 @@ namespace LSNr
 					var preFn = new PreFunction(this);
 					foreach(var param in pair.Value.Parameters)
 					{
-						preFn.CurrentScope.AddVariable(new Variable(param));
+						preFn.CurrentScope.CreateVariable(param);
 					}
 					var parser = new Parser(FunctionBodies[pair.Key], preFn);
 					parser.Parse();
 					pair.Value.Components = Parser.Consolidate(parser.Components);
+					pair.Value.StackSize = (preFn.CurrentScope as VariableTable)?.MaxSize?? 0;
 				/*}
 				catch (Exception e)
 				{

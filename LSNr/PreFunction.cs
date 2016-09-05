@@ -17,7 +17,9 @@ namespace LSNr
 			Resource = resource;
 		}
 
-		public Scope CurrentScope { get; set; } = new Scope();
+		private IScope _CurrentScope = new VariableTable(new List<Variable>());
+
+		public IScope CurrentScope { get { return _CurrentScope; } set { _CurrentScope = value; } } 
 
 		public bool Mutable => Resource.Mutable;
 

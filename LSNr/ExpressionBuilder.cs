@@ -368,7 +368,11 @@ namespace LSNr
 			for(int i = 0; i < CurrentTokens.Count; i++)
 			{
 				var val = CurrentTokens[i].Value;
-				if (val.Length > 2) continue;
+				if (val.Length > 2)
+				{
+					newTokens.Add(CurrentTokens[i]);
+					continue;
+				}
 				LsnCore.Operator op = LsnCore.Operator.Add;
 				if (val == "*")
 					op = LsnCore.Operator.Multiply;

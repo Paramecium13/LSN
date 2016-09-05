@@ -82,7 +82,7 @@ namespace LSNr
 					f.Body = (components[i] as IfControl).Body;
 					f.Condition = (components[i] as IfControl).Condition;
 					i++;
-					while (true)
+					while (i < components.Count)
 					{
 						if (components[i] is ElsifControl)
 						{

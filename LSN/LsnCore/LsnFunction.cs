@@ -31,7 +31,7 @@ namespace LsnCore
 
 		public override ILsnValue Eval(Dictionary<string, ILsnValue> args, IInterpreter i)
 		{
-			i.EnterFunctionScope(Resource?.GetEnvironment() ?? LsnEnvironment.Default);
+			i.EnterFunctionScope(Resource?.GetEnvironment() ?? LsnEnvironment.Default, StackSize);
 			foreach (var pair in args) i.AddVariable(pair.Key, pair.Value);
 			for (int x = 0; x < Components.Count; x++)
 			{

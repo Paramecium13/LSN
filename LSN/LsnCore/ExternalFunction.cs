@@ -38,7 +38,7 @@ namespace LsnCore
 		/// <param name="name"></param>
 		/// <param name="parameters"></param>
 		/// <param name="returnType"></param>
-		public ExternalFunction(string name, List<Parameter> parameters, LsnType returnType = null)
+		public ExternalFunction(string name, List<Parameter> parameters, int stackSize, LsnType returnType = null)
 			:base(parameters)
 		{
 			Name = name;
@@ -75,6 +75,7 @@ namespace LsnCore
 			{
 				Environment = function.Environment;
 				External = function;
+				_IsResolved = true;
 			}
 		}
 

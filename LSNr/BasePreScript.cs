@@ -26,7 +26,7 @@ namespace LSNr
 		protected IReadOnlyList<IToken> Tokens;
 
 
-		public abstract Scope CurrentScope { get; set; }
+		public abstract IScope CurrentScope { get; set; }
 
 		/// <summary>
 		/// Are variables defined in this script mutable?
@@ -94,8 +94,8 @@ namespace LSNr
 		{
 			foreach (var pair in resource.Functions)
 			{
-				if (LoadedExternalFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
-				LoadedExternalFunctions.Add(pair.Key, pair.Value);
+				if (LoadedExternallyDefinedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
+				LoadedExternallyDefinedFunctions.Add(pair.Key, pair.Value);
 			}
 			// ToDo: Add types.
 			Usings.Add(path);
@@ -116,12 +116,12 @@ namespace LSNr
 		/// <summary>
 		/// 
 		/// </summary>
-		private Dictionary<string, Function> LoadedExternalFunctions = new Dictionary<string, Function>();
+		private Dictionary<string, Function> LoadedExternallyDefinedFunctions = new Dictionary<string, Function>();
 
 		protected List<string> Usings = new List<string>();
 
 		public bool FunctionExists(string name)
-			=> Functions.ContainsKey(name) || LoadedExternalFunctions.ContainsKey(name);
+			=> Functions.ContainsKey(name) || LoadedExternallyDefinedFunctions.ContainsKey(name);
 
 		public bool FunctionIsIncluded(string name)
 			=> Functions.ContainsKey(name);
@@ -129,14 +129,19 @@ namespace LSNr
 		public Function GetFunction(string name)
 		{
 			if (Functions.ContainsKey(name)) return Functions[name];
-			if (LoadedExternalFunctions.ContainsKey(name)) return AddExternalFunction(LoadedExternalFunctions[name]);
+			if (LoadedExternallyDefinedFunctions.ContainsKey(name)) return AddExternalFunction(LoadedExternallyDefinedFunctions[name]);
 			else throw new ApplicationException($"Function \"{name}\" not found. Are you missing an include or using?");
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fn"> The fully created and functional externally defined function.</param>
+		/// <returns></returns>
 		private ExternalFunction AddExternalFunction(Function fn)
 		{
 			var exFn = new ExternalFunction(fn.Name, fn.Parameters.Select(p => new Parameter(p.Name, p.Type, p.DefaultValue, p.Index)).ToList(),
-				fn.ReturnType);
+				fn.StackSize,fn.ReturnType);
 			ExternalFunctions.Add(fn.Name, exFn);
 			Functions.Add(fn.Name, exFn);
 			return exFn;

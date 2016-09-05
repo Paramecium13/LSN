@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace LsnCore
 {
@@ -16,12 +18,22 @@ namespace LsnCore
 		public ILsnValue ReturnValue { get; set; }
 		protected Scope Scope = new Scope();
 		protected Stack<Scope> ScopeStack = new Stack<Scope>();
+
+
 		protected List<ILsnValue> LSN_Objects = new List<ILsnValue>();
-		
-		/// <summary>
-		/// The first 4 bytes at a location store the size of an individual element.
-		/// </summary>
-		protected Dictionary<int, IntPtr> Arrays = new Dictionary<int, IntPtr>();
+
+
+		private Dictionary<int, ConcurrentStack<ILsnValue[]>> StackStore = new Dictionary<int, ConcurrentStack<ILsnValue[]>>();
+
+
+		private ILsnValue[] CurrentStack;
+
+
+		private Stack<ILsnValue[]> StackOfStacks = new Stack<ILsnValue[]>();
+
+
+
+
 
 		// Where the current environment is pushed when a new function scope is entered.
 		private Stack<LsnEnvironment> EnvStack = new Stack<LsnEnvironment>();
@@ -85,12 +97,25 @@ namespace LsnCore
 		/// <summary>
 		/// Enters a new scope for interpreting a function. Previously defined variables are inaccessable.
 		/// </summary>
-		public virtual void EnterFunctionScope(LsnEnvironment env)
+		public virtual void EnterFunctionScope(LsnEnvironment env, int scopeSize)
 		{
 			ScopeStack.Push(Scope);
 			Scope = new Scope();
 			EnvStack.Push(CurrentEnvironment);
 			CurrentEnvironment = env;
+
+			StackOfStacks.Push(CurrentStack);
+			int i = NearestPower(scopeSize);
+			if (StackStore.ContainsKey(i))
+			{
+				if (!StackStore[i].TryPop(out CurrentStack))
+					CurrentStack = new ILsnValue[i];
+			}
+			else
+			{
+				StackStore.Add(i, new ConcurrentStack<ILsnValue[]>());
+				CurrentStack = new ILsnValue[i];
+			}
 		}
 
 		/// <summary>
@@ -98,7 +123,9 @@ namespace LsnCore
 		/// </summary>
 		public virtual void ExitFunctionScope()
 		{
+			RecycleStack(CurrentStack);
 			Scope = ScopeStack.Pop();
+			CurrentStack = StackOfStacks.Pop();
 			CurrentEnvironment = EnvStack.Pop();
 		}
 
@@ -109,7 +136,37 @@ namespace LsnCore
 		/// <returns></returns>
 		public virtual Function GetFunction(string name)
 			=> CurrentEnvironment.Functions[name];
-		
+
+		public ILsnValue GetValue(int index)
+			=> CurrentStack[index];
+
+		public void SetValue(int index, ILsnValue value)
+		{
+			CurrentStack[index] = value;
+		}
+
+
+
+		private void RecycleStack(ILsnValue[] stack)
+		{
+			Task.Run(() =>
+			{
+				for (int i = 0; i < stack.Length; i++)
+					stack[i] = null;
+				if(StackStore.ContainsKey(stack.Length))
+					StackStore[stack.Length].Push(stack);
+				else
+				{
+					StackStore.Add(stack.Length, new ConcurrentStack<ILsnValue[]>());
+					StackStore[stack.Length].Push(stack);
+				}
+			});
+		}
+
+
+		private static int NearestPower(int i)
+			=> 1 << (int)Math.Ceiling(Math.Log(i, 2));
+
 		/*
 		#region unsafe
 		// Test for using unmanaged stuff...
