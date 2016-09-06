@@ -26,6 +26,9 @@ namespace LsnCore.Expressions
 		/// </summary>
 		public IExpression Right { get { return _Right; } set { _Right = value; } }
 
+		[NonSerialized]
+		private BinOp _Operation;
+
 		private BinOp Operation;
 
 
@@ -36,7 +39,7 @@ namespace LsnCore.Expressions
 		public BinaryExpression(IExpression left, IExpression right, BinOp operation,
 			LsnType type, Operator op)
 		{
-			Left = left; Right = right; Operation = operation; Type = type; Operator = op;
+			Left = left; Right = right; _Operation = operation; Type = type; Operator = op;
 		}
 
 		public override bool IsReifyTimeConst()
@@ -54,7 +57,11 @@ namespace LsnCore.Expressions
 		}
 
 		public override ILsnValue Eval(IInterpreter i)
-			=> Operation(Left.Eval(i), Right.Eval(i));
+		{
+			if (Operation == null)
+				Operation = Left.Type.Operators[new Tuple<Operator, LsnType>(Operator, Right.Type)].Item1;
+			return Operation(Left.Eval(i), Right.Eval(i));
+		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

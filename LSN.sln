@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSN", "LSN\LSN.csproj", "{C1269507-B8FD-4668-8D5A-0819DEAAFE89}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSNr", "LSNr\LSNr.csproj", "{E0A445AC-01AA-4568-B15A-765B5C590CF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSNgen", "LSNgen\LSNgen.csproj", "{A3C82367-E89A-40FB-8342-B14C8A46FE5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{E0A445AC-01AA-4568-B15A-765B5C590CF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0A445AC-01AA-4568-B15A-765B5C590CF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0A445AC-01AA-4568-B15A-765B5C590CF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3C82367-E89A-40FB-8342-B14C8A46FE5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3C82367-E89A-40FB-8342-B14C8A46FE5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3C82367-E89A-40FB-8342-B14C8A46FE5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3C82367-E89A-40FB-8342-B14C8A46FE5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

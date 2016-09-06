@@ -4,7 +4,7 @@ namespace LsnCore.Expressions
 {
 	public interface IExpression : IExpressionContainer, IEquatable<IExpression>
 	{
-		LsnType Type { get; }
+		LsnType Type { get; set; }
 
 		ILsnValue Eval(IInterpreter i);
 		IExpression Fold();

@@ -76,7 +76,7 @@ namespace LSNr
 				if (Functions.ContainsKey(pair.Key)) throw new ApplicationException();
 				Functions.Add(pair.Key, pair.Value);
 			}
-			// ToDo: Add types.
+			// TODO: Add types.
 
 		}
 
@@ -97,7 +97,7 @@ namespace LSNr
 				if (LoadedExternallyDefinedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
 				LoadedExternallyDefinedFunctions.Add(pair.Key, pair.Value);
 			}
-			// ToDo: Add types.
+			// TODO: Add types.
 			Usings.Add(path);
 		}		
 
