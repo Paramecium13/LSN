@@ -88,7 +88,9 @@
     <Compile Include="IScope.cs" />
     <Compile Include="IToken.cs" />
     <Compile Include="ITypeContainer.cs" />
+    <Compile Include="Optimization\ArithmeticIdentityChecker.cs" />
     <Compile Include="Optimization\ComponentWalker.cs" />
+    <Compile Include="Optimization\ExpressionWalker.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="PreFunction.cs" />
     <Compile Include="Preprocessor.cs" />

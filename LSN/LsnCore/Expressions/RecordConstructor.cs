@@ -11,7 +11,7 @@ namespace LsnCore.Expressions
 	[Serializable]
 	public class RecordConstructor : Expression
 	{
-		private readonly IDictionary<string, IExpression> Args;
+		public readonly IDictionary<string, IExpression> Args;
 
 		private readonly RecordType _Type;
 
@@ -19,7 +19,7 @@ namespace LsnCore.Expressions
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public RecordConstructor(RecordType type, IDictionary<string, IExpression> args)
 		{
-			Type = type; Args = args;
+			_Type = type; Args = args;
 		}
 
 		public override LsnType Type => _Type;

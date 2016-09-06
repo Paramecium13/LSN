@@ -13,8 +13,8 @@ namespace LsnCore.Expressions
 	[Serializable]
 	public class CollectionValueAccessExpression : Expression
 	{
-		private IExpression Collection;
-		private IExpression Index;
+		public IExpression Collection;
+		public IExpression Index;
 
 		/// <summary>
 		/// 

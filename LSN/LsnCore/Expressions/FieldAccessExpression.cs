@@ -11,7 +11,7 @@ namespace LsnCore.Expressions
 	[Serializable]
 	public class FieldAccessExpression : Expression
 	{
-		private IExpression Value;
+		public IExpression Value;
 		private readonly string FieldName;
 		private readonly int Index;
 

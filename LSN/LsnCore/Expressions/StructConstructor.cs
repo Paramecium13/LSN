@@ -11,9 +11,9 @@ namespace LsnCore.Expressions
 	public class StructConstructor : Expression
 	{
 
-		private readonly IDictionary<string, IExpression> Args;
+		public readonly IDictionary<string, IExpression> Args;
 
-		private readonly IExpression[] ArgsB;
+		public readonly IExpression[] ArgsB;
 
 		private readonly LsnStructType _Type;
 

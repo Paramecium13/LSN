@@ -7,11 +7,11 @@ namespace LsnCore.Expressions
 	[Serializable]
 	public class FunctionCall : Expression
 	{
-		private Function Fn;
+		public Function Fn;
 
 		private string FnName;
 
-		private Dictionary<string, IExpression> Args;
+		public Dictionary<string, IExpression> Args;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public FunctionCall(Function fn, Dictionary<string,IExpression> args, bool include = false)

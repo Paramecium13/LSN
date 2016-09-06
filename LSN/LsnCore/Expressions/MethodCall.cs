@@ -16,9 +16,9 @@ namespace LsnCore.Expressions
 		/// The object that is calling this method.
 		/// </summary>
 		public IExpression Value { get { return _Value; } set { _Value = value; } }
-		private Dictionary<string, IExpression> Args;
+		public Dictionary<string, IExpression> Args;
 
-		private readonly Method M;
+		public readonly Method M;
 		private readonly string MethodName;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]

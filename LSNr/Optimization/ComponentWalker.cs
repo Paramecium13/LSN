@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LSNr.Optimization
 {
-	internal abstract class ComponentWalker
+	public abstract class ComponentWalker
 	{
 
 		public void Walk(Component c)
