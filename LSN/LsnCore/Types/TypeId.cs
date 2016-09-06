@@ -37,5 +37,13 @@ namespace LsnCore.Types
 
 		public static bool operator !=(TypeId a, TypeId b)
 			=> a?.Name != b?.Name;
+
+
+		public static bool operator ==(LsnType a, TypeId b)
+			=> a?.Name == b?.Name;
+
+
+		public static bool operator !=(LsnType a, TypeId b)
+			=> a?.Name != b?.Name;
 	}
 }

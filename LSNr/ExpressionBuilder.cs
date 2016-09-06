@@ -115,9 +115,9 @@ namespace LSNr
 					var name = InitialTokens[i + 1].Value;
 					IExpression expr2 = null;
 					// Is it a method call or a field access expression?
-					if(expr.Type.Methods.ContainsKey(name)) // It's a method call.
+					if(expr.Type.Type.Methods.ContainsKey(name)) // It's a method call.
 					{
-						var method = expr.Type.Methods[name];
+						var method = expr.Type.Type.Methods[name];
 						if (method.Parameters.Count == 1)
 						{
 							expr2 = method.CreateMethodCall
@@ -385,12 +385,12 @@ namespace LSNr
 				{
 					IExpression left = GetExpression(CurrentTokens[i - 1]);
 					IExpression right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type);
+					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type.Type);
 
-					if (!left.Type.Operators.ContainsKey(key))
+					if (!left.Type.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
-					var opr = left.Type.Operators[key];
+					var opr = left.Type.Type.Operators[key];
 					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
@@ -414,12 +414,12 @@ namespace LSNr
 				{
 					var left = GetExpression(CurrentTokens[i - 1]);
 					var right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LsnCore.Operator, LsnType>(LsnCore.Operator.Power, right.Type);
+					var key = new Tuple<LsnCore.Operator, LsnType>(LsnCore.Operator.Power, right.Type.Type);
 
-					if (!left.Type.Operators.ContainsKey(key))
+					if (!left.Type.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
 							$"The operator ^ is not defined for type {left.Type.Name} and {right.Type.Name}.");
-					var opr = left.Type.Operators[key];
+					var opr = left.Type.Type.Operators[key];
 					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, LsnCore.Operator.Power);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
@@ -447,12 +447,12 @@ namespace LSNr
 				{
 					var left = GetExpression(CurrentTokens[i - 1]);
 					var right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type);
+					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type.Type);
 
-					if (!left.Type.Operators.ContainsKey(key))
+					if (!left.Type.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
-					var opr = left.Type.Operators[key];
+					var opr = left.Type.Type.Operators[key];
 					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
@@ -484,12 +484,12 @@ namespace LSNr
 				{
 					var left = GetExpression(CurrentTokens[i - 1]);
 					var right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type);
+					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type.Type);
 
-					if (!left.Type.Operators.ContainsKey(key))
+					if (!left.Type.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
-					var opr = left.Type.Operators[key];
+					var opr = left.Type.Type.Operators[key];
 					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
 					var name = SUB + SubCount++;
 					if(newTokens.Count > 0) newTokens.RemoveAt(newTokens.Count - 1);

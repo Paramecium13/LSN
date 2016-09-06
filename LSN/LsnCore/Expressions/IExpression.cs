@@ -1,10 +1,11 @@
-﻿using System;
+﻿using LsnCore.Types;
+using System;
 
 namespace LsnCore.Expressions
 {
 	public interface IExpression : IExpressionContainer, IEquatable<IExpression>
 	{
-		LsnType Type { get; }
+		TypeId Type { get; }
 
 		ILsnValue Eval(IInterpreter i);
 		IExpression Fold();
