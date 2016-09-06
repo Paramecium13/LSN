@@ -16,10 +16,10 @@ namespace LsnCore
 		public LsnReference(LsnReferenceValue value, LsnReferenceType type)
 		{
 			Value = value;
-			Type = type;
+			Type = type.Id;
 		}
 
-		public override ILsnValue Clone() => new LsnReference(Value, (LsnReferenceType) Type);
+		public override ILsnValue Clone() => this;
 
 	}
 }

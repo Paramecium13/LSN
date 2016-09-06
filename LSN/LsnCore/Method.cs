@@ -41,7 +41,7 @@ namespace LsnCore
 					if (!Parameters.Any(p => p.Name == name))
 						throw new ApplicationException($"Cannot find a parameter named {name}.");//return null;// Log an error or something.
 					var param = Parameters.Where(p => p.Name == name).First();
-					if (!param.Type.Subsumes(args[i].Item2.Type))
+					if (!param.Type.Subsumes(args[i].Item2.Type.Type))
 						throw new ApplicationException(
 						$"Expected {param.Type.Name} or a valid subtype for parameter {name} recieved {expr.Type.Name}.");
 					dict.Add(name, args[i].Item2);
@@ -49,7 +49,7 @@ namespace LsnCore
 				else
 				{
 					var param = Parameters.Where(p => p.Index == i).FirstOrDefault() ?? Parameters[i];
-					if (!param.Type.Subsumes(args[i].Item2.Type))
+					if (!param.Type.Subsumes(args[i].Item2.Type.Type))
 					throw new ApplicationException(
 						$"Expected {param.Type.Name} or a valid subtype for parameter {args[i].Item1} recieved {expr.Type.Name}.");
 					dict.Add(param.Name, args[i].Item2);

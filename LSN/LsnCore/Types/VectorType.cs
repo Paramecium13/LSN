@@ -12,8 +12,8 @@ namespace LsnCore
 
 		static VectorType()
 		{
-			var vectorInt = VectorGeneric.Instance.GetType(new List<LsnType>() { int_ }) as VectorType;
-			var vectorDouble = VectorGeneric.Instance.GetType(new List<LsnType>() { double_ }) as VectorType;
+			var vectorInt = VectorGeneric.Instance.GetType(new List<TypeId>() { int_.Id }) as VectorType;
+			var vectorDouble = VectorGeneric.Instance.GetType(new List<TypeId>() { double_.Id }) as VectorType;
 
 			vectorInt._Methods.Add("Sum", new BoundedMethod(vectorInt, int_,
 				(args) =>
@@ -66,16 +66,19 @@ namespace LsnCore
 		private LsnType _Generic;
 		public LsnType GenericType { get { return _Generic; } private set { _Generic = value; } }
 
+		public readonly TypeId GenericId;
+
 		public LsnType IndexType => int_;
 
 		public LsnType ContentsType => GenericType;
 
-		internal VectorType(LsnType type)
+		internal VectorType(TypeId type)
 		{
-			GenericType = type;
+			GenericType = type.Type;
+			GenericId = type;
 			_Methods.Add("Length", new BoundedMethod(this, int_,
 				(args) => ((VectorInstance)args["self"]).Length()));
-			_Methods.Add("ToList", new BoundedMethod(this, LsnListGeneric.Instance.GetType(new List<LsnType>() { type }),
+			_Methods.Add("ToList", new BoundedMethod(this, LsnListGeneric.Instance.GetType(new List<TypeId>() { type }),
 				(args) => ((VectorInstance)args["self"]).ToLSN_List()));
 		}
 
@@ -96,7 +99,7 @@ namespace LsnCore
 
 		private VectorGeneric() {}
 
-		protected override LsnType CreateType(List<LsnType> types)
+		protected override LsnType CreateType(List<TypeId> types)
 		{
 			if (types.Count != 1) throw new ArgumentException("Vector types must have exactly one generic parameter.");
 			return new VectorType(types[0]);

@@ -17,8 +17,8 @@ namespace LsnCore
 		static LsnListType()
 		{
 			// Set up methods
-			var listInt = LsnListGeneric.Instance.GetType(new List<LsnType>() { int_ }) as LsnListType;
-			var listDouble = LsnListGeneric.Instance.GetType(new List<LsnType>() { double_ }) as LsnListType;
+			var listInt = LsnListGeneric.Instance.GetType(new List<TypeId>() { int_.Id }) as LsnListType;
+			var listDouble = LsnListGeneric.Instance.GetType(new List<TypeId>() { double_.Id }) as LsnListType;
 
 			listInt._Methods.Add("Sum", new BoundedMethod(listInt, int_,
 				(args) =>
@@ -70,13 +70,16 @@ namespace LsnCore
 		private LsnType _Generic;
 		public LsnType GenericType { get { return _Generic; } private set { _Generic = value; } }
 
+		public readonly TypeId GenericId;
+
 		public LsnType IndexType => int_;
 
 		public LsnType ContentsType => GenericType;
 
-		internal LsnListType(LsnType type)
+		internal LsnListType(TypeId type)
 		{
-			GenericType = type;
+			GenericType = type.Type;
+			GenericId = type;
 			// Set up methods
 			_Methods.Add("Add", new BoundedMethod(this, null,
 				(args) =>
@@ -84,7 +87,7 @@ namespace LsnCore
 					((LSN_List)args["self"]).Add(args["value"]);
 					return null;
 				},
-				new List<Parameter>() { new Parameter("self",this,null,0), new Parameter("value",type,null,1)}
+				new List<Parameter>() { new Parameter("self",this,null,0), new Parameter("value",type.Type,null,1)}
 			));
 			_Methods.Add("Length", new BoundedMethod(this, int_, (args) => ((LSN_List)args["self"]).Length()));
 			List<int> x = new List<int>();
@@ -108,7 +111,7 @@ namespace LsnCore
 
 		private LsnListGeneric() { }
 
-		protected override LsnType CreateType(List<LsnType> types)
+		protected override LsnType CreateType(List<TypeId> types)
 		{
 			if (types.Count != 1) throw new ArgumentException("List types must have exactly one generic parameter.");
 			return new LsnListType(types[0]);

@@ -52,7 +52,7 @@ namespace LSNr
 					if(tokens[i].Value == ",") i++; // else error?
 				}
 				endIndex = i + 1;
-				return gType.GetType(generics);
+				return gType.GetType(generics.Select(t => t.Id).ToList());
 			}
 			endIndex = -1;
 			return null;

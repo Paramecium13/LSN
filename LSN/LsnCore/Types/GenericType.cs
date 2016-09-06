@@ -16,7 +16,7 @@ namespace LsnCore.Types
 
 		public abstract string Name { get; }
 
-		private string GetGenericName(List<LsnType> types)
+		private string GetGenericName(List<TypeId> types)
 		{
 			var s = new StringBuilder(Name);
 			foreach(var type in types)
@@ -32,7 +32,7 @@ namespace LsnCore.Types
 		/// </summary>
 		/// <param name="types"></param>
 		/// <returns></returns>
-		public LsnType GetType(List<LsnType> types)
+		public LsnType GetType(List<TypeId> types)
 		{
 			var name = GetGenericName(types);
 			LsnType type = null;
@@ -47,7 +47,7 @@ namespace LsnCore.Types
 			else return Types[name];
 		}
 
-		protected abstract LsnType CreateType(List<LsnType> types);
+		protected abstract LsnType CreateType(List<TypeId> types);
 
 	}
 }

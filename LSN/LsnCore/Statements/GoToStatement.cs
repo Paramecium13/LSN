@@ -42,7 +42,7 @@ namespace LsnCore.Statements
 		{
 			if (ex0 == null) throw new ArgumentNullException();
 			Actor = actor; // Make sure its the right type.
-			if (ex0.Type == LsnType.string_)
+			if (ex0.Type.Type == LsnType.string_)
 			{
 				if (hasKeywordLabel)
 				{
@@ -58,17 +58,17 @@ namespace LsnCore.Statements
 					return;
 				}
 
-				if (ex1.Type == LsnType.string_) // It's of the form '(actor) goto <map> ` <locLable>;'
+				if (ex1.Type.Type == LsnType.string_) // It's of the form '(actor) goto <map> ` <locLable>;'
 				{
 					LocLabel = ex1;
 					MyForm = Form.MapLabel;
 					return;
 				}
 
-				if (ex1.Type == LsnType.int_) // It's of the form '(actor) goto <map> <x> <y>;'
+				if (ex1.Type.Type == LsnType.int_) // It's of the form '(actor) goto <map> <x> <y>;'
 				{
 					if (ex2 == null) throw new ArgumentNullException();
-					if (ex2.Type != LsnType.int_) throw new ArgumentException();
+					if (ex2.Type.Type != LsnType.int_) throw new ArgumentException();
 					X = ex1;
 					Y = ex2;
 					MyForm = Form.MapXY;
@@ -81,13 +81,14 @@ namespace LsnCore.Statements
 				throw new ArgumentException();
 			}
 
-			if (ex0.Type == LsnType.int_)
+			if (ex0.Type.Type == LsnType.int_)
 			{
 				if (ex1 == null) throw new ArgumentNullException();
-				if (ex1.Type != LsnType.int_) throw new ArgumentException();
+				if (ex1.Type.Type != LsnType.int_) throw new ArgumentException();
 				X = ex0;
 				Y = ex1;
 				MyForm = Form.XY;
+				return;
 			}
 
 			if (ex0.Type.Name == "Point") throw new NotImplementedException();

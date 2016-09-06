@@ -17,11 +17,15 @@ namespace LsnCore.Expressions
 
 		private readonly LsnStructType _Type;
 
+		public readonly TypeId Id;
+
+		public override TypeId Type => Id;
+
 
 		public StructConstructor(LsnStructType type, IDictionary<string,IExpression> args)
 		{
 			_Type = type; Args = args;
-			ArgsB = new IExpression[args.Count];
+			ArgsB = new IExpression[_Type.FieldCount];
 			int i = -1;
 			foreach (var pair in args)
 			{
@@ -29,8 +33,6 @@ namespace LsnCore.Expressions
 				ArgsB[i] = pair.Value;
 			}
 		}
-
-		public override LsnType Type => _Type;
 
 		public override ILsnValue Eval(IInterpreter i)
 		//=> new StructValue(_Type, ArgsB.Select(e => e.Eval(i)).ToArray());
@@ -41,7 +43,7 @@ namespace LsnCore.Expressions
 			{
 				values[j] = ArgsB[j].Eval(i);
 			}
-			return new StructValue(_Type, values);
+			return new StructValue(values,Id);
 		}
 
 		public override IExpression Fold()

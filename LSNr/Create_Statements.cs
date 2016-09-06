@@ -51,7 +51,7 @@ namespace LSNr
 			ushort nameindex = mut ? (ushort)2 : (ushort)1; // The index of the name.
 			string name = tokens[nameindex].Value;
 			IExpression value = Express(tokens.Skip(nameindex + 2).ToList(), script);
-			LsnType type = value.Type;
+			LsnType type = value.Type.Type;
 			var variable = script.CurrentScope.CreateVariable(name, mutable, value);
 			var st = new AssignmentStatement(variable.Index, value);
 			variable.Assignment = st;
@@ -82,7 +82,7 @@ namespace LSNr
 			}
 			Variable v = script.CurrentScope.GetVariable(tokens[0].Value);
 			IExpression expr = Express(tokens.Skip(2).ToList(), script);
-			if (!v.Type.Subsumes(expr.Type))
+			if (!v.Type.Subsumes(expr.Type.Type))
 			{
 				Console.WriteLine($"Cannot assign a value of type {expr.Type.Name} to a variable ({v.Name}) of type {v.Type.Name}.");
 				script.Valid = false;

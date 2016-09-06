@@ -19,7 +19,7 @@ namespace LsnCore.Expressions
 		{
 			Value = value;
 			Index = ((IHasFieldsType)value.Type.Type).GetIndex(name);
-			Type = new TypeId(type);
+			Type = type.Id;
 		}
 
 		public override bool IsReifyTimeConst()

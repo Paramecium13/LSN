@@ -20,7 +20,7 @@ namespace LsnCore.Types
 
 		public int FieldCount => _FieldsB.Length;
 
-		public LsnStructType(string name, Dictionary<string, LsnType> fields)
+		public LsnStructType(string name, Dictionary<string, LsnType> fields):base()
 		{
 			Name = name; _Fields = fields;
 			_FieldsB = new Field[fields.Count];

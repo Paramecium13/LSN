@@ -13,19 +13,38 @@ namespace LsnCore.Expressions
 	{
 		public readonly IDictionary<string, IExpression> Args;
 
-		private readonly RecordType _Type;
+		public readonly IExpression[] ArgsB;
 
+		[NonSerialized]
+		private readonly RecordType _Type;
+		public readonly TypeId Id;
+
+		public override TypeId Type => Id;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public RecordConstructor(RecordType type, IDictionary<string, IExpression> args)
 		{
 			_Type = type; Args = args;
+			ArgsB = new IExpression[_Type.FieldCount];
+			int i = -1;
+			foreach (var pair in args)
+			{
+				i = type.GetIndex(pair.Key);
+				ArgsB[i] = pair.Value;
+			}
 		}
 
-		public override LsnType Type => _Type;
 
 		public override ILsnValue Eval(IInterpreter i)
-			=> new RecordValue(_Type, Args.Select(p => new KeyValuePair<string, ILsnValue>(p.Key, p.Value.Eval(i))).ToDictionary());
+		{
+			int length = ArgsB.Length;
+			ILsnValue[] values = new ILsnValue[length];
+			for (int j = 0; j < length; j++)
+			{
+				values[j] = ArgsB[j].Eval(i);
+			}
+			return new RecordValue(Id, values);
+		}
 
 		public override IExpression Fold()
 		{
@@ -39,6 +58,7 @@ namespace LsnCore.Expressions
 			else
 				return new RecordConstructor(_Type, a);
 		}
+
 
 		public override bool IsReifyTimeConst() => false;
 

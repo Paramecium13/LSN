@@ -21,7 +21,7 @@ namespace LsnCore
 	[Serializable]
 	public struct IntValue : IBoundValue<int>
 	{
-		public static TypeId id = new TypeId(LsnType.int_);
+		public static TypeId id = LsnType.int_.Id;
 		
 		public TypeId Type { get { return id; } }
 		public int Value { get; private set; }

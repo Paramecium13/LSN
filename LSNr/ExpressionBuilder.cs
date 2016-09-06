@@ -148,9 +148,9 @@ namespace LSNr
 							expr2 = Create.CreateMethodCall(fnTokens, method, expr, Script);
 						}
 					}
-					else if (expr.Type is IHasFieldsType) // It's a field access expression.typeof(IHasFieldsType).IsAssignableFrom(expr.Type.GetType())
+					else if (expr.Type.Type is IHasFieldsType) // It's a field access expression.typeof(IHasFieldsType).IsAssignableFrom(expr.Type.GetType())
 					{
-						var type = (IHasFieldsType)expr.Type;
+						var type = (IHasFieldsType)expr.Type.Type;
 						if (!type.Fields.ContainsKey(name))
 							throw new ApplicationException($"The type {expr.Type.Name} does not have a field named {name}.");
 						expr2 = new FieldAccessExpression(expr, name, type.Fields[name]);
@@ -343,12 +343,12 @@ namespace LSNr
 					var name = SUB + SubCount++;
 					var coll = GetExpression(newTokens[newTokens.Count - 1]);
 					newTokens.RemoveAt(newTokens.Count - 1);
-					if(!(coll.Type is ICollectionType))// typeof(ICollectionType).IsAssignableFrom(coll.Type.GetType()
+					if(!(coll.Type.Type is ICollectionType))// typeof(ICollectionType).IsAssignableFrom(coll.Type.GetType()
 						throw new ApplicationException($"{coll.Type.Name} cannot be indexed.");
-					var t = coll.Type as ICollectionType;
+					var t = coll.Type.Type as ICollectionType;
 					if (t.IndexType != expr.Type)
 						throw new ApplicationException($"{coll.Type.Name} cannot be indexed by type {expr.Type.Name}.");
-                    Substitutions.Add(new Identifier(name), new CollectionValueAccessExpression(coll,expr, t.ContentsType));
+                    Substitutions.Add(new Identifier(name), new CollectionValueAccessExpression(coll,expr, t.ContentsType.Id));
 					newTokens.Add(new Identifier(name));
 					nextIndex += j;
 					i = nextIndex - 1; // In the next iteration, i == nextIndex.
@@ -391,7 +391,7 @@ namespace LSNr
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
 					var opr = left.Type.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2.Id, op);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
@@ -420,7 +420,7 @@ namespace LSNr
 						throw new ApplicationException(
 							$"The operator ^ is not defined for type {left.Type.Name} and {right.Type.Name}.");
 					var opr = left.Type.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, LsnCore.Operator.Power);
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2.Id, LsnCore.Operator.Power);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
@@ -453,7 +453,7 @@ namespace LSNr
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
 					var opr = left.Type.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2.Id, op);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
@@ -490,7 +490,7 @@ namespace LSNr
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
 					var opr = left.Type.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2.Id, op);
 					var name = SUB + SubCount++;
 					if(newTokens.Count > 0) newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
