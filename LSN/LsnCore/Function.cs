@@ -14,7 +14,7 @@ namespace LsnCore
 	public abstract class Function
 	{
 		public string Name { get; protected set; }
-		public LsnType ReturnType { get; protected set; }
+		public LsnType ReturnType { get; set; }
 		private readonly List<Parameter> _Parameters;
 		public IReadOnlyList<Parameter> Parameters => _Parameters;
 		public int StackSize { get; set; }

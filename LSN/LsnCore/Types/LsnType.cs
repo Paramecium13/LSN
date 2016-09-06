@@ -1,5 +1,6 @@
 ﻿using LsnCore.Expressions;
 using LsnCore.Types;
+using LsnCore.Values;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -261,6 +262,58 @@ namespace LsnCore
 			types.Add(double_);
 			types.Add(string_);
 			types.Add(Bool_);
+
+			#region Lists
+			var listInt = LsnListGeneric.Instance.GetType(new List<LsnType>() { int_ }) as LsnListType;
+			var listDouble = LsnListGeneric.Instance.GetType(new List<LsnType>() { double_ }) as LsnListType;
+
+			listInt._Methods.Add("Sum", new BoundedMethod(listInt, int_,
+				(args) =>
+				{
+					int Σ = 0;
+					var list = (LSN_List)args["self"];
+					int length = list.Length().Value;
+					for (int i = 0; i < length; i++)
+						Σ += ((IntValue)list[i]).Value;
+					return new IntValue(Σ, int_);
+				}
+			));
+			listInt._Methods.Add("Mean", new BoundedMethod(listInt, int_,
+				(args) =>
+				{
+					int Σ = 0;
+					var list = (LSN_List)args["self"];
+					int length = list.Length().Value;
+					for (int i = 0; i < length; i++)
+						Σ += ((IntValue)list[i]).Value;
+					return new IntValue(length > 0 ? Σ / length : 0, int_);
+				}
+			));
+
+			listDouble._Methods.Add("Sum", new BoundedMethod(listDouble, double_,
+				(args) =>
+				{
+					double Σ = 0;
+					var list = (LSN_List)args["self"];
+					int length = list.Length().Value;
+					for (int i = 0; i < length; i++)
+						Σ += ((DoubleValue)list[i]).Value;
+					return new DoubleValue(Σ, double_);
+				}
+			));
+			listDouble._Methods.Add("Mean", new BoundedMethod(listDouble, double_,
+				(args) =>
+				{
+					double Σ = 0.0;
+					var list = (LSN_List)args["self"];
+					int length = list.Length().Value;
+					for (int i = 0; i < length; i++)
+						Σ += ((DoubleValue)list[i]).Value;
+					return new DoubleValue(length > 0 ? Σ / length : 0, double_);
+				}
+			));
+			#endregion
+
 			return types;
 		}
 
