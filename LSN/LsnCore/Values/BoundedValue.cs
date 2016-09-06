@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using LsnCore.Expressions;
+using LsnCore.Types;
 
 namespace LsnCore
 {
@@ -20,8 +21,10 @@ namespace LsnCore
 	[Serializable]
 	public struct IntValue : IBoundValue<int>
 	{
+		public static TypeId id = new TypeId(LsnType.int_);
+		
+		public TypeId Type { get { return id; } }
 		public int Value { get; private set; }
-		public LsnType Type { get { return LsnType.int_; } }
 		public bool BoolValue { get { return true; } }
 
 		public IntValue(int val)
@@ -57,7 +60,10 @@ namespace LsnCore
 	[Serializable]
 	public struct StringValue : IBoundValue<string>
 	{
-		public LsnType Type {get { return LsnType.string_; } }
+		public static TypeId id = new TypeId(LsnType.string_);
+
+		public TypeId Type { get { return id; } }
+
 		public string Value { get; private set; }
 		public bool BoolValue { get { return true; } }
 
@@ -111,8 +117,11 @@ namespace LsnCore
 	[Serializable]
 	public struct DoubleValue : IBoundValue<double>
 	{
+		public static TypeId id = new TypeId(LsnType.double_);
+
+		public TypeId Type { get { return id; } }
+
 		public double Value { get; private set; }
-		public LsnType Type { get { return LsnType.double_; } }
 		public bool BoolValue { get { return true; } }
 
 		public DoubleValue(double val)
@@ -152,7 +161,11 @@ namespace LsnCore
 		public static LSN_BoolValue GetBoolValue(bool val)
 			=> val? True : False;
 
-		public LsnType Type { get { return LsnType.Bool_; } }
+		public static TypeId id = new TypeId(LsnType.Bool_);
+
+
+		public TypeId Type { get { return id; } }
+
 		public bool Value { get; private set; }
 		public bool BoolValue { get { return Value; } }
 

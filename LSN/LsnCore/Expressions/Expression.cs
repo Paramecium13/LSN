@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LsnCore.Types;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +10,9 @@ namespace LsnCore.Expressions
 	[Serializable]
 	public abstract class Expression : IExpression
 	{
-		private LsnType _Type;
+		private TypeId _Type;
 
-		public virtual LsnType Type { get { return _Type; } protected set { _Type = value; } }
+		public virtual TypeId Type { get { return _Type; } protected set { _Type = value; } }
 
 		public abstract bool IsReifyTimeConst();
 

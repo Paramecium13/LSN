@@ -10,8 +10,10 @@ namespace LsnCore.Values
 	[Serializable]
 	public class RecordValue : LsnValue, IHasFieldsValue
 	{
+		[NonSerialized]
 		private readonly RecordType _Type;
-		public override LsnType Type { get { return _Type; } protected set {} }
+		private TypeId Id;
+		public override TypeId Type => Id;
 		public override bool BoolValue { get { return true; } }
 
 		private readonly ILsnValue[] Values;
@@ -19,6 +21,7 @@ namespace LsnCore.Values
 		public RecordValue(RecordType type, IDictionary<string,ILsnValue> values)
 		{
 			_Type = type;
+			Id = new TypeId(type);
 			// Assume 'values' has already been type checked.
 			Values = new ILsnValue[_Type.FieldCount];
 			foreach (var pair in values)
@@ -32,7 +35,8 @@ namespace LsnCore.Values
 		public RecordValue(RecordType type, ILsnValue[] values, bool clone = false)
 		{
 			_Type = type;
-			if(clone)
+			Id = new TypeId(type);
+			if (clone)
 			{
 				int length = _Type.FieldCount;
 				Values = new ILsnValue[length];
@@ -43,18 +47,26 @@ namespace LsnCore.Values
 				Values = values;
 		}
 
-		public override ILsnValue Clone() => new RecordValue(_Type, Values, true);
 
+		public RecordValue(TypeId id, ILsnValue[] values, bool clone = false)
+		{
+			Id = id;
+			if (clone)
+			{
+				int length = values.Length;
+				Values = new ILsnValue[length];
+				for (int i = 0; i < length; i++)
+					Values[i] = values[i].Clone();
+			}
+			else
+				Values = values;
+		}
 
-		public ILsnValue GetValue(string name) => Values[_Type.GetIndex(name)];
-		// This should be checked by the reifier.
+		public override ILsnValue Clone() => new RecordValue(Id, Values, true);
+
 
 		public ILsnValue GetValue(int index) => Values[index];
 
-		public void SetValue(string name, ILsnValue value)
-		{
-			Values[_Type.GetIndex(name)] = value;
-		}
 
 		public void SetValue(int index, ILsnValue value)
 		{
