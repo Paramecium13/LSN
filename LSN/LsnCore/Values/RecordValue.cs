@@ -21,7 +21,7 @@ namespace LsnCore.Values
 		public RecordValue(RecordType type, IDictionary<string,ILsnValue> values)
 		{
 			_Type = type;
-			Id = new TypeId(type);
+			Id = type.Id;
 			// Assume 'values' has already been type checked.
 			Values = new ILsnValue[_Type.FieldCount];
 			foreach (var pair in values)
@@ -35,7 +35,7 @@ namespace LsnCore.Values
 		public RecordValue(RecordType type, ILsnValue[] values, bool clone = false)
 		{
 			_Type = type;
-			Id = new TypeId(type);
+			Id = type.Id;
 			if (clone)
 			{
 				int length = _Type.FieldCount;

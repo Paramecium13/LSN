@@ -60,7 +60,7 @@ namespace LsnCore
 	[Serializable]
 	public struct StringValue : IBoundValue<string>
 	{
-		public static TypeId id = new TypeId(LsnType.string_);
+		public static TypeId id = LsnType.string_.Id;
 
 		public TypeId Type { get { return id; } }
 
@@ -117,7 +117,7 @@ namespace LsnCore
 	[Serializable]
 	public struct DoubleValue : IBoundValue<double>
 	{
-		public static TypeId id = new TypeId(LsnType.double_);
+		public static TypeId id = LsnType.double_.Id;
 
 		public TypeId Type { get { return id; } }
 
@@ -161,7 +161,7 @@ namespace LsnCore
 		public static LSN_BoolValue GetBoolValue(bool val)
 			=> val? True : False;
 
-		public static TypeId id = new TypeId(LsnType.Bool_);
+		public static TypeId id = LsnType.Bool_.Id;
 
 
 		public TypeId Type { get { return id; } }

@@ -55,6 +55,9 @@ namespace LSNr
 			Tokenize();
 			PreParseFunctions(ParseStructsAndRecords());
 			ParseFunctions();
+			var t = LsnType.GetBaseTypes();
+			foreach (var ty in t)
+				Types.Remove(ty);
         }
 
 		/// <summary>
@@ -348,7 +351,7 @@ namespace LSNr
 					// Bools and other stuff...
 					else throw new ApplicationException($"Error in parsing default value for parameter {name}.");
 				}
-				paramaters.Add(new Parameter(name, type, defaultValue, index++));
+				paramaters.Add(new Parameter(name, type.Id, defaultValue, index++));
 				if (i < tokens.Count && tokens[i].Value != ",")
 					throw new ApplicationException($"Error: expected token ',' after definition of parameter {name}, recieved '{tokens[i].Value}'.");
 			}

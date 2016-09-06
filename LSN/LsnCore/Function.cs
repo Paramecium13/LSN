@@ -1,4 +1,5 @@
 ﻿using LsnCore.Expressions;
+using LsnCore.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +50,7 @@ namespace LsnCore
 				var name = param.Name;
 				if(args.ContainsKey(name))
 				{
-					if (!param.Type.Subsumes(args[name].Type.Type))
+					if (!param.Type.Type.Subsumes(args[name].Type.Type))
 						throw new ApplicationException(
 						$"Expected {param.Type.Name} or a valid subtype for parameter {name} recieved {args[name].Type.Name}.");
 					fullArgs.Add(name, args[name]);
@@ -114,14 +115,22 @@ namespace LsnCore
 	public class Parameter
 	{
 		public string Name;
-		public LsnType Type;
+		public TypeId Type;
 		public ILsnValue DefaultValue;
 		public ushort Index;
+
+		public Parameter(string name, TypeId type, ILsnValue val, ushort i)
+		{
+			Name = name;
+			Type = type;
+			DefaultValue = val;
+			Index = i;
+		}
 
 		public Parameter(string name, LsnType type, ILsnValue val, ushort i)
 		{
 			Name = name;
-			Type = type;
+			Type = type.Id;
 			DefaultValue = val;
 			Index = i;
 		}

@@ -45,5 +45,8 @@ namespace LsnCore.Types
 
 		public static bool operator !=(LsnType a, TypeId b)
 			=> a?.Name != b?.Name;
+
+		public bool Subsumes(LsnType type)
+			=> Type?.Subsumes(type) ?? false;
 	}
 }

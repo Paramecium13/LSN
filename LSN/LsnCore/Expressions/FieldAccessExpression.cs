@@ -22,6 +22,13 @@ namespace LsnCore.Expressions
 			Type = type.Id;
 		}
 
+		public FieldAccessExpression(IExpression value, string name, TypeId type)
+		{
+			Value = value;
+			Index = ((IHasFieldsType)value.Type.Type).GetIndex(name);
+			Type = type;
+		}
+
 		public override bool IsReifyTimeConst()
 			=> Value.IsReifyTimeConst();
 

@@ -23,7 +23,7 @@ namespace LsnCore
 		public StructValue(LsnStructType type, IDictionary<string, ILsnValue> values)
 		{
 			_Type = type;
-			Id = new TypeId(type);
+			Id = type.Id;
 			Members = values ?? new Dictionary<string, ILsnValue>();
 			foreach(var pair in type.Fields)
 			{
@@ -34,7 +34,7 @@ namespace LsnCore
 
 		public StructValue(LsnStructType type, ILsnValue[] values)
 		{
-			_Type = type; Id = new TypeId(type); Fields = values;
+			_Type = type; Id = type.Id; Fields = values;
 		}
 
 

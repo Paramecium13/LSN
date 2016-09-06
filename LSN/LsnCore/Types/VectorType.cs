@@ -62,7 +62,7 @@ namespace LsnCore
 			));
 		}
 
-
+		[NonSerialized]
 		private LsnType _Generic;
 		public LsnType GenericType { get { return _Generic; } private set { _Generic = value; } }
 

@@ -11,11 +11,11 @@ namespace LsnCore.Types
 	{
 		public readonly int Index;
 		public readonly string Name;
-		public readonly LsnType Type;
+		public readonly TypeId Type;
 
 		public Field(int index, string name, LsnType type)
 		{
-			Index = index; Name = name; Type = type;
+			Index = index; Name = name; Type = type.Id;
 		}
 	}
 }

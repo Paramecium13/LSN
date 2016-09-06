@@ -151,9 +151,10 @@ namespace LSNr
 					else if (expr.Type.Type is IHasFieldsType) // It's a field access expression.typeof(IHasFieldsType).IsAssignableFrom(expr.Type.GetType())
 					{
 						var type = (IHasFieldsType)expr.Type.Type;
-						if (!type.Fields.ContainsKey(name))
+						var field = type.FieldsB.FirstOrDefault(f => f.Name == name);
+						if (field.Name == null)
 							throw new ApplicationException($"The type {expr.Type.Name} does not have a field named {name}.");
-						expr2 = new FieldAccessExpression(expr, name, type.Fields[name]);
+						expr2 = new FieldAccessExpression(expr, name, field.Type);
 						nextIndex++; // Skip over the field name.
 					}
 					else
