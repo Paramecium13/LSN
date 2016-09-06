@@ -6,21 +6,25 @@ namespace LsnCore.Statements
 	[Serializable]
 	public class AssignmentStatement : Statement
 	{
-		private IExpression Value;
-		public string VariableName;
+		public IExpression Value;
+		//public string VariableName;
+		public int Index;
 		//public LSN_Type Type;
 		//public bool Mutable;
 
-		public AssignmentStatement(string name, IExpression value)
+		
+		public AssignmentStatement(/*string name*/int index, IExpression value)
 		{
-			VariableName = name;
+			//VariableName = name;
+			Index = index;
 			Value = value;
 		}
 
 		
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			i.AddVariable(VariableName,Value.Eval(i));
+			//i.AddVariable(VariableName,Value.Eval(i));
+			i.SetValue(Index, Value.Eval(i));
 			return InterpretValue.Base;
 		}
 

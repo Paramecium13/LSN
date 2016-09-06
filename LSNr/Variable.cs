@@ -33,19 +33,18 @@ namespace LSNr
 
 		public IReadOnlyList<IExpressionContainer> UsersB => _UsersB;
 
-		public AssignmentStatement Assignment { get; private set; }
+		public AssignmentStatement Assignment { get; set; }
 
 		public bool Used { get { return Users.Count > 0; } }
 
 		public bool UsedB { get { return UsersB.Count > 0; } }
 
-		public Variable(string name, bool m, IExpression init, AssignmentStatement assignment)
+		public Variable(string name, bool m, IExpression init)
 		{
 			Name = name;
 			Type = init.Type;
 			Mutable = m;
 			InitialValue = init;
-			Assignment = assignment;
 			var e = init.Fold();
 			if (e.IsReifyTimeConst())
 				AccessExpression = e;
@@ -53,13 +52,12 @@ namespace LSNr
 				AccessExpression = new VariableExpressionB(Index, Type);
 		}
 
-		public Variable(string name, bool m, IExpression init, AssignmentStatement assignment, int index)
+		public Variable(string name, bool m, IExpression init, int index)
 		{
 			Name = name;
 			Type = init.Type;
 			Mutable = m;
 			InitialValue = init;
-			Assignment = assignment;
 			Index = index;
 			var e = init.Fold();
 			if (e.IsReifyTimeConst())

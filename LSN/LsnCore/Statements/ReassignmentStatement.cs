@@ -13,25 +13,29 @@ namespace LsnCore.Statements
 	[Serializable]
 	public class ReassignmentStatement : Statement
 	{
-		protected string Name { get; set; }
+		//protected string Name { get; set; }
 
+		public int Index;
+		
 		private IExpression _Value;
-		protected IExpression Value { get { return _Value; } set { _Value = value; } }
+		public IExpression Value { get { return _Value; } set { _Value = value; } }
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="name"> The name of the variable that is being reassigned to.</param>
 		/// <param name="value"> The value that it is being assigned.</param>
-		public ReassignmentStatement(string name, IExpression value)
+		public ReassignmentStatement(/*string name*/int index, IExpression value)
 		{
-			Name = name;
+			//Name = name;
+			Index = index;
 			Value = value;
 		}
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			i.ReAssignVariable(Name, Value.Eval(i));
+			//i.ReAssignVariable(Name, Value.Eval(i));
+			i.SetValue(Index, Value.Eval(i));
 			return InterpretValue.Base;
 		}
 

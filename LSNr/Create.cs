@@ -97,7 +97,7 @@ namespace LSNr
 				} while (head[++i].Value != "`");
 				// i points to `.
 				var val = Express(exprTokens, script);
-				if (!script.CurrentScope.HasVariable(varName)) script.CurrentScope.CreateVariable(varName, true, val, null);
+				if (!script.CurrentScope.HasVariable(varName)) script.CurrentScope.CreateVariable(varName, true, val);
 
 				exprTokens.Clear(); // Recycle the list.
 				i++;
@@ -118,7 +118,7 @@ namespace LSNr
 					{
 						for(i = i+1; i < head.Count -1; i++)
 							exprTokens.Add(head[i]);
-						post = new ReassignmentStatement(varName, Express(exprTokens, script));
+						post = new ReassignmentStatement(script.CurrentScope.GetVariable(varName).Index, Express(exprTokens, script));
 					}
 					else if(head[i].Value == "++")
 					{

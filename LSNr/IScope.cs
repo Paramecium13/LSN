@@ -7,7 +7,7 @@ namespace LSNr
 {
 	public interface IScope
 	{
-		Variable CreateVariable(string name, bool mutable, IExpression init, AssignmentStatement assign);
+		Variable CreateVariable(string name, bool mutable, IExpression init);
 		Variable CreateVariable(Parameter param);
 		Variable GetVariable(string name);
 		bool HasVariable(string name);

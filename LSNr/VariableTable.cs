@@ -91,9 +91,9 @@ namespace LSNr
 		}
 
 
-		public Variable CreateVariable(string name, bool mutable, IExpression init, AssignmentStatement assign)
+		public Variable CreateVariable(string name, bool mutable, IExpression init)
 		{
-			var v = new Variable(name, mutable, init, assign, NextOffset);
+			var v = new Variable(name, mutable, init, NextOffset);
 			Variables.Add(v);
 			return v;
 		}

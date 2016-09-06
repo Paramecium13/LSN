@@ -52,8 +52,9 @@ namespace LSNr
 			string name = tokens[nameindex].Value;
 			IExpression value = Express(tokens.Skip(nameindex + 2).ToList(), script);
 			LsnType type = value.Type;
-			var st = new AssignmentStatement(name, value);
-			script.CurrentScope.CreateVariable(name, mutable, value, st);
+			var variable = script.CurrentScope.CreateVariable(name, mutable, value);
+			var st = new AssignmentStatement(variable.Index, value);
+			variable.Assignment = st;
 			return st;
 		}
 
@@ -87,7 +88,7 @@ namespace LSNr
 				script.Valid = false;
 				return null;
 			}
-			return new ReassignmentStatement(v.Name, expr);
+			return new ReassignmentStatement(v.Index, expr);
 		}
 
 		/// <summary>
