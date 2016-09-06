@@ -33,6 +33,13 @@ namespace LsnCore
 			_Type = type; Fields = values;
 		}
 
+
+		public StructValue(ILsnValue[] values, TypeId id)
+		{
+
+		}
+
+
 		public ILsnValue GetValue(string name)
 			=> GetValue(_Type.GetIndex(name));
 

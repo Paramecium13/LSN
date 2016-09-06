@@ -11,9 +11,12 @@ namespace LsnCore.Types
 	{
 		public readonly string Name;
 
+		[NonSerialized]
+		public readonly LsnType Type;
+
 		public TypeId(LsnType t)
 		{
-			Name = t.Name;
+			Name = t.Name; Type = t;
 		}
 
 		public override bool Equals(object obj)	
