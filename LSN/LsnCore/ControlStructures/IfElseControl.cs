@@ -12,9 +12,14 @@ namespace LsnCore.ControlStructures
 	public class IfElseControl : ControlStructure
 	{
 		public IExpression Condition { get; set; }
-		public readonly List<Component> Body;
-		public readonly List<ElsifControl> Elsifs = new List<ElsifControl>();
-		public readonly List<Component> ElseBlock;
+		public readonly IList<Component> Body;
+		public readonly IList<ElsifControl> Elsifs = new List<ElsifControl>();
+		public List<Component> ElseBlock; // Can be null
+
+		public IfElseControl(IExpression condition, IList<Component> body)
+		{
+			Condition = condition; Body = body;
+		}
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{

@@ -48,7 +48,7 @@ namespace LSNr
 			if(InitialTokens.Count == 1)
 			{
 				if (Substitutions.ContainsKey(InitialTokens[0])) return Substitutions[InitialTokens[0]];
-				return Create.SingleTokenExpress(InitialTokens[0], Script);
+				return Create.SingleTokenExpress(InitialTokens[0], Script, null, Variables);
 			}
 			ParseVariablesAndFunctions();
 			if(CurrentTokens.Count != 1)

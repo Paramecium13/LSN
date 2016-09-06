@@ -9,6 +9,10 @@ using LsnCore.Types;
 
 namespace LSNr.Optimization
 {
+	//TODO: Check use this on expressions before they are placed in a component and then fold them.
+	//TODO: Make this check boolean expressions...
+		//e.g. Check for simple tautology (x || !x).
+	
 	public class ArithmeticIdentityChecker : ExpressionWalker
 	{
 		protected override IExpression View(BinaryExpression b)

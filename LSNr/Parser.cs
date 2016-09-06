@@ -36,7 +36,11 @@ namespace LSNr
 				}
 				else if (t == ";")
 				{
-					Components.Add(Create.State(TempTokens,Script));
+					var comp = Create.State(TempTokens, Script);
+					if (comp != null)
+						Components.Add(comp);
+					else
+						Console.Write("");
 					TempTokens.Clear();
 				}
 				else
@@ -67,7 +71,11 @@ namespace LSNr
 				i++;
 			} while (openCount != closeCount);
 			var x = bodyTokens.Skip(1).Reverse().Skip(1).Reverse().ToList();
-			Components.Add(Create.ControlStructure(TempTokens, x, Script));
+			var comp = Create.ControlStructure(TempTokens, x, Script);
+			if (comp != null)
+				Components.Add(comp);
+			else
+				Console.Write("");
 			TempTokens.Clear();i--;
 		}
 
@@ -78,10 +86,10 @@ namespace LSNr
 			{
 				if (components[i] is IfControl)
 				{
-					IfElseControl f = new IfElseControl();
-					f.Body = (components[i] as IfControl).Body;
-					f.Condition = (components[i] as IfControl).Condition;
+					IfElseControl f = new IfElseControl((components[i] as IfControl).Condition,(components[i] as IfControl).Body);
 					i++;
+					if (i >= components.Count)
+						c.Add(f);
 					while (i < components.Count)
 					{
 						if (components[i] is ElsifControl)

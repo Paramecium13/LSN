@@ -23,18 +23,22 @@ namespace LSNr
 		{
 			get
 			{
-				return NextOffset > _MaxSizeFromChildren ? NextOffset : _MaxSizeFromChildren;
+				var childrenMax = Children.Count != 0 ? Children.Select(c => c.MaxSize).Max() : 0;
+				return NextOffset > childrenMax ? NextOffset : childrenMax;
 			}
 		}
 
 		/// <summary>
 		/// The index of the first variable in this table.
 		/// </summary>
-		private readonly int Offset;
+		private int Offset;
 
 		private readonly List<Variable> Variables = new List<Variable>();
 
 		private readonly IList<Variable> MasterVariableList;
+
+
+		private readonly IList<VariableTable> Children = new List<VariableTable>();
 
 		/// <summary>
 		/// The number of variables in this table, not counting the parent(s);
@@ -51,10 +55,12 @@ namespace LSNr
 		/// </summary>
 		public int NextOffset => Offset + Count - ConstCount;
 
+
 		public VariableTable(IList<Variable> masterVarList)
 		{
 			Offset = 0; MasterVariableList = masterVarList;
 		}
+
 
 		public VariableTable(VariableTable parent, IList<Variable> masterVarList)
 		{
@@ -106,23 +112,59 @@ namespace LSNr
 		public IScope Pop(List<Component> components)
 		{
 			// Optimize contained variables...
+			var deadVars = new List<Variable>();
+			int downShift = 0;
 			foreach (var variable in Variables)
 			{
-				if (!variable.Used && variable.Assignment != null) components.Remove(variable.Assignment);
+				if (!variable.Used && variable.Assignment != null)
+				{
+					components.Remove(variable.Assignment);
+					deadVars.Add(variable);
+					downShift++; // Shift index to account for dead variable.
+					int i = variable.Index;
+					foreach (var child in Children)
+						child.ParentVariableRemoved(i);
+				}
+				else if(downShift != 0)
+					variable.ChangeIndex(variable.Index - downShift);
 			}
-			Parent.RecieveChildMaxSize(MaxSize);
+			foreach (var v in deadVars)
+				Variables.Remove(v);
 			return Parent;
 		}
-
-
-		private void RecieveChildMaxSize(int max)
+		
+		/// <summary>
+		/// A variable in the parent was removed.
+		/// </summary>
+		/// <param name="index">The index of the variable that was removed.</param>
+		private void ParentVariableRemoved(int index)
 		{
-			if (max > _MaxSizeFromChildren) _MaxSizeFromChildren = max;
+			if(index < Offset)
+			{
+				Offset--;
+				foreach (var v in Variables)
+					v.ChangeIndex(v.Index - 1);
+				foreach (var child in Children)
+					child.ParentVariableRemoved(index);
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="index"></param>
+		private void ParentVariableAdded(int index)
+		{
+			throw new NotImplementedException();
 		}
 
 
 		public IScope CreateChild()
-			=> new VariableTable(this, MasterVariableList);
+		{
+			var child = new VariableTable(this, MasterVariableList);
+			Children.Add(child);
+			return child;
+		}
 
 	}
 }
