@@ -25,10 +25,7 @@ namespace LsnCore.Types
 		public override IReadOnlyDictionary<Tuple<Operator, LsnType>, Tuple<BinOp, LsnType>> Operators
 			=> External.Operators;
 
-		// These will be found using an expression walker...
-		private IList<IExpression> ExprUsers = new List<IExpression>();
-
-		private IList<Function> FnRetUsers = new List<Function>();
+		private IList<IExpression> Users = new List<IExpression>();
 
 		public override ILsnValue CreateDefaultValue()
 			=> External.CreateDefaultValue();
@@ -43,10 +40,10 @@ namespace LsnCore.Types
 
 		public void Resolve(LsnType type)
 		{
-			foreach (var user in ExprUsers)
+			foreach (var user in Users)
 				user.Type = type;
-			ExprUsers.Clear();
-			ExprUsers = null;
+			Users.Clear();
+			Users = null;
 		}
 
 	}

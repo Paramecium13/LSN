@@ -14,16 +14,69 @@ namespace LsnCore
 	public class LsnListType : LsnReferenceType, ICollectionType
 	{
 
-		
-		private LsnType _Generic;
-		public LsnType ContentsType { get { return _Generic; } set { _Generic = value; } }
-
-		private LsnType _int;
-		public LsnType IndexType => _int;
-
-		internal LsnListType(LsnType type, _int)
+		static LsnListType()
 		{
-			ContentsType = type;
+			// Set up methods
+			var listInt = LsnListGeneric.Instance.GetType(new List<LsnType>() { int_ }) as LsnListType;
+			var listDouble = LsnListGeneric.Instance.GetType(new List<LsnType>() { double_ }) as LsnListType;
+
+			listInt._Methods.Add("Sum", new BoundedMethod(listInt, int_,
+				(args) =>
+				{
+					int Σ = 0;
+					var list = (LSN_List)args["self"];
+					int length = list.Length().Value;
+					for (int i = 0; i < length; i++)
+						Σ += ((IntValue)list[i]).Value;
+					return new IntValue(Σ);
+				}
+			));
+			listInt._Methods.Add("Mean", new BoundedMethod(listInt, int_,
+				(args) =>
+				{
+					int Σ = 0;
+					var list = (LSN_List)args["self"];
+					int length = list.Length().Value;
+					for (int i = 0; i < length; i++)
+						Σ += ((IntValue)list[i]).Value;
+					return new IntValue(length > 0 ? Σ / length : 0);
+				}
+			));
+
+			listDouble._Methods.Add("Sum", new BoundedMethod(listDouble, double_,
+				(args) =>
+				{
+					double Σ = 0;
+					var list = (LSN_List)args["self"];
+					int length = list.Length().Value;
+					for (int i = 0; i < length; i++)
+						Σ += ((DoubleValue)list[i]).Value;
+					return new DoubleValue(Σ);
+				}
+			));
+			listDouble._Methods.Add("Mean", new BoundedMethod(listDouble, double_,
+				(args) =>
+				{
+					double Σ = 0.0;
+					var list = (LSN_List)args["self"];
+					int length = list.Length().Value;
+					for (int i = 0; i < length; i++)
+						Σ += ((DoubleValue)list[i]).Value;
+					return new DoubleValue(length > 0 ? Σ / length : 0);
+				}
+			));
+		}
+
+		private LsnType _Generic;
+		public LsnType GenericType { get { return _Generic; } private set { _Generic = value; } }
+
+		public LsnType IndexType => int_;
+
+		public LsnType ContentsType => GenericType;
+
+		internal LsnListType(LsnType type)
+		{
+			GenericType = type;
 			// Set up methods
 			_Methods.Add("Add", new BoundedMethod(this, null,
 				(args) =>
@@ -33,7 +86,7 @@ namespace LsnCore
 				},
 				new List<Parameter>() { new Parameter("self",this,null,0), new Parameter("value",type,null,1)}
 			));
-			_Methods.Add("Length", new BoundedMethod(this, _int, (args) => ((LSN_List)args["self"]).Length()));
+			_Methods.Add("Length", new BoundedMethod(this, int_, (args) => ((LSN_List)args["self"]).Length()));
 			List<int> x = new List<int>();
 			
 		}
