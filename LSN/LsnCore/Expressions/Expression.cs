@@ -11,7 +11,7 @@ namespace LsnCore.Expressions
 	{
 		private LsnType _Type;
 
-		public virtual LsnType Type { get { return _Type; } set { _Type = value; } }
+		public virtual LsnType Type { get { return _Type; } protected set { _Type = value; } }
 
 		public abstract bool IsReifyTimeConst();
 

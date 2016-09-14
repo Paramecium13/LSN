@@ -21,16 +21,15 @@ namespace LsnCore
 	public struct IntValue : IBoundValue<int>
 	{
 		public int Value { get; private set; }
-		public LsnType Type { get; set; }
+		public LsnType Type { get { return LsnType.int_; } }
 		public bool BoolValue { get { return true; } }
 
-		public IntValue(int val, LsnType type)
+		public IntValue(int val)
 		{
-			Type = type;
 			Value = val;
 		}
 
-		public ILsnValue Clone() => new IntValue(Value, Type);
+		public ILsnValue Clone() => new IntValue(Value);
 
 		public ILsnValue Eval(IInterpreter i) => this;
 		public IExpression Fold() => this;
@@ -48,15 +47,17 @@ namespace LsnCore
 
 		public static explicit operator int(IntValue v) => v.Value;
 		public static explicit operator double(IntValue v) => v.Value;
+
+		public static explicit operator DoubleValue(IntValue v) => new DoubleValue(v.Value);
 	}
 
 	/// <summary>
 	/// LSN value that contains a string, is effectively passed by reference.
 	/// </summary>
 	[Serializable]
-	public class StringValue : IBoundValue<string>
+	public struct StringValue : IBoundValue<string>
 	{
-		public LsnType Type { get; set; }
+		public LsnType Type {get { return LsnType.string_; } }
 		public string Value { get; private set; }
 		public bool BoolValue { get { return true; } }
 
@@ -64,10 +65,9 @@ namespace LsnCore
 		/// 
 		/// </summary>
 		/// <param name="val"></param>
-		public StringValue(string val, LsnType type)
+		public StringValue(string val)
 		{
 			Value = val;
-			Type = type;
 		}
 
 		/// <summary>
@@ -93,6 +93,7 @@ namespace LsnCore
 		public string TranslateUniversal() => Value.ToString();
 
 		public static explicit operator string(StringValue v) => v.Value;
+		public static explicit operator StringValue(string s) => new StringValue(s);
 
 		public void Replace(IExpression oldExpr, IExpression newExpr) { }
 
@@ -111,15 +112,14 @@ namespace LsnCore
 	public struct DoubleValue : IBoundValue<double>
 	{
 		public double Value { get; private set; }
-		public LsnType Type { get; set; }
+		public LsnType Type { get { return LsnType.double_; } }
 		public bool BoolValue { get { return true; } }
 
-		public DoubleValue(double val, LsnType type)
+		public DoubleValue(double val)
 		{
 			Value = val;
-			Type = type;
 		}
-		public ILsnValue Clone() => new DoubleValue(Value,Type);
+		public ILsnValue Clone() => new DoubleValue(Value);
 
 		public ILsnValue Eval(IInterpreter i) => this;
 		public IExpression Fold() => this;
@@ -128,6 +128,8 @@ namespace LsnCore
 
 
 		public static explicit operator double(DoubleValue v) => v.Value;
+
+		public static explicit operator DoubleValue(double v) => new DoubleValue(v);
 
 		public void Replace(IExpression oldExpr, IExpression newExpr) { }
 
@@ -150,7 +152,7 @@ namespace LsnCore
 		public static LSN_BoolValue GetBoolValue(bool val)
 			=> val? True : False;
 
-		public LsnType Type { get; set; }
+		public LsnType Type { get { return LsnType.Bool_; } }
 		public bool Value { get; private set; }
 		public bool BoolValue { get { return Value; } }
 

@@ -6,15 +6,14 @@ using LsnCore.Types;
 
 namespace LsnCore
 {
-	[Serializable]
+	[Serializable]// ToDo: change to class, pass by ref...
 	public class StructValue : ILsnValue, IHasFieldsValue
 	{
 		private readonly IDictionary<string, ILsnValue> Members;
 		private readonly ILsnValue[] Fields;
 
-		private LsnStructType _Type;
-		public LsnType Type
-		{ get { return _Type; }  set { _Type = (LsnStructType)value; } }
+		private readonly LsnStructType _Type;
+		public LsnType Type => _Type;
 
 		public bool BoolValue { get{ return true; } }
 

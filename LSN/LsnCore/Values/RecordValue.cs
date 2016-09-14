@@ -10,8 +10,8 @@ namespace LsnCore.Values
 	[Serializable]
 	public class RecordValue : LsnValue, IHasFieldsValue
 	{
-		private RecordType _Type;
-		public override LsnType Type { get { return _Type; } set { _Type = (RecordType)value; } }
+		private readonly RecordType _Type;
+		public override LsnType Type { get { return _Type; } protected set {} }
 		public override bool BoolValue { get { return true; } }
 
 		private readonly ILsnValue[] Values;

@@ -24,52 +24,49 @@ namespace LsnCore
 	{
 
         public static List<LsnType> BaseTypes;
-		/*public static LsnBoundedType<int> int_ { get; private set; }
+		public static LsnType int_ { get; private set; }
 		public static LsnType double_ { get; private set; }
 		public static LsnType string_ { get; private set; }
 		public static LsnType Bool_ { get; private set; } = new BoolType("bool","Boolean");
 		public static LsnType dynamic_ { get; private set; }
-		public static LsnType object_ { get; private set; }*/
-
-		/// <summary>
-		/// Get a list of base types.
-		/// </summary>
-		/// <returns></returns>
-		public static List<LsnType> GetBaseTypes()
+		public static LsnType object_ { get; private set; }
+		
+		static LsnType()
 		{
 			BaseTypes = new List<LsnType>();
-			var int_ = new LsnBoundedType<int>("int","Integer");
-			int_.CreateDefault = () => new IntValue(0,int_);
-			var double_ = new LsnBoundedType<double>("double");
-			double_.CreateDefault = () => new DoubleValue(0.0, double_);
-			var string_ = new LsnBoundedType<string>("string");
-			string_.CreateDefault = () => new StringValue("", string_);
-			var dynamic_ = new LsnBoundedType<object>("dynamic");
-			var object_ = new LsnBoundedType<object>("object");
-			var Bool_ = new BoolType("bool","Boolean");
+			int_ = new LsnBoundedType<int>("int",()=> new IntValue(0),"Integer");
+			double_ = new LsnBoundedType<double>("double", () => new DoubleValue(0.0));
+			string_ = new LsnBoundedType<string>("string", () => new StringValue(""));
+			dynamic_ = new LsnBoundedType<Object>("dynamic",()=> null);
+			object_ = new LsnBoundedType<object>("object", () => null);
 
 			BaseTypes.Add(int_);
 			BaseTypes.Add(double_);
 			BaseTypes.Add(string_);
 			
+			SetUpOperators(); SetUpMethods();
+        }
+
+		private static void SetUpOperators()
+		{
 			// int 'op' int -> int
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Add, int_),
-				new Tuple<BinOp, LsnType>((a, b) => new IntValue(((IntValue)a).Value + ((IntValue)b).Value, int_),int_));
+				new Tuple<BinOp, LsnType>((a, b) => new IntValue(((IntValue)a).Value + ((IntValue)b).Value),int_));
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Divide, int_),
-				new Tuple<BinOp, LsnType>((a, b) => new IntValue(((IntValue)a).Value / ((IntValue)b).Value, int_), int_));
+				new Tuple<BinOp, LsnType>((a, b) => new IntValue(((IntValue)a).Value / ((IntValue)b).Value), int_));
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Mod, int_),
-				new Tuple<BinOp, LsnType>((a, b) => new IntValue(((IntValue)a).Value % ((IntValue)b).Value, int_), int_));
+				new Tuple<BinOp, LsnType>((a, b) => new IntValue(((IntValue)a).Value % ((IntValue)b).Value), int_));
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Multiply, int_),
-				new Tuple<BinOp, LsnType>((a, b) => new IntValue(((IntValue)a).Value * ((IntValue)b).Value, int_), int_));
+				new Tuple<BinOp, LsnType>((a, b) => new IntValue(((IntValue)a).Value * ((IntValue)b).Value), int_));
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Power, int_),
-				new Tuple<BinOp, LsnType>((a, b) => new IntValue((int)Math.Pow(((IntValue)a).Value,((IntValue)b).Value), int_), int_));
+				new Tuple<BinOp, LsnType>((a, b) => new IntValue((int)Math.Pow(((IntValue)a).Value,((IntValue)b).Value)), int_));
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Subtract, int_),
-				new Tuple<BinOp, LsnType>((a, b) => new IntValue(((IntValue)a).Value - ((IntValue)b).Value, int_), int_));
+				new Tuple<BinOp, LsnType>((a, b) => new IntValue(((IntValue)a).Value - ((IntValue)b).Value), int_));
 
 			// int * string -> string
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Multiply, string_),
 				new Tuple<BinOp, LsnType>((a, b) =>
-				new StringValue((new StringBuilder()).Append(((StringValue)b).Value, 0, ((IntValue)a).Value).ToString(), string_), string_));
+				new StringValue((new StringBuilder()).Append(((StringValue)b).Value, 0, ((IntValue)a).Value).ToString()), string_));
 
 			// Comparisons: int 'op' int -> bool
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.GreaterThan, int_),
@@ -87,17 +84,17 @@ namespace LsnCore
 
 			// int 'op' double -> double
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Add, double_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((IntValue)a).Value + ((DoubleValue)b).Value, double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((IntValue)a).Value + ((DoubleValue)b).Value),double_));
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Divide, double_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((IntValue)a).Value / ((DoubleValue)b).Value, double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((IntValue)a).Value / ((DoubleValue)b).Value),double_));
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Mod, double_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((IntValue)a).Value % ((DoubleValue)b).Value, double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((IntValue)a).Value % ((DoubleValue)b).Value),double_));
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Multiply, double_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((IntValue)a).Value * ((DoubleValue)b).Value, double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((IntValue)a).Value * ((DoubleValue)b).Value),double_));
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Power, double_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(Math.Pow(((IntValue)a).Value,((DoubleValue)b).Value), double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(Math.Pow(((IntValue)a).Value,((DoubleValue)b).Value)),double_));
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Subtract, double_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((IntValue)a).Value - ((DoubleValue)b).Value, double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((IntValue)a).Value - ((DoubleValue)b).Value),double_));
 
 			// Comparisons: int 'op' double -> bool
 			int_._Operators.Add(new Tuple<Operator, LsnType>(Operator.GreaterThan, double_),
@@ -115,17 +112,17 @@ namespace LsnCore
 
 			// double 'op' double -> double
 			double_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Add, double_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value - ((DoubleValue)b).Value, double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value - ((DoubleValue)b).Value),double_));
 			double_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Divide, double_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value / ((DoubleValue)b).Value, double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value / ((DoubleValue)b).Value),double_));
 			double_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Mod, double_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value % ((DoubleValue)b).Value, double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value % ((DoubleValue)b).Value),double_));
 			double_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Multiply, double_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value * ((DoubleValue)b).Value, double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value * ((DoubleValue)b).Value),double_));
 			double_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Power, double_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(Math.Pow(((DoubleValue)a).Value, ((DoubleValue)b).Value), double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(Math.Pow(((DoubleValue)a).Value, ((DoubleValue)b).Value)),double_));
 			double_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Subtract, double_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value - ((DoubleValue)b).Value, double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value - ((DoubleValue)b).Value),double_));
 
 			// double 'op' double -> bool
 			double_._Operators.Add(new Tuple<Operator, LsnType>(Operator.LessThan, double_),
@@ -149,17 +146,17 @@ namespace LsnCore
 
 			// double 'op' int -> double
 			double_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Add, int_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value - ((IntValue)b).Value, double_), double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value - ((IntValue)b).Value), double_));
 			double_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Subtract, int_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value - ((IntValue)b).Value, double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value - ((IntValue)b).Value),double_));
 			double_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Divide, int_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value / ((IntValue)b).Value, double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value / ((IntValue)b).Value),double_));
 			double_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Mod, int_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value % ((IntValue)b).Value, double_),double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value % ((IntValue)b).Value),double_));
 			double_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Multiply, int_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value * ((IntValue)b).Value, double_), double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(((DoubleValue)a).Value * ((IntValue)b).Value), double_));
 			double_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Power, int_),
-				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(Math.Pow(((DoubleValue)a).Value, ((IntValue)b).Value), double_), double_));
+				new Tuple<BinOp, LsnType>((a, b) => new DoubleValue(Math.Pow(((DoubleValue)a).Value, ((IntValue)b).Value)), double_));
 
 			// Comparisons: double 'op' int -> bool
 			double_._Operators.Add(new Tuple<Operator, LsnType>(Operator.LessThan, int_),
@@ -177,12 +174,12 @@ namespace LsnCore
 
 			// string + string -> string
 			string_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Add, string_),
-				new Tuple<BinOp, LsnType>((a, b) => new StringValue(((StringValue)a).Value + ((StringValue)a).Value, string_),string_));
+				new Tuple<BinOp, LsnType>((a, b) => new StringValue(((StringValue)a).Value + ((StringValue)a).Value),string_));
 
 			// string * int -> string
 			string_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Multiply, int_),
 				new Tuple<BinOp, LsnType>((a, b) => 
-				new StringValue((new StringBuilder()).Append(((StringValue)a).Value,0,((IntValue)b).Value).ToString(), string_), string_) );
+				new StringValue((new StringBuilder()).Append(((StringValue)a).Value,0,((IntValue)b).Value).ToString()), string_) );
 
 			// Comparison: string 'op' string -> bool
 			string_._Operators.Add(new Tuple<Operator, LsnType>(Operator.Equals, string_),
@@ -191,9 +188,12 @@ namespace LsnCore
 			string_._Operators.Add(new Tuple<Operator, LsnType>(Operator.NotEquals, string_),
 				new Tuple<BinOp, LsnType>((a, b) =>
 				LSN_BoolValue.GetBoolValue(((StringValue)a).Value != ((StringValue)b).Value), Bool_));
-			// TODO: Add >, <, >=, and <=.
+			// ToDo: Add >, <, >=, and <=.
+		}
 
-			int_._Methods.Add("Abs", new BoundedMethod(int_,int_,(args)=>new IntValue(Math.Abs(((IntValue)args["self"]).Value),int_)));
+		private static void SetUpMethods()
+		{
+			int_._Methods.Add("Abs", new BoundedMethod(int_,int_,(args)=>new IntValue(Math.Abs(((IntValue)args["self"]).Value))));
 
 
 			double_._Methods.Add("Abs", new BoundedMethod(double_, double_, 
@@ -202,7 +202,7 @@ namespace LsnCore
 					Math.Abs
 					(
 						((DoubleValue)args["self"]).Value
-					),double_
+					)
 				)
 			));
 
@@ -212,14 +212,14 @@ namespace LsnCore
 					(int)Math.Ceiling
 					(
 						((DoubleValue)args["self"]).Value
-					),int_
+					)
 				)
 			));
 
 			double_._Methods.Add("Floor", new BoundedMethod(double_, int_,
 				(args) => new IntValue
 				(
-					(int)((DoubleValue)args["self"]).Value, int_
+					(int)((DoubleValue)args["self"]).Value
 				)
 			));
 
@@ -229,7 +229,7 @@ namespace LsnCore
 					(int)Math.Round
 					(
 						((DoubleValue)args["self"]).Value
-					), int_
+					)
 				)
 			));
 
@@ -237,7 +237,7 @@ namespace LsnCore
 			string_._Methods.Add("Length", new BoundedMethod(string_, int_,
 				(args) => new IntValue
 				(
-					((StringValue)args["self"]).Value.Length, int_
+					((StringValue)args["self"]).Value.Length
 				)
 			));
 
@@ -245,17 +245,24 @@ namespace LsnCore
 				(args) => new StringValue
 				(
 					((StringValue)args["self"]).Value.Substring(((IntValue)args["start"]).Value,
-						((IntValue)args["length"]).Value),string_
+						((IntValue)args["length"]).Value)
 				)
 			,new List<Parameter>() { new Parameter("start",int_,null,0), new Parameter("length", int_,null,1)}));
 
 			string_._Methods.Add("ToLower", new BoundedMethod(string_, string_,
 				(args) => new StringValue
 				(
-					((StringValue)args["self"]).Value.ToLower(), string_
+					((StringValue)args["self"]).Value.ToLower()
 				)
 			));
-		
+		}
+
+		/// <summary>
+		/// Get a list of base types.
+		/// </summary>
+		/// <returns></returns>
+		public static List<LsnType> GetBaseTypes()
+		{
 			var types = new List<LsnType>();
 			types.Add(int_);
 			types.Add(double_);
@@ -295,7 +302,7 @@ namespace LsnCore
 		/// <summary>
 		/// Operators...
 		/// </summary>
-		public virtual IReadOnlyDictionary<Tuple<Operator, LsnType>, Tuple<BinOp, LsnType>> Operators
+		public IReadOnlyDictionary<Tuple<Operator, LsnType>, Tuple<BinOp, LsnType>> Operators
 			{ get { return _Operators; } }
 
 		public bool IsName(string name) => Name == name || Aliases.Contains(name);

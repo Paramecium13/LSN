@@ -30,7 +30,7 @@ namespace LsnCore
 		protected LsnEnvironment _Environment;
         public LsnEnvironment Environment { get { return _Environment; } protected set { _Environment = value; } }
 
-		//TODO: create a function call expression.
+		//Todo: create a function call expression.
 		public virtual IExpression CreateCall(Dictionary<string,IExpression> args, bool throwOnInvalidName = false, bool included = false)
 		{
 			// Check for invalid names.

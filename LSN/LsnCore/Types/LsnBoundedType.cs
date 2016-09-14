@@ -25,9 +25,10 @@ namespace LsnCore
 
 		public Func<ILsnValue> CreateDefault { get; set; }
 
-		public LsnBoundedType(string name, params string[] args)
+		public LsnBoundedType(string name, Func<ILsnValue> createDefault, params string[] args)
 		{
 			Name = name;
+			CreateDefault = createDefault;
 		}
 
 		public override ILsnValue CreateDefaultValue() => CreateDefault();
