@@ -292,6 +292,17 @@ namespace LsnCore
 		protected readonly Dictionary<string, Method> _Methods = new Dictionary<string, Method>();
 		public virtual IReadOnlyDictionary<string, Method> Methods => _Methods;
 
+		private TypeId _Id;
+
+		public TypeId Id
+		{
+			get
+			{
+				if (_Id == null)
+					_Id = new TypeId(this);
+				return _Id;
+			}
+		}
 
 		/// <summary>
 		/// Operators...

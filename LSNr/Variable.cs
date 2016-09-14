@@ -42,20 +42,20 @@ namespace LSNr
 		public Variable(string name, bool m, IExpression init)
 		{
 			Name = name;
-			Type = init.Type;
+			Type = init.Type.Type;
 			Mutable = m;
 			InitialValue = init;
 			var e = init.Fold();
 			if (e.IsReifyTimeConst())
 				AccessExpression = e;
 			else
-				AccessExpression = new VariableExpressionB(Index, Type);
+				AccessExpression = new VariableExpressionB(Index, Type.Id);
 		}
 
 		public Variable(string name, bool m, IExpression init, int index)
 		{
 			Name = name;
-			Type = init.Type;
+			Type = init.Type.Type;
 			Mutable = m;
 			InitialValue = init;
 			Index = index;
@@ -66,15 +66,15 @@ namespace LSNr
 				Index = -1; // This is a constant.
 			}
 			else
-				AccessExpression = new VariableExpressionB(Index, Type);
+				AccessExpression = new VariableExpressionB(Index, Type.Id);
 		}
 
 		public Variable(Parameter param)
 		{
 			Name = param.Name;
-			Type = param.Type;
+			Type = param.Type.Type;
 			Mutable = false;
-			AccessExpression = new VariableExpressionB(Index, Type);
+			AccessExpression = new VariableExpressionB(Index, Type.Id);
 			Index = param.Index;
 		}
 

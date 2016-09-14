@@ -28,7 +28,7 @@ namespace LsnCore.Expressions
 			Args = args ?? new Dictionary<string, IExpression>();
 			M = m;
 			Args.Add("self", Value);
-			Type = m.ReturnType;
+			Type = m.ReturnType.Id;
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -38,7 +38,7 @@ namespace LsnCore.Expressions
 			Args = args ?? new Dictionary<string, IExpression>();
 			MethodName = name;
 			Args.Add("self", Value);
-			Type = type;
+			Type = type.Id;
 		}
 
 		public override ILsnValue Eval(IInterpreter i)
@@ -46,7 +46,7 @@ namespace LsnCore.Expressions
 			var args = Args.Select(p => new KeyValuePair<string, ILsnValue>(p.Key, p.Value.Eval(i))).ToDictionary();
 			var self = Value.Eval(i);
 			args.Add("self", self);
-			var fn = M ?? self.Type.Methods[MethodName];
+			var fn = M ?? self.Type.Type.Methods[MethodName]; //TODO:...
 			if (!fn.HandlesScope) i.EnterFunctionScope(fn.Environment, fn.StackSize);
 			var val = fn.Eval(args, i);
 			if (!fn.HandlesScope) i.ExitFunctionScope();

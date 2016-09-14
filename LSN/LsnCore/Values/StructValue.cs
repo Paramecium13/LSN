@@ -12,14 +12,18 @@ namespace LsnCore
 		private readonly IDictionary<string, ILsnValue> Members;
 		private readonly ILsnValue[] Fields;
 
+		[NonSerialized]
 		private readonly LsnStructType _Type;
-		public LsnType Type => _Type;
+
+		private readonly TypeId Id;
+		public TypeId Type => Id;
 
 		public bool BoolValue { get{ return true; } }
 
 		public StructValue(LsnStructType type, IDictionary<string, ILsnValue> values)
 		{
 			_Type = type;
+			Id = type.Id;
 			Members = values ?? new Dictionary<string, ILsnValue>();
 			foreach(var pair in type.Fields)
 			{
@@ -30,11 +34,15 @@ namespace LsnCore
 
 		public StructValue(LsnStructType type, ILsnValue[] values)
 		{
-			_Type = type; Fields = values;
+			_Type = type; Id = type.Id; Fields = values;
 		}
 
-		public ILsnValue GetValue(string name)
-			=> GetValue(_Type.GetIndex(name));
+
+		public StructValue(ILsnValue[] values, TypeId id)
+		{
+			Id = id; Fields = values;
+		}
+		
 
 		public ILsnValue GetValue(int index) => Fields[index];
 
@@ -52,7 +60,7 @@ namespace LsnCore
 				dict.Add(pair.Key, pair.Value);
 			}
 			dict[name] = value;
-			return new StructValue((LsnStructType)Type, dict);
+			return new StructValue(_Type, dict);
 		}
 
 		public ILsnValue Clone() => this;//new StructValue(_Type, Members);
@@ -64,7 +72,7 @@ namespace LsnCore
 			{
 				dict.Add(pair.Key, pair.Value);
 			}
-			return new StructValue((LsnStructType)Type, dict);
+			return new StructValue(_Type, dict);
 		}
 		
 		public ILsnValue Eval(IInterpreter i) => this;

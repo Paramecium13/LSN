@@ -19,7 +19,7 @@ namespace LsnCore.Expressions
 			if (include) Fn = fn;
 			FnName = fn.Name;
 			Args = args;
-			Type = fn.ReturnType;
+			Type = fn.ReturnType.Id;
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -27,7 +27,7 @@ namespace LsnCore.Expressions
 		{
 			FnName = fnName;
 			Args = args;
-			Type = type;
+			Type = type?.Id;
 		}
 
 		public override ILsnValue Eval(IInterpreter i)

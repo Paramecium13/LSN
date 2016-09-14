@@ -115,9 +115,9 @@ namespace LSNr
 					var name = InitialTokens[i + 1].Value;
 					IExpression expr2 = null;
 					// Is it a method call or a field access expression?
-					if(expr.Type.Methods.ContainsKey(name)) // It's a method call.
+					if(expr.Type.Type.Methods.ContainsKey(name)) // It's a method call.
 					{
-						var method = expr.Type.Methods[name];
+						var method = expr.Type.Type.Methods[name];
 						if (method.Parameters.Count == 1)
 						{
 							expr2 = method.CreateMethodCall
@@ -148,12 +148,13 @@ namespace LSNr
 							expr2 = Create.CreateMethodCall(fnTokens, method, expr, Script);
 						}
 					}
-					else if (expr.Type is IHasFieldsType) // It's a field access expression.typeof(IHasFieldsType).IsAssignableFrom(expr.Type.GetType())
+					else if (expr.Type.Type is IHasFieldsType) // It's a field access expression.typeof(IHasFieldsType).IsAssignableFrom(expr.Type.GetType())
 					{
-						var type = (IHasFieldsType)expr.Type;
-						if (!type.Fields.ContainsKey(name))
+						var type = (IHasFieldsType)expr.Type.Type;
+						var field = type.FieldsB.FirstOrDefault(f => f.Name == name);
+						if (field.Name == null)
 							throw new ApplicationException($"The type {expr.Type.Name} does not have a field named {name}.");
-						expr2 = new FieldAccessExpression(expr, name, type.Fields[name]);
+						expr2 = new FieldAccessExpression(expr, name, field.Type);
 						nextIndex++; // Skip over the field name.
 					}
 					else
@@ -343,12 +344,12 @@ namespace LSNr
 					var name = SUB + SubCount++;
 					var coll = GetExpression(newTokens[newTokens.Count - 1]);
 					newTokens.RemoveAt(newTokens.Count - 1);
-					if(!(coll.Type is ICollectionType))// typeof(ICollectionType).IsAssignableFrom(coll.Type.GetType()
+					if(!(coll.Type.Type is ICollectionType))// typeof(ICollectionType).IsAssignableFrom(coll.Type.GetType()
 						throw new ApplicationException($"{coll.Type.Name} cannot be indexed.");
-					var t = coll.Type as ICollectionType;
+					var t = coll.Type.Type as ICollectionType;
 					if (t.IndexType != expr.Type)
 						throw new ApplicationException($"{coll.Type.Name} cannot be indexed by type {expr.Type.Name}.");
-                    Substitutions.Add(new Identifier(name), new CollectionValueAccessExpression(coll,expr, t.ContentsType));
+                    Substitutions.Add(new Identifier(name), new CollectionValueAccessExpression(coll,expr, t.ContentsType.Id));
 					newTokens.Add(new Identifier(name));
 					nextIndex += j;
 					i = nextIndex - 1; // In the next iteration, i == nextIndex.
@@ -385,13 +386,13 @@ namespace LSNr
 				{
 					IExpression left = GetExpression(CurrentTokens[i - 1]);
 					IExpression right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type);
+					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type.Type);
 
-					if (!left.Type.Operators.ContainsKey(key))
+					if (!left.Type.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
-					var opr = left.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
+					var opr = left.Type.Type.Operators[key];
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2.Id, op);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
@@ -414,13 +415,13 @@ namespace LSNr
 				{
 					var left = GetExpression(CurrentTokens[i - 1]);
 					var right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LsnCore.Operator, LsnType>(LsnCore.Operator.Power, right.Type);
+					var key = new Tuple<LsnCore.Operator, LsnType>(LsnCore.Operator.Power, right.Type.Type);
 
-					if (!left.Type.Operators.ContainsKey(key))
+					if (!left.Type.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
 							$"The operator ^ is not defined for type {left.Type.Name} and {right.Type.Name}.");
-					var opr = left.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, LsnCore.Operator.Power);
+					var opr = left.Type.Type.Operators[key];
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2.Id, LsnCore.Operator.Power);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
@@ -447,13 +448,13 @@ namespace LSNr
 				{
 					var left = GetExpression(CurrentTokens[i - 1]);
 					var right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type);
+					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type.Type);
 
-					if (!left.Type.Operators.ContainsKey(key))
+					if (!left.Type.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
-					var opr = left.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
+					var opr = left.Type.Type.Operators[key];
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2.Id, op);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);
@@ -484,13 +485,13 @@ namespace LSNr
 				{
 					var left = GetExpression(CurrentTokens[i - 1]);
 					var right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type);
+					var key = new Tuple<LsnCore.Operator, LsnType>(op, right.Type.Type);
 
-					if (!left.Type.Operators.ContainsKey(key))
+					if (!left.Type.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
-					var opr = left.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
+					var opr = left.Type.Type.Operators[key];
+					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2.Id, op);
 					var name = SUB + SubCount++;
 					if(newTokens.Count > 0) newTokens.RemoveAt(newTokens.Count - 1);
 					Substitutions.Add(new Identifier(name), expr);

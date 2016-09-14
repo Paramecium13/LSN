@@ -12,6 +12,7 @@ namespace LsnCore.Types
 	[Serializable]
 	public class LsnStructType : LsnType, IHasFieldsType
 	{
+		[NonSerialized]
 		private Dictionary<string, LsnType> _Fields = new Dictionary<string, LsnType>();
 		public IReadOnlyDictionary<string, LsnType> Fields => _Fields;
 
@@ -20,7 +21,7 @@ namespace LsnCore.Types
 
 		public int FieldCount => _FieldsB.Length;
 
-		public LsnStructType(string name, Dictionary<string, LsnType> fields)
+		public LsnStructType(string name, Dictionary<string, LsnType> fields):base()
 		{
 			Name = name; _Fields = fields;
 			_FieldsB = new Field[fields.Count];
@@ -56,7 +57,7 @@ namespace LsnCore.Types
 		}
 
 
-		public LsnType GetFieldType(int index) => _FieldsB[index].Type;
+		public TypeId GetFieldType(int index) => _FieldsB[index].Type;
 
 	}
 }

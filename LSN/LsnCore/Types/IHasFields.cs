@@ -12,12 +12,13 @@ namespace LsnCore.Types
 	/// </summary>
 	public interface IHasFieldsType
 	{
-		IReadOnlyDictionary<string, LsnType> Fields { get; }
+		IReadOnlyCollection<Field> FieldsB { get; }
+		int GetIndex(string name);
 	}
 
 	public interface IHasFieldsValue: IExpression
 	{
-		ILsnValue GetValue(string name);
-    }
+		ILsnValue GetValue(int index);
+	}
 	
 }

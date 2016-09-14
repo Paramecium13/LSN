@@ -12,14 +12,20 @@ namespace LsnCore.Expressions
 	public class FieldAccessExpression : Expression
 	{
 		public IExpression Value;
-		private readonly string FieldName;
 		private readonly int Index;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public FieldAccessExpression(IExpression value, string name, LsnType type)
 		{
 			Value = value;
-			FieldName = name;
+			Index = ((IHasFieldsType)value.Type.Type).GetIndex(name);
+			Type = type.Id;
+		}
+
+		public FieldAccessExpression(IExpression value, string name, TypeId type)
+		{
+			Value = value;
+			Index = ((IHasFieldsType)value.Type.Type).GetIndex(name);
 			Type = type;
 		}
 
@@ -29,11 +35,14 @@ namespace LsnCore.Expressions
 		public override IExpression Fold()
 		{
 			Value = Value.Fold();
+			var hasFields = Value as IHasFieldsValue;
+			if (hasFields != null)
+				return hasFields.GetValue(Index);
 			return this;
 		}
 
 		public override ILsnValue Eval(IInterpreter i)
-			=> ((IHasFieldsValue)Value).GetValue(FieldName);
+			=> ((IHasFieldsValue)Value).GetValue(Index);
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

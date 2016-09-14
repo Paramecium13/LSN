@@ -18,7 +18,10 @@ namespace LsnCore.Values
 
 		public override bool BoolValue { get { return true;/*Values != null;*/ } }
 
-		public ICollectionType CollectionType => Type as VectorType;
+		private VectorType _Type;
+		public ICollectionType CollectionType => _Type;
+
+		public readonly TypeId GenericId;
 
 		/// <summary>
 		/// Get the value at an index.
@@ -29,9 +32,17 @@ namespace LsnCore.Values
 
 		public VectorInstance(VectorType type, ILsnValue[] values)
 		{
-			Type = type;
+			_Type = type;
+			Type = type.Id;
+			GenericId = type.GenericType.Id;
 			Size = values.Length;
 			Values = values;
+		}
+
+
+		public VectorInstance(TypeId type, TypeId genericType, ILsnValue[] values)
+		{
+			throw new NotImplementedException();
 		}
 
 		public override ILsnValue Clone() => this;
@@ -51,7 +62,7 @@ namespace LsnCore.Values
 		{
 			var vals = new ILsnValue[Size];
 			for (int i = 0; i < Size; i++) vals[i] = Values[i].Clone();
-			return new LSN_List(LsnListGeneric.Instance.GetType(new List<LsnType>() { ((VectorType)Type).GenericType })
+			return new LSN_List(LsnListGeneric.Instance.GetType(new List<TypeId>() { GenericId })
 				as LsnListType, vals);
 		}
 

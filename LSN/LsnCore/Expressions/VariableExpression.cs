@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LsnCore.Types;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,7 +11,7 @@ namespace LsnCore.Expressions
 		public string Name { get; private set; }
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-		public VariableExpression(string name, LsnType type)
+		public VariableExpression(string name, TypeId type)
 		{
 			Name = name;
 			Type = type;
@@ -29,7 +30,7 @@ namespace LsnCore.Expressions
 	{
 		public int Index;
 
-		public VariableExpressionB(int index, LsnType type)
+		public VariableExpressionB(int index, TypeId type)
 		{
 			Index = index; Type = type;
 		}

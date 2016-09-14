@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LsnCore.Types;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,7 +35,7 @@ namespace LsnCore.Expressions
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public BinaryExpression(IExpression left, IExpression right, BinOp operation,
-			LsnType type, Operator op)
+			TypeId type, Operator op)
 		{
 			Left = left; Right = right; Operation = operation; Type = type; Operator = op;
 		}

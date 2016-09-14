@@ -85,6 +85,7 @@
     <Compile Include="LsnCore\LsnFunction.cs" />
     <Compile Include="LsnCore\Statements\GoToStatement.cs" />
     <Compile Include="LsnCore\Types\Field.cs" />
+    <Compile Include="LsnCore\Types\TypeId.cs" />
     <Compile Include="LsnCore\Values\LSN_List.cs" />
     <Compile Include="LsnCore\LsnMath.cs" />
     <Compile Include="LsnCore\LsnMethod.cs" />

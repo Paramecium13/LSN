@@ -10,10 +10,6 @@ namespace LsnCore.Types
 	[Serializable]
 	public class RecordType : LsnType, IHasFieldsType
 	{
-
-		private readonly Dictionary<string, LsnType> _Fields;
-		public IReadOnlyDictionary<string, LsnType> Fields { get { return _Fields; } }
-
 		private readonly Field[] _FieldsB;
 		public IReadOnlyCollection<Field> FieldsB => _FieldsB;
 
@@ -21,7 +17,7 @@ namespace LsnCore.Types
 
 		public RecordType(string name, Dictionary<string,LsnType> fields)
 		{
-			Name = name; _Fields = fields;
+			Name = name;
 			_FieldsB = new Field[fields.Count];
 			int i = 0;
 			foreach (var pair in fields)
@@ -31,7 +27,7 @@ namespace LsnCore.Types
 		}
 
 		public override ILsnValue CreateDefaultValue()
-			=> new RecordValue(this, FieldsB.Select(f => f.Type.CreateDefaultValue()).ToArray());
+			=> new RecordValue(this, FieldsB.Select(f => f.Type.Type.CreateDefaultValue()).ToArray());
 		
 
 		public int GetIndex(string name)
@@ -48,6 +44,6 @@ namespace LsnCore.Types
 		}
 
 
-		public LsnType GetFieldType(int index) => _FieldsB[index].Type;
+		public TypeId GetFieldType(int index) => _FieldsB[index].Type;
 	}
 }
