@@ -6,7 +6,7 @@ using LsnCore.Types;
 
 namespace LsnCore
 {
-	[Serializable]// ToDo: change to class, pass by ref...
+	[Serializable]
 	public class StructValue : ILsnValue, IHasFieldsValue
 	{
 		private readonly IDictionary<string, ILsnValue> Members;

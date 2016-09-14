@@ -23,7 +23,95 @@ namespace LsnCore.ControlStructures
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			throw new NotImplementedException(); //TODO: Implement
+			if (Condition.Eval(i).BoolValue)
+			{
+				var length = Body.Count;
+				for(int j = 0; j < length; j++)
+				{
+					var val = Body[j].Interpret(i);
+					if (val != InterpretValue.Base)
+						return val;
+					//Which is better?
+					/*switch (Body[j].Interpret(i))
+					{
+						case InterpretValue.Base:
+							break;
+						case InterpretValue.Next:
+							return InterpretValue.Next;
+						case InterpretValue.Break:
+							return InterpretValue.Break;
+						case InterpretValue.Return:
+							return InterpretValue.Return;
+						default:
+							break;
+					}*/
+				}
+				return InterpretValue.Base;
+			}
+			else
+			{
+				var elsifcount = Elsifs.Count;
+				if(elsifcount != 0)
+				{
+					for(int j = 0; j < elsifcount; j++)
+					{
+						var el = Elsifs[j];
+						if(el.Condition.Eval(i).BoolValue)
+						{
+							var b = el.Body;
+							var length = b.Count;
+							for (int k = 0; k < length; j++)
+							{
+								var val = b[j].Interpret(i);
+								if (val != InterpretValue.Base)
+									return val;
+								//Which is better?
+								/*switch (b[j].Interpret(i))
+								{
+									case InterpretValue.Base:
+										break;
+									case InterpretValue.Next:
+										return InterpretValue.Next;
+									case InterpretValue.Break:
+										return InterpretValue.Break;
+									case InterpretValue.Return:
+										return InterpretValue.Return;
+									default:
+										break;
+								}*/
+							}
+							return InterpretValue.Base;
+						}
+					}
+				}
+				if(ElseBlock != null)
+				{
+					var length = ElseBlock.Count;
+					for (int j = 0; j < length; j++)
+					{
+						var val = ElseBlock[j].Interpret(i);
+						if (val != InterpretValue.Base)
+							return val;
+						//Which is better?
+						/*switch (ElseBlock[j].Interpret(i))
+						{
+							case InterpretValue.Base:
+								break;
+							case InterpretValue.Next:
+								return InterpretValue.Next;
+							case InterpretValue.Break:
+								return InterpretValue.Break;
+							case InterpretValue.Return:
+								return InterpretValue.Return;
+							default:
+								break;
+						}*/
+					}
+					return InterpretValue.Base;
+				}
+				return InterpretValue.Base;
+			}
+			throw new NotImplementedException();
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
