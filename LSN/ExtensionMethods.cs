@@ -30,5 +30,10 @@ namespace LsnCore
 		/// <returns></returns>
 		public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> self)
 			=> self.ToDictionary(pair => pair.Key, pair => pair.Value);
+
+
+		public unsafe static int ToInt32Bitwise(this double self)
+			=> *((int*)&self);
+
 	}
 }

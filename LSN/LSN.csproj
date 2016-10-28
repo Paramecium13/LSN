@@ -22,7 +22,7 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RegisterForComInterop>false</RegisterForComInterop>
     <LangVersion>6</LangVersion>
   </PropertyGroup>
@@ -34,6 +34,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>6</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -86,6 +88,7 @@
     <Compile Include="LsnCore\Statements\GoToStatement.cs" />
     <Compile Include="LsnCore\Types\Field.cs" />
     <Compile Include="LsnCore\Types\TypeId.cs" />
+    <Compile Include="LsnCore\Values\LsnValue.cs" />
     <Compile Include="LsnCore\Values\LSN_List.cs" />
     <Compile Include="LsnCore\LsnMath.cs" />
     <Compile Include="LsnCore\LsnMethod.cs" />
