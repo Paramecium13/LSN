@@ -107,45 +107,6 @@ namespace LSNr
 			Components = Parser.Consolidate(parser.Components);
 			//CurrentScope.Pop(Components);
 		}
-
-		#region Types
-
-		private readonly IList<LsnType> Types = LsnType.GetBaseTypes();
-
-		private readonly IList<GenericType> GenericTypes = LsnType.GetBaseGenerics();
-
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override bool TypeExists(string name)
-			=> Types.Any(t => t.IsName(name));
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override LsnType GetType(string name)
-			=> Types.Where(t => t.IsName(name)).FirstOrDefault();
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override bool GenericTypeExists(string name)
-			=> GenericTypes.Any(g => g.Name == name);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override GenericType GetGenericType(string name)
-			=> GenericTypes.Where(t => t.Name == name).FirstOrDefault();
-		#endregion
+		
 	}
 }

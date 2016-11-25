@@ -37,9 +37,6 @@ namespace LSNr
 
 		private readonly Dictionary<string, List<IToken>> FunctionBodies = new Dictionary<string, List<IToken>>();
 
-
-		private readonly List<LsnType> Types = LsnType.GetBaseTypes();
-
 		private readonly List<GenericType> GenericTypes = LsnType.GetBaseGenerics();
 
 		public PreResource(string src) : base(src)
@@ -55,42 +52,8 @@ namespace LSNr
 			Tokenize();
 			PreParseFunctions(ParseStructsAndRecords());
 			ParseFunctions();
-			var t = LsnType.GetBaseTypes();
-			foreach (var ty in t)
-				Types.Remove(ty);
         }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override bool TypeExists(string name)
-			=> Types.Any(t => t.IsName(name));
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override LsnType GetType(string name)
-			=> Types.Where(t => t.IsName(name)).FirstOrDefault();
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override bool GenericTypeExists(string name)
-			=> GenericTypes.Any(g => g.Name == name);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override GenericType GetGenericType(string name)
-			=> GenericTypes.Where(t => t.Name == name).FirstOrDefault();
+		
 
 		/// <summary>
 		/// 
@@ -263,7 +226,7 @@ namespace LSNr
 						fnBody.Add(tokens[i]);
 					}
 					var fn = new LsnFunction(paramaters, returnType, name);
-					AddFunction(fn);
+					IncludeFunction(fn);
 					FunctionBodies.Add(name, fnBody);
 					MyFunctions.Add(name,fn);
 				}
@@ -429,7 +392,7 @@ namespace LSNr
 			if (fields == null) return;
 			var structType = new LsnStructType(name, fields);
             StructTypes.Add(name, structType);
-			Types.Add(structType);
+			IncludedTypes.Add(structType);
 		}
 
 		/// <summary>
@@ -453,14 +416,14 @@ namespace LSNr
 			if (fields == null) return;
 			var recordType = new RecordType(name, fields);
 			RecordTypes.Add(name, recordType);
-			Types.Add(recordType);
+			IncludedTypes.Add(recordType);
 		}
 
 
 		public LsnResourceThing GetResource()
 		{
 			var resource = new LsnResourceThing();
-			resource.Functions = Functions;
+			resource.Functions = IncludedFunctions;
 			resource.RecordTypes = RecordTypes;
 			resource.StructTypes = StructTypes;
 			resource.Usings = Usings;

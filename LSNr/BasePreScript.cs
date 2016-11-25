@@ -19,9 +19,12 @@ namespace LSNr
 		/// </summary>
 		protected readonly string Source;
 
+
 		protected string Text;
 
+
 		private bool _Mutable = false;
+
 
 		protected IReadOnlyList<IToken> Tokens;
 
@@ -42,21 +45,21 @@ namespace LSNr
 		public BasePreScript(string src)
 		{
 			Source = src;
-			AddFunction(LsnMath.ACos);
-			AddFunction(LsnMath.ASin);
-			AddFunction(LsnMath.ATan);
-			AddFunction(LsnMath.Cos);
-			AddFunction(LsnMath.Cosh);
-			AddFunction(LsnMath.ErrorFunction);
-			AddFunction(LsnMath.Gamma);
-			AddFunction(LsnMath.Hypot);
-			AddFunction(LsnMath.Log);
-			AddFunction(LsnMath.Log10);
-			AddFunction(LsnMath.Sin);
-			AddFunction(LsnMath.Sinh);
-			AddFunction(LsnMath.Sqrt);
-			AddFunction(LsnMath.Tan);
-			AddFunction(LsnMath.Tanh);
+			IncludeFunction(LsnMath.ACos);
+			IncludeFunction(LsnMath.ASin);
+			IncludeFunction(LsnMath.ATan);
+			IncludeFunction(LsnMath.Cos);
+			IncludeFunction(LsnMath.Cosh);
+			IncludeFunction(LsnMath.ErrorFunction);
+			IncludeFunction(LsnMath.Gamma);
+			IncludeFunction(LsnMath.Hypot);
+			IncludeFunction(LsnMath.Log);
+			IncludeFunction(LsnMath.Log10);
+			IncludeFunction(LsnMath.Sin);
+			IncludeFunction(LsnMath.Sinh);
+			IncludeFunction(LsnMath.Sqrt);
+			IncludeFunction(LsnMath.Tan);
+			IncludeFunction(LsnMath.Tanh);
 		}
 
 		/// <summary>
@@ -73,8 +76,8 @@ namespace LSNr
 		{
 			foreach(var pair in resource.Functions)
 			{
-				if (Functions.ContainsKey(pair.Key)) throw new ApplicationException();
-				Functions.Add(pair.Key, pair.Value);
+				if (IncludedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
+				IncludedFunctions.Add(pair.Key, pair.Value);
 			}
 			// ToDo: Add types.
 
@@ -106,7 +109,7 @@ namespace LSNr
 		/// <summary>
 		/// The functions included in this script.
 		/// </summary>
-		protected readonly Dictionary<string, Function> Functions = new Dictionary<string, Function>();
+		protected readonly Dictionary<string, Function> IncludedFunctions = new Dictionary<string, Function>();
 
 		/// <summary>
 		/// The external functions that to be linked at runtime.
@@ -121,20 +124,20 @@ namespace LSNr
 		protected List<string> Usings = new List<string>();
 
 		public bool FunctionExists(string name)
-			=> Functions.ContainsKey(name) || LoadedExternallyDefinedFunctions.ContainsKey(name);
+			=> IncludedFunctions.ContainsKey(name) || LoadedExternallyDefinedFunctions.ContainsKey(name);
 
 		public bool FunctionIsIncluded(string name)
-			=> Functions.ContainsKey(name);
+			=> IncludedFunctions.ContainsKey(name);
 
 		public Function GetFunction(string name)
 		{
-			if (Functions.ContainsKey(name)) return Functions[name];
+			if (IncludedFunctions.ContainsKey(name)) return IncludedFunctions[name];
 			if (LoadedExternallyDefinedFunctions.ContainsKey(name)) return AddExternalFunction(LoadedExternallyDefinedFunctions[name]);
 			else throw new ApplicationException($"Function \"{name}\" not found. Are you missing an include or using?");
 		}
 
 		/// <summary>
-		/// 
+		/// Adds a function defined in another file.
 		/// </summary>
 		/// <param name="fn"> The fully created and functional externally defined function.</param>
 		/// <returns></returns>
@@ -143,15 +146,26 @@ namespace LSNr
 			var exFn = new ExternalFunction(fn.Name, fn.Parameters.Select(p => new Parameter(p.Name, p.Type, p.DefaultValue, p.Index)).ToList(),
 				fn.StackSize,fn.ReturnType);
 			ExternalFunctions.Add(fn.Name, exFn);
-			Functions.Add(fn.Name, exFn);
+			IncludedFunctions.Add(fn.Name, exFn);
 			return exFn;
 		}
 
-
-		
-		protected void AddFunction(Function fn)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fn"></param>
+		protected void IncludeFunction(Function fn)
 		{
-			Functions.Add(fn.Name, fn);
+			IncludedFunctions.Add(fn.Name, fn);
+		}
+
+		/// <summary>
+		/// Load a function. If it is used, include it...
+		/// </summary>
+		/// <param name="fn"></param>
+		protected void LazyIncludeFunction(Function fn)
+		{
+			throw new NotImplementedException();
 		}
 
 
@@ -159,10 +173,50 @@ namespace LSNr
 
 		#region Types
 
-		public abstract LsnType GetType(string name);
-		public abstract bool TypeExists(string name);
-		public abstract bool GenericTypeExists(string name);
-		public abstract GenericType GetGenericType(string name);
+		/// <summary>
+		/// The types that will be included by the output.
+		/// </summary>
+		protected readonly IList<LsnType> IncludedTypes = new List<LsnType>();
+
+		/// <summary>
+		/// The types that will not be included by the output.
+		/// </summary>
+		protected readonly IList<LsnType> LoadedTypes = LsnType.GetBaseTypes();
+
+
+		protected readonly IList<GenericType> IncludedGenerics = new List<GenericType>();
+
+
+		protected readonly IList<GenericType> LoadedGenerics = LsnType.GetBaseGenerics();
+
+
+		public virtual bool TypeExists(string name)
+			=> IncludedTypes.Any(t => t.Name == name) || LoadedTypes.Any(t => t.Name == name);
+
+
+		public virtual LsnType GetType(string name)
+		{
+			var type = IncludedTypes.FirstOrDefault(t => t.Name == name);
+			if (type != null) return type;
+			type = LoadedTypes.FirstOrDefault(t => t.Name == name);
+			return type;
+		}
+
+
+		public virtual bool GenericTypeExists(string name)
+			=> IncludedGenerics.Any(t => t.Name == name) || LoadedGenerics.Any(t => t.Name == name);
+
+
+		public virtual GenericType GetGenericType(string name)
+		{
+			var type = IncludedGenerics.FirstOrDefault(t => t.Name == name);
+			if (type != null) return type;
+			type = LoadedGenerics.FirstOrDefault(t => t.Name == name);
+			return type;
+		}
+
+
+
 		#endregion
 	}
 }
