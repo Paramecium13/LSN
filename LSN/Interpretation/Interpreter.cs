@@ -82,9 +82,9 @@ namespace LsnCore
 		/// </summary>
 		/// <param name="name">The name of the variable.</param>
 		/// <param name="val">The new value to assign it.</param>
-		public virtual void ReAssignVariable(string name, ILsnValue val)
+		public virtual void ReassignVariable(string name, ILsnValue val)
 		{
-			Scope.ReAssignVariable(name, val);
+			Scope.ReassignVariable(name, val);
 		}
 
 		/// <summary>
@@ -232,7 +232,7 @@ namespace LsnCore
 		#endregion*/
 
 		public abstract void GiveItemTo(ILsnValue id, int amount, ILsnValue target);
-		public abstract void GivArmorTo(ILsnValue id, int amount, ILsnValue target);
+		public abstract void GiveArmorTo(ILsnValue id, int amount, ILsnValue target);
 		public abstract void GiveWeaponTo(ILsnValue id, int amount, ILsnValue target);
 		public abstract void GiveGoldTo(int amount, ILsnValue target);
 

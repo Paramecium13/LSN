@@ -28,6 +28,7 @@ namespace LsnCore
 		/// <typeparam name="TValue"></typeparam>
 		/// <param name="self"></param>
 		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> self)
 			=> self.ToDictionary(pair => pair.Key, pair => pair.Value);
 

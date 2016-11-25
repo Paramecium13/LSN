@@ -48,11 +48,12 @@ namespace LsnCore.Expressions
 			if(i != Index || c != Collection)
 			{
 				IExpression expr;       // typeof(ICollectionValue).IsAssignableFrom(c.GetType())
-				if (i.IsReifyTimeConst() && c is ICollectionValue)
+				var cl = c as ICollectionValue;
+				if (i.IsReifyTimeConst() && cl != null)
 				{
 					try
 					{
-						expr = (c as ICollectionValue).GetValue((ILsnValue)i);
+						expr = cl.GetValue(((IntValue)i).Value);
 					}
 					catch (Exception)
 					{

@@ -85,7 +85,7 @@ namespace LsnCore
 		/// <returns></returns>
 		Function GetFunction(string name);
 
-		void GivArmorTo(ILsnValue id, int amount, ILsnValue target);
+		void GiveArmorTo(ILsnValue id, int amount, ILsnValue target);
 
 
 		void GiveGoldTo(int amount, ILsnValue target);
@@ -101,7 +101,7 @@ namespace LsnCore
 		/// </summary>
 		/// <param name="name">The name of the variable.</param>
 		/// <param name="val">The new value to assign it.</param>
-		void ReAssignVariable(string name, ILsnValue val);
+		void ReassignVariable(string name, ILsnValue val);
 
 
 		//void SetArrayValue(int id, int index, ILSN_Value value);

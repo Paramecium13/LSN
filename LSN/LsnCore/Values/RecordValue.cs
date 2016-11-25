@@ -12,8 +12,6 @@ namespace LsnCore.Values
 	{
 		[NonSerialized]
 		private readonly RecordType _Type;
-		private TypeId Id;
-		public override TypeId Type => Id;
 		public override bool BoolValue { get { return true; } }
 
 		private readonly ILsnValue[] Values;
@@ -21,7 +19,7 @@ namespace LsnCore.Values
 		public RecordValue(RecordType type, IDictionary<string,ILsnValue> values)
 		{
 			_Type = type;
-			Id = type.Id;
+			Type = type.Id;
 			// Assume 'values' has already been type checked.
 			Values = new ILsnValue[_Type.FieldCount];
 			foreach (var pair in values)
@@ -35,7 +33,7 @@ namespace LsnCore.Values
 		public RecordValue(RecordType type, ILsnValue[] values, bool clone = false)
 		{
 			_Type = type;
-			Id = type.Id;
+			Type = type.Id;
 			if (clone)
 			{
 				int length = _Type.FieldCount;
@@ -50,7 +48,7 @@ namespace LsnCore.Values
 
 		public RecordValue(TypeId id, ILsnValue[] values, bool clone = false)
 		{
-			Id = id;
+			Type = id;
 			if (clone)
 			{
 				int length = values.Length;
@@ -62,7 +60,8 @@ namespace LsnCore.Values
 				Values = values;
 		}
 
-		public override ILsnValue Clone() => new RecordValue(Id, Values, true);
+		//TODO: Copy by value...
+		public override ILsnValue Clone() => new RecordValue(Type, Values, true);
 
 
 		public ILsnValue GetValue(int index) => Values[index];

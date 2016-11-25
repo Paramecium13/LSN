@@ -79,7 +79,7 @@ namespace LsnCore
 			_Methods.Add("Length", new BoundedMethod(this, int_,
 				(args) => ((VectorInstance)args["self"]).Length()));
 			_Methods.Add("ToList", new BoundedMethod(this, LsnListGeneric.Instance.GetType(new List<TypeId>() { type }),
-				(args) => ((VectorInstance)args["self"]).ToLSN_List()));
+				(args) => ((VectorInstance)args["self"]).ToLsnList()));
 		}
 
 		/// <summary>

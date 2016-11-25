@@ -195,8 +195,8 @@ namespace LSNr
 					}
 					else
 					{
-						int lCount = 1;
-						int rCount = 0;
+						//int lCount = 1;
+						//int rCount = 0;
 						int j = i; // Move to the right twice, now looking at token after the opening '('.
 						var paramTokens = new List<IToken>();
 						/*int lCount = 0;
@@ -225,7 +225,7 @@ namespace LSNr
 				else if(val == "true" || val == "false")
 				{
 					var name = SUB + SubCount++;
-					Substitutions.Add(new Identifier(name), LSN_BoolValue.GetBoolValue(bool.Parse(val)));
+					Substitutions.Add(new Identifier(name), LsnBoolValue.GetBoolValue(bool.Parse(val)));
 					CurrentTokens.Add(new Identifier(name));
 				}
 				else if(val == "new") // new

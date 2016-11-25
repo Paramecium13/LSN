@@ -6,6 +6,6 @@
 		ILsnValue GetValue(string name);
 		T Pop();
 		T Push();
-		void ReAssignVariable(string name, ILsnValue val);
+		void ReassignVariable(string name, ILsnValue val);
 	}
 }

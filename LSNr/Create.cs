@@ -155,7 +155,7 @@ namespace LSNr
 				Parser p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
-				var endOfStr = head.IndexOf("->");
+				//var endOfStr = head.IndexOf("->");
 				var str = Express(head.Take(n - 1), script);
 
 				return new Choice(str, components);
@@ -177,7 +177,7 @@ namespace LSNr
 		/// <returns></returns>
 		public static IExpression Express(List<IToken> list, IPreScript script)
 		{
-			if (list[0].Value.ToLower() == "get")
+			if (list[0].Value/*.ToLower()*/ == "get")
 			{
 				return CreateGet(list,script);
 			}
@@ -223,8 +223,8 @@ namespace LSNr
 			{
 				return new StringValue(val);
 			}
-			else if (val == "true") return LSN_BoolValue.GetBoolValue(true);
-			else if (val == "false") return LSN_BoolValue.GetBoolValue(false);
+			else if (val == "true") return LsnBoolValue.GetBoolValue(true);
+			else if (val == "false") return LsnBoolValue.GetBoolValue(false);
 			return null;
 		}
 

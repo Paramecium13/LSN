@@ -16,6 +16,8 @@ namespace Tokens.Tokens
 			Value = s; LineNumber = line;
 		}
 
+		/*
+		//TODO: Implement and use the following three functions or remove them.
 		public bool IsVariable()
 		{
 			return false;
@@ -29,7 +31,7 @@ namespace Tokens.Tokens
 		public int Count()
 		{
 			return -1;
-		}
+		}*/
 
 		public bool Equals(IToken other)
 		{

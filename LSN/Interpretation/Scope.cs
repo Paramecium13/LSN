@@ -31,11 +31,11 @@ namespace LsnCore
 			else Parent.AddVariable(name, val);
 		}
 
-		public virtual void ReAssignVariable(string name, ILsnValue val)
+		public virtual void ReassignVariable(string name, ILsnValue val)
 		{
 			if (Contains(name))
 				Variables[name] = val;
-			else Parent.ReAssignVariable(name, val);
+			else Parent.ReassignVariable(name, val);
 		}
 
 		public ILsnValue GetValue(string name) => Variables[name];

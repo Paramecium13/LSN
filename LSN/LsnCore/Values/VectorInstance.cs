@@ -58,17 +58,19 @@ namespace LsnCore.Values
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public LSN_List ToLSN_List()
+		public LsnList ToLsnList()
 		{
 			var vals = new ILsnValue[Size];
 			for (int i = 0; i < Size; i++) vals[i] = Values[i].Clone();
-			return new LSN_List(LsnListGeneric.Instance.GetType(new List<TypeId>() { GenericId })
+			return new LsnList(LsnListGeneric.Instance.GetType(new List<TypeId>() { GenericId })
 				as LsnListType, vals);
 		}
 
-		public ILsnValue GetValue(ILsnValue index)
-		{
-			throw new NotImplementedException();
-		}
+
+		public ILsnValue GetValue(int index)
+			=> Values[index];
+
+
+		public int GetLength() => Size;
 	}
 }

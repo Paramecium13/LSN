@@ -6,10 +6,14 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Values
 {
+	//TODO: Use or remove.
 	/// <summary>
 	/// A(n) LSN collection value whose values can also be written.
 	/// </summary>
 	public interface IWritableCollectionValue : ICollectionValue
 	{
+
+		void SetValue(int index, ILsnValue value);
+
 	}
 }

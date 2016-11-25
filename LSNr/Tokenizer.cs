@@ -65,7 +65,7 @@ namespace LSNr
 			source = ProcessStrings(source, out strings);
 			source = ProcessOperators(source);
 			source = Regex.Replace(source, @"for\s*\((?<a>.*?);(?<b>.*?);(?<c>.*?)\)", "for ( ${a} ` ${b} ` ${c} ) ", RegexOptions.Multiline);
-			var tokens = Regex.Split(source, @"\s").Where(t => t != "").ToList();
+			var tokens = Regex.Split(source, @"\s").Where(t => !string.IsNullOrEmpty(t)).ToList();
 			var factory = new TokenFactory(strings);
 			return tokens.ConvertAll(MCSConv).ConvertAll(factory.GetToken);
 		}

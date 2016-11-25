@@ -18,7 +18,7 @@ namespace LsnCore.Expressions
 		public IExpression Value { get { return _Value; } set { _Value = value; } }
 		public Dictionary<string, IExpression> Args;
 
-		public readonly Method M;
+		public readonly Method Method;
 		private readonly string MethodName;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -26,7 +26,7 @@ namespace LsnCore.Expressions
 		{
 			Value = value;
 			Args = args ?? new Dictionary<string, IExpression>();
-			M = m;
+			Method = m;
 			Args.Add("self", Value);
 			Type = m.ReturnType.Id;
 		}
@@ -46,7 +46,7 @@ namespace LsnCore.Expressions
 			var args = Args.Select(p => new KeyValuePair<string, ILsnValue>(p.Key, p.Value.Eval(i))).ToDictionary();
 			var self = Value.Eval(i);
 			args.Add("self", self);
-			var fn = M ?? self.Type.Type.Methods[MethodName]; //TODO:...
+			var fn = Method ?? self.Type.Type.Methods[MethodName]; //TODO:...
 			if (!fn.HandlesScope) i.EnterFunctionScope(fn.Environment, fn.StackSize);
 			var val = fn.Eval(args, i);
 			if (!fn.HandlesScope) i.ExitFunctionScope();

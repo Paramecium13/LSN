@@ -46,12 +46,12 @@ namespace LSNr
 		/// <returns></returns>
 		private static AssignmentStatement Assignment(List<IToken> tokens, IPreScript script)
 		{
-			bool mut = tokens.Any(t => t.Value.ToLower() == "mut");
+			bool mut = tokens.Any(t => t.Value/*.ToLower()*/ == "mut");
 			bool mutable = script.Mutable || mut;
 			ushort nameindex = mut ? (ushort)2 : (ushort)1; // The index of the name.
 			string name = tokens[nameindex].Value;
 			IExpression value = Express(tokens.Skip(nameindex + 2).ToList(), script);
-			LsnType type = value.Type.Type;
+			//LsnType type = value.Type.Type;
 			var variable = script.CurrentScope.CreateVariable(name, mutable, value);
 			var st = new AssignmentStatement(variable.Index, value);
 			variable.Assignment = st;

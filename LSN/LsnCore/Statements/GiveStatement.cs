@@ -50,7 +50,7 @@ namespace LsnCore.Statements
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			i.GivArmorTo(Id.Eval(i), ((IntValue)Amount.Eval(i)).Value, Reciever.Eval(i));
+			i.GiveArmorTo(Id.Eval(i), ((IntValue)Amount.Eval(i)).Value, Reciever.Eval(i));
 			return InterpretValue.Base;
 		}
 

@@ -39,7 +39,7 @@ namespace LSNr.Optimization
 		}
 
 
-		private IExpression CheckAdditive(BinaryExpression b)
+		private static IExpression CheckAdditive(BinaryExpression b)
 		{
 			var lintq = b.Left as IntValue?;
 			var ldoubleq = b.Left as DoubleValue?;
@@ -76,7 +76,7 @@ namespace LSNr.Optimization
 		}
 
 
-		private IExpression CheckMult(BinaryExpression b)
+		private static IExpression CheckMult(BinaryExpression b)
 		{
 			var lintq = b.Left as IntValue?;
 			var ldoubleq = b.Left as DoubleValue?;
@@ -117,19 +117,19 @@ namespace LSNr.Optimization
 		}
 
 
-		private IExpression CheckDiv(BinaryExpression b)
+		private static IExpression CheckDiv(BinaryExpression b)
 		{
 			return b;
 		}
 
 
-		private IExpression CheckMod(BinaryExpression b)
+		private static IExpression CheckMod(BinaryExpression b)
 		{
 			return b;
 		}
 
 
-		private IExpression CheckPow(BinaryExpression b)
+		private static IExpression CheckPow(BinaryExpression b)
 		{
 			var lintq = b.Left as IntValue?;
 			var ldoubleq = b.Left as DoubleValue?;

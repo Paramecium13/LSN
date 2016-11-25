@@ -17,6 +17,7 @@ namespace LSNr
 		/// <param name="value"> The value to look for. If ignore case is true, this should be all lowercase.</param>
 		/// <param name="ignoreCase"> Should case be ignored. Default is true.</param>
 		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1304:SpecifyCultureInfo", MessageId = "System.String.ToLower")]
 		public static bool HasToken(this IEnumerable<IToken> self, string value, bool ignoreCase = true)
 			=> ignoreCase ?
 				self.Any(t => t.Value.ToLower() == value)
@@ -46,6 +47,7 @@ namespace LSNr
 			return -1;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IList<Tuple<TKey, TValue>> ls)
 			=> ls.ToDictionary(x => x.Item1, x => x.Item2);
 	}

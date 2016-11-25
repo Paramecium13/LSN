@@ -12,7 +12,7 @@ namespace LsnCore.Expressions
 	{
 		private TypeId _Type;
 
-		public virtual TypeId Type { get { return _Type; } protected set { _Type = value; } }
+		public /*virtual*/ TypeId Type { get { return _Type; } protected set { _Type = value; } }
 
 		public abstract bool IsReifyTimeConst();
 

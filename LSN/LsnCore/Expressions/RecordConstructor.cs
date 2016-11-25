@@ -17,13 +17,14 @@ namespace LsnCore.Expressions
 
 		[NonSerialized]
 		private readonly RecordType _Type;
-		public readonly TypeId Id;
+		//public readonly TypeId Id;
 
-		public override TypeId Type => Id;
+		//public override TypeId Type => Id;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public RecordConstructor(RecordType type, IDictionary<string, IExpression> args)
 		{
+			Type = type.Id;
 			_Type = type; Args = args;
 			ArgsB = new IExpression[_Type.FieldCount];
 			int i = -1;
@@ -43,7 +44,7 @@ namespace LsnCore.Expressions
 			{
 				values[j] = ArgsB[j].Eval(i);
 			}
-			return new RecordValue(Id, values);
+			return new RecordValue(Type, values);
 		}
 
 		public override IExpression Fold()

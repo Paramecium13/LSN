@@ -7,9 +7,9 @@ using LsnCore.Types;
 namespace LsnCore.Values
 {
 	[Serializable]
-	public class LSN_List : LsnValue, ICollectionValue 
+	public class LsnList : LsnValue, ICollectionValue, IWritableCollectionValue
 	{
-		private List<ILsnValue> Values = new List<ILsnValue>();
+		private readonly List<ILsnValue> Values = new List<ILsnValue>();
 
 		public override bool BoolValue { get { return true; } }
 
@@ -25,7 +25,7 @@ namespace LsnCore.Values
 		/// 
 		/// </summary>
 		/// <param name="type"></param>
-		public LSN_List(LsnListType type)
+		public LsnList(LsnListType type)
 		{
 			Type = type.Id;
 			_Type = type;
@@ -36,13 +36,14 @@ namespace LsnCore.Values
 		/// </summary>
 		/// <param name="type"></param>
 		/// <param name="values"></param>
-		public LSN_List(LsnListType type, IEnumerable<ILsnValue> values)
+		public LsnList(LsnListType type, IEnumerable<ILsnValue> values)
 		{
 			Type = type.Id;
 			_Type = type;
 			Values = values.ToList();
 		}
 
+		//TODO: Implement
 		internal void Add(ILsnValue value)
 		{
 
@@ -65,7 +66,22 @@ namespace LsnCore.Values
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public ILsnValue GetValue(ILsnValue index) => this[((IntValue)index).Value];
+		public ILsnValue GetValue(int index) => this[index];
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public int GetLength() => Values.Count;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="index"></param>
+		/// <param name="value"></param>
+		public void SetValue(int index, ILsnValue value)
+		{
+			Values[index] = value;
+		}
 	}
 }

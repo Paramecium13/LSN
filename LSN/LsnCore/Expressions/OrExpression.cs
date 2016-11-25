@@ -26,9 +26,9 @@ namespace LsnCore.Expressions
 		public IExpression Right { get { return _Right; } set { _Right = value; } }
 
 
-		public OrExpression(IExpression left,IExpression right, LsnType type)
+		public OrExpression(IExpression left,IExpression right, TypeId type)
 		{
-
+			_Left = left; _Right = right; Type = type;
 		}
 
 		public override bool IsReifyTimeConst()
@@ -52,7 +52,7 @@ namespace LsnCore.Expressions
 			if (l.BoolValue) return l;
 			var r = Right.Eval(i);
 			if (r.BoolValue) return r;
-			return LSN_BoolValue.GetBoolValue(false);
+			return LsnBoolValue.GetBoolValue(false);
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)

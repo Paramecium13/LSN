@@ -37,7 +37,6 @@ namespace LsnCore
 		public ILsnValue Eval(IInterpreter i) => this;
 		public IExpression Fold() => this;
 		public bool IsReifyTimeConst() => true;
-		public string TranslateUniversal() => Value.ToString();
 
 		public void Replace(IExpression oldExpr, IExpression newExpr){}
 
@@ -133,7 +132,6 @@ namespace LsnCore
 		public ILsnValue Eval(IInterpreter i) => this;
 		public IExpression Fold() => this;
 		public bool IsReifyTimeConst() => true;
-		public string TranslateUniversal() => Value.ToString();
 
 
 		public static explicit operator double(DoubleValue v) => v.Value;
@@ -154,11 +152,11 @@ namespace LsnCore
 	/// 
 	/// </summary>
 	[Serializable]
-	public class LSN_BoolValue : IBoundValue<bool>
+	public class LsnBoolValue : IBoundValue<bool>
 	{
-		private static LSN_BoolValue True = new LSN_BoolValue(true);
-		private static LSN_BoolValue False = new LSN_BoolValue(false);
-		public static LSN_BoolValue GetBoolValue(bool val)
+		private static LsnBoolValue True = new LsnBoolValue(true);
+		private static LsnBoolValue False = new LsnBoolValue(false);
+		public static LsnBoolValue GetBoolValue(bool val)
 			=> val? True : False;
 
 		public static TypeId id = LsnType.Bool_.Id;
@@ -169,7 +167,7 @@ namespace LsnCore
 		public bool Value { get; private set; }
 		public bool BoolValue { get { return Value; } }
 
-		private LSN_BoolValue(bool val)
+		private LsnBoolValue(bool val)
 		{
 			Value = val;
 		}
@@ -178,7 +176,6 @@ namespace LsnCore
 		public ILsnValue Eval(IInterpreter i) => this;
 		public IExpression Fold() => this;
 		public bool IsReifyTimeConst() => true;
-		public string TranslateUniversal() => Value.ToString();
 
 
 		public void Replace(IExpression oldExpr, IExpression newExpr) { }

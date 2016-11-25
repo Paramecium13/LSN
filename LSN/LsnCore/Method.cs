@@ -35,7 +35,7 @@ namespace LsnCore
 			for (int i = 0; i < args.Count; i++)
 			{
 				IExpression expr = args[i].Item2;
-                if (args[i].Item1 != null && args[i].Item1 != "")
+                if (!string.IsNullOrEmpty(args[i].Item1))
 				{
 					name = args[i].Item1;
 					if (!Parameters.Any(p => p.Name == name))
