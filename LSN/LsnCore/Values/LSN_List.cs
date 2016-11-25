@@ -42,11 +42,11 @@ namespace LsnCore.Values
 			_Type = type;
 			Values = values.ToList();
 		}
+		
 
-		//TODO: Implement
 		internal void Add(ILsnValue value)
 		{
-
+			Values.Add(value);
 		}
 
 		/// <summary>

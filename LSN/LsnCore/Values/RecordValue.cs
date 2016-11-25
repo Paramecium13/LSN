@@ -59,9 +59,9 @@ namespace LsnCore.Values
 			else
 				Values = values;
 		}
+		
 
-		//TODO: Copy by value...
-		public override ILsnValue Clone() => new RecordValue(Type, Values, true);
+		public override ILsnValue Clone() => new RecordValue(Type, Values.Select(v=>v.Clone()).ToArray(), true);
 
 
 		public ILsnValue GetValue(int index) => Values[index];
