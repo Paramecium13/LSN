@@ -27,6 +27,8 @@ namespace LsnCore
 		public int Value { get; private set; }
 		public bool BoolValue { get { return true; } }
 
+		public bool IsPure => true;
+
 		public IntValue(int val)
 		{
 			Value = val;
@@ -65,6 +67,8 @@ namespace LsnCore
 
 		public string Value { get; private set; }
 		public bool BoolValue { get { return true; } }
+
+		public bool IsPure => true;
 
 		/// <summary>
 		/// 
@@ -123,6 +127,8 @@ namespace LsnCore
 		public double Value { get; private set; }
 		public bool BoolValue { get { return true; } }
 
+		public bool IsPure => true;
+
 		public DoubleValue(double val)
 		{
 			Value = val;
@@ -158,6 +164,8 @@ namespace LsnCore
 		private static LsnBoolValue False = new LsnBoolValue(false);
 		public static LsnBoolValue GetBoolValue(bool val)
 			=> val? True : False;
+
+		public bool IsPure => true;
 
 		public static TypeId id = LsnType.Bool_.Id;
 

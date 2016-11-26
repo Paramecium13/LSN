@@ -107,7 +107,7 @@ namespace LSNr
 				ConstCount++;
 			return v;
 		}
-
+		private const int MaxUsersForReplacement = 2;
 
 		public IScope Pop(List<Component> components)
 		{
@@ -125,11 +125,46 @@ namespace LSNr
 					foreach (var child in Children)
 						child.ParentVariableRemoved(i);
 				}
+				else if ((!variable.Mutable || !variable.Reassigned) && variable.Assignment != null && variable.InitialValue.IsPure
+					&& variable.Users.Count <= MaxUsersForReplacement)
+				{ // Only do this if the initial assignment is a pure expression.
+					components.Remove(variable.Assignment);
+					deadVars.Add(variable);
+					downShift++;
+					int i = variable.Index;
+					foreach (var child in Children)
+						child.ParentVariableRemoved(i);
+					variable.Replace(variable.InitialValue); // Replace uses of this variable with it's initial value.
+				}
 				else if(downShift != 0)
 					variable.ChangeIndex(variable.Index - downShift);
 			}
 			foreach (var v in deadVars)
 				Variables.Remove(v);
+
+			deadVars.Clear();
+			downShift = 0;
+
+			// Check again for removable variables
+			foreach (var variable in Variables)
+			{
+				if ((!variable.Mutable || !variable.Reassigned) && variable.Assignment != null && variable.InitialValue.IsPure
+					&& variable.Users.Count <= MaxUsersForReplacement)
+				{ // Only do this if the initial assignment is a pure expression.
+					components.Remove(variable.Assignment);
+					deadVars.Add(variable);
+					downShift++;
+					int i = variable.Index;
+					foreach (var child in Children)
+						child.ParentVariableRemoved(i);
+					variable.Replace(variable.InitialValue); // Replace uses of this variable with it's initial value.
+				}
+				else if (downShift != 0)
+					variable.ChangeIndex(variable.Index - downShift);
+			}
+			foreach (var v in deadVars)
+				Variables.Remove(v);
+
 			return Parent;
 		}
 		

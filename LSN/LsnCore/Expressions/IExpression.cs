@@ -10,5 +10,11 @@ namespace LsnCore.Expressions
 		ILsnValue Eval(IInterpreter i);
 		IExpression Fold();
 		bool IsReifyTimeConst();
+
+		/// <summary>
+		/// The evaluation of this expression has no side effects.
+		/// </summary>
+		/// <returns></returns>
+		bool IsPure { get; }
 	}
 }

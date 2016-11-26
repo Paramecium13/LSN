@@ -14,6 +14,8 @@ namespace LsnCore.Expressions
 
 		public /*virtual*/ TypeId Type { get { return _Type; } protected set { _Type = value; } }
 
+		public abstract bool IsPure { get; }
+
 		public abstract bool IsReifyTimeConst();
 
 		public abstract IExpression Fold();

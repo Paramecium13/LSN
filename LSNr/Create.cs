@@ -187,7 +187,7 @@ namespace LSNr
 				var expr = SingleTokenExpress(token, script, null, __variables);
 				if(__variables.Count != 0)
 				{
-					__variables[0].AddUser(expr);
+					__variables[0].AddUser(expr as IExpressionContainer);
 					__variables.Clear();
 				}
 					

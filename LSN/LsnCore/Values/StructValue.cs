@@ -12,6 +12,8 @@ namespace LsnCore
 		private readonly IDictionary<string, ILsnValue> Members;
 		private readonly ILsnValue[] Fields;
 
+		public bool IsPure => true;
+
 		[NonSerialized]
 		private readonly LsnStructType _Type;
 

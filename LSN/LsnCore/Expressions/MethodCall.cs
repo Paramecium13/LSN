@@ -19,6 +19,8 @@ namespace LsnCore.Expressions
 		public IExpression Value { get { return _Value; } set { _Value = value; } }
 		public Dictionary<string, IExpression> Args;
 
+		public override bool IsPure => false;
+
 		public readonly Method Method;
 		private readonly string MethodName;
 

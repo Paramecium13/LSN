@@ -26,6 +26,9 @@ namespace LsnCore.Expressions
 		public IExpression Right { get { return _Right; } set { _Right = value; } }
 
 
+		public override bool IsPure => _Left.IsPure && _Right.IsPure;
+
+
 		public OrExpression(IExpression left,IExpression right, TypeId type)
 		{
 			_Left = left; _Right = right; Type = type;

@@ -15,6 +15,8 @@ namespace LsnCore
 
 		public abstract ILsnValue Clone();
 
+		public override bool IsPure => true;
+
 		public override ILsnValue Eval(IInterpreter i)
 		{
 			return this;//Clone() ?

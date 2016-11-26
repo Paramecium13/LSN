@@ -27,6 +27,8 @@ namespace LsnCore.Expressions
 		/// </summary>
 		public IExpression Right { get { return _Right; } set { _Right = value; } }
 
+		public override bool IsPure => _Left.IsPure && _Right.IsPure;
+
 		private BinOp Operation;
 
 
@@ -59,8 +61,8 @@ namespace LsnCore.Expressions
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
-			if (Left.Equals(oldExpr)) _Left = newExpr;
-			if (Right.Equals(oldExpr)) _Right = newExpr;
+			if (Left?.Equals(oldExpr) ?? false) _Left = newExpr;
+			if (Right?.Equals(oldExpr) ?? false) _Right = newExpr;
 		}
 
 		public override bool Equals(IExpression other)

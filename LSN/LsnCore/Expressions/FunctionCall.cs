@@ -11,6 +11,9 @@ namespace LsnCore.Expressions
 
 		private string FnName;
 
+		public override bool IsPure => false;
+
+		//ToDo: Encapsulate?
 		public Dictionary<string, IExpression> Args;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]

@@ -63,7 +63,7 @@ namespace LSNr
 			if(CurrentTokens.Count != 1) { throw new ApplicationException("This should not happen."); }
 			var expr = Substitutions[CurrentTokens[0]].Fold();
 			if(! expr.IsReifyTimeConst())
-				foreach (var v in Variables) v.AddUser(expr);
+				foreach (var v in Variables) v.AddUser(expr as IExpressionContainer);
 			return expr;
 		}
 

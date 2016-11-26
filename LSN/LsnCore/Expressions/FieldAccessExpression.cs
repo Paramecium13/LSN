@@ -14,6 +14,8 @@ namespace LsnCore.Expressions
 		public IExpression Value;
 		private readonly int Index;
 
+		public override bool IsPure => true;
+
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public FieldAccessExpression(IExpression value, string name, LsnType type)
 		{

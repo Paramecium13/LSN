@@ -17,6 +17,8 @@ namespace LsnCore.Expressions
 		public IExpression Collection;
 		public IExpression Index;
 
+		public override bool IsPure => true;
+
 		/// <summary>
 		/// 
 		/// </summary>

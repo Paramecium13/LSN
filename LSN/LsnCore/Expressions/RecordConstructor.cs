@@ -11,9 +11,13 @@ namespace LsnCore.Expressions
 	[Serializable]
 	public class RecordConstructor : Expression
 	{
-		public readonly IDictionary<string, IExpression> Args;
+		public readonly IDictionary<string, IExpression> Args; //ToDo: Remove
 
 		public readonly IExpression[] ArgsB;
+
+
+		public override bool IsPure => ArgsB.All(a => a.IsPure);
+
 
 		[NonSerialized]
 		private readonly RecordType _Type;

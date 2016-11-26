@@ -22,6 +22,8 @@ namespace LsnCore.Values
 		/// </summary>
 		public readonly ILsnValue Value;
 
+		public bool IsPure => true;
+
 		/// <summary>
 		/// 
 		/// </summary>

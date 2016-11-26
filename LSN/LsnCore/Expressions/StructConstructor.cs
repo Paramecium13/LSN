@@ -11,10 +11,13 @@ namespace LsnCore.Expressions
 	public class StructConstructor : Expression
 	{
 
-		public readonly IDictionary<string, IExpression> Args;
+		public readonly IDictionary<string, IExpression> Args; //ToDo: remove.
 
 		public readonly IExpression[] ArgsB;
 
+		public override bool IsPure => ArgsB.All(a => a.IsPure);
+
+		//ToDo: make non-serialized
 		private readonly LsnStructType _Type;
 		
 		public StructConstructor(LsnStructType type, IDictionary<string,IExpression> args)

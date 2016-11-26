@@ -63,7 +63,7 @@ namespace LSNr.Optimization
 
 				return e;
 			}
-			var vb = e as VariableExpressionB;
+			var vb = e as VariableExpression;
 			if(vb != null)
 			{
 
@@ -143,6 +143,6 @@ namespace LSNr.Optimization
 		}
 
 
-		protected virtual void View(VariableExpressionB v){ }
+		protected virtual void View(VariableExpression v){ }
 	}
 }
