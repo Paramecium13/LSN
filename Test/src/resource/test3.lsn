@@ -1,25 +1,17 @@
 ﻿#include "resource\test2"
 
-
-fn ToCat(dog:Dog) -> Cat
+fn foo(a:int, b:double)
 {
-	return new Cat(Age:dog.Age,Name:dog.Name);
-}
-
-fn ToDog(cat:Cat) -> Dog
-{
-	return new Dog(Age:cat.Age, Name:cat.Name);
-}
-
-
-fn PathDistance(path:Vector<Point>)-> double
-{
-	let mut sum = 0.0;
-	let mut point = path[0];
-	for(i = 1` i < path.Length()` i = i + 1)
+	let c = a - b;
+	if(a < b)
 	{
-		sum = sum + Distance(point,path[i]);
-		point = path[i];
+		let mut d = a * 3;
+		say "Hello";
+		if(d < b)
+		{
+			let mut e = d + a;
+			say "Hello"*e;
+		}
 	}
-	return sum;
+	let mut f = a /(b+1);
 }

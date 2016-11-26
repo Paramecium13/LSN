@@ -85,8 +85,8 @@ namespace LSNr
 			Name = param.Name;
 			Type = param.Type.Type;
 			Mutable = false;
-			AccessExpression = new VariableExpression(Index, param.Type);
 			Index = param.Index;
+			AccessExpression = new VariableExpression(Index, param.Type);
 		}
 
 

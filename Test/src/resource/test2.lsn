@@ -52,19 +52,27 @@ fn Distance(a:Point,b:Point)-> double
 // for( i = 0 ` a ` a)
 
 
-fn foo(a:int, b:double)
+
+
+fn ToCat(dog:Dog) -> Cat
 {
-	let c = a - b;
-	if(a < b)
-	{
-		let mut d = a * 3;
-		say "Hello";
-		if(d < b)
-		{
-			let mut e = d + a;
-			say "Hello"*e;
-		}
-	}
-	let mut f = a /(b+1);
+	return new Cat(Age:dog.Age,Name:dog.Name);
 }
 
+fn ToDog(cat:Cat) -> Dog
+{
+	return new Dog(Age:cat.Age, Name:cat.Name);
+}
+
+
+fn PathDistance(path:Vector<Point>)-> double
+{
+	let mut sum = 0.0;
+	let mut point = path[0];
+	for(i = 1` i < path.Length()` i = i + 1)
+	{
+		sum = sum + Distance(point,path[i]);
+		point = path[i];
+	}
+	return sum;
+}
