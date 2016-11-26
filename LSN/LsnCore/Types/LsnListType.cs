@@ -87,7 +87,7 @@ namespace LsnCore
 					((LsnList)args["self"]).Add(args["value"]);
 					return null;
 				},
-				new List<Parameter>() { new Parameter("self",this,null,0), new Parameter("value",type.Type,null,1)}
+				new List<Parameter>() { new Parameter("self",this,null,0), new Parameter("value",type,null,1)}
 			));
 			_Methods.Add("Length", new BoundedMethod(this, int_, (args) => ((LsnList)args["self"]).Length()));
 		}

@@ -59,7 +59,7 @@ namespace LSNr
 			{
 				src = s.ReadToEnd();
 			}
-			string destination = args[0].Replace(".lsn", Config.ObjectFileExtension);
+			string destination = GetObjectPath(args[0]);
 			
 			// The argument that specifies the destination, or null if not present
 			string dest = args.Where(a => Regex.IsMatch(a, @"^\s*destination\s*=.+$", RegexOptions.IgnoreCase))
@@ -169,6 +169,10 @@ namespace LSNr
 				if (Path.HasExtension(rawPath))
 					return rawPath;
 				return rawPath + Config.ObjectFileExtension;
+			}
+			if(rawPath.StartsWith("src"))
+			{
+				rawPath = rawPath.Skip(4).ToList().ToString();
 			}
 			if(Path.HasExtension(rawPath))
 				return Path.Combine("obj",rawPath);

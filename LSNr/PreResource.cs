@@ -67,17 +67,26 @@ namespace LSNr
 		/// <returns></returns>
 		protected string ProcessDirectives(string source)
 		{
-			if (Regex.IsMatch(source, "#include", RegexOptions.IgnoreCase))
-			{
-				//Process #include directive(s)
-			}
 			if (Regex.IsMatch(source, "#using", RegexOptions.IgnoreCase))
 			{
 				//Process #using directive(s)
-				foreach (var match in Regex.Matches(source, "#using\\s+\"(.+)\""))
+				foreach (var match in Regex.Matches(source, "#using\\s+\"(.+)\"").Cast<Match>())
 				{
-					var res = Load(match.ToString());
-					Use(res, match.ToString());
+					var path = match.Groups.OfType<object>().Select(o => o.ToString()).Skip(1).First();
+					var res = Load(path);
+					Use(res, path);
+					source = source.Replace(match.Value, "");
+				}
+			}
+			if (Regex.IsMatch(source, "#include", RegexOptions.IgnoreCase))
+			{
+				//Process #using directive(s)
+				foreach (var match in Regex.Matches(source, "#include\\s+\"(.+)\"").Cast<Match>())
+				{
+					var path = match.Groups.OfType<object>().Select(o => o.ToString()).Skip(1).First();
+					var res = Load(path);
+					Include(res, path);
+					source = source.Replace(match.Value, "");
 				}
 			}
 			if (source.Contains("#mut"))

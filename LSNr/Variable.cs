@@ -74,7 +74,7 @@ namespace LSNr
 			Name = param.Name;
 			Type = param.Type.Type;
 			Mutable = false;
-			AccessExpression = new VariableExpressionB(Index, Type.Id);
+			AccessExpression = new VariableExpressionB(Index, param.Type);
 			Index = param.Index;
 		}
 

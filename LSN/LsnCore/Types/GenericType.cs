@@ -16,7 +16,7 @@ namespace LsnCore.Types
 
 		public abstract string Name { get; }
 
-		private string GetGenericName(List<TypeId> types)
+		protected string GetGenericName(List<TypeId> types)
 		{
 			var s = new StringBuilder(Name);
 			foreach(var type in types)

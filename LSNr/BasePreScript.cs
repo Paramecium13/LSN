@@ -65,6 +65,12 @@ namespace LSNr
 			IncludeFunction(LsnMath.Sqrt);
 			IncludeFunction(LsnMath.Tan);
 			IncludeFunction(LsnMath.Tanh);
+
+			foreach (var t in LoadedTypes)
+			{
+				t.Id.Load(t);
+				// Load/bind it's type ids...
+			}
 		}
 
 		/// <summary>
@@ -81,21 +87,25 @@ namespace LSNr
 		{
 			foreach(var pair in resource.Functions)
 			{
-				if (IncludedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
-				IncludedFunctions.Add(pair.Key, pair.Value);
+				// if (IncludedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
+				if (! IncludedFunctions.ContainsKey(pair.Key)) IncludedFunctions.Add(pair.Key, pair.Value);
 			}
 			foreach (var recType in resource.RecordTypes.Values)
 			{
 				IncludedTypes.Add(recType);
+				recType.Id.Load(recType);
 			}
 			foreach (var stType in resource.StructTypes.Values)
 			{
 				IncludedTypes.Add(stType);
+				stType.Id.Load(stType);
 			}
 			//ToDo: Generic types and functions...
 
 			Includes.Add(path);
 		}
+
+		
 
 		/// <summary>
 		/// 
@@ -175,10 +185,12 @@ namespace LSNr
 			foreach (var recType in resource.RecordTypes.Values)
 			{
 				LoadedTypes.Add(recType);
+				recType.Id.Load(recType);
 			}
 			foreach (var stType in resource.StructTypes.Values)
 			{
 				LoadedTypes.Add(stType);
+				stType.Id.Load(stType);
 			}
 			//ToDo: Generic types and functions...
 			Usings.Add(path);
@@ -250,7 +262,39 @@ namespace LSNr
 
 		#endregion
 
+		protected void LoadFunctionParamAndReturnTypes(Function func)
+		{
+			//func.ReturnType; ToDo: change Function.ReturnType to TypeId, bind it here...
+			foreach(var param in func.Parameters)
+			{
+				LoadType(GetType(param.Type.Name));
+			}
+		}
+
 		#region Types
+
+
+		protected void LoadType(LsnType type)
+		{
+			if(type.Id.Type == null)
+			{
+				type.Id.Load(type);
+				var fType = type as IHasFieldsType;
+				if(fType != null)
+				{
+					foreach(var field in fType.FieldsB)
+					{
+						LoadType(GetType(field.Type.Name));
+					}
+				}
+				// Methods...
+				foreach (var func in type.Methods.Values)
+				{
+					LoadFunctionParamAndReturnTypes(func);
+				}
+			}
+		}
+
 
 		/// <summary>
 		/// The types that will be included by the output.

@@ -72,8 +72,13 @@ namespace LsnCore
 
 		public LsnType ContentsType => GenericType;
 
-		internal VectorType(TypeId type)
+
+		internal VectorType(TypeId type, string name)
 		{
+			if (type == null) throw new ApplicationException();
+			if (type.Name == null) throw new ApplicationException();
+
+			Name = name;
 			GenericType = type.Type;
 			GenericId = type;
 			_Methods.Add("Length", new BoundedMethod(this, int_,
@@ -101,8 +106,9 @@ namespace LsnCore
 
 		protected override LsnType CreateType(List<TypeId> types)
 		{
+			if (types == null) throw new ArgumentNullException("types");
 			if (types.Count != 1) throw new ArgumentException("Vector types must have exactly one generic parameter.");
-			return new VectorType(types[0]);
+			return new VectorType(types[0],GetGenericName(types));
 		}
 	}
 
