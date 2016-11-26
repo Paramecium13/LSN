@@ -17,7 +17,7 @@ namespace LsnCore
 			:base(parameters)
 		{
 			Bound = b;
-			ReturnType = returnType.Id;
+			ReturnType = returnType?.Id;
 			Name = name;
 		}
 

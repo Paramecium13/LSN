@@ -13,10 +13,10 @@ namespace LsnCore.Values
 
 		public override bool BoolValue { get { return true; } }
 
-		public readonly LsnListType _Type;
+		//public readonly LsnListType _Type;
 
-		//TODO: Make non serializable...
-		public ICollectionType CollectionType => _Type;
+		
+		//public ICollectionType CollectionType => _Type;
 
 
 		public ILsnValue this[int index] { get { return Values[index]; } set { Values[index] = value; } }
@@ -28,7 +28,7 @@ namespace LsnCore.Values
 		public LsnList(LsnListType type)
 		{
 			Type = type.Id;
-			_Type = type;
+			//_Type = type;
 		}
 
 		/// <summary>
@@ -39,7 +39,7 @@ namespace LsnCore.Values
 		public LsnList(LsnListType type, IEnumerable<ILsnValue> values)
 		{
 			Type = type.Id;
-			_Type = type;
+			//_Type = type;
 			Values = values.ToList();
 		}
 		

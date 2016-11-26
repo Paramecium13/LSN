@@ -1,0 +1,70 @@
+﻿
+
+
+struct Cat {Age:int, Name:string}
+
+struct Dog {Age: int, Name:string}
+
+fn Bark(dog : Dog)
+{
+	say dog . Name + ": Woof!";
+}
+
+fn Meow(cat : Cat)
+{
+	say cat . Name + ": Meow!";
+}
+
+fn Sum(x:int, y:int)-> int
+{
+	return x + y;
+}
+
+struct Circle
+{
+	X : double,
+	Y : double,
+	Radius : double
+}
+
+fn IsInCircle(circ:Circle,x:double,y:double)
+{
+	return (x-circ.X)^2 + (y-circ.Y)^2 <= circ.Radius;
+}
+
+fn GetArea(circ:Circle)->double
+{
+	say "Can't find π";
+}
+
+struct Point
+{
+	X : double,
+	Y : double
+}
+
+fn Distance(a:Point,b:Point)-> double
+{
+	return Hypot(a.X-b.X,a.Y-b.Y);
+}
+
+
+// for( i = 0 ` a ` a)
+
+
+fn foo(a:int, b:double)
+{
+	let c = a - b;
+	if(a < b)
+	{
+		let mut d = a * 3;
+		say "Hello";
+		if(d < b)
+		{
+			let mut e = d + a;
+			say "Hello"*e;
+		}
+	}
+	let mut f = a /(b+1);
+}
+

@@ -22,10 +22,10 @@ namespace LsnCore
 		public override bool HandlesScope { get { return true; } }
 
 
-		public LsnFunction(List<Parameter> parameters,LsnType returnType, string name)
+		public LsnFunction(List<Parameter> parameters, LsnType returnType, string name)
 			:base(parameters)
 		{
-			ReturnType = returnType.Id;
+			ReturnType = returnType?.Id;
 			Name = name;
 		}
 

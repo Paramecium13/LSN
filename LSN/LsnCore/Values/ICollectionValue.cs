@@ -12,7 +12,7 @@ namespace LsnCore.Values
 	/// </summary>
 	public interface ICollectionValue
 	{
-		ICollectionType CollectionType { get; }
+		//ICollectionType CollectionType { get; }
 
 		ILsnValue GetValue(int index);
 

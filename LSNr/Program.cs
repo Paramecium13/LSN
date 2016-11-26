@@ -172,10 +172,17 @@ namespace LSNr
 			}
 			if(rawPath.StartsWith("src"))
 			{
-				rawPath = rawPath.Skip(4).ToList().ToString();
+				rawPath = new string(rawPath.Skip(4).ToArray());
 			}
 			if(Path.HasExtension(rawPath))
+			{
+				if(Path.GetExtension(rawPath) != Config.ObjectFileExtension)
+				{
+					rawPath = new string(rawPath.Take(rawPath.Length - Path.GetExtension(rawPath).Length).Concat(Config.ObjectFileExtension).ToArray());
+				}
 				return Path.Combine("obj",rawPath);
+			}
+				
 			return Path.Combine("obj", rawPath + Config.ObjectFileExtension);
 		}
 

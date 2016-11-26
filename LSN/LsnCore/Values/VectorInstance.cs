@@ -18,8 +18,9 @@ namespace LsnCore.Values
 
 		public override bool BoolValue { get { return true;/*Values != null;*/ } }
 
-		private VectorType _Type;
-		public ICollectionType CollectionType => _Type;
+		//private VectorType _Type;
+
+		//public ICollectionType CollectionType => _Type;
 
 		public readonly TypeId GenericId;
 
@@ -32,7 +33,7 @@ namespace LsnCore.Values
 
 		public VectorInstance(VectorType type, ILsnValue[] values)
 		{
-			_Type = type;
+			//_Type = type;
 			Type = type.Id;
 			GenericId = type.GenericType.Id;
 			Size = values.Length;

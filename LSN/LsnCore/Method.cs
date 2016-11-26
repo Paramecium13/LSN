@@ -20,7 +20,7 @@ namespace LsnCore
 			:base(paramaters)
 		{
 			Type = type;
-			ReturnType = returnType.Id;
+			ReturnType = returnType?.Id;
 		}
 
 

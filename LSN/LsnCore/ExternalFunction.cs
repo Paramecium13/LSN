@@ -43,7 +43,7 @@ namespace LsnCore
 			:base(parameters)
 		{
 			Name = name;
-			ReturnType = returnType.Id;
+			ReturnType = returnType?.Id;
 		}
 
 		/// <summary>
