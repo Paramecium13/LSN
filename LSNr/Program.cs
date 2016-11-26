@@ -21,7 +21,13 @@ namespace LSNr
 		private const int CONFIG_EXISTS = -4;
 
 		private const string END_OF_COMMENTS = "⌧";
-		private const string COMMENTS = "~~~Remarks Section~~~\n\n\n\n~~~Do not edit below this line~~~\n";
+		private const string COMMENTS = "~~~Remarks Section~~~\nDescribe your workplace here\n\n\n~~~Do comment below this line~~~\n";
+
+		private static Config _Config;
+
+
+		internal static Config Config => _Config;
+
 
 		static int Main(string[] args)
 		{
@@ -29,6 +35,16 @@ namespace LSNr
 			{
 				return SetUp();
 			}
+
+			if(File.Exists("lsn.config"))
+			{
+				_Config = JsonSerializer.Create()
+					.Deserialize<Config>(new JsonTextReader(new StringReader(File.ReadAllText("lsn.config"))));
+			}
+			else
+				_Config = new Config();
+			
+
 			if(args[0].ToLower() == "build")
 			{
 				return Build(args);
@@ -43,7 +59,7 @@ namespace LSNr
 			{
 				src = s.ReadToEnd();
 			}
-			string destination = args[0].Replace(".lsn", ".dat");
+			string destination = args[0].Replace(".lsn", Config.ObjectFileExtension);
 			
 			// The argument that specifies the destination, or null if not present
 			string dest = args.Where(a => Regex.IsMatch(a, @"^\s*destination\s*=.+$", RegexOptions.IgnoreCase))
@@ -59,7 +75,11 @@ namespace LSNr
 					.Groups.Cast<Group>()
 					.Select(g => g.Value)
 					.ToArray()[1];
-				if (type == "resource" || type == "res") return MakeResource(src, destination, args);
+				if (type == "resource" || type == "res")
+				{
+					LsnResourceThing res = null;
+					return MakeResource(src, destination, out res, args);
+				}
 
 				if (type == "quest") throw new NotImplementedException();
 			}
@@ -89,17 +109,18 @@ namespace LSNr
 
 
 
-		private static int MakeResource(string src, string destination, string[] args)
+		internal static int MakeResource(string src, string destination, out LsnResourceThing res, string[] args)
 		{
 			var rs = new PreResource(src);
 			rs.Reify();
 			if(! rs.Valid)
 			{
+				res = null;
 				Console.WriteLine("Invalid source.");
 				// Write error messages, if not already done. (Errors should be printed during reification)
 				return ERROR_IN_SOURCE;
 			}
-			var res = rs.GetResource();
+			res = rs.GetResource();
 			using (var fs = new FileStream(destination, FileMode.Create))
 			{
 				new BinaryFormatter().Serialize(fs, res);
@@ -115,7 +136,7 @@ namespace LSNr
 			var config = new Config();
 			using (var writer = new StreamWriter(File.Create(file)))
 			{
-				writer.Write(COMMENTS + END_OF_COMMENTS + JsonConvert.SerializeObject(config, Formatting.Indented));
+				writer.Write(/*COMMENTS + END_OF_COMMENTS + */JsonConvert.SerializeObject(config, Formatting.Indented));
 			}
 			Directory.CreateDirectory("src");
 			Directory.CreateDirectory("obj");
@@ -133,12 +154,31 @@ namespace LSNr
 			Directory.CreateDirectory(@"obj\quest");
 			return 0;
 		}
-
-
+		
 		private static int Build(string[] args)
 		{
 
 			return 0;
+		}
+
+
+		public static string GetObjectPath(string rawPath)
+		{
+			if(rawPath.StartsWith("obj"))
+			{
+				if (Path.HasExtension(rawPath))
+					return rawPath;
+				return rawPath + Config.ObjectFileExtension;
+			}
+			if(Path.HasExtension(rawPath))
+				return Path.Combine("obj",rawPath);
+			return Path.Combine("obj", rawPath + Config.ObjectFileExtension);
+		}
+
+
+		public static string GetSourcePath(string rawPath)
+		{
+			return Path.Combine("src", rawPath + ".lsn");
 		}
 
 	}

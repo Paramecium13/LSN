@@ -424,6 +424,7 @@ namespace LSNr
 		{
 			var resource = new LsnResourceThing();
 			resource.Functions = IncludedFunctions;
+			resource.Includes = Includes;
 			resource.RecordTypes = RecordTypes;
 			resource.StructTypes = StructTypes;
 			resource.Usings = Usings;

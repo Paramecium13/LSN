@@ -42,6 +42,11 @@ namespace LSNr
 		public bool Valid { get; set; } = true;
 
 
+		protected readonly List<string> Usings = new List<string>();
+
+
+		protected readonly List<string> Includes = new List<string>();
+
 		public BasePreScript(string src)
 		{
 			Source = src;
@@ -72,26 +77,92 @@ namespace LSNr
 			Tokens = tokenizer.Tokenize(Text);
 		}
 
-		protected void Include(LsnResourceThing resource)
+		protected void Include(LsnResourceThing resource,string path)
 		{
 			foreach(var pair in resource.Functions)
 			{
 				if (IncludedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
 				IncludedFunctions.Add(pair.Key, pair.Value);
 			}
-			// ToDo: Add types.
+			foreach (var recType in resource.RecordTypes.Values)
+			{
+				IncludedTypes.Add(recType);
+			}
+			foreach (var stType in resource.StructTypes.Values)
+			{
+				IncludedTypes.Add(stType);
+			}
+			//ToDo: Generic types and functions...
 
+			Includes.Add(path);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="path">The path to the file.</param>
+		/// <returns></returns>
 		protected LsnResourceThing Load(string path)
 		{
-			LsnResourceThing res;
-			using (var fs = new FileStream(path, FileMode.Open))
+			LsnResourceThing res = null;
+			string objPath = Program.GetObjectPath(path);
+			string srcPath = Program.GetSourcePath(path);
+			if (ObjectFileUpToDate(path,out res))
 			{
-				res = (LsnResourceThing)(new BinaryFormatter().Deserialize(fs));
+				if (res == null)
+					using (var fs = new FileStream(objPath, FileMode.Open))
+					{
+						res = (LsnResourceThing)(new BinaryFormatter().Deserialize(fs));
+					}
 			}
+			else
+			{
+				if (Program.MakeResource(File.ReadAllText(srcPath), objPath, out res, new string[0]) != 0)
+					throw new ApplicationException();
+			}
+			
 			return res;
 		}
+			
+
+		protected static bool ObjectFileUpToDate(string path, out LsnResourceThing res)
+		{
+			res = null;
+			bool upToDate = true;
+			var objPath = Program.GetObjectPath(path);
+			var srcPath = Program.GetSourcePath(path);
+
+			if (File.Exists(objPath))
+			{
+				if (File.Exists(srcPath))
+				{ // Both an object file and a source file exists.
+					var objTime = File.GetLastWriteTimeUtc(objPath);
+					var srcTime = File.GetLastWriteTimeUtc(srcPath);
+
+					if (srcTime < objTime)
+					{ // The object file is up to date.
+						using (var fs = new FileStream(objPath, FileMode.Open))
+						{
+							res = (LsnResourceThing)(new BinaryFormatter().Deserialize(fs));
+						}
+						LsnResourceThing x = null;
+						foreach (var include in res.Includes)
+						{
+							if (!ObjectFileUpToDate(include,out x))
+							{
+								upToDate = false;
+								break;
+							}
+						}
+					}
+					else upToDate = false;
+				}
+			}
+			else
+				upToDate = false;
+			return upToDate;
+		}
+
 
 		protected void Use(LsnResourceThing resource, string path)
 		{
@@ -100,7 +171,16 @@ namespace LSNr
 				if (LoadedExternallyDefinedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
 				LoadedExternallyDefinedFunctions.Add(pair.Key, pair.Value);
 			}
-			// ToDo: Add types.
+			
+			foreach (var recType in resource.RecordTypes.Values)
+			{
+				LoadedTypes.Add(recType);
+			}
+			foreach (var stType in resource.StructTypes.Values)
+			{
+				LoadedTypes.Add(stType);
+			}
+			//ToDo: Generic types and functions...
 			Usings.Add(path);
 		}		
 
@@ -121,7 +201,6 @@ namespace LSNr
 		/// </summary>
 		private Dictionary<string, Function> LoadedExternallyDefinedFunctions = new Dictionary<string, Function>();
 
-		protected List<string> Usings = new List<string>();
 
 		public bool FunctionExists(string name)
 			=> IncludedFunctions.ContainsKey(name) || LoadedExternallyDefinedFunctions.ContainsKey(name);
@@ -216,6 +295,10 @@ namespace LSNr
 		}
 
 
+		/*public virtual void AddType(LsnType type)
+		{
+			IncludedTypes.Add(type);
+		}*/
 
 		#endregion
 	}

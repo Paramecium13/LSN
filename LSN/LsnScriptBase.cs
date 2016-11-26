@@ -22,11 +22,19 @@ namespace LsnCore
 		private Dictionary<string, RecordType> _RecordTypes = new Dictionary<string, RecordType>();
 		public Dictionary<string, RecordType> RecordTypes { get { return _RecordTypes; } set { _RecordTypes = value; } }
 
+		public List<LsnType> Types;
+
 		private List<string> _Usings = new List<string>();
 		/// <summary>
 		/// The resources this script uses.
 		/// </summary>
 		public List<string> Usings { get { return _Usings; } set { _Usings = value; } }
+
+
+		private List<string> _Includes = new List<string>();
+
+
+		public List<string> Includes { get { return _Includes; } set { _Includes = value; } }
 
 		//protected string Source { get; set; }
 		//protected List<string> PreTokens { get; set; }
