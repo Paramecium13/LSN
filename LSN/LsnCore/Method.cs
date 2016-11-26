@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using LsnCore.Expressions;
 using System.Linq;
+using LsnCore.Types;
 
 namespace LsnCore
 {
@@ -12,15 +13,24 @@ namespace LsnCore
 		/// <summary>
 		/// The type this method is a member of.
 		/// </summary>
-		public readonly LsnType Type;
+		public readonly LsnType Type; // ToDo: Replace with TypeId.
 
-		public Method(LsnType type,LsnType returnType, List<Parameter> paramaters)
+
+		public Method(LsnType type, LsnType returnType, List<Parameter> paramaters)
 			:base(paramaters)
+		{
+			Type = type;
+			ReturnType = returnType.Id;
+		}
+
+
+		public Method(LsnType type, TypeId returnType, List<Parameter> paramaters)
+			: base(paramaters)
 		{
 			Type = type;
 			ReturnType = returnType;
 		}
-		
+
 		/// <summary>
 		/// 
 		/// </summary>

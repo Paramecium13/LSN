@@ -1,4 +1,5 @@
 ﻿using LsnCore.Expressions;
+using LsnCore.Types;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,10 +25,16 @@ namespace LsnCore
 		public LsnFunction(List<Parameter> parameters,LsnType returnType, string name)
 			:base(parameters)
 		{
-			ReturnType = returnType;
+			ReturnType = returnType.Id;
 			Name = name;
 		}
 
+		public LsnFunction(List<Parameter> parameters, TypeId returnType, string name)
+			: base(parameters)
+		{
+			ReturnType = returnType;
+			Name = name;
+		}
 
 		public override ILsnValue Eval(Dictionary<string, ILsnValue> args, IInterpreter i)
 		{

@@ -1,4 +1,5 @@
 ﻿using LsnCore.Expressions;
+using LsnCore.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,17 +29,17 @@ namespace LsnCore.Expressions
 			Args = args ?? new Dictionary<string, IExpression>();
 			Method = m;
 			Args.Add("self", Value);
-			Type = m.ReturnType.Id;
+			Type = m.ReturnType;
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-		public MethodCall(string name, IExpression value, LsnType type, Dictionary<string, IExpression> args = null)
+		public MethodCall(string name, IExpression value, TypeId type, Dictionary<string, IExpression> args = null)
 		{
 			Value = value;
 			Args = args ?? new Dictionary<string, IExpression>();
 			MethodName = name;
 			Args.Add("self", Value);
-			Type = type.Id;
+			Type = type;
 		}
 
 		public override ILsnValue Eval(IInterpreter i)

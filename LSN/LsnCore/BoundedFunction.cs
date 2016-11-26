@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using LsnCore.Expressions;
+using LsnCore.Types;
 
 namespace LsnCore
 {
@@ -14,6 +15,14 @@ namespace LsnCore
 
 		public BoundedFunction(Func<Dictionary<string, ILsnValue>, ILsnValue> b, List<Parameter> parameters, LsnType returnType, string name)
 			:base(parameters)
+		{
+			Bound = b;
+			ReturnType = returnType.Id;
+			Name = name;
+		}
+
+		public BoundedFunction(Func<Dictionary<string, ILsnValue>, ILsnValue> b, List<Parameter> parameters, TypeId returnType, string name)
+			: base(parameters)
 		{
 			Bound = b;
 			ReturnType = returnType;

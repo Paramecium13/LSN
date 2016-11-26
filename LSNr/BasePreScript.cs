@@ -264,7 +264,8 @@ namespace LSNr
 
 		protected void LoadFunctionParamAndReturnTypes(Function func)
 		{
-			//func.ReturnType; ToDo: change Function.ReturnType to TypeId, bind it here...
+			if (func.ReturnType != null)
+				LoadType(GetType(func.ReturnType.Name));
 			foreach(var param in func.Parameters)
 			{
 				LoadType(GetType(param.Type.Name));
