@@ -81,4 +81,4 @@ Contains structs definitions, functions, and exported inline substitutions.
 Contains definitions of quests. The reason they are not put in resource files is that quests should not be #include 'd.
 
 ### Scriptlets
-Other than #import 's and #using 's, they only contain a single expression, the result of which is returned by the interpreter.
+Other than #include 's and #using 's, they only contain a single expression, the result of which is returned by the interpreter.
