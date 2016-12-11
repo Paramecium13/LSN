@@ -63,22 +63,25 @@ References are LSN values that contain a .NET reference to an instance of the ab
 I am thinking of just making them like regular values with the only difference being that they are passed by reference.
 
 ##Types of LSN Files
-LSN source files end with the *.lsn* extension and object files end with the *.dat* extension. There are currently five (ten if source and object files are counted separately) different types of LSN files planned. Only three, *script*, *scene* and *scriptlet*, will be able to be directly interpreted, the others will have to be included(#include) or imported(#import). Currently, the reifier can only create *script* and *resource* object files.
+LSN source files end with the *.lsn* extension and object files end with the *.obj* extension. There are currently six (twelve if source and object files are counted separately) different types of LSN files planned. Only three, *script*, *scene* and *scriptlet*, will be able to be directly interpreted, the others will have to be included(#include) or imported(#import). Currently, the reifier can only create *script* and *resource* object files.
 
 All object files can contain a collection of included types and functions that were not defined in it.
-This is done using the #include directive. They can also tell the interpreter to load resource and quest files at runtime, with the #using directive. The reifier will also load these resources to check type and function usage.
+This is done using the #include directive. They can also tell the interpreter to load resource, quest, and globals files at runtime, with the #using directive. The reifier will also load these resources to check type and function usage.
 
 ###Scripts
-Contains a sequence of statements and control structures that are executed by the interpreter.
-
-###Scene
-Similar to scripts but is passed arguments by the interpreter. For example, the scene for a chest could be passed the character who opened it and the chest itself so it can give the character the chest's items and make the chest empty.
+Contain a sequence of statements and control structures that are executed by the interpreter.
 
 ###Resources
-Contains structs definitions, functions, and exported inline substitutions.
+Contain structs definitions, functions, and exported inline substitutions.
+
+###Globals Files
+Store global variables, which are variables whose state is preserved by saves (and thus across executions) and which can be accessed by other files. They cannot contain functions or types and thus cannot '#include' resource files.
 
 ###Quest Files
-Contains definitions of quests. The reason they are not put in resource files is that quests should not be #include 'd.
+Contain definitions of quests. The reason they are not put in resource files is that quests should not be #include 'd.
 
 ### Scriptlets
 Other than #include 's and #using 's, they only contain a single expression, the result of which is returned by the interpreter.
+
+### Scene
+Similar to scripts but are passed arguments by the interpreter. For example, the scene for a chest could be passed the character who opened it and the chest itself so it can give the character the chest's items and make the chest empty.
