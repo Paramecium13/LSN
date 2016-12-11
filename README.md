@@ -3,7 +3,7 @@ LSN is a reified scripting language that is designed for use in RPGs and similar
 
 LSN is a reified language; the reifier, LSNr, generates .NET objects from .lsn source files and saves them to the disk. These files can be loaded by a game and run using an implementation of *IInterpreter*.
 
-LSN is meant to be used for higher level mechanics of a game, such as specific dialog, story interactions, quests, etc. It could also be used for parts of a combat system. It is not supposed to handle low level mechanics such as graphics, audio, user input, saving, etc. 
+LSN is meant to be used for higher level mechanics of a game, such as specific dialog, story interactions, quests, etc. It could also be used for parts of a combat system. It is not supposed to handle lower level mechanics such as graphics, audio, user input, saving, etc. 
 
 ## Features
 LSN is procedural and somewhat object oriented. All values, (strings, integers, doubles, etc.) are objects and will have methods. Users will be able to create custom types, structs, which contain read only fields, and records, which contain mutable fields and are passed by value. All values in LSN are passed by value (structs are technically kind of passed by reference because it doesn't make a difference). I am still working on reference type variables.
