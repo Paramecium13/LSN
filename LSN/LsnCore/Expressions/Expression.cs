@@ -20,7 +20,7 @@ namespace LsnCore.Expressions
 
 		public abstract IExpression Fold();
 
-		public abstract ILsnValue Eval(IInterpreter i);
+		public abstract LsnValue Eval(IInterpreter i);
 		public virtual void Replace(IExpression oldExpr, IExpression newExpr) { }
 		public virtual bool Equals(IExpression other) => this == other;
 	}

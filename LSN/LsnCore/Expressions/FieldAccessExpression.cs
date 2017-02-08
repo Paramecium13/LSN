@@ -43,8 +43,8 @@ namespace LsnCore.Expressions
 			return this;
 		}
 
-		public override ILsnValue Eval(IInterpreter i)
-			=> ((IHasFieldsValue)Value).GetValue(Index);
+		public override LsnValue Eval(IInterpreter i)
+			=> ((IHasFieldsValue)Value.Eval(i).Value).GetValue(Index);
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

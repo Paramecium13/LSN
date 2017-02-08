@@ -32,14 +32,14 @@ namespace LsnCore.Types
 			}
 		}
 
-		public override ILsnValue CreateDefaultValue()
+		public override LsnValue CreateDefaultValue()
 		{
-			var dict = new Dictionary<string, ILsnValue>();
+			var dict = new Dictionary<string, LsnValue>();
 			foreach(var pair in Fields)
 			{
 				dict.Add(pair.Key, pair.Value.CreateDefaultValue());
 			}
-			return new StructValue(this, dict);
+			return new LsnValue(new StructValue(this, dict));
 		}
 
 

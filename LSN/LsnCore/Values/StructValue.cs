@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 using LsnCore.Expressions;
 using LsnCore.Types;
+using System.Linq;
 
 namespace LsnCore
 {
 	[Serializable]
 	public class StructValue : ILsnValue, IHasFieldsValue
 	{
-		private readonly IDictionary<string, ILsnValue> Members;
-		private readonly ILsnValue[] Fields;
+		private readonly LsnValue[] Fields;
 
 		public bool IsPure => true;
 
@@ -22,31 +22,30 @@ namespace LsnCore
 
 		public bool BoolValue { get{ return true; } }
 
-		public StructValue(LsnStructType type, IDictionary<string, ILsnValue> values)
+		public StructValue(LsnStructType type, IDictionary<string, LsnValue> values)
 		{
 			_Type = type;
 			Id = type.Id;
-			Members = values ?? new Dictionary<string, ILsnValue>();
-			foreach(var pair in type.Fields)
+			Fields = new LsnValue[_Type.FieldCount];
+			foreach(var pair in values)
 			{
-				if (!Members.ContainsKey(pair.Key))
-					Members.Add(pair.Key, pair.Value.CreateDefaultValue());
+				Fields[_Type.GetIndex(pair.Key)] = pair.Value;
 			}
 		}
 
-		public StructValue(LsnStructType type, ILsnValue[] values)
+		public StructValue(LsnStructType type, LsnValue[] values)
 		{
 			_Type = type; Id = type.Id; Fields = values;
 		}
 
 
-		public StructValue(ILsnValue[] values, TypeId id)
+		public StructValue(LsnValue[] values, TypeId id)
 		{
 			Id = id; Fields = values;
 		}
 		
 
-		public ILsnValue GetValue(int index) => Fields[index];
+		public LsnValue GetValue(int index) => Fields[index];
 
 		/// <summary>
 		/// Create a new struct, 
@@ -56,28 +55,24 @@ namespace LsnCore
 		/// <returns></returns>
 		public StructValue SetValue(string name, ILsnValue value)
 		{
-			var dict = new Dictionary<string, ILsnValue>();
+			/*var dict = new Dictionary<string, ILsnValue>();
 			foreach(var pair in Members)
 			{
 				dict.Add(pair.Key, pair.Value);
 			}
 			dict[name] = value;
-			return new StructValue(_Type, dict);
+			return new StructValue(_Type, dict);*/
+			throw new NotImplementedException();
 		}
 
 		public ILsnValue Clone() => this;//new StructValue(_Type, Members);
 
 		public ILsnValue DeepClone()
 		{
-			var dict = new Dictionary<string, ILsnValue>();
-			foreach (var pair in Members)
-			{
-				dict.Add(pair.Key, pair.Value);
-			}
-			return new StructValue(_Type, dict);
+			return new StructValue(_Type, Fields.Select(f=>f.Clone()).ToArray());
 		}
 		
-		public ILsnValue Eval(IInterpreter i) => this;
+		public LsnValue Eval(IInterpreter i) => new LsnValue(this);
 
 		public IExpression Fold() => this;
 

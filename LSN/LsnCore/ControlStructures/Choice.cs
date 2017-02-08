@@ -24,7 +24,7 @@ namespace LsnCore.ControlStructures
 			=> Interpret(_Components, i);
 
 
-		public bool Check(IInterpreter i) => Condition?.Eval(i)?.BoolValue ?? true;
+		public bool Check(IInterpreter i) => Condition?.Eval(i).BoolValue ?? true;
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

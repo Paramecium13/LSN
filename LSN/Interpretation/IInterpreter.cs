@@ -4,7 +4,7 @@ namespace LsnCore
 {
 	public interface IInterpreter
 	{
-		ILsnValue ReturnValue { get; set; }
+		LsnValue ReturnValue { get; set; }
 
 		/// <summary>
 		/// Should CompoundExpressions pass variable names to this (rather than their values), may save time.
@@ -16,7 +16,7 @@ namespace LsnCore
 		/// </summary>
 		/// <param name="name">The name of the variable to create.</param>
 		/// <param name="val">The initial value to assign it.</param>
-		void AddVariable(string name, ILsnValue val);
+		void AddVariable(string name, LsnValue val);
 
 
 		//void AddVariable(int id, IntValue val, object dummyParam);
@@ -61,14 +61,14 @@ namespace LsnCore
 		/// </summary>
 		/// <param name="name">The name of the variable whose value is requested.</param>
 		/// <returns>The value of the variable.</returns>
-		ILsnValue GetValue(string name);
+		//LsnValue GetValue(string name);
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		ILsnValue GetValue(int index);
+		LsnValue GetValue(int index);
 
 		/// <summary>
 		/// 
@@ -76,7 +76,7 @@ namespace LsnCore
 		/// <param name="index"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		void SetValue(int index, ILsnValue value);
+		void SetValue(int index, LsnValue value);
 
 		/// <summary>
 		/// Get a function.
@@ -85,23 +85,16 @@ namespace LsnCore
 		/// <returns></returns>
 		Function GetFunction(string name);
 
-		void GiveArmorTo(ILsnValue id, int amount, ILsnValue target);
+		void GiveArmorTo(LsnValue id, int amount, LsnValue target);
 
 
-		void GiveGoldTo(int amount, ILsnValue target);
+		void GiveGoldTo(int amount, LsnValue target);
 
 
-		void GiveItemTo(ILsnValue id, int amount, ILsnValue target);
+		void GiveItemTo(LsnValue id, int amount, LsnValue target);
 
 
-		void GiveWeaponTo(ILsnValue id, int amount, ILsnValue target);
-
-		/// <summary>
-		/// Assigns a new value to a variable.
-		/// </summary>
-		/// <param name="name">The name of the variable.</param>
-		/// <param name="val">The new value to assign it.</param>
-		void ReassignVariable(string name, ILsnValue val);
+		void GiveWeaponTo(LsnValue id, int amount, LsnValue target);
 
 
 		//void SetArrayValue(int id, int index, ILSN_Value value);
@@ -113,7 +106,7 @@ namespace LsnCore
 		/// <param name="message"></param>
 		/// <param name="graphic"> The id of the graphic to display, null if no graphic should be displayed.</param>
 		/// <param name="title">The title to display, null if no title should be displayed.</param>
-		void Say(string message, ILsnValue graphic, string title);
+		void Say(string message, LsnValue graphic, string title);
 
 		/// <summary>
 		/// Has the player make a choice and returns the index of that choice.

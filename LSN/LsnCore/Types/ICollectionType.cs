@@ -14,11 +14,11 @@ namespace LsnCore.Types
 		/// <summary>
 		/// The type of the index.
 		/// </summary>
-		LsnType IndexType { get; }
+		LsnType IndexType { get; } // TODO: Replace with TypeId?
 
 		/// <summary>
 		/// The type of the contents.
 		/// </summary>
-		LsnType ContentsType { get; }
+		LsnType ContentsType { get; } // TODO: Replace with TypeId?
 	}
 }

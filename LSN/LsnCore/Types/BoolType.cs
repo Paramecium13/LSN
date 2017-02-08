@@ -11,7 +11,7 @@ namespace LsnCore
 	{
 		internal BoolType(string name, params string[] args):base(name,null,args) { }
 
-		public override ILsnValue CreateDefaultValue() => LsnBoolValue.GetBoolValue(false);
+		public override LsnValue CreateDefaultValue() => LsnBoolValue.GetBoolValue(false);
 	}
 
 }

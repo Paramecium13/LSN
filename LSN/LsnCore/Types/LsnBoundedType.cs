@@ -23,14 +23,14 @@ namespace LsnCore
 		public override bool IsBounded { get { return true; } }
 		protected int Size;
 
-		public Func<ILsnValue> CreateDefault { get; set; }
+		public Func<LsnValue> CreateDefault { get; set; }
 
-		public LsnBoundedType(string name, Func<ILsnValue> createDefault, params string[] args)
+		public LsnBoundedType(string name, Func<LsnValue> createDefault, params string[] args)
 		{
 			Name = name;
 			CreateDefault = createDefault;
 		}
 
-		public override ILsnValue CreateDefaultValue() => CreateDefault();
+		public override LsnValue CreateDefaultValue() => CreateDefault();
 	}
 }

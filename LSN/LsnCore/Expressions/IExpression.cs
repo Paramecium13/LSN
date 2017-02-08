@@ -1,4 +1,5 @@
 ﻿using LsnCore.Types;
+using LsnCore.Values;
 using System;
 
 namespace LsnCore.Expressions
@@ -7,7 +8,7 @@ namespace LsnCore.Expressions
 	{
 		TypeId Type { get; }
 
-		ILsnValue Eval(IInterpreter i);
+		LsnValue Eval(IInterpreter i);
 		IExpression Fold();
 		bool IsReifyTimeConst();
 

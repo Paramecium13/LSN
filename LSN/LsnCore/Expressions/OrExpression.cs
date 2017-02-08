@@ -49,7 +49,7 @@ namespace LsnCore.Expressions
 			return this;
         }
 
-		public override ILsnValue Eval(IInterpreter i)
+		public override LsnValue Eval(IInterpreter i)
 		{
 			var l = Left.Eval(i);
 			if (l.BoolValue) return l;

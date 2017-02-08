@@ -41,7 +41,7 @@ namespace LSNr.Optimization
 
 		private static IExpression CheckAdditive(BinaryExpression b)
 		{
-			var lintq = b.Left as IntValue?;
+			/*var lintq = b.Left as IntValue?;
 			var ldoubleq = b.Left as DoubleValue?;
 			var lstrq = b.Left as StringValue?;
 			var rintq = b.Right as IntValue?;
@@ -71,14 +71,14 @@ namespace LSNr.Optimization
 				if (rstrq != null && ((StringValue)rstrq).Value == "")
 					return lstr;
 				return b;
-			}
+			}*/
 			return b;
 		}
 
 
 		private static IExpression CheckMult(BinaryExpression b)
 		{
-			var lintq = b.Left as IntValue?;
+			/*var lintq = b.Left as IntValue?;
 			var ldoubleq = b.Left as DoubleValue?;
 			var rintq = b.Right as IntValue?;
 			var rdoubleq = b.Right as DoubleValue?;
@@ -112,7 +112,7 @@ namespace LSNr.Optimization
 						return new DoubleValue(0);
 				if (d == 1)
 					return b.Left;
-			}
+			}*/
 			return b;
 		}
 
@@ -131,7 +131,7 @@ namespace LSNr.Optimization
 
 		private static IExpression CheckPow(BinaryExpression b)
 		{
-			var lintq = b.Left as IntValue?;
+			/*var lintq = b.Left as IntValue?;
 			var ldoubleq = b.Left as DoubleValue?;
 			var rintq = b.Right as IntValue?;
 			var rdoubleq = b.Right as DoubleValue?;
@@ -165,7 +165,7 @@ namespace LSNr.Optimization
 					return new DoubleValue(1);
 				if (d == 1)
 					return b.Left;
-			}
+			}*/
 			return b;
 		}
 

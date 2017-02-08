@@ -18,7 +18,7 @@ namespace LsnCore.Types
 
 	public interface IHasFieldsValue: IExpression
 	{
-		ILsnValue GetValue(int index);
+		LsnValue GetValue(int index);
 	}
 	
 }

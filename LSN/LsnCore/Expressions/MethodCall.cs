@@ -44,9 +44,9 @@ namespace LsnCore.Expressions
 			Type = type;
 		}
 
-		public override ILsnValue Eval(IInterpreter i)
+		public override LsnValue Eval(IInterpreter i)
 		{
-			var args = Args.Select(p => new KeyValuePair<string, ILsnValue>(p.Key, p.Value.Eval(i))).ToDictionary();
+			var args = Args.Select(p => new KeyValuePair<string, LsnValue>(p.Key, p.Value.Eval(i))).ToDictionary();
 			var self = Value.Eval(i);
 			args.Add("self", self);
 			var fn = Method ?? self.Type.Type.Methods[MethodName]; //TODO:...

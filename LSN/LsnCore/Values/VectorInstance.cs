@@ -9,12 +9,12 @@ namespace LsnCore.Values
 	/// A readonly collection passed by value.
 	/// </summary>
 	[Serializable]
-	public class VectorInstance : LsnValue, ICollectionValue
+	public class VectorInstance : LsnValueB, ICollectionValue
 	{
 
 		public readonly int Size;
 
-		private readonly ILsnValue[] Values;
+		private readonly LsnValue[] Values;
 
 		public override bool BoolValue { get { return true;/*Values != null;*/ } }
 
@@ -29,9 +29,9 @@ namespace LsnCore.Values
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public ILsnValue this [int index] { get { return Values[index].Clone(); } }
+		public LsnValue this [int index] { get { return Values[index].Clone(); } }
 
-		public VectorInstance(VectorType type, ILsnValue[] values)
+		public VectorInstance(VectorType type, LsnValue[] values)
 		{
 			//_Type = type;
 			Type = type.Id;
@@ -41,7 +41,7 @@ namespace LsnCore.Values
 		}
 
 
-		public VectorInstance(TypeId type, TypeId genericType, ILsnValue[] values)
+		public VectorInstance(TypeId type, TypeId genericType, LsnValue[] values)
 		{
 			throw new NotImplementedException();
 		}
@@ -53,7 +53,7 @@ namespace LsnCore.Values
 		/// Get the length of this list.
 		/// </summary>
 		/// <returns></returns>
-		public IntValue Length() => new IntValue(Values.Length);
+		public LsnValue Length() => new LsnValue(Values.Length);
 
 		/// <summary>
 		/// 
@@ -61,14 +61,14 @@ namespace LsnCore.Values
 		/// <returns></returns>
 		public LsnList ToLsnList()
 		{
-			var vals = new ILsnValue[Size];
+			var vals = new LsnValue[Size];
 			for (int i = 0; i < Size; i++) vals[i] = Values[i].Clone();
 			return new LsnList(LsnListGeneric.Instance.GetType(new List<TypeId>() { GenericId })
 				as LsnListType, vals);
 		}
 
 
-		public ILsnValue GetValue(int index)
+		public LsnValue GetValue(int index)
 			=> Values[index];
 
 

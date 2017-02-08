@@ -56,7 +56,7 @@ namespace LsnCore
 					fullArgs.Add(name, args[name]);
 					continue;
 				}// implicit else
-				if(param.DefaultValue == null) // This argument does not have a default value.
+				if(!param.DefaultValue.IsNull) // This argument does not have a default value.
 					throw new ApplicationException($"The parameter {param.Name} of {this.Name} must be provided a value.");
 				fullArgs.Add(name, param.DefaultValue);
 			}
@@ -96,7 +96,7 @@ namespace LsnCore
 				foreach(var param in Parameters)
 				{
 					if (dict.ContainsKey(param.Name)) continue;
-					if (param.DefaultValue == null) // This argument does not have a default value.
+					if (!param.DefaultValue.IsNull) // This argument does not have a default value.
 						throw new ApplicationException($"The parameter {param.Name} of {this.Name} must be provided a value.");
 					dict.Add(param.Name, param.DefaultValue);
 				}
@@ -104,7 +104,7 @@ namespace LsnCore
 			return new FunctionCall(this,dict, included);
 		}
 
-		public abstract ILsnValue Eval(Dictionary<string, ILsnValue> args, IInterpreter i);
+		public abstract LsnValue Eval(Dictionary<string, LsnValue> args, IInterpreter i); // ToDo: replace dictionary with array.
 
 	}
 
@@ -116,10 +116,10 @@ namespace LsnCore
 	{
 		public string Name;
 		public TypeId Type;
-		public ILsnValue DefaultValue;
+		public LsnValue DefaultValue;
 		public ushort Index;
 
-		public Parameter(string name, TypeId type, ILsnValue val, ushort i)
+		public Parameter(string name, TypeId type, LsnValue val, ushort i)
 		{
 			Name = name;
 			Type = type;
@@ -127,7 +127,7 @@ namespace LsnCore
 			Index = i;
 		}
 
-		public Parameter(string name, LsnType type, ILsnValue val, ushort i)
+		public Parameter(string name, LsnType type, LsnValue val, ushort i)
 		{
 			Name = name;
 			Type = type.Id;

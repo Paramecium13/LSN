@@ -12,7 +12,7 @@ namespace LsnCore.Values
 	public interface IWritableCollectionValue : ICollectionValue
 	{
 
-		void SetValue(int index, ILsnValue value);
+		void SetValue(int index, LsnValue value);
 
 	}
 }

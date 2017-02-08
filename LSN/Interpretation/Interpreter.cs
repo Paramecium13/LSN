@@ -15,21 +15,21 @@ namespace LsnCore
 		/// </summary>
 		public bool PassVariablesByName { get { return false; } }
 
-		public ILsnValue ReturnValue { get; set; }
-		protected Scope Scope = new Scope();
-		protected Stack<Scope> ScopeStack = new Stack<Scope>();
+		public LsnValue ReturnValue { get; set; }
+		protected Scope Scope = new Scope(); // ToDo: Remove
+		protected Stack<Scope> ScopeStack = new Stack<Scope>(); // ToDo: Remove
 
 
 		protected List<ILsnValue> LSN_Objects = new List<ILsnValue>();
 
 
-		private Dictionary<int, ConcurrentStack<ILsnValue[]>> StackStore = new Dictionary<int, ConcurrentStack<ILsnValue[]>>();
+		private Dictionary<int, ConcurrentStack<LsnValue[]>> StackStore = new Dictionary<int, ConcurrentStack<LsnValue[]>>();
 
 
-		private ILsnValue[] CurrentStack;
+		private LsnValue[] CurrentStack;
 
 
-		private Stack<ILsnValue[]> StackOfStacks = new Stack<ILsnValue[]>();
+		private Stack<LsnValue[]> StackOfStacks = new Stack<LsnValue[]>();
 
 
 
@@ -57,7 +57,7 @@ namespace LsnCore
 		/// <summary>
 		/// Enters a new scope, that still has access to variables defined in the previuos scope.
 		/// </summary>
-		public virtual void EnterScope()
+		public virtual void EnterScope() // ToDo: Remove
 		{
 			Scope = Scope.Push();
 		}
@@ -65,27 +65,18 @@ namespace LsnCore
 		/// <summary>
 		/// Exits the current scope.
 		/// </summary>
-		public virtual void ExitScope()	{ Scope = Scope.Pop(); }
+		public virtual void ExitScope()	{ Scope = Scope.Pop(); } // ToDo: Remove
 
 		/// <summary>
 		/// Creates a new variable with the provided name and value.
 		/// </summary>
 		/// <param name="name">The name of the variable to create.</param>
 		/// <param name="val">The initial value to assign it.</param>
-		public virtual void AddVariable(string name, ILsnValue val)
+		public virtual void AddVariable(string name, LsnValue val) // ToDo: Remove
 		{
-			Scope.AddVariable(name, val);			
+			//Scope.AddVariable(name, val);			
 		}
 		
-		/// <summary>
-		/// Assigns a new value to a variable.
-		/// </summary>
-		/// <param name="name">The name of the variable.</param>
-		/// <param name="val">The new value to assign it.</param>
-		public virtual void ReassignVariable(string name, ILsnValue val)
-		{
-			Scope.ReassignVariable(name, val);
-		}
 
 		/// <summary>
 		/// Gets the value of the specified variable.
@@ -109,12 +100,12 @@ namespace LsnCore
 			if (StackStore.ContainsKey(i))
 			{
 				if (!StackStore[i].TryPop(out CurrentStack))
-					CurrentStack = new ILsnValue[i];
+					CurrentStack = new LsnValue[i];
 			}
 			else
 			{
-				StackStore.Add(i, new ConcurrentStack<ILsnValue[]>());
-				CurrentStack = new ILsnValue[i];
+				StackStore.Add(i, new ConcurrentStack<LsnValue[]>());
+				CurrentStack = new LsnValue[i];
 			}
 		}
 
@@ -137,27 +128,29 @@ namespace LsnCore
 		public virtual Function GetFunction(string name)
 			=> CurrentEnvironment.Functions[name];
 
-		public ILsnValue GetValue(int index)
+
+		public LsnValue GetValue(int index)
 			=> CurrentStack[index];
 
-		public void SetValue(int index, ILsnValue value)
+
+		public void SetValue(int index, LsnValue value)
 		{
 			CurrentStack[index] = value;
 		}
 
 
 
-		private void RecycleStack(ILsnValue[] stack)
+		private void RecycleStack(LsnValue[] stack)
 		{
 			Task.Run(() =>
 			{
 				for (int i = 0; i < stack.Length; i++)
-					stack[i] = null;
+					stack[i] = LsnValue.Nil;
 				if(StackStore.ContainsKey(stack.Length))
 					StackStore[stack.Length].Push(stack);
 				else
 				{
-					StackStore.Add(stack.Length, new ConcurrentStack<ILsnValue[]>());
+					StackStore.Add(stack.Length, new ConcurrentStack<LsnValue[]>());
 					StackStore[stack.Length].Push(stack);
 				}
 			});
@@ -231,14 +224,14 @@ namespace LsnCore
 
 		#endregion*/
 
-		public abstract void GiveItemTo(ILsnValue id, int amount, ILsnValue target);
-		public abstract void GiveArmorTo(ILsnValue id, int amount, ILsnValue target);
-		public abstract void GiveWeaponTo(ILsnValue id, int amount, ILsnValue target);
-		public abstract void GiveGoldTo(int amount, ILsnValue target);
+		public abstract void GiveItemTo(LsnValue id, int amount, LsnValue target);
+		public abstract void GiveArmorTo(LsnValue id, int amount, LsnValue target);
+		public abstract void GiveWeaponTo(LsnValue id, int amount, LsnValue target);
+		public abstract void GiveGoldTo(int amount, LsnValue target);
 
 		public abstract IActor GetActor(LsnValue id);
 
-		public abstract void Say(string message, ILsnValue graphic, string title);
+		public abstract void Say(string message, LsnValue graphic, string title);
 		public abstract int Choice(List<string> choices);
 	}
 }

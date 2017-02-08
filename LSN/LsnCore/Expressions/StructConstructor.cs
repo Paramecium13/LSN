@@ -32,29 +32,28 @@ namespace LsnCore.Expressions
 			}
 		}
 
-		public override ILsnValue Eval(IInterpreter i)
+		public override LsnValue Eval(IInterpreter i)
 		//=> new StructValue(_Type, ArgsB.Select(e => e.Eval(i)).ToArray());
 		{
 			int length = ArgsB.Length;
-			ILsnValue[] values = new ILsnValue[length];
+			LsnValue[] values = new LsnValue[length];
 			for(int j = 0; j < length; j++)
 			{
 				values[j] = ArgsB[j].Eval(i);
 			}
-			return new StructValue(values,Type);
+			return new LsnValue(new StructValue(values, Type));
 		}
 
 		public override IExpression Fold()
 		{
-			IDictionary<string, ILsnValue> d;
 			var a = Args.Select(pair => new KeyValuePair<string, IExpression>(pair.Key, pair.Value.Fold())).ToDictionary();
-			if (a.Values.All(v => v.IsReifyTimeConst()) && 
-				(d = Args.Select(pair => new KeyValuePair<string, ILsnValue>(pair.Key, pair.Value as ILsnValue)).ToDictionary())
-				.All(p => p.Value != null))
-				return new StructValue(_Type, d);
-			
+			if (a.Values.All(v => v.IsReifyTimeConst() && v is LsnValue?))
+				return new LsnValue(
+					new StructValue(_Type, Args.Select(pair
+					=> new KeyValuePair<string, LsnValue>(pair.Key, (LsnValue)pair.Value)).ToDictionary())
+					);
 			else
-				return new StructConstructor(_Type, a);		
+				return new StructConstructor(_Type, a);
 		}
 
 		public override bool IsReifyTimeConst() => false;

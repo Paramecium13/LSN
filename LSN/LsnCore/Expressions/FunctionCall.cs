@@ -33,9 +33,9 @@ namespace LsnCore.Expressions
 			Type = type?.Id;
 		}
 
-		public override ILsnValue Eval(IInterpreter i)
+		public override LsnValue Eval(IInterpreter i)
 		{
-			var args = Args.Select(p => new KeyValuePair<string, ILsnValue>(p.Key, p.Value.Eval(i))).ToDictionary();
+			var args = Args.Select(p => new KeyValuePair<string, LsnValue>(p.Key, p.Value.Eval(i))).ToDictionary();
             var fn = Fn ?? i.GetFunction(FnName);
 			if (! fn.HandlesScope) i.EnterFunctionScope(fn.Environment, fn.StackSize);
 			var val = fn.Eval(args, i);

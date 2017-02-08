@@ -70,7 +70,7 @@ namespace LsnCore
 				foreach (var param in Parameters)
 				{
 					if (dict.ContainsKey(param.Name)) continue;
-					if (param.DefaultValue == null && param.Name != "self") // This argument does not have a default value.
+					if (!param.DefaultValue.IsNull && param.Name != "self") // This argument does not have a default value.
 					{
 						throw new ApplicationException($"The parameter {param.Name} of {this.Name} must be provided a value.");
 					} else if (param.Name != "self")

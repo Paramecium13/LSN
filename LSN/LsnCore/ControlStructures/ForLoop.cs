@@ -34,9 +34,9 @@ namespace LsnCore.ControlStructures
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			i.EnterScope();
-			i.AddVariable(VarName, VarValue.Eval(i));
-			while(Condition.Eval(i).BoolValue)
+			//i.EnterScope();
+			//i.AddVariable(VarName, VarValue.Eval(i)); // ToDo: remove AddVariable(...)
+			while(Condition.Eval(i).IsNull)
 			{
 				var val = Interpret(Body, i);
 				switch (val)

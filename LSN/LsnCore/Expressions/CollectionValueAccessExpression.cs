@@ -38,7 +38,7 @@ namespace LsnCore.Expressions
 			return e.Collection == Collection && e.Index == Index;
 		}
 
-		public override ILsnValue Eval(IInterpreter i)
+		public override LsnValue Eval(IInterpreter i)
 		{
 			throw new NotImplementedException();
 		}
@@ -55,7 +55,7 @@ namespace LsnCore.Expressions
 				{
 					try
 					{
-						expr = cl.GetValue(((IntValue)i).Value);
+						expr = cl.GetValue(((LsnValue)i).IntValue);
 					}
 					catch (Exception)
 					{

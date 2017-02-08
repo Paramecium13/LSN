@@ -21,16 +21,17 @@ namespace LsnCore
 
 		public LsnMethod(LsnType type, LsnType returnType, List<Component> components, LsnResourceThing res, 
 			List<Parameter> paramaters = null)
-			:base(type,returnType, paramaters ?? new List<Parameter>() { new Parameter("self", type, null, 0) })
+			:base(type,returnType, paramaters ?? new List<Parameter>() { new Parameter("self", type.Id, LsnValue.Nil, 0) })
 		{
 			Components = components;
 			Resource = res;
 		}
 
-		public override ILsnValue Eval(Dictionary<string, ILsnValue> args, IInterpreter i)
+		public override LsnValue Eval(Dictionary<string, LsnValue> args, IInterpreter i)
 		{
 			i.EnterFunctionScope(Resource?.GetEnvironment() ?? LsnEnvironment.Default, StackSize);
-			foreach (var pair in args) i.AddVariable(pair.Key, pair.Value);
+			//ToDo: assign arguments to stack.
+			//foreach (var pair in args) i.AddVariable(pair.Key, pair.Value); // ToDo: remove AddVariable(...)
 			for (int x = 0; x < Components.Count; x++)
 			{
 				var val = Components[x].Interpret(i);

@@ -27,7 +27,7 @@ namespace LsnCore.Statements
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			i.Say(((StringValue)Message.Eval(i)).Value, Graphic?.Eval(i), Title?.Eval(i)?.ToString());
+			i.Say(((StringValue)Message.Eval(i).Value).Value, Graphic?.Eval(i) ?? LsnValue.Nil, Title?.Eval(i).Value?.ToString());
 			return InterpretValue.Base;
 		}
 

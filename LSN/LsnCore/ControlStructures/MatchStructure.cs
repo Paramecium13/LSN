@@ -35,10 +35,10 @@ namespace LsnCore.ControlStructures
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			ILsnValue value = i.GetValue(VariableIndex);
+			LsnValue value = i.GetValue(VariableIndex);
 			for(int j = 0; j < Cases.Count; j++)
 			{
-				if (Cases[j].Value.Eval(i) == value) return Cases[j].Interpret(i);
+				if (Cases[j].Value.Eval(i).Equals(value)) return Cases[j].Interpret(i);
 			}
 			return InterpretValue.Base;
 		}

@@ -14,7 +14,7 @@ namespace LsnCore
 	{
 		T Value { get; }
 	}
-
+/*
 	/// <summary>
 	/// LSN value that contains a 32 bit integer.
 	/// </summary>
@@ -53,7 +53,7 @@ namespace LsnCore
 		public static explicit operator double(IntValue v) => v.Value;
 
 		public static explicit operator DoubleValue(IntValue v) => new DoubleValue(v.Value);
-	}
+	}*/
 
 	/// <summary>
 	/// LSN value that contains a string, is effectively passed by reference.
@@ -96,7 +96,7 @@ namespace LsnCore
 			return new StringValue(new string(c));
 		}*/
 
-		public ILsnValue Eval(IInterpreter i) => this;
+		public LsnValue Eval(IInterpreter i) => new LsnValue(this);
 		public IExpression Fold() => this;
 		public bool IsReifyTimeConst() => true;
 		public string TranslateUniversal() => Value.ToString();
@@ -113,7 +113,7 @@ namespace LsnCore
 			return e.Value == Value;
 		}
 	}
-
+	/*
 	/// <summary>
 	/// LSN value that contains a Double.
 	/// </summary>
@@ -152,20 +152,20 @@ namespace LsnCore
 			if (e == null) return false;
 			return e.Value == Value;
 		}
-	}
+	}*/
 
 	/// <summary>
 	/// 
 	/// </summary>
 	[Serializable]
-	public class LsnBoolValue : IBoundValue<bool>
+	public class LsnBoolValue
 	{
-		private static LsnBoolValue True = new LsnBoolValue(true);
-		private static LsnBoolValue False = new LsnBoolValue(false);
-		public static LsnBoolValue GetBoolValue(bool val)
+		private static LsnValue True = new LsnValue(1);
+		private static LsnValue False = LsnValue.Nil;
+		public static LsnValue GetBoolValue(bool val)
 			=> val? True : False;
 
-		public bool IsPure => true;
+		/*public bool IsPure => true;
 
 		public static TypeId id = LsnType.Bool_.Id;
 
@@ -193,6 +193,6 @@ namespace LsnCore
 			var e = other as IBoundValue<bool>;
 			if (e == null) return false;
 			return e.Value == Value;
-		}
+		}*/
 	}
 }

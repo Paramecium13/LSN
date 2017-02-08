@@ -213,11 +213,11 @@ namespace LSNr
 			}
 			else if (token.GetType() == typeof(FloatToken))
 			{
-				return new DoubleValue(((FloatToken)token).DVal);
+				return new LsnValue(((FloatToken)token).DVal);
 			}
 			else if (token.GetType() == typeof(IntToken))
 			{
-				return new IntValue(((IntToken)token).IVal);
+				return new LsnValue(((IntToken)token).IVal);
 			}
 			else if (token.GetType() == typeof(StringToken))
 			{

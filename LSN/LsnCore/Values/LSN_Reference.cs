@@ -8,7 +8,7 @@ namespace LsnCore
 	/// Wraps a .NET reference to an LsnObject
 	/// </summary>
 	[Serializable]
-	public class LsnReference : LsnValue
+	public class LsnReference : LsnValueB
 	{
 		public readonly LsnReferenceValue Value;
 		public override bool BoolValue { get { return Value?.BoolValue ?? false; } }

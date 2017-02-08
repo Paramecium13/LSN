@@ -26,8 +26,8 @@ namespace LsnCore.Types
 			};
 		}
 
-		public override ILsnValue CreateDefaultValue()
-			=> new RecordValue(this, FieldsB.Select(f => f.Type.Type.CreateDefaultValue()).ToArray());
+		public override LsnValue CreateDefaultValue()
+			=> new LsnValue(new RecordValue(this, FieldsB.Select(f => f.Type.Type.CreateDefaultValue()).ToArray()));
 		
 
 		public int GetIndex(string name)

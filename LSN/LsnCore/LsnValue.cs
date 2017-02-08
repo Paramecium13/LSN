@@ -7,15 +7,16 @@ using System.Threading.Tasks;
 using LsnCore.Types;
 using System.Runtime.CompilerServices;
 
-namespace LsnCore.Values
+namespace LsnCore
 {
+#pragma warning disable CS1718 // Comparison made to same variable
 	[Serializable]
-	public unsafe struct LsnValueX : IExpression
+	public unsafe struct LsnValue : IExpression
 	{
 		/// <summary>
 		/// 
 		/// </summary>
-		public static readonly LsnValueX Nil = new LsnValueX(double.NaN, null);
+		public static readonly LsnValue Nil = new LsnValue(double.NaN, null);
 
 		/// <summary>
 		/// 
@@ -23,6 +24,15 @@ namespace LsnCore.Values
 		public readonly ILsnValue Value;
 
 		public bool IsPure => true;
+
+
+
+		public bool IsNull => Data == Data || Value != null;
+
+
+		public bool BoolValue =>
+			Data == Data ? Data != 0 : Value?.BoolValue ?? false;
+
 
 		/// <summary>
 		/// 
@@ -38,13 +48,6 @@ namespace LsnCore.Values
 		/// 
 		/// </summary>
 		public int IntValueB => Data.ToInt32Bitwise();
-		/*{
-			get
-			{
-				double x = Data;
-				return *((int*)&x);
-			}
-		}*/
 
 		/// <summary>
 		/// 
@@ -62,7 +65,7 @@ namespace LsnCore.Values
 		public TypeId Type => Id;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public LsnValueX(double value)
+		public LsnValue(double value)
 		{
 			Data = value;
 			Value = null;
@@ -70,7 +73,7 @@ namespace LsnCore.Values
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public LsnValueX(int value)
+		public LsnValue(int value)
 		{
 			Data = value;
 			Value = null;
@@ -78,15 +81,15 @@ namespace LsnCore.Values
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public LsnValueX(ILsnValue value)
+		public LsnValue(ILsnValue value)
 		{
 			Data = double.NaN;
 			Value = value;
 			Id = value.Type;
 		}
 
-
-		private LsnValueX(double d, ILsnValue v)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private LsnValue(double d, ILsnValue v)
 		{
 			Data = d;
 			Value = v;
@@ -98,7 +101,7 @@ namespace LsnCore.Values
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
-		public ILsnValue Eval(IInterpreter i) => null;//this;
+		public LsnValue Eval(IInterpreter i) => this;
 
 		/// <summary>
 		/// 
@@ -109,9 +112,7 @@ namespace LsnCore.Values
 		/// <summary>
 		/// 
 		/// </summary>
-#pragma warning disable CS1718 // Comparison made to same variable
-		public LsnValueX Clone => Data == Data ? this : new LsnValueX(Value.Clone());
-#pragma warning restore CS1718 // Comparison made to same variable
+		public LsnValue Clone() => Data == Data ? this : new LsnValue(Value.Clone());
 
 		/// <summary>
 		/// 
@@ -131,16 +132,15 @@ namespace LsnCore.Values
 		/// </summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Equals(IExpression other)
 		{
-			var v = other as LsnValueX?;
+			var v = other as LsnValue?;
 			if (v != null)
 			{
 				var val = v.Value;
 				var data = val.Data;
-#pragma warning disable CS1718 // Comparison made to same variable
 				return (data == Data || (data != data && Data != Data)) && val.Value == Value;
-#pragma warning restore CS1718 // Comparison made to same variable
 			}
 			return false;
 		}
@@ -151,8 +151,9 @@ namespace LsnCore.Values
 		/// <param name="a"></param>
 		/// <param name="b"></param>
 		/// <returns></returns>
-		public static LsnValueX IntSum(LsnValueX a, LsnValueX b)
-			=> new LsnValueX(a.IntValue + b.IntValue);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static LsnValue IntSum(LsnValue a, LsnValue b)
+			=> new LsnValue(a.IntValue + b.IntValue);
 
 		/// <summary>
 		/// 
@@ -160,8 +161,9 @@ namespace LsnCore.Values
 		/// <param name="a"></param>
 		/// <param name="b"></param>
 		/// <returns></returns>
-		public static LsnValueX IntDiff(LsnValueX a, LsnValueX b)
-			=> new LsnValueX(a.IntValue - b.IntValue);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static LsnValue IntDiff(LsnValue a, LsnValue b)
+			=> new LsnValue(a.IntValue - b.IntValue);
 
 		/// <summary>
 		/// 
@@ -169,26 +171,9 @@ namespace LsnCore.Values
 		/// <param name="a"></param>
 		/// <param name="b"></param>
 		/// <returns></returns>
-		public static LsnValueX IntProduct(LsnValueX a, LsnValueX b)
-			=> new LsnValueX(a.IntValue * b.IntValue);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="a"></param>
-		/// <param name="b"></param>
-		/// <returns></returns>
-		public static LsnValueX IntQuotient(LsnValueX a, LsnValueX b)
-			=> new LsnValueX(a.IntValue / b.IntValue);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="a"></param>
-		/// <param name="b"></param>
-		/// <returns></returns>
-		public static LsnValueX IntMod(LsnValueX a, LsnValueX b)
-			=> new LsnValueX(a.IntValue % b.IntValue);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static LsnValue IntProduct(LsnValue a, LsnValue b)
+			=> new LsnValue(a.IntValue * b.IntValue);
 
 
 		/// <summary>
@@ -197,8 +182,9 @@ namespace LsnCore.Values
 		/// <param name="a"></param>
 		/// <param name="b"></param>
 		/// <returns></returns>
-		public static LsnValueX DoubleSum(LsnValueX a, LsnValueX b)
-			=> new LsnValueX(a.Data + b.Data);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static LsnValue IntQuotient(LsnValue a, LsnValue b)
+			=> new LsnValue(a.IntValue / b.IntValue);
 
 		/// <summary>
 		/// 
@@ -206,8 +192,9 @@ namespace LsnCore.Values
 		/// <param name="a"></param>
 		/// <param name="b"></param>
 		/// <returns></returns>
-		public static LsnValueX DoubleDiff(LsnValueX a, LsnValueX b)
-			=> new LsnValueX(a.Data - b.Data);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static LsnValue IntMod(LsnValue a, LsnValue b)
+			=> new LsnValue(a.IntValue % b.IntValue);
 
 		/// <summary>
 		/// 
@@ -215,8 +202,9 @@ namespace LsnCore.Values
 		/// <param name="a"></param>
 		/// <param name="b"></param>
 		/// <returns></returns>
-		public static LsnValueX DoubleProduct(LsnValueX a, LsnValueX b)
-			=> new LsnValueX(a.Data * b.Data);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static LsnValue IntPow(LsnValue a, LsnValue b)
+			=> new LsnValue(Math.Pow(a.IntValue, b.IntValue));
 
 		/// <summary>
 		/// 
@@ -224,8 +212,9 @@ namespace LsnCore.Values
 		/// <param name="a"></param>
 		/// <param name="b"></param>
 		/// <returns></returns>
-		public static LsnValueX DoubleQuotient(LsnValueX a, LsnValueX b)
-			=> new LsnValueX(a.Data / b.Data);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static LsnValue DoubleSum(LsnValue a, LsnValue b)
+			=> new LsnValue(a.Data + b.Data);
 
 		/// <summary>
 		/// 
@@ -233,8 +222,51 @@ namespace LsnCore.Values
 		/// <param name="a"></param>
 		/// <param name="b"></param>
 		/// <returns></returns>
-		public static LsnValueX DoubleMod(LsnValueX a, LsnValueX b)
-			=> new LsnValueX(a.Data % b.Data);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static LsnValue DoubleDiff(LsnValue a, LsnValue b)
+			=> new LsnValue(a.Data - b.Data);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static LsnValue DoubleProduct(LsnValue a, LsnValue b)
+			=> new LsnValue(a.Data * b.Data);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static LsnValue DoubleQuotient(LsnValue a, LsnValue b)
+			=> new LsnValue(a.Data / b.Data);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static LsnValue DoubleMod(LsnValue a, LsnValue b)
+			=> new LsnValue(a.Data % b.Data);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static LsnValue DoublePow(LsnValue a, LsnValue b)
+			=> new LsnValue(Math.Pow(a.Data, b.Data));
 
 	}
 }
+
+#pragma warning restore CS1718 // Comparison made to same variable

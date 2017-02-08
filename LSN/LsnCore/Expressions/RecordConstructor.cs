@@ -40,26 +40,25 @@ namespace LsnCore.Expressions
 		}
 
 
-		public override ILsnValue Eval(IInterpreter i)
+		public override LsnValue Eval(IInterpreter i)
 		{
 			int length = ArgsB.Length;
-			ILsnValue[] values = new ILsnValue[length];
+			LsnValue[] values = new LsnValue[length];
 			for (int j = 0; j < length; j++)
 			{
 				values[j] = ArgsB[j].Eval(i);
 			}
-			return new RecordValue(Type, values);
+			return new LsnValue(new RecordValue(Type, values));
 		}
 
 		public override IExpression Fold()
-		{
-			IDictionary<string, ILsnValue> d;
+		{//d = Args.Select(pair => new KeyValuePair<string, ILsnValue>(pair.Key, pair.Value as ILsnValue)).ToDictionary()
 			var a = Args.Select(pair => new KeyValuePair<string, IExpression>(pair.Key, pair.Value.Fold())).ToDictionary();
-			if (a.Values.All(v => v.IsReifyTimeConst()) &&
-				(d = Args.Select(pair => new KeyValuePair<string, ILsnValue>(pair.Key, pair.Value as ILsnValue)).ToDictionary())
-				.All(p => p.Value != null))
-				return new RecordValue(_Type, d);
-
+			if (a.Values.All(v => v.IsReifyTimeConst() && v is LsnValue?))
+				return new LsnValue(
+					new RecordValue(_Type, Args.Select(pair 
+					=> new KeyValuePair<string,LsnValue>(pair.Key,(LsnValue)pair.Value)).ToDictionary())
+					);
 			else
 				return new RecordConstructor(_Type, a);
 		}

@@ -14,7 +14,7 @@ namespace LsnCore.Values
 	{
 		//ICollectionType CollectionType { get; }
 
-		ILsnValue GetValue(int index);
+		LsnValue GetValue(int index);
 
 		int GetLength();
 	}

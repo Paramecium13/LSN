@@ -42,6 +42,7 @@ namespace LsnCore.Expressions
 			Left = left; Right = right; Operation = operation; Type = type; Operator = op;
 		}
 
+
 		public override bool IsReifyTimeConst()
 			=> Left.IsReifyTimeConst() && Right.IsReifyTimeConst();
 		
@@ -50,13 +51,12 @@ namespace LsnCore.Expressions
 		{
 			Right = Right.Fold();
 			Left = Left.Fold();
-			//typeof(ILSN_Value).IsAssignableFrom(Left.GetType()) && typeof(ILSN_Value).IsAssignableFrom(Right.GetType())
-			if (Left is ILsnValue && Right is ILsnValue)
-				return Operation(Left as ILsnValue, Right as ILsnValue);
+			if (typeof(LsnValue).IsAssignableFrom(Left.GetType()) && typeof(LsnValue).IsAssignableFrom(Right.GetType()))
+				return Operation((LsnValue)Left, (LsnValue)Right);
 			return this;
 		}
 
-		public override ILsnValue Eval(IInterpreter i)
+		public override LsnValue Eval(IInterpreter i)
 			=> Operation(Left.Eval(i), Right.Eval(i));
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)

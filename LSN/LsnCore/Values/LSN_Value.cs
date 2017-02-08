@@ -1,4 +1,5 @@
 ﻿using LsnCore.Expressions;
+using LsnCore.Values;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,7 +10,7 @@ namespace LsnCore
 	/// An object representing an LSN value.
 	/// </summary>
 	[Serializable]
-	public abstract class LsnValue : Expression, ILsnValue
+	public abstract class LsnValueB : Expression, ILsnValue
 	{
 		public abstract bool BoolValue { get; }
 
@@ -17,9 +18,9 @@ namespace LsnCore
 
 		public override bool IsPure => true;
 
-		public override ILsnValue Eval(IInterpreter i)
+		public override LsnValue Eval(IInterpreter i)
 		{
-			return this;//Clone() ?
+			return new LsnValue(this);//Clone() ?
 		}
 
 		public override IExpression Fold()

@@ -19,10 +19,9 @@ namespace LsnCore.Expressions
 		}
 		
 
-		public override ILsnValue Eval(IInterpreter i)
-		{
-			throw new NotImplementedException();
-		}
+		public override LsnValue Eval(IInterpreter i)
+			=> i.GetValue(Index);
+		
 
 		public override IExpression Fold() => this;
 

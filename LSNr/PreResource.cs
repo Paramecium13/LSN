@@ -289,14 +289,14 @@ namespace LSNr
 				if(tokens[++i].Value != ":")
 					throw new ApplicationException($"Error: Expected token ':' after parameter name {name} recieved token '{tokens[i].Value}'.");
                 LsnType type = this.ParseType(tokens, ++i, out i);
-				ILsnValue defaultValue = null;
+				LsnValue defaultValue = LsnValue.Nil;
 				if (i < tokens.Count && tokens[i].Value == "=")
 				{
 					if (tokens[++i] is StringToken)
 					{
 						if (type != LsnType.string_)
 							throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type string to a parameter of type {type.Name}");
-						defaultValue = new StringValue(tokens[i].Value);
+						defaultValue = new LsnValue (new StringValue(tokens[i].Value));
 						if (i + 1 < tokens.Count) i++;
 					}
 					else if (tokens[i] is IntToken)
@@ -305,19 +305,19 @@ namespace LSNr
 						{
 							if (type == LsnType.double_)
 							{
-								defaultValue = new DoubleValue((tokens[i] as IntToken?)?.IVal ?? 0);
+								defaultValue = new LsnValue((tokens[i] as IntToken?)?.IVal ?? 0);
 							}
 							else
 								throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type int to a parameter of type {type.Name}");
 						}
-						else defaultValue = new IntValue((tokens[i] as IntToken?)?.IVal ?? 0);
+						else defaultValue = new LsnValue((tokens[i] as IntToken?)?.IVal ?? 0);
 						if (i + 1 < tokens.Count) i++;
 					}
 					else if (tokens[i] is FloatToken)
 					{
 						if (type != LsnType.double_)
 							throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type double to a parameter of type {type.Name}");
-						defaultValue = new DoubleValue((tokens[i] as FloatToken?)?.DVal ?? 0.0);
+						defaultValue = new LsnValue((tokens[i] as FloatToken?)?.DVal ?? 0.0);
 						if(i + 1 < tokens.Count) i++;
 					}
 					// Bools and other stuff...

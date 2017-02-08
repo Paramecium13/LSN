@@ -23,7 +23,7 @@ namespace LsnCore.ControlStructures
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			if (Condition.Eval(i).BoolValue)
+			if (Condition.Eval(i).IsNull)
 			{
 				var length = Body.Count;
 				for(int j = 0; j < length; j++)
@@ -56,7 +56,7 @@ namespace LsnCore.ControlStructures
 					for(int j = 0; j < elsifcount; j++)
 					{
 						var el = Elsifs[j];
-						if(el.Condition.Eval(i).BoolValue)
+						if(el.Condition.Eval(i).IsNull)
 						{
 							var b = el.Body;
 							var length = b.Count;
