@@ -205,7 +205,7 @@ namespace LsnCore
 
 		private static void SetUpMethods()
 		{
-			int_._Methods.Add("Abs", new BoundedMethod(int_,int_,(args)=>new LsnValue((int)Math.Abs(args["self"].IntValue))));
+			int_._Methods.Add("Abs", new BoundedMethod(int_,int_,(args)=>new LsnValue((int)Math.Abs(args[0].IntValue))));
 
 
 			double_._Methods.Add("Abs", new BoundedMethod(double_, double_, 
@@ -213,7 +213,7 @@ namespace LsnCore
 				(
 					Math.Abs
 					(
-						args["self"].DoubleValue
+						args[0].DoubleValue
 					)
 				)
 			));
@@ -223,7 +223,7 @@ namespace LsnCore
 				(
 					(int)Math.Ceiling
 					(
-						args["self"].DoubleValue
+						args[0].DoubleValue
 					)
 				)
 			));
@@ -231,7 +231,7 @@ namespace LsnCore
 			double_._Methods.Add("Floor", new BoundedMethod(double_, int_,
 				(args) => new LsnValue
 				(
-					(int)args["self"].DoubleValue
+					(int)args[0].DoubleValue
 				)
 			));
 
@@ -240,7 +240,7 @@ namespace LsnCore
 				(
 					(int)Math.Round
 					(
-						args["self"].DoubleValue
+						args[0].DoubleValue
 					)
 				)
 			));
@@ -249,24 +249,24 @@ namespace LsnCore
 			string_._Methods.Add("Length", new BoundedMethod(string_, int_,
 				(args) => new LsnValue
 				(
-					((StringValue)args["self"].Value).Value.Length
+					((StringValue)args[0].Value).Value.Length
 				)
 			));
 
 			string_._Methods.Add("SubString", new BoundedMethod(string_, string_,
 				(args) => new LsnValue (
 					new StringValue (
-						((StringValue)args["self"].Value).Value.Substring(args["start"].IntValue,
-							args["length"].IntValue)
+						((StringValue)args[0].Value).Value.Substring(args[1].IntValue,
+							args[2].IntValue)
 						)
 				),
-				new List<Parameter>() { new Parameter("start",int_,LsnValue.Nil,0), new Parameter("length", int_,LsnValue.Nil,1)})
+				new List<Parameter>() { new Parameter("start",int_,LsnValue.Nil,1), new Parameter("length", int_,LsnValue.Nil,2)})
 			);
 
 			string_._Methods.Add("ToLower", new BoundedMethod(string_, string_,
 				(args) => new LsnValue(new StringValue
 				(
-					((StringValue)args["self"].Value).Value.ToLower()
+					((StringValue)args[0].Value).Value.ToLower()
 				))
 			));
 		}

@@ -102,8 +102,8 @@ namespace LSNr.Optimization
 
 		protected virtual void WalkFuncCall(FunctionCall f)
 		{
-			foreach (var exp in f.Args.Values)
-				Walk(exp);
+			for (int i = 0; i < f.Args.Length; i++)
+				f.Args[i] = Walk(f.Args[i]);
 		}
 
 
@@ -115,9 +115,8 @@ namespace LSNr.Optimization
 
 		protected virtual void WalkMethodCall(MethodCall m)
 		{
-			foreach (var exp in m.Args.Values)
-				Walk(exp);
-			Walk(m.Value);
+			for (int i = 0; i < m.Args.Length; i++)
+				m.Args[i] = Walk(m.Args[i]);
 		}
 
 

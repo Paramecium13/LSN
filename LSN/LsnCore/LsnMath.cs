@@ -15,7 +15,7 @@ namespace LsnCore
 
 			Sqrt = new BoundedFunction(d =>
 			{
-				var v = d["x"];
+				var v = d[0];
 				return new LsnValue(Math.Sqrt(v.DoubleValue));
 			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sqrt");
 
@@ -23,27 +23,27 @@ namespace LsnCore
 
 			Sin = new BoundedFunction(d =>
 			{
-				var v = d["θ"];
+				var v = d[0];
 				return new LsnValue(Math.Sin(v.DoubleValue));
 			}, new List<Parameter>() { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sin");
 
 			Cos = new BoundedFunction(d =>
 			{
-				var v = d["θ"];
+				var v = d[0];
 				return new LsnValue(Math.Cos(v.DoubleValue));
 			}, new List<Parameter>() { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Cos");
 
 			Tan = new BoundedFunction(d =>
 			{
-				var v = d["θ"];
+				var v = d[0];
 				return new LsnValue(Math.Tan(v.DoubleValue));
 			}, new List<Parameter>() { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Tan");
 
 
 			Hypot = new BoundedFunction(d =>
 			{
-				var x = d["x"].DoubleValue;
-				var y = d["y"].DoubleValue;
+				var x = d[0].DoubleValue;
+				var y = d[1].DoubleValue;
 				return new LsnValue( Math.Sqrt(x * x + y * y));
 			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0),
 				new Parameter("y", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Hypot");
@@ -53,19 +53,19 @@ namespace LsnCore
 
 			ASin = new BoundedFunction(d =>
 			{
-				var v = d["θ"];
+				var v = d[0];
 				return new LsnValue(Math.Asin(v.DoubleValue));
 			}, new List<Parameter>() { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ASin");
 
 			ACos = new BoundedFunction(d =>
 			{
-				var v = d["θ"];
+				var v = d[0];
 				return new LsnValue(Math.Acos(v.DoubleValue));
 			}, new List<Parameter>() { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ACos");
 
 			ATan = new BoundedFunction(d =>
 			{
-				var v = d["θ"];
+				var v = d[0];
 				return new LsnValue(Math.Atan(v.DoubleValue));
 			}, new List<Parameter>() { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ATan");
 
@@ -73,33 +73,33 @@ namespace LsnCore
 
 			Sinh = new BoundedFunction(d =>
 			{
-				var v = d["x"];
+				var v = d[0];
 				return new LsnValue(Math.Sinh(v.DoubleValue));
 			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sinh");
 
 			Cosh = new BoundedFunction(d =>
 			{
-				var v = d["x"];
+				var v = d[0];
 				
 				return new LsnValue(Math.Cosh(v.DoubleValue));
 			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Cosh");
 
 			Tanh = new BoundedFunction(d =>
 			{
-				var v = d["x"];
+				var v = d[0];
 				return new LsnValue(Math.Tanh(v.DoubleValue));
 			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Tanh");
 
 
 			Log = new BoundedFunction(d =>
 			{
-				var v = d["x"];
+				var v = d[0];
 				return (new LsnValue(Math.Log(v.DoubleValue)));
 			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Log");
 
 			Log10 = new BoundedFunction(d =>
 			{
-				var v = d["x"];
+				var v = d[0];
 				return (new LsnValue(Math.Log10(v.DoubleValue)));
 			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Log10");
 
@@ -107,13 +107,13 @@ namespace LsnCore
 
 			ErrorFunction = new BoundedFunction(d =>
 			{
-				var v = d["x"];
+				var v = d[0];
 				return (new LsnValue(Erf(v.DoubleValue)));
 			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ErrorFunction");
 
 			Gamma = new BoundedFunction(d =>
 			{
-				var v = d["x"];
+				var v = d[0];
 				return (new LsnValue(Γ(v.DoubleValue)));
 			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Gamma");
 

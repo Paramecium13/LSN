@@ -14,10 +14,10 @@ namespace LsnCore.Expressions
 		public override bool IsPure => false;
 
 		//ToDo: Encapsulate?
-		public Dictionary<string, IExpression> Args;
+		public readonly IExpression[] Args;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-		public FunctionCall(Function fn, Dictionary<string,IExpression> args, bool include = false)
+		public FunctionCall(Function fn, IExpression[] args, bool include = false)
 		{
 			if (include) Fn = fn;
 			FnName = fn.Name;
@@ -26,7 +26,7 @@ namespace LsnCore.Expressions
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-		private FunctionCall(string fnName, Dictionary<string,IExpression> args, LsnType type = null)
+		private FunctionCall(string fnName, IExpression[] args, LsnType type = null)
 		{
 			FnName = fnName;
 			Args = args;
@@ -35,17 +35,23 @@ namespace LsnCore.Expressions
 
 		public override LsnValue Eval(IInterpreter i)
 		{
-			var args = Args.Select(p => new KeyValuePair<string, LsnValue>(p.Key, p.Value.Eval(i))).ToDictionary();
-            var fn = Fn ?? i.GetFunction(FnName);
+			var args = new LsnValue[Args.Length];
+			for (int x = 0; x < Args.Length; x++)
+				args[x] = Args[x].Eval(i);
+			//var args = Args.Select(a => a.Eval(i)).ToArray();
+
+			var fn = Fn ?? i.GetFunction(FnName);
+
 			if (! fn.HandlesScope) i.EnterFunctionScope(fn.Environment, fn.StackSize);
 			var val = fn.Eval(args, i);
 			if (! fn.HandlesScope) i.ExitFunctionScope();
+
 			return val;
 		}
 
 		public override IExpression Fold()
 		{
-			var dict = Args.Select(p => new KeyValuePair<string, IExpression>(p.Key, p.Value.Fold())).ToDictionary();
+			var dict = Args.Select(a => a.Fold()).ToArray();
 			if (Fn != null) return new FunctionCall(Fn, dict, true);
 			return new FunctionCall(FnName,dict);
 		}
@@ -54,18 +60,8 @@ namespace LsnCore.Expressions
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
-			if(Args.Values.Contains(oldExpr))
-			{
-				Args = Args.Select(p =>
-				{
-					if (p.Value.Equals(oldExpr))
-					{
-						return new KeyValuePair<string, IExpression>(p.Key,newExpr);
-					}
-					return p;
-				}
-				).ToDictionary();
-			}
+			if(Args.Contains(oldExpr))
+				Args[Array.IndexOf(Args, oldExpr)] = newExpr;
 		}
 
 		public override bool Equals(IExpression other)

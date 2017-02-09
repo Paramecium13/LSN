@@ -94,7 +94,7 @@ namespace LsnCore
 		}
 
 
-		public override LsnValue Eval(Dictionary<string, LsnValue> args, IInterpreter i)
+		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{
 #if DEBUG
 			if (External == null)

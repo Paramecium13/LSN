@@ -36,11 +36,15 @@ namespace LsnCore
 			Name = name;
 		}
 
-		public override LsnValue Eval(Dictionary<string, LsnValue> args, IInterpreter i)
+
+		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{
 			i.EnterFunctionScope(Resource?.GetEnvironment() ?? LsnEnvironment.Default, StackSize);
 			//ToDo: assign variables to stack;
 			//foreach (var pair in args) i.AddVariable(pair.Key, pair.Value); // ToDo: remove AddVariable(...)
+			for (int argI = 0; argI < args.Length; argI++)
+				i.SetValue(argI, args[argI]);
+
 			for (int x = 0; x < Components.Count; x++)
 			{
 				var val = Components[x].Interpret(i);

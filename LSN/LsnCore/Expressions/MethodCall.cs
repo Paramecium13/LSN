@@ -17,7 +17,7 @@ namespace LsnCore.Expressions
 		/// The object that is calling this method.
 		/// </summary>
 		public IExpression Value { get { return _Value; } set { _Value = value; } }
-		public Dictionary<string, IExpression> Args;
+		public IExpression[] Args;
 
 		public override bool IsPure => false;
 
@@ -25,31 +25,29 @@ namespace LsnCore.Expressions
 		private readonly string MethodName;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-		public MethodCall(Method m, IExpression value, Dictionary<string, IExpression> args = null)
+		public MethodCall(Method m, /*IExpression value,*/ IExpression[] args)
 		{
-			Value = value;
-			Args = args ?? new Dictionary<string, IExpression>();
+			//Value = value;
+			Args = args ?? new IExpression[1];
 			Method = m;
-			Args.Add("self", Value);
 			Type = m.ReturnType;
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-		public MethodCall(string name, IExpression value, TypeId type, Dictionary<string, IExpression> args = null)
+		public MethodCall(string name, /*IExpression value,*/ TypeId type, IExpression[] args )
 		{
-			Value = value;
-			Args = args ?? new Dictionary<string, IExpression>();
+			//Value = value;
+			Args = args;
 			MethodName = name;
-			Args.Add("self", Value);
 			Type = type;
 		}
 
 		public override LsnValue Eval(IInterpreter i)
 		{
-			var args = Args.Select(p => new KeyValuePair<string, LsnValue>(p.Key, p.Value.Eval(i))).ToDictionary();
-			var self = Value.Eval(i);
-			args.Add("self", self);
-			var fn = Method ?? self.Type.Type.Methods[MethodName]; //TODO:...
+			var args = new LsnValue[Args.Length];
+			for (int x = 0; x < Args.Length; x++)
+				args[x] = Args[x].Eval(i);
+			var fn = Method ?? args[0].Type.Type.Methods[MethodName]; //TODO:...
 			if (!fn.HandlesScope) i.EnterFunctionScope(fn.Environment, fn.StackSize);
 			var val = fn.Eval(args, i);
 			if (!fn.HandlesScope) i.ExitFunctionScope();

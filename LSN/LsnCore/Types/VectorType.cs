@@ -19,7 +19,7 @@ namespace LsnCore
 				(args) =>
 				{
 					int Σ = 0;
-					var vector = (VectorInstance)args["self"].Value;
+					var vector = (VectorInstance)args[0].Value;
 					int length = vector.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (vector[i]).IntValue;
@@ -30,7 +30,7 @@ namespace LsnCore
 				(args) =>
 				{
 					int Σ = 0;
-					var vector = (VectorInstance)args["self"].Value;
+					var vector = (VectorInstance)args[0].Value;
 					int length = vector.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (vector[i]).IntValue;
@@ -42,7 +42,7 @@ namespace LsnCore
 				(args) =>
 				{
 					double Σ = 0;
-					var vector = (VectorInstance)args["self"].Value;
+					var vector = (VectorInstance)args[0].Value;
 					int length = vector.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (vector[i]).DoubleValue;
@@ -53,7 +53,7 @@ namespace LsnCore
 				(args) =>
 				{
 					double Σ = 0.0;
-					var vector = (VectorInstance)args["self"].Value;
+					var vector = (VectorInstance)args[0].Value;
 					int length = vector.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (vector[i]).DoubleValue;
@@ -82,11 +82,11 @@ namespace LsnCore
 			GenericType = type.Type;
 			GenericId = type;
 			_Methods.Add("Length", new BoundedMethod(this, int_,
-				(args) => ((VectorInstance)args["self"].Value).Length()));
+				(args) => ((VectorInstance)args[0].Value).Length()));
 			_Methods.Add("ToList",
 				new BoundedMethod(this,
 					LsnListGeneric.Instance.GetType(new List<TypeId>() { type }),
-					(args) => new LsnValue(((VectorInstance)args["self"].Value).ToLsnList())
+					(args) => new LsnValue(((VectorInstance)args[0].Value).ToLsnList())
 				)	
 			);
 		}

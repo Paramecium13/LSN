@@ -10,7 +10,7 @@ namespace LsnCore
 	{
 		public override bool HandlesScope => false;
 
-		private readonly Func<Dictionary<string, LsnValue>, LsnValue> Bound;
+		private readonly Func<LsnValue[], LsnValue> Bound;
 
 		/// <summary>
 		/// Create a new BoundedMethod.
@@ -18,13 +18,13 @@ namespace LsnCore
 		/// <param name="type">The LSN_Type this is a method of.</param>
 		/// <param name="returnType">The LSN_Type of the returned value (null if void).</param>
 		/// <param name="bound">The .NET function.</param>
-		public BoundedMethod(LsnType type, LsnType returnType, Func<Dictionary<string, LsnValue>, LsnValue> bound, List<Parameter> paramaters = null)
+		public BoundedMethod(LsnType type, LsnType returnType, Func<LsnValue[], LsnValue> bound, List<Parameter> paramaters = null)
 			:base(type,returnType, paramaters ?? new List<Parameter>() { new Parameter("self",type.Id, LsnValue.Nil, 0)})
 		{
 			Bound = bound;
 		}
 
-		public override LsnValue Eval(Dictionary<string, LsnValue> args, IInterpreter i)
+		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 			=> Bound(args);
 		
 	}

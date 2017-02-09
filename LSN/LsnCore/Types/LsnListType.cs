@@ -24,7 +24,7 @@ namespace LsnCore
 				(args) =>
 				{
 					int Σ = 0;
-					var list = (LsnList)args["self"].Value;
+					var list = (LsnList)args[0].Value;
 					int length = list.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (list[i]).IntValue;
@@ -35,7 +35,7 @@ namespace LsnCore
 				(args) =>
 				{
 					int Σ = 0;
-					var list = (LsnList)args["self"].Value;
+					var list = (LsnList)args[0].Value;
 					int length = list.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (list[i]).IntValue;
@@ -47,7 +47,7 @@ namespace LsnCore
 				(args) =>
 				{
 					double Σ = 0;
-					var list = (LsnList)args["self"].Value;
+					var list = (LsnList)args[0].Value;
 					int length = list.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (list[i]).DoubleValue;
@@ -58,7 +58,7 @@ namespace LsnCore
 				(args) =>
 				{
 					double Σ = 0.0;
-					var list = (LsnList)args["self"].Value;
+					var list = (LsnList)args[0].Value;
 					int length = list.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (list[i]).DoubleValue;
@@ -84,12 +84,12 @@ namespace LsnCore
 			_Methods.Add("Add", new BoundedMethod(this, null,
 				(args) =>
 				{
-					((LsnList)args["self"].Value).Add(args["value"]);
+					((LsnList)args[0].Value).Add(args[1]);
 					return LsnValue.Nil;
 				},
 				new List<Parameter>() { new Parameter("self",this, LsnValue.Nil, 0), new Parameter("value",type, LsnValue.Nil, 1)}
 			));
-			_Methods.Add("Length", new BoundedMethod(this, int_, (args) => ((LsnList)args["self"].Value).Length()));
+			_Methods.Add("Length", new BoundedMethod(this, int_, (args) => ((LsnList)args[0].Value).Length()));
 		}
 
 		public override LsnValue CreateDefaultValue()

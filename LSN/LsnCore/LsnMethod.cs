@@ -27,7 +27,7 @@ namespace LsnCore
 			Resource = res;
 		}
 
-		public override LsnValue Eval(Dictionary<string, LsnValue> args, IInterpreter i)
+		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{
 			i.EnterFunctionScope(Resource?.GetEnvironment() ?? LsnEnvironment.Default, StackSize);
 			//ToDo: assign arguments to stack.

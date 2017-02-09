@@ -31,80 +31,19 @@ namespace LsnCore
 		protected LsnEnvironment _Environment;
         public LsnEnvironment Environment { get { return _Environment; } protected set { _Environment = value; } }
 
-		//Todo: create a function call expression.
-		public virtual IExpression CreateCall(Dictionary<string,IExpression> args, bool throwOnInvalidName = false, bool included = false)
-		{
-			// Check for invalid names.
-			if(throwOnInvalidName)
-			{
-				foreach(var name in args.Keys)
-				{
-					if (!Parameters.Any(p => p.Name == name))
-						throw new ApplicationException($"No argument named {name} was found for {this.Name}.");
-				}
-			}
-			// Check type.
-			Dictionary<string, IExpression> fullArgs = new Dictionary<string, IExpression>();
-			foreach(var param in Parameters)
-			{
-				var name = param.Name;
-				if(args.ContainsKey(name))
-				{
-					if (!param.Type.Type.Subsumes(args[name].Type.Type))
-						throw new ApplicationException(
-						$"Expected {param.Type.Name} or a valid subtype for parameter {name} recieved {args[name].Type.Name}.");
-					fullArgs.Add(name, args[name]);
-					continue;
-				}// implicit else
-				if(!param.DefaultValue.IsNull) // This argument does not have a default value.
-					throw new ApplicationException($"The parameter {param.Name} of {this.Name} must be provided a value.");
-				fullArgs.Add(name, param.DefaultValue);
-			}
-			return new FunctionCall(this, fullArgs, included);
-		}
-
 
 		public virtual FunctionCall CreateCall(IList<Tuple<string,IExpression>> args, bool included = false)
 		{
-			var dict = new Dictionary<string, IExpression>();
-			string name;
-			for (int i = 0; i < args.Count; i++)
-			{
-				IExpression expr = args[i].Item2;
-				if (!string.IsNullOrEmpty(args[i].Item1))
-				{
-					name = args[i].Item1;
-					if (!Parameters.Any(p => p.Name == name))
-						throw new ApplicationException($"Cannot find a parameter named {name}.");//return null;// Log an error or something.
-					var param = Parameters.Where(p => p.Name == name).First();
-					if (!param.Type.Subsumes(args[i].Item2.Type.Type))
-						throw new ApplicationException(
-						$"Expected {param.Type.Name} or a valid subtype for parameter {name} recieved {expr.Type.Name}.");
-					dict.Add(name, args[i].Item2);
-				}
-				else
-				{
-					var param = Parameters.Where(p => p.Index == i).FirstOrDefault() ?? Parameters[i];
-					if (!param.Type.Subsumes(args[i].Item2.Type.Type))
-						throw new ApplicationException(
-							$"Expected {param.Type.Name} or a valid subtype for parameter {args[i].Item1} recieved {expr.Type.Name}.");
-					dict.Add(param.Name, args[i].Item2);
-				}
-			}
-			if (dict.Count < Parameters.Count)
-			{
-				foreach(var param in Parameters)
-				{
-					if (dict.ContainsKey(param.Name)) continue;
-					if (!param.DefaultValue.IsNull) // This argument does not have a default value.
-						throw new ApplicationException($"The parameter {param.Name} of {this.Name} must be provided a value.");
-					dict.Add(param.Name, param.DefaultValue);
-				}
-			}
-			return new FunctionCall(this,dict, included);
+			var dict = args.ToDictionary(t => t.Item1, t => t.Item2);
+			var argsArray = new IExpression[Parameters.Count];
+
+			foreach (var param in Parameters)
+				argsArray[param.Index] = dict.ContainsKey(param.Name) ? dict[param.Name] : param.DefaultValue;
+
+			return new FunctionCall(this, argsArray, included);
 		}
 
-		public abstract LsnValue Eval(Dictionary<string, LsnValue> args, IInterpreter i); // ToDo: replace dictionary with array.
+		public abstract LsnValue Eval(LsnValue[] args, IInterpreter i);
 
 	}
 
@@ -114,10 +53,10 @@ namespace LsnCore
 	[Serializable]
 	public class Parameter
 	{
-		public string Name;
-		public TypeId Type;
-		public LsnValue DefaultValue;
-		public ushort Index;
+		public readonly string Name;
+		public readonly TypeId Type;
+		public readonly LsnValue DefaultValue;
+		public readonly ushort Index;
 
 		public Parameter(string name, TypeId type, LsnValue val, ushort i)
 		{
