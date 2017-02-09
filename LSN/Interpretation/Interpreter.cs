@@ -16,27 +16,25 @@ namespace LsnCore
 		public bool PassVariablesByName { get { return false; } }
 
 		public LsnValue ReturnValue { get; set; }
-		protected Scope Scope = new Scope(); // ToDo: Remove
-		protected Stack<Scope> ScopeStack = new Stack<Scope>(); // ToDo: Remove
 
 
-		protected List<ILsnValue> LSN_Objects = new List<ILsnValue>();
+		//protected List<ILsnValue> LsnObjects = new List<ILsnValue>();
 
 
-		private Dictionary<int, ConcurrentStack<LsnValue[]>> StackStore = new Dictionary<int, ConcurrentStack<LsnValue[]>>();
+		private readonly Dictionary<int, ConcurrentStack<LsnValue[]>> StackFrameStore = new Dictionary<int, ConcurrentStack<LsnValue[]>>();
 
 
-		private LsnValue[] CurrentStack;
+		private LsnValue[] CurrentStackFrame;
 
 
-		private Stack<LsnValue[]> StackOfStacks = new Stack<LsnValue[]>();
+		private readonly Stack<LsnValue[]> StackFrames = new Stack<LsnValue[]>();
 
 
 
 
 
 		// Where the current environment is pushed when a new function scope is entered.
-		private Stack<LsnEnvironment> EnvStack = new Stack<LsnEnvironment>();
+		private readonly Stack<LsnEnvironment> EnvStack = new Stack<LsnEnvironment>();
 
 		// The current environment.
 		private LsnEnvironment CurrentEnvironment;
@@ -52,60 +50,27 @@ namespace LsnCore
 				var c = script.Components[i];
 				c.Interpret(this);
 			}
-		}
-
-		/// <summary>
-		/// Enters a new scope, that still has access to variables defined in the previuos scope.
-		/// </summary>
-		public virtual void EnterScope() // ToDo: Remove
-		{
-			Scope = Scope.Push();
-		}
-
-		/// <summary>
-		/// Exits the current scope.
-		/// </summary>
-		public virtual void ExitScope()	{ Scope = Scope.Pop(); } // ToDo: Remove
-
-		/// <summary>
-		/// Creates a new variable with the provided name and value.
-		/// </summary>
-		/// <param name="name">The name of the variable to create.</param>
-		/// <param name="val">The initial value to assign it.</param>
-		public virtual void AddVariable(string name, LsnValue val) // ToDo: Remove
-		{
-			//Scope.AddVariable(name, val);			
-		}
-		
-
-		/// <summary>
-		/// Gets the value of the specified variable.
-		/// </summary>
-		/// <param name="name">The name of the variable whose value is requested.</param>
-		/// <returns>The value of the variable.</returns>
-		public virtual ILsnValue GetValue(string name) => Scope.GetValue(name);
+		}		
 
 		/// <summary>
 		/// Enters a new scope for interpreting a function. Previously defined variables are inaccessable.
 		/// </summary>
 		public virtual void EnterFunctionScope(LsnEnvironment env, int scopeSize)
 		{
-			ScopeStack.Push(Scope);
-			Scope = new Scope();
 			EnvStack.Push(CurrentEnvironment);
 			CurrentEnvironment = env;
 
-			StackOfStacks.Push(CurrentStack);
+			StackFrames.Push(CurrentStackFrame);
 			int i = NearestPower(scopeSize);
-			if (StackStore.ContainsKey(i))
+			if (StackFrameStore.ContainsKey(i))
 			{
-				if (!StackStore[i].TryPop(out CurrentStack))
-					CurrentStack = new LsnValue[i];
+				if (!StackFrameStore[i].TryPop(out CurrentStackFrame))
+					CurrentStackFrame = new LsnValue[i];
 			}
 			else
 			{
-				StackStore.Add(i, new ConcurrentStack<LsnValue[]>());
-				CurrentStack = new LsnValue[i];
+				StackFrameStore.Add(i, new ConcurrentStack<LsnValue[]>());
+				CurrentStackFrame = new LsnValue[i];
 			}
 		}
 
@@ -114,9 +79,8 @@ namespace LsnCore
 		/// </summary>
 		public virtual void ExitFunctionScope()
 		{
-			RecycleStack(CurrentStack);
-			Scope = ScopeStack.Pop();
-			CurrentStack = StackOfStacks.Pop();
+			RecycleStack(CurrentStackFrame);
+			CurrentStackFrame = StackFrames.Pop();
 			CurrentEnvironment = EnvStack.Pop();
 		}
 
@@ -130,14 +94,13 @@ namespace LsnCore
 
 
 		public LsnValue GetValue(int index)
-			=> CurrentStack[index];
+			=> CurrentStackFrame[index];
 
 
 		public void SetValue(int index, LsnValue value)
 		{
-			CurrentStack[index] = value;
+			CurrentStackFrame[index] = value;
 		}
-
 
 
 		private void RecycleStack(LsnValue[] stack)
@@ -146,12 +109,12 @@ namespace LsnCore
 			{
 				for (int i = 0; i < stack.Length; i++)
 					stack[i] = LsnValue.Nil;
-				if(StackStore.ContainsKey(stack.Length))
-					StackStore[stack.Length].Push(stack);
+				if(StackFrameStore.ContainsKey(stack.Length))
+					StackFrameStore[stack.Length].Push(stack);
 				else
 				{
-					StackStore.Add(stack.Length, new ConcurrentStack<LsnValue[]>());
-					StackStore[stack.Length].Push(stack);
+					StackFrameStore.Add(stack.Length, new ConcurrentStack<LsnValue[]>());
+					StackFrameStore[stack.Length].Push(stack);
 				}
 			});
 		}

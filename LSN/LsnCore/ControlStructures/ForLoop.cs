@@ -34,9 +34,9 @@ namespace LsnCore.ControlStructures
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			//i.EnterScope();
 			//i.AddVariable(VarName, VarValue.Eval(i)); // ToDo: remove AddVariable(...)
-			while(Condition.Eval(i).IsNull)
+			//TODO: assign variable?
+			while(Condition.Eval(i).BoolValue)
 			{
 				var val = Interpret(Body, i);
 				switch (val)
@@ -46,10 +46,8 @@ namespace LsnCore.ControlStructures
 					case InterpretValue.Next:
 						break;
 					case InterpretValue.Break:
-						i.ExitScope();
 						return InterpretValue.Base;
 					case InterpretValue.Return:
-						i.ExitScope();
 						return InterpretValue.Return;
 					default:
 						break;

@@ -58,9 +58,7 @@
     <Compile Include="Interpretation\IActor.cs" />
     <Compile Include="Interpretation\IInterpreter.cs" />
     <Compile Include="Interpretation\Interpreter.cs" />
-    <Compile Include="Interpretation\IScope.cs" />
     <Compile Include="Interpretation\LsnEnvironment.cs" />
-    <Compile Include="Interpretation\Scope.cs" />
     <Compile Include="LsnCore\BoundedFunction.cs" />
     <Compile Include="LsnCore\BoundedMethod.cs" />
     <Compile Include="LsnCore\Component.cs" />
