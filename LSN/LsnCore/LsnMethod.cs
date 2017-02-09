@@ -32,6 +32,8 @@ namespace LsnCore
 			i.EnterFunctionScope(Resource?.GetEnvironment() ?? LsnEnvironment.Default, StackSize);
 			//ToDo: assign arguments to stack.
 			//foreach (var pair in args) i.AddVariable(pair.Key, pair.Value); // ToDo: remove AddVariable(...)
+			for (int argI = 0; argI < args.Length; argI++)
+				i.SetValue(argI, args[argI]);
 			for (int x = 0; x < Components.Count; x++)
 			{
 				var val = Components[x].Interpret(i);
