@@ -6,37 +6,43 @@ GameObject StandardDoor
 	property DestX : int;
 	property DestY : int;
   
-	abstract fn Activate();
+	abstract fn Activate(actor : IActor);
 	
 	auto state StartState
 	{
 		Start()
 		{
 			if(Locked){
-				SetState(LockedState);
+				SetState LockedState;
 			} else {
-				SetState(UnlockedState);
+				SetState UnlockedState;
 			}
 		}
-    
-		fn Activate()
+		
+		fn Activate(actor : IActor)
 		{
 			return;
 		}
 	}
+	
 	state LockedState
 	{
 		
-		fn Activate()
+		fn Activate(actor : IActor)
 		{
 			// If the player has the key, unlock the door.
+			if(actor hasItem KeyId)
+			{
+				SetState UnlockedState;
+			}
 			return;
 		}
 	}
+	
 	state UnlockedState
 	{
 	
-		fn Activate()
+		fn Activate(actor : IActor)
 		{
 			// Open the door.
 			goto DestMap` DestX` DestY;
