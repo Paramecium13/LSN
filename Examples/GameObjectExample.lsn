@@ -1,0 +1,44 @@
+GameObject StandardDoor
+{
+	property Locked : bool;
+  property KeyId : Name;
+  
+  abstract fn Activate();
+  
+  auto state StartState
+  {
+  	Start()
+    {
+    	if(Locked){
+      	SetState(LockedState);
+      } else {
+        SetState(UnlockedState);
+      }
+    }
+    
+    fn Activate()
+    {
+      return;
+    }
+  }
+  state LockedState
+  {
+    
+    fn Activate()
+    {
+      // If the player has the key, unlock the door.
+      return;
+    }
+  }
+  state UnlockedState
+  {
+    
+    fn Activate()
+    {
+      // Open the door.
+      return;
+    }
+    
+  }
+  
+}
