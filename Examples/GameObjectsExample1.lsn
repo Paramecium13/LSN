@@ -8,6 +8,7 @@ unique GameObject FountainOfBlood
 	
 	auto state State1
 	{
+		when Value1IsHigh SetState(Closed1);
 		
 		fn Foo() -> int
 		{
@@ -32,6 +33,8 @@ unique GameObject FountainOfBlood
 	
 	state State2
 	{
+		when Value1IsHigh SetState(Closed2);
+		
 		fn Foo() -> int
 		{
 			return Blood^2;
@@ -42,7 +45,7 @@ unique GameObject FountainOfBlood
 			Name = actor.Name;
 			if(Foo < 100)
 			{
-				SetState(auto);
+				SetState(State1);
 			}
 			else if(actor.Health < actor.MaxHP)
 			{
@@ -53,5 +56,35 @@ unique GameObject FountainOfBlood
 		}
 		
 	}
-
+	
+	state Closed1
+	{
+		when Value1IsLow SetState(State1);
+		
+		fn Foo() -> int
+		{
+			return 0;
+		}
+		
+		Activate(actor : IActor)
+		{
+			say "This blood fountain is closed.\n\nPlease try again later."
+		}
+	}
+	
+	
+	state Closed2
+	{
+		when Value1IsLow SetState(State2);
+		
+		fn Foo() -> int
+		{
+			return 0;
+		}
+		
+		Activate(actor : IActor)
+		{
+			say "This blood fountain is closed.\n\nPlease try again later."
+		}
+	}
 }
