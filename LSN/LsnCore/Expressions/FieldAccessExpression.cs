@@ -12,7 +12,7 @@ namespace LsnCore.Expressions
 	public class FieldAccessExpression : Expression
 	{
 		public IExpression Value;
-		private readonly int Index;
+		internal readonly int Index;
 
 		public override bool IsPure => true;
 

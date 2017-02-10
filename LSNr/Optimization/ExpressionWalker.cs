@@ -1,4 +1,7 @@
-﻿using LsnCore.Expressions;
+﻿using LsnCore;
+using LsnCore.Expressions;
+using LsnCore.Types;
+using LsnCore.Values;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,54 +18,60 @@ namespace LSNr.Optimization
 			var bin = e as BinaryExpression;
 			if(bin != null)
 				return WalkBinExp(bin);
+
 			var cva = e as CollectionValueAccessExpression;
 			if(cva != null)
 			{
-
+				WalkCvaExp(cva);
 				return e;
 			}
+
 			var fa = e as FieldAccessExpression;
 			if(fa != null)
 			{
-
+				WalkFieldAccess(fa);
 				return e;
 			}
+
 			var fc = e as FunctionCall;
 			if(fc != null)
 			{
-
+				WalkFuncCall(fc);
 				return e;
 			}
+
 			var gt = e as GetExpression;
 			if(gt != null)
 			{
-
+				WalkGet(gt);
 				return e;
 			}
+
 			var mc = e as MethodCall;
 			if(mc != null)
 			{
-
+				WalkMethodCall(mc);
 				return e;
 			}
+
 			var or = e as OrExpression;
-			if(or != null)
-			{
+			if (or != null)
+				return WalkOrExp(or);
 
-				return e;
-			}
 			var rc = e as RecordConstructor;
 			if(rc != null)
 			{
 
 				return e;
 			}
+
 			var sc = e as StructConstructor;
 			if(sc != null)
 			{
 
 				return e;
 			}
+
 			var vb = e as VariableExpression;
 			if(vb != null)
 			{
@@ -90,13 +99,17 @@ namespace LSNr.Optimization
 
 		protected virtual void WalkCvaExp(CollectionValueAccessExpression c)
 		{
-			Walk(c.Collection);Walk(c.Index);
+			c.Collection = Walk(c.Collection);
+			c.Index = Walk(c.Index);
 		}
 
 
-		protected virtual void WalkFieldAccess(FieldAccessExpression f)
+		protected virtual IExpression WalkFieldAccess(FieldAccessExpression f)
 		{
-			Walk(f.Value);
+			f.Value = Walk(f.Value);
+			if(f.Value is LsnValue?)
+				return ((IHasFieldsValue)((LsnValue)f.Value).Value).GetValue(f.Index);
+			return f;
 		}
 
 
@@ -120,25 +133,30 @@ namespace LSNr.Optimization
 		}
 
 
-		protected virtual void WalkOrExp(OrExpression or)
+		protected virtual IExpression WalkOrExp(OrExpression or)
 		{
-			Walk(or.Left);Walk(or.Right);
+			or.Left = Walk(or.Left);
+			or.Right = Walk(or.Right);
+			return or;
 		}
 
 
-		protected virtual void WalkRecordConstructor(RecordConstructor rc)
+		protected virtual IExpression WalkRecordConstructor(RecordConstructor rc)
 		{
 			foreach (var exp in rc.Args.Values)
 				Walk(exp);
+			return rc;
 		}
 
 
-		protected virtual void WalkStructConstuctor(StructConstructor sc)
+		protected virtual IExpression WalkStructConstuctor(StructConstructor sc)
 		{
 			foreach (var exp in sc.Args.Values)
 				Walk(exp);
 			foreach (var exp in sc.ArgsB)
 				Walk(exp);
+
+			return sc;
 		}
 
 
