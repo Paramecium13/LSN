@@ -1,4 +1,4 @@
-MapObject FountainOfBlood
+unique GameObject FountainOfBlood
 {
 	Blood : int = 10;
 	Name : string;
@@ -6,7 +6,7 @@ MapObject FountainOfBlood
 	virtual fn Foo() -> int; /* A virtual method must be defined in every state.*/
 
 	
-	state auto
+	auto state State1
 	{
 		
 		fn Foo() -> int
