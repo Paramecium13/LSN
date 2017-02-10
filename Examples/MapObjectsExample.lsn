@@ -1,8 +1,7 @@
 MapObject FountainOfBlood
 {
-	FountainOfBlood(){}
-	int Blood = 10;
-	string Name;
+	Blood : int = 10;
+	Name : string;
 	
 	virtual fn Foo() -> int; /* A virtual method must be defined in every state.*/
 
@@ -54,5 +53,5 @@ MapObject FountainOfBlood
 		}
 		
 	}
-	
+
 }
