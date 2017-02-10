@@ -3,7 +3,7 @@ unique GameObject FountainOfBlood
 	Blood : int = 10;
 	Name : string;
 	
-	virtual fn Foo() -> int; /* A virtual method must be defined in every state.*/
+	abstract fn Foo() -> int; /* An abstract method must be defined in every state.*/
 
 	
 	auto state State1
