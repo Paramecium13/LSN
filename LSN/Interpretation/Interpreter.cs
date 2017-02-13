@@ -160,6 +160,30 @@ namespace LsnCore
 		private static int NearestPower(int i)
 			=> 1 << (int)Math.Ceiling(Math.Log(i, 2));
 
+		protected abstract GlobalVariableValue GetGlobalVariableValue(string globalVarName/*, string fileName*/);
+
+
+		public LsnValue GetGlobalVariable(string globalVarName/*, string fileName*/)
+			=> GetGlobalVariableValue(globalVarName/*, filename*/).Value;
+
+
+		public void SetGlobalVariable(LsnValue value, string globalVarName/*, string fileName*/)
+		{
+			GetGlobalVariableValue(globalVarName/*, fileName*/).Value = value;
+		}
+		
+
+		public virtual void WatchGlobalVariable(string globalVarName/*, string fileName*/,OnGlobalVariableValueChanged onChange)
+		{
+			(GetGlobalVariableValue(globalVarName/*, fileName*/) as GlobalVariableValueWatched).OnValueChanged += onChange;
+		}
+
+		public virtual void UnwatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange)
+		{
+			(GetGlobalVariableValue(globalVarName/*, fileName*/) as GlobalVariableValueWatched).OnValueChanged -= onChange;
+		}
+
+
 		/*
 		#region unsafe
 		// Test for using unmanaged stuff...
@@ -234,7 +258,5 @@ namespace LsnCore
 		public abstract void Say(string message, LsnValue graphic, string title);
 		public abstract int Choice(List<string> choices);
 
-		public abstract LsnValue GetGlobalVariable(string globalVarName/*, string fileName*/);
-		public abstract void SetGlobalVariable(LsnValue value, string globalVarName/*, string fileName*/);
 	}
 }

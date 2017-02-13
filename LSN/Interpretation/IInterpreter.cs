@@ -117,6 +117,12 @@ namespace LsnCore
 
 
 		LsnValue GetGlobalVariable(string globalVarName/*, string fileName*/);
+
 		void SetGlobalVariable(LsnValue value, string globalVarName/*, string fileName*/);
+
+		void WatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange);
+
+		void UnwatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange);
+
 	}
 }
