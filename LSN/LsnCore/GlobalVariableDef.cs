@@ -13,19 +13,24 @@ namespace LsnCore
 		public readonly string Name;
 		public readonly TypeId Type;
 		public readonly LsnValue InitialValue;
+		public readonly bool Watched;
 
-		public GlobalVariableDef(string name, TypeId type, LsnValue initialValue)
+
+		public GlobalVariableDef(string name, TypeId type, LsnValue initialValue, bool watched = false)
 		{
 			Name = name; Type = type; InitialValue = initialValue;
 		}
 
-		public GlobalVariableDef(string name, TypeId type):this(name,type,LsnValue.Nil){}
+		public GlobalVariableDef(string name, TypeId type, bool watched = false)
+			:this(name,type,LsnValue.Nil, watched) {}
 
 
-		internal GlobalVariableDef(string name,LsnType type, LsnValue initialValue) :this(name,type.Id,initialValue){}
+		internal GlobalVariableDef(string name,LsnType type, LsnValue initialValue, bool watched = false) 
+			:this(name,type.Id,initialValue,watched){}
 
 
-		internal GlobalVariableDef(string name, LsnType type) : this(name, type.Id, type.CreateDefaultValue()) { }
+		internal GlobalVariableDef(string name, LsnType type, bool watched = false) 
+			:this(name, type.Id, type.CreateDefaultValue(), watched) { }
 
 	}
 }
