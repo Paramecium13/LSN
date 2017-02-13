@@ -36,10 +36,11 @@ namespace LSNr
 		public bool Reassigned => _Reassignments.Count != 0;
 
 		
-		private List<IExpressionContainer> _Users = new List<IExpressionContainer>();
+		// The int item is the length of _SubsequentValues -1 at the time the user was added.
+		private List<Tuple<IExpressionContainer,int>> _Users = new List<Tuple<IExpressionContainer, int>>();
 
 
-		public IReadOnlyList<IExpressionContainer> Users => _Users;
+		public IReadOnlyList<Tuple<IExpressionContainer, int>> Users => _Users;
 
 
 		public AssignmentStatement Assignment { get; set; }
@@ -98,13 +99,14 @@ namespace LSNr
 
 		public void AddUser(IExpressionContainer user) // Include an indication of its position...
 		{
-			_Users.Add(user);
+			_Users.Add(new Tuple<IExpressionContainer, int>(user, _SubsequentValues.Count-1));
 		}
 
 
-		public void AddReasignment(IExpression val)
+		public void AddReasignment(ReassignmentStatement reassign)
 		{
-			_SubsequentValues.Add(val);
+			_Reassignments.Add(reassign);
+			_SubsequentValues.Add(reassign.Value);
 		}
 
 

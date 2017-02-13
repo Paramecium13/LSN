@@ -15,28 +15,33 @@ namespace LSNr.Optimization
 	
 	public class ArithmeticIdentityChecker : ExpressionWalker
 	{
-		protected override IExpression WalkBinExp(BinaryExpression b)
+		protected override IExpression WalkBinExp(BinaryExpression bin)
 		{
-			b = (BinaryExpression) base.WalkBinExp(b);
-			if(b.Left.IsReifyTimeConst() || b.Right.IsReifyTimeConst())
-				switch (b.Operator)
-				{
-					case LsnCore.Operator.Add:
-						return CheckAdditive(b);
-					case LsnCore.Operator.Subtract:
-						return CheckAdditive(b);
-					case LsnCore.Operator.Multiply:
-						return CheckMult(b);
-					case LsnCore.Operator.Divide:
-						return CheckDiv(b);
-					case LsnCore.Operator.Mod:
-						return CheckMod(b);
-					case LsnCore.Operator.Power:
-						return CheckPow(b);
-					default:
-						break;
-				}
-			return b;
+			var x = base.WalkBinExp(bin);
+			var b = x as BinaryExpression;
+			if(b != null)
+			{
+				if (b.Left.IsReifyTimeConst() || b.Right.IsReifyTimeConst())
+					switch (b.Operator)
+					{
+						case LsnCore.Operator.Add:
+							return CheckAdditive(b);
+						case LsnCore.Operator.Subtract:
+							return CheckAdditive(b);
+						case LsnCore.Operator.Multiply:
+							return CheckMult(b);
+						case LsnCore.Operator.Divide:
+							return CheckDiv(b);
+						case LsnCore.Operator.Mod:
+							return CheckMod(b);
+						case LsnCore.Operator.Power:
+							return CheckPow(b);
+						default:
+							break;
+					}
+				return b;
+			}
+			return x;
 		}
 
 
@@ -79,6 +84,36 @@ namespace LSNr.Optimization
 			return b;
 		}
 
+		private static IExpression CheckDiff(BinaryExpression b)
+		{
+			var leftType = b.Left.Type;
+			var rightType = b.Right.Type;
+
+			if (b.Left is LsnValue?)
+			{
+				if (leftType == LsnType.int_.Id)
+				{
+					if (((LsnValue)b.Left).IntValue == 0) return b.Right;
+				}
+				else if (leftType == LsnType.double_.Id)
+				{
+					if (((LsnValue)b.Left).DoubleValue == 0) return b.Right;
+				}
+			}
+			else if (b.Right is LsnValue?)
+			{
+				if (rightType == LsnType.int_.Id)
+				{
+					if (((LsnValue)b.Right).IntValue == 0) return b.Left;
+				}
+				else if (rightType == LsnType.double_.Id)
+				{
+					if (((LsnValue)b.Right).DoubleValue == 0) return b.Left;
+				}
+			}
+
+			return b;
+		}
 
 		private static IExpression CheckMult(BinaryExpression b)
 		{
