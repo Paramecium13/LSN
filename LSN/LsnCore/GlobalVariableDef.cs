@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore
 {
+	[Serializable]
 	public sealed class GlobalVariableDef
 	{
 		public readonly string Name;

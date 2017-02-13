@@ -6,15 +6,26 @@ using System.Threading.Tasks;
 
 namespace LsnCore
 {
+
+	public delegate void OnGlobalVariableValueChanged(LsnValue oldValue, LsnValue newValue);
+
 	[Serializable]
 	public sealed class GlobalVariableValueWatched : GlobalVariableValue
 	{
+
+		public event OnGlobalVariableValueChanged OnValueChanged;
+
 		public override LsnValue Value
 		{
 			get { return _Value; }
 			set
 			{
-				throw new NotImplementedException();
+				if(!value.Equals(_Value))
+				{
+					var old = _Value;
+					_Value = value;
+					OnValueChanged?.Invoke(old, value);
+				}
 			}
 		}
 
@@ -23,15 +34,7 @@ namespace LsnCore
 		public GlobalVariableValueWatched(string name, LsnValue value) : base(name, value){}
 
 
-		public void Watch(object arg)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void UnWatch(object arg)
-		{
-			throw new NotImplementedException();
-		}
+		
 
 	}
 }
