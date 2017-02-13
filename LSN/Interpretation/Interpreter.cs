@@ -233,5 +233,8 @@ namespace LsnCore
 
 		public abstract void Say(string message, LsnValue graphic, string title);
 		public abstract int Choice(List<string> choices);
+
+		public abstract LsnValue GetGlobalVariable(string globalVarName/*, string fileName*/);
+		public abstract void SetGlobalVariable(LsnValue value, string globalVarName/*, string fileName*/);
 	}
 }

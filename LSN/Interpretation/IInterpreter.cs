@@ -115,5 +115,8 @@ namespace LsnCore
 		/// <returns></returns>
 		int Choice(List<string> choices);
 
+
+		LsnValue GetGlobalVariable(string globalVarName/*, string fileName*/);
+		void SetGlobalVariable(LsnValue value, string globalVarName/*, string fileName*/);
 	}
 }

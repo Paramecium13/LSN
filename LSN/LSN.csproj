@@ -74,6 +74,7 @@
     <Compile Include="LsnCore\ControlStructures\WhileLoop.cs" />
     <Compile Include="LsnCore\Expressions\BinaryExpression.cs" />
     <Compile Include="LsnCore\Expressions\CollectionValueAccessExpression.cs" />
+    <Compile Include="LsnCore\Expressions\GlobalVariableAccessExpression.cs" />
     <Compile Include="LsnCore\Expressions\IExpressionContainer.cs" />
     <Compile Include="LsnCore\Expressions\RecordConstructor.cs" />
     <Compile Include="LsnCore\Expressions\StructConstructor.cs" />
