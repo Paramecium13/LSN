@@ -117,7 +117,7 @@ namespace LSNr
 		public void Replace(IExpression newExpr)
 		{
 			foreach (var user in _Users)
-				user.Replace(AccessExpression, newExpr);
+				user.Item1.Replace(AccessExpression, newExpr);
 			AccessExpression = newExpr;
 		}
 
