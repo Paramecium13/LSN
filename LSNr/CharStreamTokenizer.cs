@@ -52,7 +52,7 @@ namespace LSNr
 			//"my","common","all"
 			//"int","double","num","complex","bool","string",
 			"watched","rule","when","scriptobject","attachedto","attatched","to","host","hostinterface",
-			"interface","script","property","state","auto","on","event","abstract","virtual","override"
+			"interface","script","property","state","auto","setstate","on","event","abstract","virtual","override"
 		};
 
 		protected enum TokenizerState
