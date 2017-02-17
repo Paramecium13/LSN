@@ -38,22 +38,21 @@ namespace LSNr
 			"wait","start","stop","change","say","turn",//move
 
 			//Statement stuff
-			"item","weapon","armor","armour","actor","video","image","me","se","bgm",
-			"screen","moveroute","animation","ballon","picture","battle","shop","menu",
-			"encounter","graphic","with","as","down","left","right","up","graphic",
-			"direction","fix","route",
-
+			"item","weapon","armor","armour","actor","video","image","soundeffect","backgroundmusic",
+			"screen","moveroute","animation","picture","with","as","down","left","right","up","graphic",
+			
 			//both
-			"hp","level","lvl","exp","mp","skill","ability","g","gvar","gswitch","class",//"name",
-			"nickname","state","tileset","off","on",
+			"hp","level","exp","mp","g",//"name",
 
 			//Get expression stuff
 			"get","mapid","playtime","savecount","battlecount","number","of","keyitem","timer",
-			"input","terraintag","region","at","tileid",
+			"input","at",
 
 			//Things
-			"my","common","all"
+			//"my","common","all"
 			//"int","double","num","complex","bool","string",
+			"watched","rule","when","scriptobject","attachedto","attatched","to","host","hostinterface",
+			"interface","script","property","state","auto","on","event","abstract","virtual","override"
 		};
 
 		protected enum TokenizerState
