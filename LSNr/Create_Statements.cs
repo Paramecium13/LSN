@@ -73,14 +73,14 @@ namespace LSNr
 				script.Valid = false;
 				return null;
 			}
-			if (!script.CurrentScope.GetVariable(tokens[0].Value).Mutable)
+			Variable v = script.CurrentScope.GetVariable(tokens[0].Value);
+			if (!v.Mutable)
 			{
 				// The variable is immutable.
 				Console.WriteLine($"The variable {tokens[0].Value} is immutable.");
 				script.Valid = false;
 				return null;
 			}
-			Variable v = script.CurrentScope.GetVariable(tokens[0].Value);
 			IExpression expr = Express(tokens.Skip(2).ToList(), script);
 			if (!v.Type.Subsumes(expr.Type.Type))
 			{
@@ -88,7 +88,9 @@ namespace LSNr
 				script.Valid = false;
 				return null;
 			}
-			return new ReassignmentStatement(v.Index, expr);
+			var reassign = new ReassignmentStatement(v.Index, expr);
+			v.AddReasignment(reassign);
+			return reassign;
 		}
 
 		/// <summary>

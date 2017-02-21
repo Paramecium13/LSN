@@ -15,157 +15,239 @@ namespace LSNr.Optimization
 	
 	public class ArithmeticIdentityChecker : ExpressionWalker
 	{
-		protected override IExpression View(BinaryExpression b)
+		protected override IExpression WalkBinExp(BinaryExpression bin)
 		{
-			if(b.Left.IsReifyTimeConst() || b.Right.IsReifyTimeConst())
-				switch (b.Operator)
-				{
-					case LsnCore.Operator.Add:
-						return CheckAdditive(b);
-					case LsnCore.Operator.Subtract:
-						return CheckAdditive(b);
-					case LsnCore.Operator.Multiply:
-						return CheckMult(b);
-					case LsnCore.Operator.Divide:
-						return CheckDiv(b);
-					case LsnCore.Operator.Mod:
-						return CheckMod(b);
-					case LsnCore.Operator.Power:
-						return CheckPow(b);
-					default:
-						break;
-				}
-			return b;
+			var x = base.WalkBinExp(bin);
+			var b = x as BinaryExpression;
+			if(b != null)
+			{
+				if (b.Left.IsReifyTimeConst() || b.Right.IsReifyTimeConst())
+					switch (b.Operator)
+					{
+						case LsnCore.Operator.Add:
+							return CheckAdditive(b);
+						case LsnCore.Operator.Subtract:
+							return CheckAdditive(b);
+						case LsnCore.Operator.Multiply:
+							return CheckMult(b);
+						case LsnCore.Operator.Divide:
+							return CheckDiv(b);
+						case LsnCore.Operator.Mod:
+							return CheckMod(b);
+						case LsnCore.Operator.Power:
+							return CheckPow(b);
+						default:
+							break;
+					}
+				return b;
+			}
+			return x;
 		}
 
 
 		private static IExpression CheckAdditive(BinaryExpression b)
 		{
-			/*var lintq = b.Left as IntValue?;
-			var ldoubleq = b.Left as DoubleValue?;
-			var lstrq = b.Left as StringValue?;
-			var rintq = b.Right as IntValue?;
-			var rdoubleq = b.Right as DoubleValue?;
-			var rstrq = b.Right as StringValue?;
-			if (lintq != null)
+			var leftType = b.Left.Type;
+			var rightType = b.Right.Type;
+
+			if(b.Left is LsnValue?)
 			{
-				var lint = (IntValue)lintq;
-				if (lint.Value == 0)
-					return b.Right;
+				if (leftType == LsnType.int_.Id)
+				{
+					if (((LsnValue)b.Left).IntValue == 0) return b.Right;
+				}
+				else if (leftType == LsnType.double_.Id)
+				{
+					if (((LsnValue)b.Left).DoubleValue == 0) return b.Right;
+				}
+				else if (leftType == LsnType.string_.Id)
+				{
+					if (((StringValue)((LsnValue)b.Left).Value).Value == "") return b.Right;
+				}
 			}
-			if (rintq != null && ((IntValue)rintq).Value == 0)
-					return b.Left;
-			if (ldoubleq != null)
+			else if(b.Right is LsnValue?)
 			{
-				var ldouble = (DoubleValue)ldoubleq;
-				if (ldouble.Value == 0)
-					return b.Right;
+				if (rightType == LsnType.int_.Id)
+				{
+					if (((LsnValue)b.Right).IntValue == 0) return b.Left;
+				}
+				else if (rightType == LsnType.double_.Id)
+				{
+					if (((LsnValue)b.Right).DoubleValue == 0) return b.Left;
+				}
+				else if (rightType == LsnType.string_.Id)
+				{
+					if (((StringValue)((LsnValue)b.Right).Value).Value == "") return b.Left;
+				}
 			}
-			if (rdoubleq != null && ((DoubleValue)rdoubleq).Value == 0)
-					return b.Left;
-			if (lstrq != null)
-			{
-				var lstr = (StringValue)lstrq;
-				if (lstr.Value == "")
-					return b.Right;
-				if (rstrq != null && ((StringValue)rstrq).Value == "")
-					return lstr;
-				return b;
-			}*/
+
 			return b;
 		}
 
+		private static IExpression CheckDiff(BinaryExpression b)
+		{
+			var leftType = b.Left.Type;
+			var rightType = b.Right.Type;
+
+			if (b.Left is LsnValue?)
+			{
+				if (leftType == LsnType.int_.Id)
+				{
+					if (((LsnValue)b.Left).IntValue == 0) return b.Right;
+				}
+				else if (leftType == LsnType.double_.Id)
+				{
+					if (((LsnValue)b.Left).DoubleValue == 0) return b.Right;
+				}
+			}
+			else if (b.Right is LsnValue?)
+			{
+				if (rightType == LsnType.int_.Id)
+				{
+					if (((LsnValue)b.Right).IntValue == 0) return b.Left;
+				}
+				else if (rightType == LsnType.double_.Id)
+				{
+					if (((LsnValue)b.Right).DoubleValue == 0) return b.Left;
+				}
+			}
+
+			return b;
+		}
 
 		private static IExpression CheckMult(BinaryExpression b)
 		{
-			/*var lintq = b.Left as IntValue?;
-			var ldoubleq = b.Left as DoubleValue?;
-			var rintq = b.Right as IntValue?;
-			var rdoubleq = b.Right as DoubleValue?;
-			if (lintq != null)
+			var leftType = b.Left.Type;
+			var rightType = b.Right.Type;
+
+			if (b.Left is LsnValue?)
 			{
-				var lint = (IntValue)lintq;
-				if (lint.Value == 1)
-					return b.Right;
-				if (lint.Value == 0)
-					return new IntValue(0);
+				if (leftType == LsnType.int_.Id)
+				{
+
+				}
+				else if (leftType == LsnType.double_.Id)
+				{
+
+				}
+				else if (leftType == LsnType.string_.Id)
+				{
+
+				}
+			}
+			else if (b.Right is LsnValue?)
+			{
+				if (rightType == LsnType.int_.Id)
+				{
+
+				}
 				
 			}
-			if (rintq != null)
-			{
-				int i = ((IntValue)rintq).Value;
-				if (i == 1) return b.Left;
-				if(i ==0) return new IntValue(0);
-			}
-			if (ldoubleq != null)
-			{
-				var ldouble = (DoubleValue)ldoubleq;
-				if (ldouble.Value == 1)
-					return b.Right;
-				if (ldouble.Value == 0)
-					return new DoubleValue(0);
-			}
-			if (rdoubleq != null)
-			{
-				double d = ((DoubleValue)rdoubleq).Value;
-				if (d == 0)
-						return new DoubleValue(0);
-				if (d == 1)
-					return b.Left;
-			}*/
 			return b;
 		}
 
 
 		private static IExpression CheckDiv(BinaryExpression b)
 		{
+			var leftType = b.Left.Type;
+			var rightType = b.Right.Type;
+
+			if (b.Left is LsnValue?)
+			{
+				if (leftType == LsnType.int_.Id)
+				{
+					if (((LsnValue)b.Left).IntValue == 1) return b.Right;
+					if (((LsnValue)b.Left).IntValue == 0) return b.Type.Type.CreateDefaultValue();
+				}
+				else if (leftType == LsnType.double_.Id)
+				{
+					if (((LsnValue)b.Left).DoubleValue == 1) return b.Right;
+					if (((LsnValue)b.Left).DoubleValue == 0) return b.Type.Type.CreateDefaultValue();
+				}
+				else if (leftType == LsnType.string_.Id)
+				{
+					if (((StringValue)((LsnValue)b.Left).Value).Value == "") return b.Type.Type.CreateDefaultValue();
+				}
+			}
+			else if (b.Right is LsnValue?)
+			{
+				if (rightType == LsnType.int_.Id)
+				{
+					if (((LsnValue)b.Right).IntValue == 1) return b.Left;
+					if (((LsnValue)b.Right).IntValue == 0) return b.Type.Type.CreateDefaultValue();
+				}
+				else if (rightType == LsnType.double_.Id)
+				{
+					if (((LsnValue)b.Right).DoubleValue == 1) return b.Left;
+					if (((LsnValue)b.Right).DoubleValue == 0) return b.Type.Type.CreateDefaultValue();
+				}
+				else if (rightType == LsnType.string_.Id)
+				{
+					if (((StringValue)((LsnValue)b.Right).Value).Value == "") return b.Type.Type.CreateDefaultValue();
+				}
+			}
 			return b;
 		}
 
 
 		private static IExpression CheckMod(BinaryExpression b)
 		{
+			var leftType = b.Left.Type;
+			var rightType = b.Right.Type;
+
+			if (b.Left is LsnValue?)
+			{
+				if (leftType == LsnType.int_.Id)
+				{
+
+				}
+				else if (leftType == LsnType.double_.Id)
+				{
+
+				}
+			}
+			else if (b.Right is LsnValue?)
+			{
+				if (rightType == LsnType.int_.Id)
+				{
+
+				}
+				else if (rightType == LsnType.double_.Id)
+				{
+
+				}
+			}
 			return b;
 		}
 
 
 		private static IExpression CheckPow(BinaryExpression b)
 		{
-			/*var lintq = b.Left as IntValue?;
-			var ldoubleq = b.Left as DoubleValue?;
-			var rintq = b.Right as IntValue?;
-			var rdoubleq = b.Right as DoubleValue?;
-			if (lintq != null)
-			{
-				var lint = (IntValue)lintq;
-				if (lint.Value == 1)
-					return new IntValue(1);
-				if (lint.Value == 0)
-					return new IntValue(0);
+			var leftType = b.Left.Type;
+			var rightType = b.Right.Type;
 
-			}
-			if (rintq != null)
+			if (b.Left is LsnValue?)
 			{
-				int i = ((IntValue)rintq).Value;
-				if (i == 1) return b.Left;
-				if (i == 0) return new IntValue(1);
+				if (leftType == LsnType.int_.Id)
+				{
+
+				}
+				else if (leftType == LsnType.double_.Id)
+				{
+
+				}
 			}
-			if (ldoubleq != null)
+			else if (b.Right is LsnValue?)
 			{
-				var ldouble = (DoubleValue)ldoubleq;
-				if (ldouble.Value == 1)
-					return new DoubleValue(1);
-				if (ldouble.Value == 0)
-					return new DoubleValue(0);
+				if (rightType == LsnType.int_.Id)
+				{
+
+				}
+				else if (rightType == LsnType.double_.Id)
+				{
+
+				}
 			}
-			if (rdoubleq != null)
-			{
-				double d = ((DoubleValue)rdoubleq).Value;
-				if (d == 0)
-					return new DoubleValue(1);
-				if (d == 1)
-					return b.Left;
-			}*/
 			return b;
 		}
 
