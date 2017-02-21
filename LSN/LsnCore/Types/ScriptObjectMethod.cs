@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Types
 {
+	[Serializable]
 	public class ScriptObjectMethod : Method
 	{
 		public override bool HandlesScope => false;

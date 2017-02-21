@@ -131,6 +131,7 @@
     <Compile Include="LsnCore\Values\LSN_Reference.cs" />
     <Compile Include="LsnCore\Values\LSN_Value.cs" />
     <Compile Include="LsnCore\Values\RecordValue.cs" />
+    <Compile Include="LsnCore\Values\ScriptObject.cs" />
     <Compile Include="LsnCore\Values\StructValue.cs" />
     <Compile Include="LsnCore\Values\VectorInstance.cs" />
     <Compile Include="LsnResourceThing.cs" />
