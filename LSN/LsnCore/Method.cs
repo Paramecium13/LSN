@@ -13,21 +13,27 @@ namespace LsnCore
 		/// <summary>
 		/// The type this method is a member of.
 		/// </summary>
-		public readonly LsnType Type; // ToDo: Replace with TypeId.
+		public readonly TypeId TypeId;
 
-
-		public Method(LsnType type, LsnType returnType, List<Parameter> paramaters)
+		public Method(LsnType type, LsnType returnType, IList<Parameter> paramaters)
 			:base(paramaters)
 		{
-			Type = type;
+			TypeId = type.Id;
 			ReturnType = returnType?.Id;
 		}
 
 
-		public Method(LsnType type, TypeId returnType, List<Parameter> paramaters)
+		public Method(LsnType type, TypeId returnType, IList<Parameter> paramaters)
 			: base(paramaters)
 		{
-			Type = type;
+			TypeId = type.Id;
+			ReturnType = returnType;
+		}
+
+		public Method(TypeId type, TypeId returnType, IList<Parameter> paramaters)
+					: base(paramaters)
+		{
+			TypeId = type;
 			ReturnType = returnType;
 		}
 

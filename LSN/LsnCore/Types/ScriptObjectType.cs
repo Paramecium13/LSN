@@ -6,20 +6,25 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Types
 {
-	public class ScriptObjectType
+	[Serializable]
+	public sealed class ScriptObjectType : LsnType
 	{
 		public readonly bool Unique;
 
-		public IReadOnlyList<Property> Properties;
-
+		public readonly IReadOnlyList<Property> Properties;
 
 		//Fields
-
+		public readonly IReadOnlyList<Field> Fields;
 
 		//Methods
 
 
 		//States
+
+
+
+		public override LsnValue CreateDefaultValue()
+			=> LsnValue.Nil;
 
 	}
 }

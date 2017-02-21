@@ -1,31 +1,44 @@
-﻿using System;
+﻿using LsnCore.Expressions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LsnCore.Expressions;
 
-namespace LsnCore
+namespace LsnCore.Types
 {
-	/// <summary>
-	/// A method written in LSN
-	/// </summary>
-	[Serializable]
-	public class LsnMethod : Method
+	public class ScriptObjectMethod : Method
 	{
-		private readonly  IReadOnlyList<Component> Components;
+		public override bool HandlesScope => false;
+
+		public readonly bool IsVirtual;
+
+		private readonly IReadOnlyList<Component> Components;
 
 		private readonly LsnResourceThing Resource;
 
-		public override bool HandlesScope { get { return false; } }
-
-		public LsnMethod(LsnType type, LsnType returnType, List<Component> components, LsnResourceThing res, 
-			List<Parameter> paramaters = null)
-			:base(type,returnType, paramaters ?? new List<Parameter>() { new Parameter("self", type.Id, LsnValue.Nil, 0) })
+		public ScriptObjectMethod(TypeId type, TypeId returnType, IList<Parameter> parameters, IReadOnlyList<Component> components,
+			LsnResourceThing res, bool isVirtual)
+			:base(type,returnType,parameters)
 		{
+			if(Parameters[0].Name != "self")
+				throw new ApplicationException("");
+			if(Parameters[1].Name != "host")
+				throw new ApplicationException("");
 			Components = components;
-			Resource = res;
+			IsVirtual = isVirtual;
 		}
+
+
+		/*public ScriptObjectMethodCall CreateScriptObjectMethodCall(IExpression[] parameters)
+		{
+			if (parameters.Length != Parameters.Count)
+				throw new ApplicationException();
+			if (parameters[0].Type != TypeId)
+				throw new ApplicationException();
+
+			return new ScriptObjectMethodCall(parameters, Name);
+		}*/
 
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{
@@ -53,5 +66,6 @@ namespace LsnCore
 			i.ExitFunctionScope();
 			return i.ReturnValue;
 		}
+
 	}
 }
