@@ -26,7 +26,7 @@ namespace LsnCore.Statements
 
 		private IExpression Position;
 
-		private IExpression Actor;
+		//private IExpression Actor;
 
 		private Form MyForm;
 
@@ -38,10 +38,10 @@ namespace LsnCore.Statements
 		/// <param name="ex2"></param>
 		/// <param name="actor"></param>
 		/// <param name="hasKeywordLabel"></param>
-		public GoToStatement(IExpression ex0, IExpression ex1, IExpression ex2, IExpression actor = null, bool hasKeywordLabel = false)
+		public GoToStatement(IExpression ex0, IExpression ex1, IExpression ex2, /*IExpression actor = null,*/ bool hasKeywordLabel = false)
 		{
 			if (ex0 == null) throw new ArgumentNullException();
-			Actor = actor; // Make sure its the right type.
+			//Actor = actor; // Make sure its the right type.
 			if (ex0.Type.Type == LsnType.string_)
 			{
 				if (hasKeywordLabel)
