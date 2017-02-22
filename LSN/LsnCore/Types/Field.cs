@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace LsnCore.Types
 {
 	[Serializable]
-	public struct Field
+	public struct Field : IEquatable<Field>
 	{
 		public readonly int Index;
 		public readonly string Name;
@@ -17,5 +17,8 @@ namespace LsnCore.Types
 		{
 			Index = index; Name = name; Type = type.Id;
 		}
+
+		public bool Equals(Field other)
+			=> Index == other.Index && Name == other.Name && Type == other.Type;
 	}
 }

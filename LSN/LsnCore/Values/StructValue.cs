@@ -47,23 +47,6 @@ namespace LsnCore
 
 		public LsnValue GetValue(int index) => Fields[index];
 
-		/// <summary>
-		/// Create a new struct, 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public StructValue SetValue(string name, ILsnValue value)
-		{
-			/*var dict = new Dictionary<string, ILsnValue>();
-			foreach(var pair in Members)
-			{
-				dict.Add(pair.Key, pair.Value);
-			}
-			dict[name] = value;
-			return new StructValue(_Type, dict);*/
-			throw new NotImplementedException();
-		}
 
 		public ILsnValue Clone() => this;//new StructValue(_Type, Members);
 

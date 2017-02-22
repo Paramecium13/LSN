@@ -18,6 +18,11 @@ namespace LsnCore.Expressions
 		private readonly TypeId _Type;
 		public TypeId Type => _Type;
 
+		public GlobalVariableAccessExpression(string gvarName, TypeId type)
+		{
+			GlobalVarName = gvarName; _Type = type;
+		}
+
 		public bool Equals(IExpression other)
 		{
 			var gl = other as GlobalVariableAccessExpression;

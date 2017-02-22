@@ -11,7 +11,7 @@ namespace LsnCore
 {
 #pragma warning disable CS1718 // Comparison made to same variable
 	[Serializable]
-	public unsafe struct LsnValue : IExpression
+	public unsafe struct LsnValue : IExpression, IEquatable<LsnValue>
 	{
 		/// <summary>
 		/// 
@@ -266,6 +266,13 @@ namespace LsnCore
 		public static LsnValue DoublePow(LsnValue a, LsnValue b)
 			=> new LsnValue(Math.Pow(a.Data, b.Data));
 
+
+		public bool Equals(LsnValue other)
+		{
+			if (Data == Data)
+				return Data == other.Data;
+			return Value.Equals(other.Value);
+		}
 	}
 }
 

@@ -19,7 +19,7 @@ namespace LsnCore
 
 		public GlobalVariableDef(string name, TypeId type, LsnValue initialValue, bool watched = false)
 		{
-			Name = name; Type = type; InitialValue = initialValue;
+			Name = name; Type = type; InitialValue = initialValue; Watched = watched;
 		}
 
 		public GlobalVariableDef(string name, TypeId type, bool watched = false)

@@ -26,6 +26,7 @@ namespace LsnCore.Types
 				throw new ApplicationException("");
 			if(Parameters[1].Name != "host")
 				throw new ApplicationException("");
+			Resource = res;
 			Components = components;
 			IsVirtual = isVirtual;
 		}

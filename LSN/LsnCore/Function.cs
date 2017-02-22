@@ -22,7 +22,7 @@ namespace LsnCore
 		public int StackSize { get; set; }
 
 
-		public Function(FunctionSignature signature)
+		protected Function(FunctionSignature signature)
 		{
 			Signature = signature;
 		}
