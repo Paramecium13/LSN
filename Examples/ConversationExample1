@@ -1,9 +1,0 @@
-unique ScriptObject Conversation1
-{
-	fn MainTalk()
-	{
-		
-	}
-	
-	abstract fn Talk();
-}

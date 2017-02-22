@@ -1,0 +1,81 @@
+unique ScriptObject Conversation1
+{
+	NpcFace : string = "NpcFace01";
+	PcFace : string = "PlayerFace";
+	
+	NpcName : string = "";
+	PcName : string = "";
+	
+	
+	fn MainTalk(/*pcName:string, npcName:string*/)
+	{
+		//NpcName = npcName;
+		//PcName = pcName;
+		let mut continueConv = true;
+		while(continueConv)
+		{
+			continueConv = Talk();
+		}
+	}
+	
+	abstract fn Talk() -> bool/*continue conversation*/;
+	
+	auto state StartState
+	{
+		
+		fn Talk() -> bool
+		{
+			choice
+			{
+				"What do you do?" ->
+				{
+					SetState AskAboutJobState;
+					return true;
+				}
+				"Is there anything I can do to help?" ->
+				{
+					SetState CanIHelpState;
+					return true;
+				}
+				"" ->
+				{
+					
+				}
+				"Goodbye" ->
+				{
+					say "Goodbye" as PcName with PcFace;
+					return false;
+				}
+				
+				
+			}
+		}
+		
+	}
+	
+	state AskAboutJobState
+	{
+		fn Talk() -> bool
+		{
+			setstate StartState;
+			return false;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	state CanIHelpState
+	{
+		fn Talk() -> bool
+		{
+			setstate StartState;
+			return false;
+		}
+	}
+	
+	
+	
+}

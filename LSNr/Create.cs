@@ -63,10 +63,10 @@ namespace LSNr
 				var components = Parser.Consolidate(p.Components);
 				return new ChoicesBlockControl(components);
 			}
-			if(h == "?")
-			{ /* ? [expression (condition)] ? [expression] -> [block] */
+			if(h == "when")
+			{ /* when [expression (condition)] : [expression] -> [block] */
 				// It's a conditional choice (inside a choice block).
-				int endOfCondition = head.Skip(1).ToList().IndexOf("?");
+				int endOfCondition = head.ToList().IndexOf(":");
 				var cnd = Express(head.Skip(1).Take(endOfCondition - 1),script);
 				var endOfStr = head.IndexOf("->");
 				var str = Express(head.Skip(endOfCondition).Take(endOfStr - endOfCondition), script);
