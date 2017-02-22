@@ -56,7 +56,7 @@ namespace LsnCore
 	/// A parameter for a function or method.
 	/// </summary>
 	[Serializable]
-	public class Parameter
+	public class Parameter : IEquatable<Parameter>
 	{
 		public readonly string Name;
 		public readonly TypeId Type;
@@ -79,5 +79,7 @@ namespace LsnCore
 			Index = i;
 		}
 
+		public bool Equals(Parameter other)
+			=> Name == other.Name && Type == other.Type && DefaultValue.Equals(other.DefaultValue) && Index == other.Index;
 	}
 }
