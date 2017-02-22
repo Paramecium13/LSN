@@ -24,7 +24,7 @@ namespace LsnCore
 					for (int i = 0; i < length; i++)
 						Σ += (vector[i]).IntValue;
 					return new LsnValue(Σ);
-				}
+				}, "Sum"
 			));
 			vectorInt._Methods.Add("Mean", new BoundedMethod(vectorInt, int_,
 				(args) =>
@@ -35,7 +35,7 @@ namespace LsnCore
 					for (int i = 0; i < length; i++)
 						Σ += (vector[i]).IntValue;
 					return new LsnValue(length > 0 ? Σ / length : 0);
-				}
+				}, "Mean"
 			));
 
 			vectorDouble._Methods.Add("Sum", new BoundedMethod(vectorDouble, double_,
@@ -47,7 +47,7 @@ namespace LsnCore
 					for (int i = 0; i < length; i++)
 						Σ += (vector[i]).DoubleValue;
 					return new LsnValue(Σ);
-				}
+				}, "Sum"
 			));
 			vectorDouble._Methods.Add("Mean", new BoundedMethod(vectorDouble, double_,
 				(args) =>
@@ -58,7 +58,7 @@ namespace LsnCore
 					for (int i = 0; i < length; i++)
 						Σ += (vector[i]).DoubleValue;
 					return new LsnValue(length > 0 ? Σ / length : 0);
-				}
+				}, "Mean"
 			));
 		}
 
@@ -82,12 +82,12 @@ namespace LsnCore
 			GenericType = type.Type;
 			GenericId = type;
 			_Methods.Add("Length", new BoundedMethod(this, int_,
-				(args) => ((VectorInstance)args[0].Value).Length()));
+				(args) => ((VectorInstance)args[0].Value).Length(), "Length"));
 			_Methods.Add("ToList",
 				new BoundedMethod(this,
 					LsnListGeneric.Instance.GetType(new List<TypeId>() { type }),
 					(args) => new LsnValue(((VectorInstance)args[0].Value).ToLsnList())
-				)	
+				, "ToList")	
 			);
 		}
 
