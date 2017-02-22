@@ -11,15 +11,19 @@ namespace LsnCore.Types
 	{
 		public readonly bool Unique;
 
+		// Host Interface
+		public readonly TypeId HostInterface;
+
+		// Properties
 		public readonly IReadOnlyList<Property> Properties;
 
-		//Fields
+		// Fields
 		public readonly IReadOnlyList<Field> Fields;
 
-		//Methods
+		// Methods
 
 
-		//States
+		// States
 
 
 
