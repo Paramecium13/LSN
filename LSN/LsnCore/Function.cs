@@ -21,11 +21,15 @@ namespace LsnCore
 		public int StackSize { get; set; }
 
 
-		public Function(List<Parameter> parameters)
+		public Function(IList<Parameter> parameters)
 		{
-			_Parameters = parameters;
+			_Parameters = parameters.ToList();
 		}
 
+		/// <summary>
+		/// Does this function handle the scope and stack by itself (i.e. without any calls to the interpreter)?
+		/// Typically true for bound functions and methods.
+		/// </summary>
 		public abstract bool HandlesScope { get; }
 
 		protected LsnEnvironment _Environment;
