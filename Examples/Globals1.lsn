@@ -1,0 +1,6 @@
+
+watched Value1 : int = 200;
+
+rule Value1IsHigh -> Value1 > 25000;
+
+rule Value1IsLow -> Value1 < 500;
