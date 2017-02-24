@@ -10,99 +10,51 @@ namespace LsnCore.Statements
 	{
 		protected IExpression Amount;
 
-		protected IExpression Reciever;
-
+		protected IExpression Receiver;
+		
 	}
 	[Serializable]
 	public class GiveItemStatement : GiveStatement
 	{
 		private IExpression Id;
 
-		public GiveItemStatement(IExpression id, IExpression a)
+		public GiveItemStatement(IExpression id, IExpression a, IExpression receiver)
 		{
-			Id = id;
-			Amount = a;
+			Id = id; Amount = a; Receiver = receiver;
 		}
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			i.GiveItemTo(Id.Eval(i), Amount.Eval(i).IntValue, Reciever.Eval(i));
+			i.GiveItemTo(Id.Eval(i), Amount.Eval(i).IntValue, Receiver.Eval(i));
 			return InterpretValue.Base;
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if (Amount.Equals(oldExpr)) Amount = newExpr;
-			if (Reciever.Equals(oldExpr)) Reciever = newExpr;
+			if (Receiver.Equals(oldExpr)) Receiver = newExpr;
 			if (Id.Equals(oldExpr)) Id = newExpr;
 		}
 	}
-	[Serializable]
-	public class GiveArmorStatement : GiveStatement
-	{
-		private IExpression Id;
-
-		public GiveArmorStatement(IExpression id, IExpression a)
-		{
-			Id = id;
-			Amount = a;
-		}
-
-		public override InterpretValue Interpret(IInterpreter i)
-		{
-			i.GiveArmorTo(Id.Eval(i), Amount.Eval(i).IntValue, Reciever.Eval(i));
-			return InterpretValue.Base;
-		}
-
-		public override void Replace(IExpression oldExpr, IExpression newExpr)
-		{
-			if (Amount.Equals(oldExpr)) Amount = newExpr;
-			if (Reciever.Equals(oldExpr)) Reciever = newExpr;
-			if (Id.Equals(oldExpr)) Id = newExpr;
-		}
-	}
-	[Serializable]
-	public class GiveWeaponStatement : GiveStatement
-	{
-		private IExpression Id;
-
-		public GiveWeaponStatement(IExpression id, IExpression a)
-		{
-			Id = id;
-			Amount = a;
-		}
-
-		public override InterpretValue Interpret(IInterpreter i)
-		{
-			i.GiveWeaponTo(Id.Eval(i), Amount.Eval(i).IntValue, Reciever.Eval(i));
-			return InterpretValue.Base;
-		}
-
-		public override void Replace(IExpression oldExpr, IExpression newExpr)
-		{
-			if (Amount.Equals(oldExpr)) Amount = newExpr;
-			if (Reciever.Equals(oldExpr)) Reciever = newExpr;
-			if (Id.Equals(oldExpr)) Id = newExpr;
-		}
-	}
+	
 	[Serializable]
 	public class GiveGoldStatement : GiveStatement
 	{
-		public GiveGoldStatement(IExpression a)
+		public GiveGoldStatement(IExpression a, IExpression receiver)
 		{
-			Amount = a;
+			Amount = a; Receiver = receiver;
 		}
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			i.GiveGoldTo(Amount.Eval(i).IntValue, Reciever.Eval(i));
+			i.GiveGoldTo(Amount.Eval(i).IntValue, Receiver.Eval(i));
 			return InterpretValue.Base;
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if (Amount.Equals(oldExpr)) Amount = newExpr;
-			if (Reciever.Equals(oldExpr)) Reciever = newExpr;
+			if (Receiver.Equals(oldExpr)) Receiver = newExpr;
 		}
 	}
 }
