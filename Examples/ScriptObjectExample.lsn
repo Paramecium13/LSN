@@ -1,12 +1,15 @@
-GameObject StandardDoor
+HostInterface IStandardDoor
+{
+	event Activate(actor : IActor);
+}
+
+ScriptObject StandardDoor
 {
 	property Locked : bool;
 	property KeyId : string;
 	property DestMap : string;
 	property DestX : int;
 	property DestY : int;
-  
-	abstract fn Activate(actor : IActor);
 	
 	auto state StartState
 	{
@@ -18,17 +21,11 @@ GameObject StandardDoor
 				SetState UnlockedState;
 			}
 		}
-		
-		fn Activate(actor : IActor)
-		{
-			return;
-		}
 	}
 	
 	state LockedState
-	{
-		
-		fn Activate(actor : IActor)
+	{		
+		on Activate(actor : IActor)
 		{
 			// If the player has the key, unlock the door.
 			if(actor hasItem KeyId)
@@ -40,15 +37,13 @@ GameObject StandardDoor
 	}
 	
 	state UnlockedState
-	{
-	
-		fn Activate(actor : IActor)
+	{	
+		on Activate(actor : IActor)
 		{
 			// Open the door.
 			goto DestMap` DestX` DestY;
 			return;
-		}
-    
+		}    
 	}
   
 }
