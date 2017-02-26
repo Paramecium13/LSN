@@ -94,6 +94,7 @@
     <Compile Include="LsnCore\LsnFunction.cs" />
     <Compile Include="LsnCore\Statements\ChangeGlobalVariableStatement.cs" />
     <Compile Include="LsnCore\Statements\GoToStatement.cs" />
+    <Compile Include="LsnCore\Statements\SetStateStatement.cs" />
     <Compile Include="LsnCore\Types\Field.cs" />
     <Compile Include="LsnCore\Types\Property.cs" />
     <Compile Include="LsnCore\Types\ScriptObjectMethod.cs" />
