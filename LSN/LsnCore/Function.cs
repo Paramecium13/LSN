@@ -14,16 +14,17 @@ namespace LsnCore
 	[Serializable]
 	public abstract class Function
 	{
-		public string Name { get; protected set; }
-		public TypeId ReturnType { get; protected set; }
-		private readonly List<Parameter> _Parameters;
-		public IReadOnlyList<Parameter> Parameters => _Parameters;
+		public readonly FunctionSignature Signature;
+
+		public string Name => Signature.Name;
+		public TypeId ReturnType => Signature.ReturnType;
+		public IReadOnlyList<Parameter> Parameters => Signature.Parameters;
 		public int StackSize { get; set; }
 
 
-		public Function(IList<Parameter> parameters)
+		protected Function(FunctionSignature signature)
 		{
-			_Parameters = parameters.ToList();
+			Signature = signature;
 		}
 
 		/// <summary>
@@ -55,7 +56,7 @@ namespace LsnCore
 	/// A parameter for a function or method.
 	/// </summary>
 	[Serializable]
-	public class Parameter
+	public class Parameter : IEquatable<Parameter>
 	{
 		public readonly string Name;
 		public readonly TypeId Type;
@@ -78,5 +79,7 @@ namespace LsnCore
 			Index = i;
 		}
 
+		public bool Equals(Parameter other)
+			=> Name == other.Name && Type == other.Type && DefaultValue.Equals(other.DefaultValue) && Index == other.Index;
 	}
 }

@@ -205,7 +205,7 @@ namespace LsnCore
 
 		private static void SetUpMethods()
 		{
-			int_._Methods.Add("Abs", new BoundedMethod(int_,int_,(args)=>new LsnValue((int)Math.Abs(args[0].IntValue))));
+			int_._Methods.Add("Abs", new BoundedMethod(int_,int_,(args)=>new LsnValue((int)Math.Abs(args[0].IntValue)), "Abs"));
 
 
 			double_._Methods.Add("Abs", new BoundedMethod(double_, double_, 
@@ -215,7 +215,7 @@ namespace LsnCore
 					(
 						args[0].DoubleValue
 					)
-				)
+				), "Abs"
 			));
 
 			double_._Methods.Add("Ceil", new BoundedMethod(double_, int_,
@@ -225,14 +225,14 @@ namespace LsnCore
 					(
 						args[0].DoubleValue
 					)
-				)
+				), "Ceil"
 			));
 
 			double_._Methods.Add("Floor", new BoundedMethod(double_, int_,
 				(args) => new LsnValue
 				(
 					(int)args[0].DoubleValue
-				)
+				), "Floor"
 			));
 
 			double_._Methods.Add("Round", new BoundedMethod(double_, int_,
@@ -242,7 +242,7 @@ namespace LsnCore
 					(
 						args[0].DoubleValue
 					)
-				)
+				), "Round"
 			));
 
 
@@ -250,7 +250,7 @@ namespace LsnCore
 				(args) => new LsnValue
 				(
 					((StringValue)args[0].Value).Value.Length
-				)
+				), "Length"
 			));
 
 			string_._Methods.Add("SubString", new BoundedMethod(string_, string_,
@@ -259,7 +259,7 @@ namespace LsnCore
 						((StringValue)args[0].Value).Value.Substring(args[1].IntValue,
 							args[2].IntValue)
 						)
-				),
+				), "SubString",
 				new List<Parameter>() { new Parameter("start",int_,LsnValue.Nil,1), new Parameter("length", int_,LsnValue.Nil,2)})
 			);
 
@@ -267,7 +267,7 @@ namespace LsnCore
 				(args) => new LsnValue(new StringValue
 				(
 					((StringValue)args[0].Value).Value.ToLower()
-				))
+				)), "ToLower"
 			));
 		}
 

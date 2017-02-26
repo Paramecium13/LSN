@@ -59,7 +59,7 @@ namespace LsnCore
 	/// LSN value that contains a string, is effectively passed by reference.
 	/// </summary>
 	[Serializable]
-	public struct StringValue : IBoundValue<string>
+	public class StringValue : IBoundValue<string>
 	{
 		public static TypeId id = LsnType.string_.Id;
 
@@ -158,7 +158,7 @@ namespace LsnCore
 	/// 
 	/// </summary>
 	[Serializable]
-	public class LsnBoolValue
+	public static class LsnBoolValue
 	{
 		private static LsnValue True = new LsnValue(1);
 		private static LsnValue False = LsnValue.Nil;

@@ -40,11 +40,8 @@ namespace LsnCore
 		/// <param name="parameters"></param>
 		/// <param name="returnType"></param>
 		public ExternalFunction(string name, List<Parameter> parameters, int stackSize, LsnType returnType = null)
-			:base(parameters)
-		{
-			Name = name;
-			ReturnType = returnType?.Id;
-		}
+			:base(new FunctionSignature(parameters,name,returnType?.Id))
+		{}
 
 		/// <summary>
 		/// 
@@ -53,11 +50,8 @@ namespace LsnCore
 		/// <param name="parameters"></param>
 		/// <param name="returnType"></param>
 		public ExternalFunction(string name, List<Parameter> parameters, int stackSize, TypeId returnType = null)
-			: base(parameters)
-		{
-			Name = name;
-			ReturnType = returnType;
-		}
+			: base(new FunctionSignature(parameters, name, returnType))
+		{}
 
 		/// <summary>
 		/// 

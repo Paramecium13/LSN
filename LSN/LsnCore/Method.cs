@@ -15,26 +15,23 @@ namespace LsnCore
 		/// </summary>
 		public readonly TypeId TypeId;
 
-		public Method(LsnType type, LsnType returnType, IList<Parameter> paramaters)
-			:base(paramaters)
+		protected Method(LsnType type, LsnType returnType, string name, IList<Parameter> parameters)
+			:base(new FunctionSignature(parameters, name, returnType?.Id))
 		{
 			TypeId = type.Id;
-			ReturnType = returnType?.Id;
 		}
 
 
-		public Method(LsnType type, TypeId returnType, IList<Parameter> paramaters)
-			: base(paramaters)
+		protected Method(LsnType type, TypeId returnType, string name, IList<Parameter> parameters)
+			: base(new FunctionSignature(parameters, name, returnType))
 		{
 			TypeId = type.Id;
-			ReturnType = returnType;
 		}
 
-		public Method(TypeId type, TypeId returnType, IList<Parameter> paramaters)
-					: base(paramaters)
+		protected Method(TypeId type, TypeId returnType, string name, IList<Parameter> parameters)
+			: base(new FunctionSignature(parameters, name, returnType))
 		{
 			TypeId = type;
-			ReturnType = returnType;
 		}
 
 		/// <summary>

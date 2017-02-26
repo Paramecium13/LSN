@@ -19,9 +19,9 @@ namespace LsnCore
 
 		public override bool HandlesScope { get { return false; } }
 
-		public LsnMethod(LsnType type, LsnType returnType, List<Component> components, LsnResourceThing res, 
+		public LsnMethod(LsnType type, LsnType returnType, List<Component> components, string name, LsnResourceThing res, 
 			List<Parameter> paramaters = null)
-			:base(type,returnType, paramaters ?? new List<Parameter>() { new Parameter("self", type.Id, LsnValue.Nil, 0) })
+			:base(type,returnType,name, paramaters ?? new List<Parameter>() { new Parameter("self", type.Id, LsnValue.Nil, 0) })
 		{
 			Components = components;
 			Resource = res;

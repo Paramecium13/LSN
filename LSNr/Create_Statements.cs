@@ -164,11 +164,16 @@ namespace LSNr
 		/// <returns></returns>
 		private static GiveStatement Give(List<IToken> tokens, IPreScript script)
 		{
-			if (tokens.Any(t => t.Value.ToLower() == "item"))
+			if (tokens.Count < 2) throw new NotImplementedException();
+			if (tokens.Any(t => t.Value == "item"))
 			{
 				return GiveItem(tokens, script);
 			}
-			else if (tokens.Any(t => t.Value.ToLower() == "armor" || t.Value.ToLower() == "armour"))
+			else if (tokens.Any(t => t.Value == "gold"))
+			{
+				return GiveGold(tokens, script);
+			}
+			/*else if (tokens.Any(t => t.Value.ToLower() == "armor" || t.Value.ToLower() == "armour"))
 			{
 				return GiveArmor(tokens, script);
 			}
@@ -176,10 +181,7 @@ namespace LSNr
 			{
 				return GiveWeapon(tokens, script);
 			}
-			else if (tokens.Any(t => t.Value.ToLower() == "g"))
-			{
-				return GiveGold(tokens, script);
-			}
+			*/
 			else
 				return null;
 		}
@@ -187,41 +189,45 @@ namespace LSNr
 		private static GiveItemStatement GiveItem(List<IToken> tokens, IPreScript script)
 		{
 			int index1, index2;
-			var Amount = GetExpression(tokens.Skip(1), "item", out index1, script);
-			var Id = GetExpression(tokens.Skip(index1 + 1), "to", out index2, script);
-			return new GiveItemStatement(Id, Amount);
+			IExpression Amount;
+
+			if (tokens[2].Value == "item")
+			{
+				Amount = new LsnValue(1);
+				index1 = 2;
+			}
+			else
+				Amount = GetExpression(tokens.Skip(1), "item", out index1, script);
+			IExpression Id;
+			IExpression receiver = LsnValue.Nil;
+			var idTokens = tokens.Skip(index1 + 1);
+			if (idTokens.Any(t => t.Value == "to"))
+			{
+				Id = GetExpression(idTokens, "to", out index2, script);
+				receiver = Express(idTokens.Skip(index2 + 1), script);
+			}
+			else
+			{
+				Id = Express(idTokens, script);
+			}
+			return new GiveItemStatement(Id, Amount,receiver);
 		}
 
 		private static GiveGoldStatement GiveGold(List<IToken> tokens, IPreScript script)
 		{
-			int x = tokens.Select(t => t.Value).ToList().IndexOf("G");
-			var exprTokens = tokens.Skip(1).Take(x - 1).ToList();
-			var Amount = Express(exprTokens, script);
-			return new GiveGoldStatement(Amount);
-		}
-
-		private static GiveWeaponStatement GiveWeapon(List<IToken> tokens, IPreScript script)
-		{
-			//Id = GetExpression(tokens, "weapon");
-			int x = tokens.Select(t => t.Value.ToLower()).ToList().IndexOf("weapon");
-			var exprTokens = tokens.Skip(1).Take(x - 1).ToList();
-			var Amount = Express(exprTokens, script);
-			var Id = Express(tokens.Skip(x + 1).ToList(), script);
-			return new GiveWeaponStatement(Id, Amount);
-		}
-
-		private static GiveArmorStatement GiveArmor(List<IToken> tokens, IPreScript script)
-		{
-			//Id = GetExpression(tokens,"armor");
-			int x;
-			if (tokens.Any(t => t.Value == "armor"))
-				x = tokens.Select(t => t.Value.ToLower()).ToList().IndexOf("armor");
-			else x = tokens.Select(t => t.Value.ToLower()).ToList().IndexOf("armour");
-			//The tokens before the token 'armor'
-			var exprTokens = tokens.Skip(1).Take(x - 1).ToList();
-			var Amount = Express(exprTokens, script);
-			var Id = Express(tokens.Skip(x + 1).ToList(), script);
-			return new GiveArmorStatement(Id, Amount);
+			IExpression Amount;
+			IExpression receiver = LsnValue.Nil;
+			
+			int indexOfKeywordGold = tokens.Select(t => t.Value).ToList().IndexOf("gold");
+			if(tokens.Any(t => t.Value == "to"))
+			{
+				int i;
+				Amount = GetExpression(tokens, "to", out i, script);
+				receiver = Express(tokens.Skip(i + 1), script);
+			}
+			else
+				Amount = Express(tokens.Skip(1).Take(indexOfKeywordGold - 1).ToList(), script);
+			return new GiveGoldStatement(Amount,receiver);
 		}
 	}
 }

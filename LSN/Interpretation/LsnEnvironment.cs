@@ -22,13 +22,13 @@ namespace LsnCore
 		/// <summary>
 		/// 
 		/// </summary>
-		public Dictionary<string, Function> Functions { get { return _Functions; } set { _Functions = value; } }
+		public Dictionary<string, Function> Functions { get { return _Functions; } private set { _Functions = value; } }
 
 		private Dictionary<string, LsnStructType> _StructTypes = new Dictionary<string, LsnStructType>();
-		public Dictionary<string, LsnStructType> StructTypes { get { return _StructTypes; } set { _StructTypes = value; } }
+		public Dictionary<string, LsnStructType> StructTypes { get { return _StructTypes; } private set { _StructTypes = value; } }
 
 		private Dictionary<string, RecordType> _RecordTypes = new Dictionary<string, RecordType>();
-		public Dictionary<string, RecordType> RecordTypes { get { return _RecordTypes; } set { _RecordTypes = value; } }
+		public Dictionary<string, RecordType> RecordTypes { get { return _RecordTypes; } private set { _RecordTypes = value; } }
 		
 		/// <summary>
 		/// Sets up the default environment.

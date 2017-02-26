@@ -23,18 +23,12 @@ namespace LsnCore
 
 
 		public LsnFunction(List<Parameter> parameters, LsnType returnType, string name)
-			:base(parameters)
-		{
-			ReturnType = returnType?.Id;
-			Name = name;
-		}
+			:base(new FunctionSignature(parameters, name, returnType?.Id))
+		{}
 
 		public LsnFunction(List<Parameter> parameters, TypeId returnType, string name)
-			: base(parameters)
-		{
-			ReturnType = returnType;
-			Name = name;
-		}
+			: base(new FunctionSignature(parameters, name, returnType))
+		{}
 
 
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)

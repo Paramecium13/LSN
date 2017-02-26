@@ -19,13 +19,14 @@ namespace LsnCore.Types
 		private readonly LsnResourceThing Resource;
 
 		public ScriptObjectMethod(TypeId type, TypeId returnType, IList<Parameter> parameters, IReadOnlyList<Component> components,
-			LsnResourceThing res, bool isVirtual)
-			:base(type,returnType,parameters)
+			LsnResourceThing res, bool isVirtual, string name)
+			:base(type,returnType,name,parameters)
 		{
 			if(Parameters[0].Name != "self")
 				throw new ApplicationException("");
 			if(Parameters[1].Name != "host")
 				throw new ApplicationException("");
+			Resource = res;
 			Components = components;
 			IsVirtual = isVirtual;
 		}
