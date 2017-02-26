@@ -14,7 +14,7 @@ namespace LsnCore.Statements
 	public class GoToStatement : Statement
 	{
 
-		private enum Form { Map, MapLabel, MapXY, MapPos, Label, XY, Pos}
+		private enum Form { Map, MapLabel, MapXY, MapPos, /*Label,*/ XY, Pos}
 
 		private IExpression Map;
 
@@ -22,11 +22,11 @@ namespace LsnCore.Statements
 
 		private IExpression Y;
 
-		private IExpression LocLabel;
+		//private IExpression LocLabel;
 
 		private IExpression Position;
 
-		//private IExpression Actor;
+		private IExpression Actor;
 
 		private Form MyForm;
 
@@ -38,18 +38,18 @@ namespace LsnCore.Statements
 		/// <param name="ex2"></param>
 		/// <param name="actor"></param>
 		/// <param name="hasKeywordLabel"></param>
-		public GoToStatement(IExpression ex0, IExpression ex1, IExpression ex2, /*IExpression actor = null,*/ bool hasKeywordLabel = false)
+		public GoToStatement(IExpression ex0, IExpression ex1, IExpression ex2, IExpression actor = null/*, bool hasKeywordLabel = false*/)
 		{
 			if (ex0 == null) throw new ArgumentNullException();
-			//Actor = actor; // Make sure its the right type.
+			Actor = actor; // Make sure its the right type.
 			if (ex0.Type.Type == LsnType.string_)
 			{
-				if (hasKeywordLabel)
+				/*if (hasKeywordLabel)
 				{
 					LocLabel = ex0;
 					MyForm = Form.Label;
 					return;
-				}
+				}*/
 				// It's a map name
 				Map = ex0;
 				if (ex1 == null) // It's of the form '(actor) goto <map>;'
@@ -58,12 +58,12 @@ namespace LsnCore.Statements
 					return;
 				}
 
-				if (ex1.Type.Type == LsnType.string_) // It's of the form '(actor) goto <map> ` <locLable>;'
+				/*if (ex1.Type.Type == LsnType.string_) // It's of the form '(actor) goto <map> ` <locLable>;'
 				{
 					LocLabel = ex1;
 					MyForm = Form.MapLabel;
 					return;
-				}
+				}*/
 
 				if (ex1.Type.Type == LsnType.int_) // It's of the form '(actor) goto <map> <x> <y>;'
 				{
@@ -109,8 +109,8 @@ namespace LsnCore.Statements
 					break;
 				case Form.MapPos:
 					break;
-				case Form.Label:
-					break;
+				/*case Form.Label:
+					break;*/
 				case Form.XY:
 					break;
 				case Form.Pos:
@@ -121,7 +121,7 @@ namespace LsnCore.Statements
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
-			if (LocLabel.Equals( oldExpr)) LocLabel = newExpr;
+			//if (LocLabel.Equals( oldExpr)) LocLabel = newExpr;
 			if (Map.Equals (oldExpr)) Map = newExpr;
 			if (Position.Equals(oldExpr)) Position = newExpr;
 			if (X.Equals(oldExpr)) X = newExpr;

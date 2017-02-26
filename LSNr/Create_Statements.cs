@@ -29,13 +29,19 @@ namespace LSNr
 			int n = tokens.Count;
 			if (v == "give")	return Give(tokens, script);
 			if (v == "let")		return Assignment(tokens, script);
-			if (n > 1 && tokens[1].Value == "=") return Reassignment(tokens, script);
+			if (n > 1 && tokens[1].Value == "=")
+								return Reassignment(tokens, script);
 			if (v == "break")	return new BreakStatement();
 			if (v == "next")	return new NextStatement();
 			if (v == "return")	return new ReturnStatement(n > 1 ? Express(tokens.Skip(1), script) : null);
 			if (v == "say")		return Say(tokens.Skip(1).ToList(),script);
+			if (v == "goto")	throw new NotImplementedException("GoTo statement considered not implemented.");
 
-			return null;
+
+			if (tokens.Any(t => t.Value == "goto"))
+				throw new NotImplementedException("GoTo statement considered not implemented.");
+
+			throw new ApplicationException(v);
 		}
 
 		/// <summary>

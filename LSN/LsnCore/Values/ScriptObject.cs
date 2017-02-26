@@ -27,5 +27,11 @@ namespace LsnCore.Values
 		{
 			throw new NotImplementedException();
 		}
+
+		internal void SetState(string state)
+		{
+			throw new NotImplementedException();
+		}
+
 	}
 }
