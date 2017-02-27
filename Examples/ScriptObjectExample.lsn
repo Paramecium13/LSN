@@ -1,3 +1,9 @@
+HostInterface IActor
+{
+	fn HasItem(string: itemId) -> bool;
+	// Other stuff...
+}
+
 HostInterface IStandardDoor
 {
 	event Activate(actor : IActor);
@@ -5,7 +11,7 @@ HostInterface IStandardDoor
 
 ScriptObject StandardDoor
 {
-	property Locked : bool;
+	property InitiallyLocked : bool;
 	property KeyId : string;
 	property DestMap : string;
 	property DestX : int;
@@ -13,9 +19,9 @@ ScriptObject StandardDoor
 	
 	auto state StartState
 	{
-		Start()
+		fn Start()
 		{
-			if(Locked){
+			if(InitiallyLocked){
 				SetState LockedState;
 			} else {
 				SetState UnlockedState;
@@ -28,7 +34,7 @@ ScriptObject StandardDoor
 		on Activate(actor : IActor)
 		{
 			// If the player has the key, unlock the door.
-			if(actor hasItem KeyId)
+			if(actor.HasItem(KeyId))
 			{
 				SetState UnlockedState;
 			}
@@ -41,7 +47,7 @@ ScriptObject StandardDoor
 		on Activate(actor : IActor)
 		{
 			// Open the door.
-			goto DestMap` DestX` DestY;
+			actor goto DestMap` DestX` DestY;
 			return;
 		}    
 	}
