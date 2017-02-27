@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +25,12 @@ namespace LsnCore.Types
 
 
 		// States
+		private readonly Collection<object> _States;
 
+		private readonly int DefaultStateIndex;
+
+		public object GetDefaultState()
+			=> _States[DefaultStateIndex];
 
 
 		public override LsnValue CreateDefaultValue()

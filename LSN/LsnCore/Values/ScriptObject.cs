@@ -12,7 +12,21 @@ namespace LsnCore.Values
 	public sealed class ScriptObject : ILsnValue, IHasMutableFieldsValue
 	{
 
+		private readonly LsnValue[] Properties;
+
 		private readonly LsnValue[] Fields;
+
+
+		private readonly ScriptObjectType ScObjType;
+
+
+
+
+		public ScriptObject(LsnValue[] properties, LsnValue[] fields, ScriptObjectType type)
+		{
+			Properties = properties; Fields = fields; Type = type.Id;
+		}
+
 
 		public bool BoolValue => true;
 		public bool IsPure => false;
@@ -35,12 +49,17 @@ namespace LsnCore.Values
 		}
 
 
+		internal LsnValue GetPropertyValue(int index)
+			=> Properties[index];
+		
+
 		internal ScriptObjectMethod GetMethod(string methodName)
 		{
 			throw new NotImplementedException();
 		}
 
-		internal void SetState(string state)
+
+		internal void SetState(int index)
 		{
 			throw new NotImplementedException();
 		}
