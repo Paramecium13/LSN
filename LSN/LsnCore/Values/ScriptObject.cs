@@ -9,8 +9,25 @@ using LsnCore.Types;
 namespace LsnCore.Values
 {
 	[Serializable]
-	public sealed class ScriptObject : ILsnValue
+	public sealed class ScriptObject : ILsnValue, IHasMutableFieldsValue
 	{
+
+		private readonly LsnValue[] Properties;
+
+		private readonly LsnValue[] Fields;
+
+
+		private readonly ScriptObjectType ScObjType;
+
+
+
+
+		public ScriptObject(LsnValue[] properties, LsnValue[] fields, ScriptObjectType type)
+		{
+			Properties = properties; Fields = fields; Type = type.Id;
+		}
+
+
 		public bool BoolValue => true;
 		public bool IsPure => false;
 		public TypeId Type { get; private set; }
@@ -22,13 +39,27 @@ namespace LsnCore.Values
 		public void Replace(IExpression oldExpr, IExpression newExpr){}
 
 
+		public LsnValue GetFieldValue(int index)
+			=> Fields[index];
+
+
+		public void SetFieldValue(int index, LsnValue value)
+		{
+			Fields[index] = value;
+		}
+
+
+		internal LsnValue GetPropertyValue(int index)
+			=> Properties[index];
+		
 
 		internal ScriptObjectMethod GetMethod(string methodName)
 		{
 			throw new NotImplementedException();
 		}
 
-		internal void SetState(string state)
+
+		internal void SetState(int index)
 		{
 			throw new NotImplementedException();
 		}

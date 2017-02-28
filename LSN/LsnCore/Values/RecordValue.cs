@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace LsnCore.Values
 {
 	[Serializable]
-	public class RecordValue : LsnValueB, IHasFieldsValue
+	public class RecordValue : LsnValueB, IHasMutableFieldsValue
 	{
 		[NonSerialized]
 		private readonly RecordType _Type;
@@ -64,10 +64,10 @@ namespace LsnCore.Values
 		public override ILsnValue Clone() => new RecordValue(Type, Values.Select(v=>v.Clone()).ToArray(), true);
 
 
-		public LsnValue GetValue(int index) => Values[index];
+		public LsnValue GetFieldValue(int index) => Values[index];
 
 
-		public void SetValue(int index, LsnValue value)
+		public void SetFieldValue(int index, LsnValue value)
 		{
 			Values[index] = value;
 		}

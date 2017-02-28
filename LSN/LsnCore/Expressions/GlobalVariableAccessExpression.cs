@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Expressions
 {
+	[Serializable]
 	public sealed class GlobalVariableAccessExpression : IExpression
 	{
 		//private readonly string GlobalVarFileName;
