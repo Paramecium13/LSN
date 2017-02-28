@@ -38,5 +38,16 @@ namespace LSNr
 		public LsnType GetType(string name) => Resource.GetType(name);
 
 		public bool TypeExists(string name) => Resource.TypeExists(name);
+
+
+		public SymbolType CheckSymbol(string name)
+		{
+			if (FunctionExists(name))
+				return SymbolType.Function;
+			if (_CurrentScope.VariableExists(name))
+				return SymbolType.Variable;
+
+			return SymbolType.Undefined;
+		}
 	}
 }

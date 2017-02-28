@@ -428,7 +428,6 @@ namespace LSNr
 			IncludedTypes.Add(recordType);
 		}
 
-
 		public LsnResourceThing GetResource()
 		{
 			var resource = new LsnResourceThing();
@@ -438,6 +437,17 @@ namespace LSNr
 			resource.StructTypes = StructTypes;
 			resource.Usings = Usings;
 			return resource;
+		}
+
+
+		public override SymbolType CheckSymbol(string name)
+		{
+			if (FunctionExists(name))
+				return SymbolType.Function;
+			if (_CurrentScope.VariableExists(name))
+				return SymbolType.Variable;
+
+			return SymbolType.Undefined;
 		}
 	}
 }

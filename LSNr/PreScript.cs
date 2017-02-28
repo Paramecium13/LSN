@@ -107,6 +107,16 @@ namespace LSNr
 			Components = Parser.Consolidate(parser.Components);
 			//CurrentScope.Pop(Components);
 		}
-		
+
+		public override SymbolType CheckSymbol(string name)
+		{
+			if (FunctionExists(name))
+				return SymbolType.Function;
+			if (_CurrentScope.VariableExists(name))
+				return SymbolType.Variable;
+
+			return SymbolType.Undefined;
+		}
+
 	}
 }

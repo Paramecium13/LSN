@@ -83,6 +83,7 @@ namespace LSNr
 			Tokens = tokenizer.Tokenize(Text);
 		}
 
+
 		protected void Include(LsnResourceThing resource,string path)
 		{
 			foreach(var pair in resource.Functions)
@@ -105,7 +106,9 @@ namespace LSNr
 			Includes.Add(path);
 		}
 
-		
+
+		public abstract SymbolType CheckSymbol(string name);
+
 
 		/// <summary>
 		/// 
