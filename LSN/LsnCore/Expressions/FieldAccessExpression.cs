@@ -39,12 +39,12 @@ namespace LsnCore.Expressions
 			Value = Value.Fold();
 			var hasFields = Value as IHasFieldsValue;
 			if (hasFields != null)
-				return hasFields.GetValue(Index);
+				return hasFields.GetFieldValue(Index);
 			return this;
 		}
 
 		public override LsnValue Eval(IInterpreter i)
-			=> ((IHasFieldsValue)Value.Eval(i).Value).GetValue(Index);
+			=> ((IHasFieldsValue)Value.Eval(i).Value).GetFieldValue(Index);
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

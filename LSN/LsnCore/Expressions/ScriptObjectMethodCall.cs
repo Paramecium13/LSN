@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace LsnCore.Expressions
 {
 	[Serializable]
-	public class ScriptObjectMethodCall : Expression
+	public class ScriptObjectVirtualMethodCall : Expression
 	{
 		private readonly IExpression[] Parameters;
 
@@ -20,7 +20,7 @@ namespace LsnCore.Expressions
 		public override bool IsPure => false;
 
 
-		public ScriptObjectMethodCall(IExpression[] parameters, string name)
+		public ScriptObjectVirtualMethodCall(IExpression[] parameters, string name)
 		{
 			Parameters = parameters; Name = name;
 		}
@@ -33,7 +33,7 @@ namespace LsnCore.Expressions
 		}
 
 		public override IExpression Fold()
-			=> new ScriptObjectMethodCall(Parameters.Select(p => p.Fold()).ToArray(), Name);
+			=> new ScriptObjectVirtualMethodCall(Parameters.Select(p => p.Fold()).ToArray(), Name);
 
 		public override bool IsReifyTimeConst() => false;
 	}

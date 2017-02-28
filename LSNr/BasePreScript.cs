@@ -153,7 +153,9 @@ namespace LSNr
 					{ // The object file is up to date.
 						using (var fs = new FileStream(objPath, FileMode.Open))
 						{
-							res = (LsnResourceThing)(new BinaryFormatter().Deserialize(fs));
+							var bf = new BinaryFormatter();
+							var obj = bf.Deserialize(fs);
+							res = (LsnResourceThing) obj;
 						}
 						LsnResourceThing x = null;
 						foreach (var include in res.Includes)

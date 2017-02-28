@@ -108,7 +108,7 @@ namespace LSNr.Optimization
 		{
 			f.Value = Walk(f.Value);
 			if(f.Value is LsnValue?)
-				return ((IHasFieldsValue)((LsnValue)f.Value).Value).GetValue(f.Index);
+				return ((IHasFieldsValue)((LsnValue)f.Value).Value).GetFieldValue(f.Index);
 			return f;
 		}
 

@@ -45,7 +45,7 @@ namespace LsnCore
 		}
 		
 
-		public LsnValue GetValue(int index) => Fields[index];
+		public LsnValue GetFieldValue(int index) => Fields[index];
 
 
 		public ILsnValue Clone() => this;//new StructValue(_Type, Members);
