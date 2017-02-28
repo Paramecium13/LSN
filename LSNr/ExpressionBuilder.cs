@@ -75,9 +75,10 @@ namespace LSNr
 			for (int i = 0; i < InitialTokens.Count; i++)
 			{
 				var val = InitialTokens[i].Value;
-				#region .
+				
 				if (val == ".") //Member Access
 				{
+					#region .
 					if (i == 0)
 						throw new ApplicationException("An expresion cannot start with \'.\'.");
 					if (i + 1 > InitialTokens.Count)
@@ -164,115 +165,141 @@ namespace LSNr
 					Substitutions.Add(new Identifier(sub), expr2);
 					CurrentTokens.Add(new Identifier(sub));
 					i = nextIndex -1; // In the next iteration, i == nextIndex.
-				}
-				#endregion
-				else if (Script.CurrentScope.VariableExists(val)) // Variable
-				{
-					var v = Script.CurrentScope.GetVariable(val);
-					IExpression expr = v.GetAccessExpression();
-					/*if (!v.Mutable && ( v.InitialValue?.IsReifyTimeConst()?? false ) )
-						expr = v.InitialValue.Fold();
-					else expr = new VariableExpression(val, v.Type);*/
-
-                    var name = SUB + SubCount++;
-					Variables.Add(v);
-					Substitutions.Add(new Identifier(name), expr);
-					CurrentTokens.Add(new Identifier(name));
-				}
-				#region Function
-				else if (Script.FunctionExists(val)) // It's the start of a function call.
-				{
-					var fn = Script.GetFunction(val);
-					int nextIndex = i + 1; // This is the default next index.
-					if (InitialTokens[i + 1].Value != "(")
-					{
-						if(fn.Parameters.Count != 0)
-							throw new ApplicationException(); // Or throw or log something...
-						var fnCall = fn.CreateCall(new List<Tuple<string, IExpression>>());
-						var name = SUB + SubCount++;
-						Substitutions.Add(new Identifier(name), fnCall);
-						CurrentTokens.Add(new Identifier(name));
-					}
-					else
-					{
-						//int lCount = 1;
-						//int rCount = 0;
-						int j = i; // Move to the right twice, now looking at token after the opening '('.
-						var paramTokens = new List<IToken>();
-						/*int lCount = 0;
-						int rCount = 0;*/
-						int pCount = 0;
-						do
-						{
-							if (++j >= InitialTokens.Count)
-								throw new ApplicationException("Mismatched parenthesis...");
-							var t = InitialTokens[j];
-							var v = t.Value;
-							if (v == "(") ++pCount; // ++lCount;
-							if (v == ")") --pCount; // ++rCount
-							paramTokens.Add(t);
-						} while (/*lCount != rCount*/pCount != 0);
-						nextIndex = j + 1;
-						// Create the function call, add it to the dictionary, and add its identifier to the list (ls).
-						var name = SUB + SubCount++;
-						var fnCall = Create.CreateFunctionCall(paramTokens, fn, Script);
-						Substitutions.Add(new Identifier(name), fnCall);
-						CurrentTokens.Add(new Identifier(name));
-					}
-					i = nextIndex -1; // In the next iteration, i == nextIndex.
-				}
-				#endregion
-				else if(val == "true" || val == "false")
-				{
-					var name = SUB + SubCount++;
-					Substitutions.Add(new Identifier(name), LsnBoolValue.GetBoolValue(bool.Parse(val)));
-					CurrentTokens.Add(new Identifier(name));
-				}
-				else if(val == "new") // new
-				{
-					if (i + 1 > InitialTokens.Count)
-						throw new ApplicationException("An expresion cannot end with \'new\'.");
-					IExpression expr = null;
-					int j = i;
-					string typeName = InitialTokens[++j].Value; // j points to the type name;
-					if (!Script.TypeExists(typeName))
-						throw new ApplicationException($"The type \'{typeName}\' could not be found. Are You missing a \'#using\' or \'#include\'?");
-
-					LsnType type = Script.GetType(typeName);
-					var structType = type as LsnStructType;
-					var recordType = type as RecordType;
-
-					if (structType == null && recordType == null)
-						throw new ApplicationException($"Cannot use \'new\' with type \'{typeName}\'.");
-					if (j + 2 >= InitialTokens.Count)
-						throw new ApplicationException("No parenthesis.");
-					var paramTokens = new List<IToken>();
-					/*int lCount = 0;
-					int rCount = 0;*/
-					int pCount = 0;
-					do
-					{
-						if (++j >= InitialTokens.Count)
-							throw new ApplicationException("Mismatched parenthesis...");
-						var t = InitialTokens[j];
-						var v = t.Value;
-						if (v == "(") ++pCount; // ++lCount;
-						if (v == ")") --pCount; // ++rCount
-						paramTokens.Add(t);
-					} while (/*lCount != rCount*/pCount != 0);
-					var parameters = Create.CreateParamList(paramTokens, -1, Script);
-					if (structType != null)
-						expr = new StructConstructor(structType, parameters.ToDictionary());
-					else // recordType != null
-						expr = new RecordConstructor(recordType, parameters.ToDictionary());
-					i = j;
-					var sub = SUB + SubCount++;
-					Substitutions.Add(new Identifier(sub), expr);
-					CurrentTokens.Add(new Identifier(sub));
-				}
+					#endregion
+				}				
 				else
 				{
-					CurrentTokens.Add(InitialTokens[i]);
+					var symbolType = Script.CheckSymbol(val);
+					switch (symbolType)
+					{
+						case SymbolType.Undefined:
+						{
+							if (val == "true" || val == "false")
+							{
+								var name = SUB + SubCount++;
+								Substitutions.Add(new Identifier(name), LsnBoolValue.GetBoolValue(bool.Parse(val)));
+								CurrentTokens.Add(new Identifier(name));
+							}
+							else if (val == "new") // new
+							{
+								#region new
+									if (i + 1 > InitialTokens.Count)
+										throw new ApplicationException("An expresion cannot end with \'new\'.");
+									IExpression expr = null;
+									int j = i;
+									string typeName = InitialTokens[++j].Value; // j points to the type name;
+									if (!Script.TypeExists(typeName))
+										throw new ApplicationException($"The type \'{typeName}\' could not be found. Are You missing a \'#using\' or \'#include\'?");
+
+									LsnType type = Script.GetType(typeName);
+									var structType = type as LsnStructType;
+									var recordType = type as RecordType;
+
+									if (structType == null && recordType == null)
+										throw new ApplicationException($"Cannot use \'new\' with type \'{typeName}\'.");
+									if (j + 2 >= InitialTokens.Count)
+										throw new ApplicationException("No parenthesis.");
+									var paramTokens = new List<IToken>();
+									/*int lCount = 0;
+									int rCount = 0;*/
+									int pCount = 0;
+									do
+									{
+										if (++j >= InitialTokens.Count)
+											throw new ApplicationException("Mismatched parenthesis...");
+										var t = InitialTokens[j];
+										var v = t.Value;
+										if (v == "(") ++pCount; // ++lCount;
+										if (v == ")") --pCount; // ++rCount
+										paramTokens.Add(t);
+									} while (/*lCount != rCount*/pCount != 0);
+									var parameters = Create.CreateParamList(paramTokens, -1, Script);
+									if (structType != null)
+										expr = new StructConstructor(structType, parameters.ToDictionary());
+									else // recordType != null
+										expr = new RecordConstructor(recordType, parameters.ToDictionary());
+									i = j;
+									var sub = SUB + SubCount++;
+									Substitutions.Add(new Identifier(sub), expr);
+									CurrentTokens.Add(new Identifier(sub));
+									#endregion
+							}
+							else CurrentTokens.Add(InitialTokens[i]);
+							break;
+						}
+						case SymbolType.Variable:
+						{
+							var v = Script.CurrentScope.GetVariable(val);
+							IExpression expr = v.GetAccessExpression();
+							/*if (!v.Mutable && ( v.InitialValue?.IsReifyTimeConst()?? false ) )
+								expr = v.InitialValue.Fold();
+							else expr = new VariableExpression(val, v.Type);*/
+
+							var name = SUB + SubCount++;
+							Variables.Add(v);
+							Substitutions.Add(new Identifier(name), expr);
+							CurrentTokens.Add(new Identifier(name));
+							break;
+						}
+							
+						case SymbolType.GlobalVariable:
+							break;
+						case SymbolType.Field:
+							break;
+						case SymbolType.Property:
+							break;
+						case SymbolType.Function:
+						{
+							#region Function
+							var fn = Script.GetFunction(val);
+							int nextIndex = i + 1; // This is the default next index.
+							if (InitialTokens[i + 1].Value != "(")
+							{
+								if (fn.Parameters.Count != 0)
+									throw new ApplicationException(); // Or throw or log something...
+								var fnCall = fn.CreateCall(new List<Tuple<string, IExpression>>());
+								var name = SUB + SubCount++;
+								Substitutions.Add(new Identifier(name), fnCall);
+								CurrentTokens.Add(new Identifier(name));
+							}
+							else
+							{
+								//int lCount = 1;
+								//int rCount = 0;
+								int j = i; // Move to the right twice, now looking at token after the opening '('.
+								var paramTokens = new List<IToken>();
+								/*int lCount = 0;
+								int rCount = 0;*/
+								int pCount = 0;
+								do
+								{
+									if (++j >= InitialTokens.Count)
+										throw new ApplicationException("Mismatched parenthesis...");
+									var t = InitialTokens[j];
+									var v = t.Value;
+									if (v == "(") ++pCount; // ++lCount;
+									if (v == ")") --pCount; // ++rCount
+									paramTokens.Add(t);
+								} while (/*lCount != rCount*/pCount != 0);
+								nextIndex = j + 1;
+								// Create the function call, add it to the dictionary, and add its identifier to the list (ls).
+								var name = SUB + SubCount++;
+								var fnCall = Create.CreateFunctionCall(paramTokens, fn, Script);
+								Substitutions.Add(new Identifier(name), fnCall);
+								CurrentTokens.Add(new Identifier(name));
+							}
+							i = nextIndex - 1; // In the next iteration, i == nextIndex.
+							#endregion
+							break;
+						}
+						case SymbolType.ScriptObjectMethod:
+							break;
+						case SymbolType.HostInterfaceMethod:
+							break;
+						default:
+							break;
+					}
+					
 				}
 			}
 		}
