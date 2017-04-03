@@ -14,6 +14,9 @@ namespace LsnCore.Types
 
 		public readonly bool IsVirtual;
 
+
+		public bool IsAbstract => IsVirtual && Components == null;
+
 		private readonly IReadOnlyList<Component> Components;
 
 		private readonly LsnResourceThing Resource;
@@ -32,15 +35,18 @@ namespace LsnCore.Types
 		}
 
 
-		/*public ScriptObjectMethodCall CreateScriptObjectMethodCall(IExpression[] parameters)
+		public Expression CreateScriptObjectMethodCall(IExpression[] parameters)
 		{
 			if (parameters.Length != Parameters.Count)
 				throw new ApplicationException();
 			if (parameters[0].Type != TypeId)
 				throw new ApplicationException();
 
-			return new ScriptObjectMethodCall(parameters, Name);
-		}*/
+			//if (IsVirtual)
+				return new ScriptObjectVirtualMethodCall(parameters, Name);
+			//else
+				//return new MethodCall(this, parameters); Can't do this, would result in this method being serialized along with it's call.
+		}
 
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{

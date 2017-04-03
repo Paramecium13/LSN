@@ -20,11 +20,12 @@ namespace LsnCore.Values
 		private readonly ScriptObjectType ScObjType;
 
 
+		private int CurrentState;
 
 
-		public ScriptObject(LsnValue[] properties, LsnValue[] fields, ScriptObjectType type)
+		public ScriptObject(LsnValue[] properties, LsnValue[] fields, ScriptObjectType type, int currentState, IHostInterface host = null)
 		{
-			Properties = properties; Fields = fields; Type = type.Id;
+			Properties = properties; Fields = fields; Type = type.Id; CurrentState = currentState;
 		}
 
 
@@ -55,14 +56,32 @@ namespace LsnCore.Values
 
 		internal ScriptObjectMethod GetMethod(string methodName)
 		{
+			//Is the method virtual?
+			//	Does the current state override it?
+			//		Run the current state's implementation
+			//		(END)
+			//	Else Does the Type have an implementation?
+			//		Run that
+			//		(END)
+			//	Else
+			//	Throw exception
+			//Else
+			//	Run the type's implementation.
 			throw new NotImplementedException();
 		}
 
 
 		internal void SetState(int index)
 		{
+			//TODO: Unsubscribe from old state's event subscriptions (if valid). Run old state exit method.
+			CurrentState = index;
 			throw new NotImplementedException();
+			//TODO: Subscribe to new state's event subscriptions (if valid). Run new state Start method.
 		}
+
+
+		// Serialization?
+
 
 	}
 }
