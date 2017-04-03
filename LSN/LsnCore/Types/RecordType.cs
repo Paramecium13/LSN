@@ -32,15 +32,9 @@ namespace LsnCore.Types
 
 		public int GetIndex(string name)
 		{
-			try
-			{
-				var field = FieldsB.First(f => f.Name == name);
-				return field.Index;
-			}
-			catch (Exception)
-			{
-				throw new ApplicationException($"The struct type {Name} does not have a field named {name}.");
-			}
+			if (FieldsB.Any(f => f.Name == name))
+				return FieldsB.First(f => f.Name == name).Index;
+			throw new ApplicationException($"The struct type {Name} does not have a field named {name}.");
 		}
 
 

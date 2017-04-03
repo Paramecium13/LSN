@@ -9,14 +9,14 @@ namespace LsnCore.Types
 	public sealed class HostInterfaceType : LsnType
 	{
 		// Method definitions
-		private readonly IReadOnlyDictionary<string, MethodDefinition> MethodDefinitions;
+		private readonly IReadOnlyDictionary<string, FunctionSignature> MethodDefinitions;
 		
 		
 		// Event definitions
 		private readonly IReadOnlyDictionary<string, EventDefinition> EventDefinitions;
 
 
-		public HostInterfaceType(Dictionary<string,MethodDefinition> methods, Dictionary<string, EventDefinition> events)
+		public HostInterfaceType(Dictionary<string, FunctionSignature> methods, Dictionary<string, EventDefinition> events)
 		{
 			MethodDefinitions = methods; EventDefinitions = events;
 		}
@@ -35,7 +35,7 @@ namespace LsnCore.Types
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public MethodDefinition GetMethodDefinition(string name)
+		public FunctionSignature GetMethodDefinition(string name)
 		{
 			if (MethodDefinitions.ContainsKey(name))
 				return MethodDefinitions[name];

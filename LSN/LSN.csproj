@@ -99,9 +99,9 @@
     <Compile Include="LsnCore\Types\EventDefinition.cs" />
     <Compile Include="LsnCore\Types\Field.cs" />
     <Compile Include="LsnCore\Types\HostInterfaceType.cs" />
-    <Compile Include="LsnCore\Types\MethodDefinition.cs" />
     <Compile Include="LsnCore\Types\Property.cs" />
     <Compile Include="LsnCore\Types\ScriptObjectMethod.cs" />
+    <Compile Include="LsnCore\Types\ScriptObjectState.cs" />
     <Compile Include="LsnCore\Types\ScriptObjectType.cs" />
     <Compile Include="LsnCore\Types\TypeId.cs" />
     <Compile Include="LsnCore\LsnValue.cs" />

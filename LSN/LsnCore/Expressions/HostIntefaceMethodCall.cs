@@ -23,7 +23,7 @@ namespace LsnCore.Expressions
 		private IExpression[] Arguments;
 
 
-		public HostIntefaceMethodCall(MethodDefinition def, IExpression scriptObject, IExpression[] args)
+		public HostIntefaceMethodCall(FunctionSignature def, IExpression scriptObject, IExpression[] args)
 		{
 			_Type = def.ReturnType; Name = def.Name; ScriptObject = scriptObject; Arguments = args;
 		}
