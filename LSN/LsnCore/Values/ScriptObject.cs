@@ -88,6 +88,12 @@ namespace LsnCore.Values
 		}
 
 
+		public LsnValue ExecuteHostInterfaceMethod(string name, LsnValue[] values)
+		{
+			return Host.CallMethod(name, values);
+		}
+
+
 		internal void SetState(int index)
 		{
 			//TODO: Unsubscribe from old state's event subscriptions (if valid). Run old state exit method.

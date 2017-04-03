@@ -75,6 +75,7 @@
     <Compile Include="LsnCore\Expressions\BinaryExpression.cs" />
     <Compile Include="LsnCore\Expressions\CollectionValueAccessExpression.cs" />
     <Compile Include="LsnCore\Expressions\GlobalVariableAccessExpression.cs" />
+    <Compile Include="LsnCore\Expressions\HostIntefaceMethodCall.cs" />
     <Compile Include="LsnCore\Expressions\IExpressionContainer.cs" />
     <Compile Include="LsnCore\Expressions\RecordConstructor.cs" />
     <Compile Include="LsnCore\Expressions\ScriptObjectMethodCall.cs" />
