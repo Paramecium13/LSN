@@ -19,13 +19,30 @@ namespace LsnCore.Values
 
 		private readonly ScriptObjectType ScObjType;
 
+		private readonly IHostInterface Host;
 
 		private int CurrentState;
 
 
 		public ScriptObject(LsnValue[] properties, LsnValue[] fields, ScriptObjectType type, int currentState, IHostInterface host = null)
 		{
-			Properties = properties; Fields = fields; Type = type.Id; CurrentState = currentState;
+			Properties = properties; Fields = fields; Type = type.Id; ScObjType = type; CurrentState = currentState;
+			if (host != null)
+			{
+				// Check types
+				if (ScObjType.HostInterface == null)
+					throw new ArgumentException("This type of ScriptObject does not have a host.", "host");
+				if (!ScObjType.HostInterface.Equals(host.Type))
+					throw new ArgumentException($"Invalid HostInterface type. Expected {ScObjType.HostInterface.Name}. Recieved {host.Type.Name}.", "host");
+
+				Host = host;
+
+				//TODO: Subscribe to events.
+			}
+			else
+			{
+				if (ScObjType.HostInterface != null) throw new ArgumentException("This type of ScriptObject cannot survive without a host.", "host");
+			}
 		}
 
 

@@ -22,8 +22,11 @@ namespace LsnCore.Types
 		public readonly IReadOnlyList<Field> Fields;
 
 		// Methods
+		public readonly IReadOnlyList<ScriptObjectMethod> ScriptObjectMethods;
 
-
+		// Events
+		public readonly IReadOnlyList<object> EventListeners;
+		
 		// States
 		private readonly Collection<object> _States;
 
@@ -35,6 +38,9 @@ namespace LsnCore.Types
 
 		public override LsnValue CreateDefaultValue()
 			=> LsnValue.Nil;
+
+
+
 
 	}
 }
