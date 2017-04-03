@@ -98,7 +98,7 @@ namespace LsnCore.Values
 				}
 				return method;
 			}
-			throw new ArgumentException($"The ScriptObject type \"{Name}\" does not have a method named \"{methodName}\".",nameof(methodName));
+			throw new ArgumentException($"The ScriptObject type \"{ScObjType.Name}\" does not have a method named \"{methodName}\".",nameof(methodName));
 		}
 
 
