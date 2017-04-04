@@ -21,8 +21,6 @@ namespace LSNr
 
 		public override IScope CurrentScope { get { return _CurrentScope; } set { _CurrentScope = value; } }
 
-		private readonly Dictionary<string, string> Subs = new Dictionary<string, string>();
-
 		//private readonly Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
 
 		private readonly Dictionary<string, LsnStructType> StructTypes = new Dictionary<string, LsnStructType>();
@@ -61,64 +59,14 @@ namespace LSNr
 		/// </summary>
 		public void ProcessDirectives() { Text = ProcessDirectives(Source); }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="source"></param>
-		/// <returns></returns>
-		protected string ProcessDirectives(string source)
-		{
-			if (Regex.IsMatch(source, "#using", RegexOptions.IgnoreCase))
-			{
-				//Process #using directive(s)
-				foreach (var match in Regex.Matches(source, "#using\\s+\"(.+)\"").Cast<Match>())
-				{
-					var path = match.Groups.OfType<object>().Select(o => o.ToString()).Skip(1).First();
-					var res = Load(path);
-					Use(res, path);
-					source = source.Replace(match.Value, "");
-				}
-			}
-			if (Regex.IsMatch(source, "#include", RegexOptions.IgnoreCase))
-			{
-				//Process #using directive(s)
-				foreach (var match in Regex.Matches(source, "#include\\s+\"(.+)\"").Cast<Match>())
-				{
-					var path = match.Groups.OfType<object>().Select(o => o.ToString()).Skip(1).First();
-					var res = Load(path);
-					Include(res, path);
-					source = source.Replace(match.Value, "");
-				}
-			}
-			if (source.Contains("#mut"))
-			{
-				Mutable = true;
-				source = source.Replace("#mut", "");
-			}
-			if (source.Contains("#no_std"))
-			{
-				source = source.Replace("#no_std", "");
-			}
-			else
-			{
-				// Load the standard library.
-			}
-			source = Tokenizer.ReplaceAndStore(source, @"(?s)#sub(.(?<!#endsub))*#endsub", SUBN, Subs);
-			var x = new string[Subs.Count];
-			Subs.Keys.CopyTo(x, 0);
-			foreach (string key in x)
-			{
-				Subs[key] = Subs[key].Replace("#sub", "").Replace("#endsub", "");
-			}
-			return source;
-		}
+		
 		
 
 		/// <summary>
 		/// Go through the source, parsing structs and records.
 		/// </summary>
 		/// <returns> Tokens that are not part of a struct or record.</returns>
-		private List<IToken> ParseStructsAndRecords()
+		private IReadOnlyList<IToken> ParseStructsAndRecords()
 		{
 			var otherTokens = new List<IToken>();
 			for(int i = 0; i < Tokens.Count; i++)
@@ -162,7 +110,7 @@ namespace LSNr
 		//		* Store the name and body in a Dictionary<string,List<IToken>> named FunctionBodies.
 		//	* Go through FunctionBodies and parse the tokens.
 		//		* Put the resulting List<Component> in the LSN_Function of the same name stored in Functions.
-		private List<IToken> PreParseFunctions(List<IToken> tokens)
+		private List<IToken> PreParseFunctions(IReadOnlyList<IToken> tokens)
 		{
 			var otherTokens = new List<IToken>();
 			for (int i = 0; i < tokens.Count; i++)
@@ -253,24 +201,16 @@ namespace LSNr
 		{
 			foreach(var pair in MyFunctions)
 			{
-				//try
-				//{
-					var preFn = new PreFunction(this);
-					foreach(var param in pair.Value.Parameters)
-					{
-						preFn.CurrentScope.CreateVariable(param);
-					}
-					var parser = new Parser(FunctionBodies[pair.Key], preFn);
-					parser.Parse();
-					preFn.CurrentScope.Pop(parser.Components);
-					pair.Value.Components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
-					pair.Value.StackSize = (preFn.CurrentScope as VariableTable)?.MaxSize?? 0;
-				/*}
-				catch (Exception e)
+				var preFn = new PreFunction(this);
+				foreach (var param in pair.Value.Parameters)
 				{
-					Console.WriteLine($"Error parsing function{pair.Key}.");
-				}*/
-				
+					preFn.CurrentScope.CreateVariable(param);
+				}
+				var parser = new Parser(FunctionBodies[pair.Key], preFn);
+				parser.Parse();
+				preFn.CurrentScope.Pop(parser.Components);
+				pair.Value.Components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
+				pair.Value.StackSize = (preFn.CurrentScope as VariableTable)?.MaxSize?? 0;		
 			}
 		}
 		
@@ -280,7 +220,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="tokens"></param>
 		/// <returns></returns>
-		private List<Parameter> ParseParameters(List<IToken> tokens)
+		private List<Parameter> ParseParameters(IReadOnlyList<IToken> tokens)
 		{
 			var paramaters = new List<Parameter>();
 			ushort index = 0;
@@ -338,7 +278,7 @@ namespace LSNr
 		/// <param name="typeOfType">struct or record.</param>
 		/// <param name="tokens"></param>
 		/// <returns></returns>
-		private Dictionary<string, LsnType> ParseFields(string name, string typeOfType, List<IToken> tokens)
+		private Dictionary<string, LsnType> ParseFields(string name, string typeOfType, IReadOnlyList<IToken> tokens)
 		{
 			if (tokens.Count < 3) // struct Circle { Radius : double}
 			{
@@ -386,7 +326,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="name"> The name of the struct to make.</param>
 		/// <param name="tokens"> The tokens defining the struct.</param>
-		private void MakeStruct(string name, List<IToken> tokens)
+		private void MakeStruct(string name, IReadOnlyList<IToken> tokens)
 		{
 			Dictionary<string, LsnType> fields = null;
 			try
@@ -410,7 +350,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="name"> The name of the record.</param>
 		/// <param name="tokens"> The tokens defining the record.</param>
-		private void MakeRecord(string name, List<IToken> tokens)
+		private void MakeRecord(string name, IReadOnlyList<IToken> tokens)
 		{
 			Dictionary<string, LsnType> fields = null;
 			try

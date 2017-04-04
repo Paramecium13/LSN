@@ -13,13 +13,7 @@ namespace LSNr
 {
 	public class PreScript : BasePreScript
 	{
-		internal const string STRN = "Στρ";
-		internal const string SUBN = "SUB";
-
-
 		private List<Component> Components;
-
-
 
 		//private Dictionary<string, string> Subs = new Dictionary<string, string>();
 		//private Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
@@ -60,41 +54,6 @@ namespace LSNr
 		/// 
 		/// </summary>
 		public void ProcessDirectives() { Text = ProcessDirectives(Text); }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="source"></param>
-		/// <returns></returns>
-		protected string ProcessDirectives(string source)
-		{
-			if(Regex.IsMatch(source, "#include",RegexOptions.IgnoreCase))
-			{
-				//Process #include statements
-			}
-			if (source.Contains("#mut"))
-			{
-				Mutable = true;
-				source = source.Replace("#mut", "");
-			}
-			if(source.Contains("#no_std"))
-			{
-				source = source.Replace("#no_std", "");
-            }
-			else
-			{
-				// Load the standard library.
-			}
-			/*source = Tokenizer.ReplaceAndStore(source, @"(?s)#sub(.(?<!#endsub))*#endsub", SUBN, Subs);
-			var x = new string[Subs.Count];
-			Subs.Keys.CopyTo(x, 0);
-			foreach (string key in x)
-			{
-				Subs[key] = Subs[key].Replace("#sub", "").Replace("#endsub", "");
-			}*/
-			return source;
-		}
-
 
 		/// <summary>
 		/// 

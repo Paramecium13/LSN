@@ -100,8 +100,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scope.cs" />
-    <Compile Include="TokenFactory.cs" />
-    <Compile Include="Tokenizer.cs" />
     <Compile Include="Tokens\Ambiguous.cs" />
     <Compile Include="Tokens\Assignment.cs" />
     <Compile Include="Tokens\FloatToken.cs" />

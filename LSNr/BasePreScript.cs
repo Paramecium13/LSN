@@ -8,6 +8,7 @@ using LsnCore.Types;
 using Tokens;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
 
 namespace LSNr
 {
@@ -67,10 +68,7 @@ namespace LSNr
 			IncludeFunction(LsnMath.Tanh);
 
 			foreach (var t in LoadedTypes)
-			{
-				t.Id.Load(t);
-				// Load/bind it's type ids...
-			}
+				t.Id.Load(t);// Load/bind it's type ids...
 		}
 
 		/// <summary>
@@ -78,9 +76,7 @@ namespace LSNr
 		/// </summary>
 		protected void Tokenize()
 		{
-			//Tokens = Tokenizer.Tokenize(Text);
-			var tokenizer = new CharStreamTokenizer();
-			Tokens = tokenizer.Tokenize(Text);
+			Tokens = new CharStreamTokenizer().Tokenize(Text);
 		}
 
 
@@ -176,6 +172,51 @@ namespace LSNr
 			else
 				upToDate = false;
 			return upToDate;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="source"></param>
+		/// <returns></returns>
+		protected string ProcessDirectives(string source)
+		{
+			if (Regex.IsMatch(source, "#using", RegexOptions.IgnoreCase))
+			{
+				//Process #using directive(s)
+				foreach (var match in Regex.Matches(source, "#using\\s+\"(.+)\"").Cast<Match>())
+				{
+					var path = match.Groups.OfType<object>().Select(o => o.ToString()).Skip(1).First();
+					var res = Load(path);
+					Use(res, path);
+					source = source.Replace(match.Value, ""); // TODO: Test.
+				}
+			}
+			if (Regex.IsMatch(source, "#include", RegexOptions.IgnoreCase))
+			{
+				//Process #include directive(s)
+				foreach (var match in Regex.Matches(source, "#include\\s+\"(.+)\"").Cast<Match>())
+				{
+					var path = match.Groups.OfType<object>().Select(o => o.ToString()).Skip(1).First();
+					var res = Load(path);
+					Include(res, path);
+					source = source.Replace(match.Value, ""); // TODO: Test.
+				}
+			}
+			if (source.Contains("#mut"))
+			{
+				Mutable = true;
+				source = source.Replace("#mut", "");
+			}
+			if (source.Contains("#no_std"))
+			{
+				source = source.Replace("#no_std", "");
+			}
+			else
+			{
+				// Load the standard library.
+			}
+			return source;
 		}
 
 
@@ -282,22 +323,21 @@ namespace LSNr
 
 		protected void LoadType(LsnType type)
 		{
-			if(type.Id.Type == null)
+			if (type.Id.Type == null)
 			{
 				type.Id.Load(type);
 				var fType = type as IHasFieldsType;
-				if(fType != null)
+				if (fType != null)
 				{
-					foreach(var field in fType.FieldsB)
-					{
+					foreach (var field in fType.FieldsB)
 						LoadType(GetType(field.Type.Name));
-					}
+					// ScriptObject: Load host, methods, properties
 				}
 				// Methods...
 				foreach (var func in type.Methods.Values)
-				{
 					LoadFunctionParamAndReturnTypes(func);
-				}
+
+				// HostInterface: Load method defs (FunctionDefinition), event defs.
 			}
 		}
 

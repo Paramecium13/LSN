@@ -26,7 +26,7 @@ namespace LSNr
 		/// <param name="startIndex"></param>
 		/// <param name="endIndex"> The index of the token after the last token used in the type.</param>
 		/// <returns></returns>
-		public static LsnType ParseType(this ITypeContainer self, List<IToken> tokens, int startIndex, out int endIndex)
+		public static LsnType ParseType(this ITypeContainer self, IReadOnlyList<IToken> tokens, int startIndex, out int endIndex)
 		{
 			int i = startIndex;
 			var tName = tokens[startIndex].Value;
