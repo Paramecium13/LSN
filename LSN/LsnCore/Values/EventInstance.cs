@@ -34,10 +34,10 @@ namespace LsnCore.Values
 		}
 
 
-		public virtual void Fire(LsnValue[] args)
+		public Task Fire(LsnValue[] args)
 		{
 			if (Subscribers.Count == 0)
-				return;
+				return Task.CompletedTask;
 			ScriptObject[] subs;
 			lock (Subscribers)
 			{
@@ -46,7 +46,15 @@ namespace LsnCore.Values
 
 			// Don't lock subscribers here!
 			int n = subs.Length;
-			Task.Run(() => Parallel.For(0, n, (i) => Fire(subs[i]/*.GetEventListener(Name)*/, args)));
+			int c = args.Length+1;
+			return Task.Run(() => 
+				Parallel.For(0, n, (i) => {
+					var a = new LsnValue[c];
+					a[0] = new LsnValue(subs[i]);
+					args.CopyTo(a, 1);
+					Fire(subs[i]/*.GetEventListener(Name)*/, a);
+				})
+			);
 		}
 
 		protected abstract void Fire(/*EventListener*/object eventListener, LsnValue[] args);
