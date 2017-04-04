@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Types
 {
+	[Serializable]
 	public sealed class EventDefinition
 	{
 		public readonly string Name;

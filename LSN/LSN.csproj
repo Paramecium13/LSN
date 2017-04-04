@@ -70,7 +70,6 @@
     <Compile Include="LsnCore\ControlStructures\IfElseControl.cs" />
     <Compile Include="LsnCore\ControlStructures\MatchStructure.cs" />
     <Compile Include="LsnCore\ControlStructures\WhileLoop.cs" />
-    <Compile Include="LsnCore\EventDefinition.cs" />
     <Compile Include="LsnCore\EventListener.cs" />
     <Compile Include="LsnCore\Expressions\BinaryExpression.cs" />
     <Compile Include="LsnCore\Expressions\CollectionValueAccessExpression.cs" />
@@ -105,6 +104,7 @@
     <Compile Include="LsnCore\Types\ScriptObjectType.cs" />
     <Compile Include="LsnCore\Types\TypeId.cs" />
     <Compile Include="LsnCore\LsnValue.cs" />
+    <Compile Include="LsnCore\Values\EventInstance.cs" />
     <Compile Include="LsnCore\Values\HostInterface.cs" />
     <Compile Include="LsnCore\Values\IHostInterface.cs" />
     <Compile Include="LsnCore\Values\LSN_List.cs" />
