@@ -23,9 +23,7 @@ namespace LSNr
 
 		private readonly Dictionary<string, string> Subs = new Dictionary<string, string>();
 
-		private readonly Dictionary<string, string> Strings = new Dictionary<string, string>();
-
-		private readonly Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
+		//private readonly Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
 
 		private readonly Dictionary<string, LsnStructType> StructTypes = new Dictionary<string, LsnStructType>();
 
@@ -37,7 +35,10 @@ namespace LSNr
 
 		private readonly Dictionary<string, List<IToken>> FunctionBodies = new Dictionary<string, List<IToken>>();
 
-		private readonly List<GenericType> GenericTypes = LsnType.GetBaseGenerics();
+
+		//private readonly List<GenericType> GenericTypes = LsnType.GetBaseGenerics();
+
+
 
 		public PreResource(string src) : base(src)
 		{
@@ -171,7 +172,7 @@ namespace LSNr
 					string name = tokens[++i].Value;
 					if(tokens[++i].Value != "(")
 					{
-						Console.WriteLine($"Error in parsing function {name} expected token '(', recieved '{tokens[i].Value}'.");
+						Console.WriteLine($"Error in parsing function {name} expected token '(', received '{tokens[i].Value}'.");
 						Valid = false; continue;
 					}
 					var paramTokens = new List<IToken>();
@@ -196,7 +197,7 @@ namespace LSNr
 						{ // The current token is the token after '->'.
 							if(tokens[++i].Value != ")")
 							{
-								Console.WriteLine($"Error in parsing function {name} expected token '(', recieved '{tokens[i].Value}'.");
+								Console.WriteLine($"Error in parsing function {name} expected token '(', received '{tokens[i].Value}'.");
 								Valid = false; continue;
 							}
 						}
@@ -216,7 +217,7 @@ namespace LSNr
 					}
 					if(tokens[i].Value != "{")
 					{
-						Console.WriteLine($"Error in parsing function {name} expected token '{{', recieved '{tokens[i].Value}'.");
+						Console.WriteLine($"Error in parsing function {name} expected token '{{', received '{tokens[i].Value}'.");
 						Valid = false; continue;
 					}
 					var fnBody = new List<IToken>();
@@ -287,7 +288,7 @@ namespace LSNr
 			{
 				string name = tokens[i].Value;
 				if(tokens[++i].Value != ":")
-					throw new ApplicationException($"Error: Expected token ':' after parameter name {name} recieved token '{tokens[i].Value}'.");
+					throw new ApplicationException($"Error: Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.");
                 LsnType type = this.ParseType(tokens, ++i, out i);
 				LsnValue defaultValue = LsnValue.Nil;
 				if (i < tokens.Count && tokens[i].Value == "=")
@@ -325,7 +326,7 @@ namespace LSNr
 				}
 				paramaters.Add(new Parameter(name, type.Id, defaultValue, index++));
 				if (i < tokens.Count && tokens[i].Value != ",")
-					throw new ApplicationException($"Error: expected token ',' after definition of parameter {name}, recieved '{tokens[i].Value}'.");
+					throw new ApplicationException($"Error: expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.");
 			}
 			return paramaters;
 		}

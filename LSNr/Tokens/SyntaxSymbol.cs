@@ -13,7 +13,7 @@ namespace Tokens.Tokens
 
 		public SyntaxSymbol(string s, int line = 0)
 		{
-			Value = s; LineNumber = 0;
+			Value = s; LineNumber = line;
 		}
 
 		public bool Equals(IToken other)

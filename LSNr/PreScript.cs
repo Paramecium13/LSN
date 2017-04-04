@@ -21,9 +21,8 @@ namespace LSNr
 
 
 
-		private Dictionary<string, string> Subs = new Dictionary<string, string>();
-		private Dictionary<string, string> Strings = new Dictionary<string, string>();
-		private Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
+		//private Dictionary<string, string> Subs = new Dictionary<string, string>();
+		//private Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
 
 		private IScope _CurrentScope = new Scope();
 
@@ -86,13 +85,13 @@ namespace LSNr
 			{
 				// Load the standard library.
 			}
-			source = Tokenizer.ReplaceAndStore(source, @"(?s)#sub(.(?<!#endsub))*#endsub", SUBN, Subs);
+			/*source = Tokenizer.ReplaceAndStore(source, @"(?s)#sub(.(?<!#endsub))*#endsub", SUBN, Subs);
 			var x = new string[Subs.Count];
 			Subs.Keys.CopyTo(x, 0);
 			foreach (string key in x)
 			{
 				Subs[key] = Subs[key].Replace("#sub", "").Replace("#endsub", "");
-			}
+			}*/
 			return source;
 		}
 

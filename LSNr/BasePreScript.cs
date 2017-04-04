@@ -47,7 +47,7 @@ namespace LSNr
 
 		protected readonly List<string> Includes = new List<string>();
 
-		public BasePreScript(string src)
+		protected BasePreScript(string src)
 		{
 			Source = src;
 			IncludeFunction(LsnMath.ACos);
@@ -84,7 +84,7 @@ namespace LSNr
 		}
 
 
-		protected void Include(LsnResourceThing resource,string path)
+		protected void Include(LsnScriptBase resource, string path)
 		{
 			foreach(var pair in resource.Functions)
 			{
@@ -179,7 +179,7 @@ namespace LSNr
 		}
 
 
-		protected void Use(LsnResourceThing resource, string path)
+		protected void Use(LsnScriptBase resource, string path)
 		{
 			foreach (var pair in resource.Functions)
 			{

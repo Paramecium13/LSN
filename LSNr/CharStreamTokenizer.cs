@@ -626,7 +626,7 @@ namespace LSNr
 			switch (tokenType)
 			{
 				case TokenType.Unknown:
-					if(str == "")
+					if(string.IsNullOrEmpty(str))
 					{
 						tokenType = TokenType.Unknown;
 						State = TokenizerState.Base;

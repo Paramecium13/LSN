@@ -80,9 +80,9 @@ namespace LSNr
 				{
 					#region .
 					if (i == 0)
-						throw new ApplicationException("An expresion cannot start with \'.\'.");
+						throw new ApplicationException("An expression cannot start with \'.\'.");
 					if (i + 1 > InitialTokens.Count)
-						throw new ApplicationException("An expresion cannot end with \'.\'.");
+						throw new ApplicationException("An expression cannot end with \'.\'.");
 					IExpression expr;
 
 					int nextIndex = i + 1; // This is the default next index.
@@ -184,7 +184,7 @@ namespace LSNr
 							{
 								#region new
 									if (i + 1 > InitialTokens.Count)
-										throw new ApplicationException("An expresion cannot end with \'new\'.");
+										throw new ApplicationException("An expression cannot end with \'new\'.");
 									IExpression expr = null;
 									int j = i;
 									string typeName = InitialTokens[++j].Value; // j points to the type name;

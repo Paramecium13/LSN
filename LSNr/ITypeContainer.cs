@@ -39,7 +39,7 @@ namespace LSNr
 			{
 				if(tokens[++i].Value != "<")
 				{
-					Console.WriteLine($"Error: expected token '<', recieved '{tokens[i].Value}'.");
+					Console.WriteLine($"Error: expected token '<', received '{tokens[i].Value}'.");
 					endIndex = -1;
 					return null;
 				}

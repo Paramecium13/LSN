@@ -16,7 +16,7 @@ namespace LSNr
 		/// <summary>
 		/// 
 		/// </summary>
-		private int _MaxSizeFromChildren;
+		//private int _MaxSizeFromChildren;
 
 
 		public int MaxSize

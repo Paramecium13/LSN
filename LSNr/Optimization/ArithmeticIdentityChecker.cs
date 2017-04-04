@@ -15,9 +15,9 @@ namespace LSNr.Optimization
 	
 	public class ArithmeticIdentityChecker : ExpressionWalker
 	{
-		protected override IExpression WalkBinExp(BinaryExpression bin)
+		protected override IExpression WalkBinExp(BinaryExpression e)
 		{
-			var x = base.WalkBinExp(bin);
+			var x = base.WalkBinExp(e);
 			var b = x as BinaryExpression;
 			if(b != null)
 			{

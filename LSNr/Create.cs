@@ -79,7 +79,7 @@ namespace LSNr
 			{
 				script.CurrentScope = script.CurrentScope.CreateChild();
 				if (head.Count < 10)
-					throw new ApplicationException("Incorrect for loop head thing [incorrectness inferred by too tew tokens].");
+					throw new ApplicationException("Incorrect for loop head thing [incorrectness inferred by too few tokens].");
 				if (head.Select(t => t.Value).Count(vl => vl == "`") != 2)
 					throw new ApplicationException("Incorrectly formatted for loop...");
 

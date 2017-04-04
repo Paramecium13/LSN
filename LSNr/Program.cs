@@ -21,7 +21,7 @@ namespace LSNr
 		private const int CONFIG_EXISTS = -4;
 
 		private const string END_OF_COMMENTS = "⌧";
-		private const string COMMENTS = "~~~Remarks Section~~~\nDescribe your workplace here\n\n\n~~~Do comment below this line~~~\n";
+		private const string COMMENTS = "~~~Remarks Section~~~\nDescribe your workplace here\n\n\n~~~Do not comment below this line~~~\n";
 
 		private static Config _Config;
 
@@ -38,8 +38,8 @@ namespace LSNr
 
 			if(File.Exists("lsn.config"))
 			{
-				_Config = JsonSerializer.Create()
-					.Deserialize<Config>(new JsonTextReader(new StringReader(File.ReadAllText("lsn.config"))));
+				using (var strReader = new StringReader(File.ReadAllText("lsn.config")))
+					_Config = JsonSerializer.Create().Deserialize<Config>(new JsonTextReader(strReader));
 			}
 			else
 				_Config = new Config();
@@ -134,7 +134,8 @@ namespace LSNr
 			const string file = "lsn.config";
             if (File.Exists(file)) return CONFIG_EXISTS;
 			var config = new Config();
-			using (var writer = new StreamWriter(File.Create(file)))
+
+			using (var f = File.Create(file)) using (var writer = new StreamWriter(f))
 			{
 				writer.Write(/*COMMENTS + END_OF_COMMENTS + */JsonConvert.SerializeObject(config, Formatting.Indented));
 			}
@@ -157,7 +158,14 @@ namespace LSNr
 		
 		private static int Build(string[] args)
 		{
+			if(args.Length > 1 && args[1].ToLower() == "all")
+			{
 
+			}
+			else // Only build the files that aren't up to date.
+			{
+
+			}
 			return 0;
 		}
 

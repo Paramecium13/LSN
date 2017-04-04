@@ -133,11 +133,11 @@ namespace LSNr.Optimization
 		}
 
 
-		protected virtual IExpression WalkOrExp(OrExpression or)
+		protected virtual IExpression WalkOrExp(OrExpression expr)
 		{
-			or.Left = Walk(or.Left);
-			or.Right = Walk(or.Right);
-			return or;
+			expr.Left = Walk(expr.Left);
+			expr.Right = Walk(expr.Right);
+			return expr;
 		}
 
 
