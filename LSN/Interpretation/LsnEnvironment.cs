@@ -11,7 +11,7 @@ namespace LsnCore
 	/// Contains the loaded functions and types.
 	/// </summary>
 	[Serializable]
-	public class LsnEnvironment
+	public class LsnEnvironment //TODO: Improve this!
 	{
 		// When a function from a used resource is loaded, the interpreter should enter the environment for that resource file.
 

@@ -21,7 +21,7 @@ namespace LsnCore.Types
 		LsnValue GetFieldValue(int index);
 	}
 
-	public interface IHasMutableFieldsValue : IExpression
+	public interface IHasMutableFieldsValue : IHasFieldsValue
 	{
 		void SetFieldValue(int index, LsnValue value);
 	}

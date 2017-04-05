@@ -17,7 +17,9 @@ namespace LsnCore
 		/// </summary>
 		public List<Component> Components;
 
+		//TODO: Remove, replace with Function.Environment.
 		public LsnResourceThing Resource;
+
 
 		public override bool HandlesScope { get { return true; } }
 
@@ -49,7 +51,7 @@ namespace LsnCore
 					case InterpretValue.Next:
 						throw new ApplicationException("This should not happen.");
 					case InterpretValue.Break:
-						throw new ApplicationException("This should not happen.");
+						throw new ApplicationException("I SHALL NOT BE BROKEN!!!\nYou cannot have a break statement directly in a function.");
 					case InterpretValue.Return: //Exit the function.
 						x = Components.Count; // This breaks the for loop.
 						break;

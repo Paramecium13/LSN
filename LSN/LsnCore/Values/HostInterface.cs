@@ -9,6 +9,7 @@ using LsnCore.Types;
 namespace LsnCore.Values
 {
 	// An implementation of IHostInterface.
+	[Serializable]
 	public class HostInterface : IHostInterface
 	{
 		public virtual bool BoolValue => true;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace LsnCore.Types
 {
 	[Serializable]
-	public sealed class ScriptObjectType : LsnType
+	public sealed class ScriptObjectType : LsnType, IHasFieldsType
 	{
 		public readonly bool Unique;
 
@@ -16,23 +16,27 @@ namespace LsnCore.Types
 		public readonly TypeId HostInterface;
 
 		// Properties
-		public readonly IReadOnlyList<Property> Properties;
+		private readonly IReadOnlyList<Property> Properties;
 
 		// Fields
-		public readonly IReadOnlyList<Field> Fields;
+		private readonly IReadOnlyList<Field> Fields;
 
 		// Methods
-		public readonly IReadOnlyList<ScriptObjectMethod> ScriptObjectMethods;
+		private readonly IReadOnlyDictionary<string,ScriptObjectMethod> ScriptObjectMethods;
 
 		// Events
-		public readonly IReadOnlyList<object> EventListeners;
+		private readonly IReadOnlyDictionary<string, EventListener> EventListeners;
 		
 		// States
-		private readonly Collection<object> _States;
+		private readonly IReadOnlyDictionary<int,ScriptObjectState> _States;
 
 		private readonly int DefaultStateIndex;
 
-		public object GetDefaultState()
+
+		public IReadOnlyCollection<Field> FieldsB => Fields;
+
+
+		public ScriptObjectState GetDefaultState()
 			=> _States[DefaultStateIndex];
 
 
@@ -40,7 +44,33 @@ namespace LsnCore.Types
 			=> LsnValue.Nil;
 
 
+		public int GetIndex(string name)
+		{
+			if (Fields.Any(f => f.Name == name))
+				return Fields.First(f => f.Name == name).Index;
+			else throw new ApplicationException($"The ScriptObject type {Name} does not have a field named {name}.");
+		}
 
+
+		public bool HasMethod(string name)
+			=> ScriptObjectMethods.ContainsKey(name);
+
+
+		public ScriptObjectMethod GetMethod(string name)
+		{
+			if (ScriptObjectMethods.ContainsKey(name))
+				return ScriptObjectMethods[name];
+			throw new ArgumentException($"The ScriptObject type \"{Name}\" does not have a method named \"{name}\".", nameof(name));
+		}
+
+
+		public bool HasEventListener(string name) => EventListeners.ContainsKey(name);
+
+
+		public EventListener GetEventListener(string name) => EventListeners[name];
+		
+		
+		public ScriptObjectState GetState(int id) => _States[id];
 
 	}
 }

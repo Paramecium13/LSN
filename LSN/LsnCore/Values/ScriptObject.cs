@@ -21,12 +21,14 @@ namespace LsnCore.Values
 
 		private readonly IHostInterface Host;
 
-		private int CurrentState;
 
+		private int CurrentStateIndex;
+		private ScriptObjectState CurrentState;
 
 		public ScriptObject(LsnValue[] properties, LsnValue[] fields, ScriptObjectType type, int currentState, IHostInterface host = null)
 		{
-			Properties = properties; Fields = fields; Type = type.Id; ScObjType = type; CurrentState = currentState;
+			Properties = properties; Fields = fields; Type = type.Id; ScObjType = type; CurrentStateIndex = currentState;
+			CurrentState = ScObjType.GetState(CurrentStateIndex);
 			if (host != null)
 			{
 				// Check types
@@ -75,16 +77,28 @@ namespace LsnCore.Values
 		{
 			//Is the method virtual?
 			//	Does the current state override it?
-			//		Run the current state's implementation
-			//		(END)
+			//		Return the current state's implementation
 			//	Else Does the Type have an implementation?
-			//		Run that
-			//		(END)
+			//		Return that
 			//	Else
 			//	Throw exception
 			//Else
-			//	Run the type's implementation.
-			throw new NotImplementedException();
+			//	Return the type's implementation.
+
+			if (ScObjType.HasMethod(methodName))
+			{
+				var method = ScObjType.GetMethod(methodName);
+				if (method.IsVirtual)
+				{
+					if (CurrentState.HasMethod(methodName))
+						return CurrentState.GetMethod(methodName);
+					if (!method.IsAbstract)
+						return method;
+					throw new ApplicationException("...");
+				}
+				return method;
+			}
+			throw new ArgumentException($"The ScriptObject type \"{ScObjType.Name}\" does not have a method named \"{methodName}\".",nameof(methodName));
 		}
 
 
@@ -94,10 +108,22 @@ namespace LsnCore.Values
 		}
 
 
+		public EventListener GetEventListener(string name)
+		{
+			if (CurrentState.HasEventListener(name))
+				return CurrentState.GetEventListener(name);
+			else if(ScObjType.HasEventListener(name))
+				return ScObjType.GetEventListener(name);
+			
+			throw new ArgumentException("", nameof(name));
+		}
+
+
 		internal void SetState(int index)
 		{
 			//TODO: Unsubscribe from old state's event subscriptions (if valid). Run old state exit method.
-			CurrentState = index;
+			CurrentStateIndex = index;
+			CurrentState = ScObjType.GetState(index);
 			throw new NotImplementedException();
 			//TODO: Subscribe to new state's event subscriptions (if valid). Run new state Start method.
 		}
