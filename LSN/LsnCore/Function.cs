@@ -33,8 +33,9 @@ namespace LsnCore
 		/// </summary>
 		public abstract bool HandlesScope { get; }
 
-		protected LsnEnvironment _Environment;
-        public LsnEnvironment Environment { get { return _Environment; } protected set { _Environment = value; } }
+
+		protected LsnEnvironment _Environment; //TODO: Give this a value!!!
+		public LsnEnvironment Environment { get { return _Environment; } protected set { _Environment = value; } }
 
 
 		public virtual FunctionCall CreateCall(IList<Tuple<string,IExpression>> args, bool included = false)
