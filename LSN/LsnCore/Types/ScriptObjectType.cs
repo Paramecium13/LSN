@@ -25,7 +25,7 @@ namespace LsnCore.Types
 		private readonly IReadOnlyDictionary<string,ScriptObjectMethod> ScriptObjectMethods;
 
 		// Events
-		private readonly IReadOnlyDictionary<string, object> EventListeners;
+		private readonly IReadOnlyDictionary<string, EventListener> EventListeners;
 		
 		// States
 		private readonly IReadOnlyDictionary<int,ScriptObjectState> _States;
@@ -64,6 +64,12 @@ namespace LsnCore.Types
 		}
 
 
+		public bool HasEventListener(string name) => EventListeners.ContainsKey(name);
+
+
+		public EventListener GetEventListener(string name) => EventListeners[name];
+		
+		
 		public ScriptObjectState GetState(int id) => _States[id];
 
 	}

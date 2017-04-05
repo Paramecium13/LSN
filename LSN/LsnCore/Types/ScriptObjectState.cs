@@ -14,8 +14,13 @@ namespace LsnCore.Types
 		public readonly int Id;
 
 
-		public readonly IReadOnlyDictionary<string, ScriptObjectMethod> ScriptObjectMethods;
+		private readonly IReadOnlyDictionary<string, ScriptObjectMethod> ScriptObjectMethods;
 
+
+		// Events
+		public readonly IReadOnlyList<string> EventsListenedTo;
+
+		private readonly IReadOnlyDictionary<string, EventListener> EventListeners;
 
 
 
@@ -23,5 +28,12 @@ namespace LsnCore.Types
 
 
 		public ScriptObjectMethod GetMethod(string name) => ScriptObjectMethods[name];
+
+
+		public bool HasEventListener(string name) => EventListeners.ContainsKey(name);
+
+
+		public EventListener GetEventListener(string name) => EventListeners[name];
+
 	}
 }

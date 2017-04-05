@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Values
 {
-	public abstract class EventInstance
+	/// <summary>
+	/// Use this for events that do not interupt the normal game flow.
+	/// </summary>
+	public abstract class EventInstance : IEventInstance
 	{
 		public readonly EventDefinition Definition;
 		public readonly string Name;
@@ -52,12 +55,12 @@ namespace LsnCore.Values
 					var a = new LsnValue[c];
 					a[0] = new LsnValue(subs[i]);
 					args.CopyTo(a, 1);
-					Fire(subs[i]/*.GetEventListener(Name)*/, a);
+					Fire(subs[i].GetEventListener(Name), a);
 				})
 			);
 		}
 
-		protected abstract void Fire(/*EventListener*/object eventListener, LsnValue[] args);
+		protected abstract void Fire(EventListener eventListener, LsnValue[] args);
 
 
 	}

@@ -108,6 +108,17 @@ namespace LsnCore.Values
 		}
 
 
+		public EventListener GetEventListener(string name)
+		{
+			if (CurrentState.HasEventListener(name))
+				return CurrentState.GetEventListener(name);
+			else if(ScObjType.HasEventListener(name))
+				return ScObjType.GetEventListener(name);
+			
+			throw new ArgumentException("", nameof(name));
+		}
+
+
 		internal void SetState(int index)
 		{
 			//TODO: Unsubscribe from old state's event subscriptions (if valid). Run old state exit method.
