@@ -96,6 +96,7 @@
     <Compile Include="LsnCore\Statements\ChangeGlobalVariableStatement.cs" />
     <Compile Include="LsnCore\Statements\GoToStatement.cs" />
     <Compile Include="LsnCore\Types\EventDefinition.cs" />
+    <Compile Include="LsnCore\Types\EventListener.cs" />
     <Compile Include="LsnCore\Types\Field.cs" />
     <Compile Include="LsnCore\Types\HostInterfaceType.cs" />
     <Compile Include="LsnCore\Types\Property.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="LsnCore\Types\TypeId.cs" />
     <Compile Include="LsnCore\LsnValue.cs" />
     <Compile Include="LsnCore\Values\EventInstance.cs" />
+    <Compile Include="LsnCore\Values\ExternalizedEventInstance.cs" />
     <Compile Include="LsnCore\Values\HostInterface.cs" />
     <Compile Include="LsnCore\Values\IHostInterface.cs" />
     <Compile Include="LsnCore\Values\LSN_List.cs" />
