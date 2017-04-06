@@ -15,27 +15,30 @@ namespace LsnCore
 		/// <summary>
 		/// This should only be set from within LSNr, where function bodies are parsed.
 		/// </summary>
-		public List<Component> Components;
-
-		//TODO: Remove, replace with Function.Environment.
-		public LsnResourceThing Resource;
-
+		public IReadOnlyList<Component> Components;
+		
 
 		public override bool HandlesScope { get { return true; } }
 
 
-		public LsnFunction(List<Parameter> parameters, LsnType returnType, string name)
+		public LsnFunction(List<Parameter> parameters, LsnType returnType, string name,LsnEnvironment environment
+			)
 			:base(new FunctionSignature(parameters, name, returnType?.Id))
-		{}
+		{
+			Environment = environment;
+		}
 
-		public LsnFunction(List<Parameter> parameters, TypeId returnType, string name)
+		public LsnFunction(List<Parameter> parameters, TypeId returnType, string name,LsnEnvironment environment
+			)
 			: base(new FunctionSignature(parameters, name, returnType))
-		{}
+		{
+			Environment = environment;
+		}
 
 
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{
-			i.EnterFunctionScope(Resource?.GetEnvironment() ?? LsnEnvironment.Default, StackSize);
+			i.EnterFunctionScope(Environment ?? LsnEnvironment.Default, StackSize);
 			//ToDo: assign variables to stack;
 			//foreach (var pair in args) i.AddVariable(pair.Key, pair.Value); // ToDo: remove AddVariable(...)
 			for (int argI = 0; argI < args.Length; argI++)

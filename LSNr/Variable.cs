@@ -71,7 +71,7 @@ namespace LSNr
 			InitialValue = init;
 			Index = index;
 			var e = init.Fold();
-			if (e.IsReifyTimeConst())
+			if (e.IsReifyTimeConst() && !m)
 			{
 				AccessExpression = e;
 				Index = -1; // This is a constant.

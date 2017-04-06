@@ -69,6 +69,9 @@ namespace LSNr
 
 			// The argument that specifies
 			string t = args.Where(a => Regex.IsMatch(a,@"^\s*type\s*=\s*(\w+)\s*$",RegexOptions.IgnoreCase)).FirstOrDefault();
+
+			if(Path.IsPathRooted(args[0])) throw new ApplicationException("Needs relative path...");
+
 			if (t != null)
 			{ // The type of file is defined.
 				string type = Regex.Match(t, @"^\s*type\s*=\s*(\w+)\s*$", RegexOptions.IgnoreCase)
@@ -78,20 +81,20 @@ namespace LSNr
 				if (type == "resource" || type == "res")
 				{
 					LsnResourceThing res = null;
-					return MakeResource(src, destination, out res, args);
+					return MakeResource(Path.GetFileNameWithoutExtension(args[0]),src, destination, out res, args);
 				}
 
 				if (type == "quest") throw new NotImplementedException();
 			}
 			// Otherwise it's a script.
-			return MakeScript(src,destination,args);
+			return MakeScript(Path.GetFileNameWithoutExtension(args[0]),src,destination,args);
 		}
 
 		
 		
-		private static int MakeScript(string src, string destination, string[] args)
+		private static int MakeScript(string path, string src, string destination, string[] args)
 		{
-			var sc = new PreScript(src);
+			var sc = new PreScript(src,path);
 			sc.Reify();
 			if(! sc.Valid)
 			{
@@ -109,9 +112,9 @@ namespace LSNr
 
 
 
-		internal static int MakeResource(string src, string destination, out LsnResourceThing res, string[] args)
+		internal static int MakeResource(string path, string src, string destination, out LsnResourceThing res, string[] args)
 		{
-			var rs = new PreResource(src);
+			var rs = new PreResource(src,path);
 			rs.Reify();
 			if(! rs.Valid)
 			{

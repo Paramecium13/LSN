@@ -16,10 +16,17 @@ namespace LsnCore
 	{
 		public readonly FunctionSignature Signature;
 
+
 		public string Name => Signature.Name;
+
+
 		public TypeId ReturnType => Signature.ReturnType;
+
+
 		public IReadOnlyList<Parameter> Parameters => Signature.Parameters;
-		public int StackSize { get; set; }
+
+
+		public int StackSize { get; set; } // Should only be set in LSNr.
 
 
 		protected Function(FunctionSignature signature)

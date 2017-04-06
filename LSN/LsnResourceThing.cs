@@ -18,7 +18,7 @@ namespace LsnCore
 
 		public LsnEnvironment GetEnvironment()
 		{
-			if (Environment == null) Environment = new LsnEnvironment(this);
+			//if (Environment == null) Environment = new LsnEnvironment(this);
 			return Environment;
 		}
 	}

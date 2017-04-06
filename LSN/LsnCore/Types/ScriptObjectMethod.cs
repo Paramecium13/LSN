@@ -15,23 +15,23 @@ namespace LsnCore.Types
 		public readonly bool IsVirtual;
 
 
-		public bool IsAbstract => IsVirtual && Components == null;
+		public readonly bool IsAbstract;
 
-		private readonly IReadOnlyList<Component> Components;
 
-		private readonly LsnResourceThing Resource;
+		public IReadOnlyList<Component> Components; // Assigned in LSNr.
+		
 
-		public ScriptObjectMethod(TypeId type, TypeId returnType, IList<Parameter> parameters, IReadOnlyList<Component> components,
-			LsnResourceThing res, bool isVirtual, string name)
+
+		public ScriptObjectMethod(TypeId type, TypeId returnType, IList<Parameter> parameters, LsnEnvironment environment,
+			bool isVirtual, bool isAbstract, string name)
 			:base(type,returnType,name,parameters)
 		{
 			if(Parameters[0].Name != "self")
 				throw new ApplicationException("");
-			if(Parameters[1].Name != "host")
-				throw new ApplicationException("");
-			Resource = res;
-			Components = components;
+			Environment = environment;
 			IsVirtual = isVirtual;
+			IsAbstract = isAbstract;
+			if (IsAbstract && !IsVirtual) throw new ArgumentException();
 		}
 
 
@@ -50,7 +50,7 @@ namespace LsnCore.Types
 
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{
-			i.EnterFunctionScope(Resource?.GetEnvironment() ?? LsnEnvironment.Default, StackSize);
+			i.EnterFunctionScope(Environment, StackSize);
 			for (int argI = 0; argI < args.Length; argI++) // Assign variables to the stack.
 				i.SetValue(argI, args[argI]);
 			for (int x = 0; x < Components.Count; x++)

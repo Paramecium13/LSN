@@ -48,24 +48,29 @@ namespace LSNr
 
 		protected readonly List<string> Includes = new List<string>();
 
-		protected BasePreScript(string src)
+		protected LsnEnvironment _Environment;
+		protected LsnEnvironment Environment => _Environment;
+
+		protected readonly string Path;
+
+		protected BasePreScript(string src, string path)
 		{
 			Source = src;
-			IncludeFunction(LsnMath.ACos);
-			IncludeFunction(LsnMath.ASin);
-			IncludeFunction(LsnMath.ATan);
-			IncludeFunction(LsnMath.Cos);
-			IncludeFunction(LsnMath.Cosh);
-			IncludeFunction(LsnMath.ErrorFunction);
-			IncludeFunction(LsnMath.Gamma);
+			//IncludeFunction(LsnMath.ACos);
+			//IncludeFunction(LsnMath.ASin);
+			//IncludeFunction(LsnMath.ATan);
+			//IncludeFunction(LsnMath.Cos);
+			//IncludeFunction(LsnMath.Cosh);
+			//IncludeFunction(LsnMath.ErrorFunction);
+			//IncludeFunction(LsnMath.Gamma);
 			IncludeFunction(LsnMath.Hypot);
-			IncludeFunction(LsnMath.Log);
-			IncludeFunction(LsnMath.Log10);
-			IncludeFunction(LsnMath.Sin);
-			IncludeFunction(LsnMath.Sinh);
+			//IncludeFunction(LsnMath.Log);
+			//IncludeFunction(LsnMath.Log10);
+			//IncludeFunction(LsnMath.Sin);
+			//IncludeFunction(LsnMath.Sinh);
 			IncludeFunction(LsnMath.Sqrt);
-			IncludeFunction(LsnMath.Tan);
-			IncludeFunction(LsnMath.Tanh);
+			//IncludeFunction(LsnMath.Tan);
+			//IncludeFunction(LsnMath.Tanh);
 
 			foreach (var t in LoadedTypes)
 				t.Id.Load(t);// Load/bind it's type ids...
@@ -126,7 +131,7 @@ namespace LSNr
 			}
 			else
 			{
-				if (Program.MakeResource(File.ReadAllText(srcPath), objPath, out res, new string[0]) != 0)
+				if (Program.MakeResource(System.IO.Path.GetFileNameWithoutExtension(path),File.ReadAllText(srcPath), objPath, out res, new string[0]) != 0)
 					throw new ApplicationException();
 			}
 			
@@ -181,6 +186,8 @@ namespace LSNr
 		/// <returns></returns>
 		protected string ProcessDirectives(string source)
 		{
+			var usePaths = new List<string>();
+			usePaths.Add(Path);
 			if (Regex.IsMatch(source, "#using", RegexOptions.IgnoreCase))
 			{
 				//Process #using directive(s)
@@ -190,8 +197,11 @@ namespace LSNr
 					var res = Load(path);
 					Use(res, path);
 					source = source.Replace(match.Value, ""); // TODO: Test.
+					usePaths.Add(path);
 				}
 			}
+			_Environment = new LsnEnvironment(usePaths);
+
 			if (Regex.IsMatch(source, "#include", RegexOptions.IgnoreCase))
 			{
 				//Process #include directive(s)

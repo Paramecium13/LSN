@@ -26,9 +26,9 @@ namespace LSNr
 		/// 
 		/// </summary>
 		/// <param name="src"></param>
-		public PreScript(string src) :base(src)
+		public PreScript(string src, string path) :base(src,path)
 		{
-			Text = Source;
+			Text = Source; // ??
 		}
 
 		/// <summary>

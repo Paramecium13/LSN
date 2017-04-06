@@ -38,9 +38,7 @@ namespace LSNr
 
 
 
-		public PreResource(string src) : base(src)
-		{
-		}
+		public PreResource(string src, string path) : base(src,path){}
 
 		/// <summary>
 		/// Reifies the source...
@@ -183,7 +181,7 @@ namespace LSNr
 						}
 						fnBody.Add(tokens[i]);
 					}
-					var fn = new LsnFunction(paramaters, returnType, name);
+					var fn = new LsnFunction(paramaters, returnType, name, Environment);
 					IncludeFunction(fn);
 					FunctionBodies.Add(name, fnBody);
 					MyFunctions.Add(name,fn);
