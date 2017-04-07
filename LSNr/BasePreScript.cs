@@ -394,6 +394,8 @@ namespace LSNr
 			return type;
 		}
 
+		public TypeId GetTypeId(string name) => GetType(name).Id;
+
 
 		/*public virtual void AddType(LsnType type)
 		{

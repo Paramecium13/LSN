@@ -21,6 +21,10 @@ namespace LsnCore.Types
 			Name = t.Name; _Type = t;
 		}
 
+		internal TypeId(string name)
+		{
+			Name = name;
+		}
 
 		public void Load(LsnType t)
 		{

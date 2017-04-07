@@ -49,5 +49,7 @@ namespace LSNr
 
 			return SymbolType.Undefined;
 		}
+
+		public TypeId GetTypeId(string name) => Resource.GetTypeId(name);
 	}
 }

@@ -11,10 +11,11 @@ namespace LSNr
 	public interface ITypeContainer
 	{
 		LsnType GetType(string name);
+		TypeId GetTypeId(string name);
 		bool TypeExists(string name);
 		bool GenericTypeExists(string name);
 		GenericType GetGenericType(string name);
-    }
+	}
 
 	public static class TypeContainerExtensions
 	{
@@ -53,6 +54,46 @@ namespace LSNr
 				}
 				endIndex = i + 1;
 				return gType.GetType(generics.Select(t => t.Id).ToList());
+			}
+			endIndex = -1;
+			return null;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="self"></param>
+		/// <param name="tokens"></param>
+		/// <param name="startIndex"></param>
+		/// <param name="endIndex"> The index of the token after the last token used in the type.</param>
+		/// <returns></returns>
+		public static TypeId ParseTypeId(this ITypeContainer self, IReadOnlyList<IToken> tokens, int startIndex, out int endIndex)
+		{
+			int i = startIndex;
+			var tName = tokens[startIndex].Value;
+			if (self.TypeExists(tName))
+			{
+				endIndex = i + 1;
+				return self.GetTypeId(tokens[i].Value);
+			}
+			else if (self.GenericTypeExists(tName))
+			{
+				if (tokens[++i].Value != "<")
+				{
+					Console.WriteLine($"Error: expected token '<', received '{tokens[i].Value}'.");
+					endIndex = -1;
+					return null;
+				}
+				++i;
+				GenericType gType = self.GetGenericType(tName);
+				var generics = new List<TypeId>();
+				while (tokens[i].Value != ">")
+				{
+					generics.Add(self.ParseTypeId(tokens, i, out i));
+					if (tokens[i].Value == ",") i++; // else error?
+				}
+				endIndex = i + 1;
+				return gType.GetType(generics).Id;
 			}
 			endIndex = -1;
 			return null;

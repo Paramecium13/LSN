@@ -17,9 +17,9 @@ namespace LsnCore.Types
 		private readonly IReadOnlyDictionary<string, EventDefinition> EventDefinitions;
 
 
-		public HostInterfaceType(Dictionary<string, FunctionSignature> methods, Dictionary<string, EventDefinition> events)
+		public HostInterfaceType(TypeId id, Dictionary<string, FunctionSignature> methods, Dictionary<string, EventDefinition> events)
 		{
-			MethodDefinitions = methods; EventDefinitions = events;
+			Name = id.Name; Id = id; MethodDefinitions = methods; EventDefinitions = events;
 		}
 
 		public override LsnValue CreateDefaultValue() => LsnValue.Nil;

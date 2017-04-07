@@ -316,6 +316,10 @@ namespace LsnCore
 					_Id = new TypeId(this);
 				return _Id;
 			}
+			protected set
+			{
+				_Id = value;
+			}
 		}
 
 		/// <summary>

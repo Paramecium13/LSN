@@ -94,6 +94,7 @@
     <Compile Include="Optimization\ExpressionWalker.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="PreFunction.cs" />
+    <Compile Include="PreHostInterface.cs" />
     <Compile Include="Preprocessor.cs" />
     <Compile Include="PreResource.cs" />
     <Compile Include="PreScript.cs" />
