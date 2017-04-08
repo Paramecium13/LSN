@@ -201,14 +201,12 @@ namespace LSNr
 			{
 				var preFn = new PreFunction(this);
 				foreach (var param in pair.Value.Parameters)
-				{
 					preFn.CurrentScope.CreateVariable(param);
-				}
 				var parser = new Parser(FunctionBodies[pair.Key], preFn);
 				parser.Parse();
 				preFn.CurrentScope.Pop(parser.Components);
 				pair.Value.Components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
-				pair.Value.StackSize = (preFn.CurrentScope as VariableTable)?.MaxSize?? 0;		
+				pair.Value.StackSize = (preFn.CurrentScope as VariableTable)?.MaxSize?? -1;		
 			}
 		}
 		

@@ -36,6 +36,15 @@ namespace LsnCore.Types
 		public IReadOnlyCollection<Field> FieldsB => Fields;
 
 
+		public ScriptObjectType(TypeId id, TypeId host, IReadOnlyList<Property> properties, IReadOnlyList<Field> fields,
+			IReadOnlyDictionary<string,ScriptObjectMethod> methods, IReadOnlyDictionary<string,EventListener> eventListeners,
+			IReadOnlyDictionary<int,ScriptObjectState> states, int defaultStateIndex)
+		{
+			Name = id.Name; Id = id; HostInterface = host; Properties = properties; Fields = fields; ScriptObjectMethods = methods;
+			EventListeners = eventListeners; _States = states; DefaultStateIndex = defaultStateIndex;
+		}
+
+
 		public ScriptObjectState GetDefaultState()
 			=> _States[DefaultStateIndex];
 

@@ -3,7 +3,7 @@
 namespace LSNr
 {
 	// All variable,field,etc. type symbols in this enum must come before Function.
-	public enum SymbolType { Undefined, Variable, GlobalVariable, Field, Property, Function, ScriptObjectMethod, HostInterfaceMethod}
+	public enum SymbolType { Undefined, Variable, GlobalVariable, Field, Property, ScriptObjectMethod, HostInterfaceMethod, Function}
 
 	public interface IPreScript : ITypeContainer
 	{

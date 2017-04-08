@@ -12,15 +12,14 @@ namespace LsnCore.Types
 		public readonly EventDefinition Definition;
 
 		private readonly LsnEnvironment Environment;
-		private readonly int StackSize;
+
+		internal int StackSize;
+		internal IReadOnlyList<Component> Components;
 		
 
-		private readonly IReadOnlyList<Component> Components;
-		
-
-		public EventListener(EventDefinition definition, LsnEnvironment environment, int stacksize, IList<Component> components)
+		public EventListener(EventDefinition definition, LsnEnvironment environment)
 		{
-			Definition = definition; Environment = environment; StackSize = stacksize; Components = components.ToList();
+			Definition = definition; Environment = environment;
 		}
 
 

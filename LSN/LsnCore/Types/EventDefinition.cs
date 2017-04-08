@@ -19,5 +19,21 @@ namespace LsnCore.Types
 			Parameters = paramaters.ToList();
 		}
 
+		public bool Equivalent(EventDefinition other, bool requireMatchingNames = false)
+		{
+			if (Name != other.Name) return false;
+			if (Parameters.Count != other.Parameters.Count) return false;
+
+			for(int i = 0; i < Parameters.Count; i++)
+			{
+				var param = Parameters[i];
+				var otherParam = other.Parameters[i];
+				if (param.Type != otherParam.Type) return false;
+				if (param.Index != otherParam.Index) return false;
+				if (requireMatchingNames && param.Name != otherParam.Name) return false;
+			}
+
+			return true;
+		}
 	}
 }

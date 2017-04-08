@@ -18,7 +18,7 @@ namespace LsnCore.Types
 		public readonly bool IsAbstract;
 
 
-		public IReadOnlyList<Component> Components; // Assigned in LSNr.
+		internal IReadOnlyList<Component> Components; // Assigned in LSNr.
 		
 
 

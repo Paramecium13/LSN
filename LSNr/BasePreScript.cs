@@ -49,7 +49,7 @@ namespace LSNr
 		protected readonly List<string> Includes = new List<string>();
 
 		protected LsnEnvironment _Environment;
-		protected LsnEnvironment Environment => _Environment;
+		internal LsnEnvironment Environment => _Environment;
 
 		protected readonly string Path;
 

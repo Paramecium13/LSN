@@ -10,7 +10,7 @@ namespace LsnCore.Types
 {
 	public sealed class ScriptObjectState
 	{
-		public readonly string Name;
+		//public readonly string Name;
 		public readonly int Id;
 
 
@@ -22,6 +22,12 @@ namespace LsnCore.Types
 
 		private readonly IReadOnlyDictionary<string, EventListener> EventListeners;
 
+
+		public ScriptObjectState(/*string name,*/ int id, IReadOnlyDictionary<string, ScriptObjectMethod> methods, IReadOnlyDictionary<string, EventListener>  eventListeners)
+		{
+			Id = id; ScriptObjectMethods = methods; EventListeners = eventListeners;
+			EventsListenedTo = EventListeners.Keys.ToList();
+		}
 
 
 		public bool HasMethod(string name) => ScriptObjectMethods.ContainsKey(name);

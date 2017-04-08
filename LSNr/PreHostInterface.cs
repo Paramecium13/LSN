@@ -35,9 +35,9 @@ namespace LSNr
 		}
 
 
-		internal PreHostInterface(string name, BasePreScript parent)
+		internal PreHostInterface(string name, BasePreScript parent, IReadOnlyList<IToken> tokens)
 		{
-			Name = name; HostInterfaceId = new TypeId(name); 
+			Name = name; HostInterfaceId = new TypeId(name);  Parent = parent; Tokens = tokens;
 		}
 
 
@@ -179,7 +179,7 @@ namespace LSNr
 			var parameters = ParseParameters(paramTokens);
 			TypeId returnType = null;
 			i++; // 'i' Points to the thing after the closing parenthesis.
-			if (i >= Tokens.Count - 1)
+			if (i > Tokens.Count - 1)
 			{
 				Valid = false;
 				Console.WriteLine($"Error line {Tokens[Tokens.Count - 1].LineNumber}: Expected ';' or '->'");
