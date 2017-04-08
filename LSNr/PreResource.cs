@@ -37,6 +37,12 @@ namespace LSNr
 		//private readonly List<GenericType> GenericTypes = LsnType.GetBaseGenerics();
 
 
+		private readonly Dictionary<string, PreHostInterface> PreHostInterfaces = new Dictionary<string, PreHostInterface>();
+		private readonly Dictionary<string, HostInterfaceType> HostInterfaces = new Dictionary<string, HostInterfaceType>();
+
+		private readonly Dictionary<string, PreScriptObject> PreScriptObjects = new Dictionary<string, PreScriptObject>();
+		private readonly Dictionary<string, ScriptObjectType> ScriptObjects = new Dictionary<string, ScriptObjectType>();
+
 
 		public PreResource(string src, string path) : base(src,path){}
 
@@ -373,6 +379,8 @@ namespace LSNr
 			resource.RecordTypes = RecordTypes;
 			resource.StructTypes = StructTypes;
 			resource.Usings = Usings;
+			resource.HostInterfaces = HostInterfaces;
+			resource.ScriptObjectTypes = ScriptObjects;
 			return resource;
 		}
 

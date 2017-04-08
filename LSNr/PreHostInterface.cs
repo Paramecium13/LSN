@@ -14,7 +14,7 @@ namespace LSNr
 	{
 		private readonly string Name;
 
-		private readonly TypeId HostInterfaceId;
+		public readonly TypeId HostInterfaceId;
 
 		private readonly BasePreScript Parent;
 

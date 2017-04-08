@@ -17,7 +17,7 @@ namespace LSNr
 		public abstract bool Valid { get; set; }
 
 		// The Id of the ScriptObject this is for.
-		protected readonly TypeId Id;
+		public readonly TypeId Id;
 		protected readonly IReadOnlyList<IToken> Tokens;
 		protected readonly PreResource Resource;
 		protected readonly HostInterfaceType HostType;

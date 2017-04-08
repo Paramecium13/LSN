@@ -35,6 +35,22 @@ namespace LsnCore
 
 		public List<string> Includes { get { return _Includes; } set { _Includes = value; } }
 
+		private IReadOnlyDictionary<string, ScriptObjectType> _ScriptObjectTypes;
+		public IReadOnlyDictionary<string, ScriptObjectType> ScriptObjectTypes
+		{
+			get { return _ScriptObjectTypes; }
+			set { _ScriptObjectTypes = value; }
+		}
+
+		private IReadOnlyDictionary<string,HostInterfaceType> _HostInterfaces;
+
+		public IReadOnlyDictionary<string, HostInterfaceType> HostInterfaces
+		{
+			get { return _HostInterfaces; }
+			set { _HostInterfaces = value; }
+		}
+
+
 		//protected string Source { get; set; }
 		//protected List<string> PreTokens { get; set; }
 		//protected List<IToken> Tokens { get; set; }
