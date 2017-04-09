@@ -27,7 +27,7 @@ namespace LsnCore
 
 
 
-		public bool IsNull => Data == Data || Value != null;
+		public bool IsNull => Data != Data && Value == null;
 
 
 		public bool BoolValue =>

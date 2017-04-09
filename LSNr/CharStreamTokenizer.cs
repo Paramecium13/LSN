@@ -447,6 +447,18 @@ namespace LSNr
 						tokenType = TokenType.Assignment;
 						Pop();
 					}
+					else if (c == '/')
+					{
+						State = TokenizerState.CommentSingleLine;
+						tokenType = TokenType.Unknown;
+						StrB.Clear();
+					}
+					else if (c == '*')
+					{
+						State = TokenizerState.CommentMultiLine;
+						tokenType = TokenType.Unknown;
+						StrB.Clear();
+					}
 					else
 					{
 						tokenType = TokenType.Operator;

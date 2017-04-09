@@ -36,7 +36,7 @@ namespace LSNr
 
 		//private readonly List<GenericType> GenericTypes = LsnType.GetBaseGenerics();
 
-
+		//private readonly Dictionary<string, IReadOnlyList<IToken>> HostInterfaceBodies = new Dictionary<string, IReadOnlyList<IToken>>();
 		private readonly Dictionary<string, PreHostInterface> PreHostInterfaces = new Dictionary<string, PreHostInterface>();
 		private readonly Dictionary<string, HostInterfaceType> HostInterfaces = new Dictionary<string, HostInterfaceType>();
 
@@ -53,7 +53,8 @@ namespace LSNr
 		{
 			ProcessDirectives();
 			Tokenize();
-			PreParseFunctions(ParseStructsAndRecords());
+			PreParseFunctions(PreParseTypes());
+			ParseHostInterfaces();
 			ParseFunctions();
         }
 		
@@ -70,7 +71,7 @@ namespace LSNr
 		/// Go through the source, parsing structs and records.
 		/// </summary>
 		/// <returns> Tokens that are not part of a struct or record.</returns>
-		private IReadOnlyList<IToken> ParseStructsAndRecords()
+		private IReadOnlyList<IToken> PreParseTypes()
 		{
 			var otherTokens = new List<IToken>();
 			for(int i = 0; i < Tokens.Count; i++)
@@ -83,7 +84,6 @@ namespace LSNr
 					{
 						Console.WriteLine($"Error in parsing struct {name}: invalid token: {Tokens[i]}, expected {{.");
 						Valid = false;
-
 					}
 					else ++i; // Move on to the token after '{'.
 					var tokens = new List<IToken>();
@@ -102,6 +102,24 @@ namespace LSNr
 					var tokens = new List<IToken>();
 					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
 					MakeRecord(name, tokens);
+				}
+				else if (val == "hostinterface")
+				{
+					string name = Tokens[++i].Value; // Move on to the next token, get the name.
+					if (Tokens[++i].Value != "{") // Move on to the next token, make sure it is '{'.
+					{
+						Console.WriteLine($"Error in parsing HostInterface {name}: invalid token: {Tokens[i]}, expected {{.");
+						Valid = false;
+					}
+					else ++i; // Move on to the token after '{'.
+					var tokens = new List<IToken>();
+					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
+					PreHostInterfaces.Add(name, new PreHostInterface(name, this, tokens));
+				}
+				else if (val == "scriptobject")
+				{
+					string name = Tokens[++i].Value; // Move on to the next token, get the name.
+					throw new NotImplementedException();
 				}
 				else otherTokens.Add(Tokens[i]);
 			}
@@ -142,7 +160,7 @@ namespace LSNr
 						Valid = false; continue;
 					}*/
 					// At this point, the current token (i.e. tokens[i].Value) is ')'.
-					LsnType returnType = null;
+					TypeId returnType = null;
 					if (tokens[++i].Value == "->")
 					{
 						if(tokens[++i].Value == "(")
@@ -157,7 +175,7 @@ namespace LSNr
 						{ // The current token is the token after '->'.
 							try
 							{
-								returnType = this.ParseType(tokens, i, out i);
+								returnType = this.ParseTypeId(tokens, i, out i);
 							}
 							catch (Exception e)
 							{
@@ -217,6 +235,15 @@ namespace LSNr
 		}
 		
 
+		private void ParseHostInterfaces()
+		{
+			foreach(var pre in PreHostInterfaces.Values)
+			{
+				var host = pre.Parse();
+				HostInterfaces.Add(host.Name, host);
+			}
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -231,22 +258,22 @@ namespace LSNr
 				string name = tokens[i].Value;
 				if(tokens[++i].Value != ":")
 					throw new ApplicationException($"Error: Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.");
-                LsnType type = this.ParseType(tokens, ++i, out i);
+                TypeId type = this.ParseTypeId(tokens, ++i, out i);
 				LsnValue defaultValue = LsnValue.Nil;
 				if (i < tokens.Count && tokens[i].Value == "=")
 				{
 					if (tokens[++i] is StringToken)
 					{
-						if (type != LsnType.string_)
+						if (type != LsnType.string_.Id)
 							throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type string to a parameter of type {type.Name}");
 						defaultValue = new LsnValue (new StringValue(tokens[i].Value));
 						if (i + 1 < tokens.Count) i++;
 					}
 					else if (tokens[i] is IntToken)
 					{
-						if (type != LsnType.int_)
+						if (type != LsnType.int_.Id)
 						{
-							if (type == LsnType.double_)
+							if (type == LsnType.double_.Id)
 							{
 								defaultValue = new LsnValue((tokens[i] as IntToken?)?.IVal ?? 0);
 							}
@@ -258,7 +285,7 @@ namespace LSNr
 					}
 					else if (tokens[i] is FloatToken)
 					{
-						if (type != LsnType.double_)
+						if (type != LsnType.double_.Id)
 							throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type double to a parameter of type {type.Name}");
 						defaultValue = new LsnValue((tokens[i] as FloatToken?)?.DVal ?? 0.0);
 						if(i + 1 < tokens.Count) i++;
@@ -266,7 +293,7 @@ namespace LSNr
 					// Bools and other stuff...
 					else throw new ApplicationException($"Error in parsing default value for parameter {name}.");
 				}
-				paramaters.Add(new Parameter(name, type.Id, defaultValue, index++));
+				paramaters.Add(new Parameter(name, type, defaultValue, index++));
 				if (i < tokens.Count && tokens[i].Value != ",")
 					throw new ApplicationException($"Error: expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.");
 			}
@@ -384,6 +411,18 @@ namespace LSNr
 			return resource;
 		}
 
+
+		public override bool TypeExists(string name) => PreScriptObjects.ContainsKey(name) || PreHostInterfaces.ContainsKey(name) || base.TypeExists(name);
+
+
+		public override TypeId GetTypeId(string name)
+		{
+			if (PreScriptObjects.ContainsKey(name))
+				return PreScriptObjects[name].Id;
+			if (PreHostInterfaces.ContainsKey(name))
+				return PreHostInterfaces[name].HostInterfaceId;
+			return base.GetTypeId(name);
+		}
 
 		public override SymbolType CheckSymbol(string name)
 		{

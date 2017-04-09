@@ -110,7 +110,7 @@ namespace LSNr
 				string name = tokens[i].Value;
 				if (tokens[++i].Value != ":")
 					throw new ApplicationException($"Error: Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.");
-				LsnType type = this.ParseType(tokens, ++i, out i);
+				var type = this.ParseTypeId(tokens, ++i, out i);
 				LsnValue defaultValue = LsnValue.Nil;
 				if (i < tokens.Count && tokens[i].Value == "=")
 				{
@@ -118,7 +118,7 @@ namespace LSNr
 					Console.Write($"Error line {tokens[i].LineNumber}: Cannot have default values for host interface methods or events.");
 					i++;
 				}
-				paramaters.Add(new Parameter(name, type.Id, defaultValue, index++));
+				paramaters.Add(new Parameter(name, type, defaultValue, index++));
 				if (i < tokens.Count && tokens[i].Value != ",")
 					throw new ApplicationException($"Error: expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.");
 			}
@@ -136,7 +136,6 @@ namespace LSNr
 			i++; // 'i' should now point to the opening parenthesis.
 			if (Tokens[i].Value != "(")
 				throw new ApplicationException("...");
-			i++;
 
 			var paramTokens = new List<IToken>();
 			while (Tokens[++i].Value != ")") // This starts with the token after '('.
@@ -145,7 +144,7 @@ namespace LSNr
 			var parameters = ParseParameters(paramTokens);
 
 			i++; // 'i' Points to the thing after the closing parenthesis.
-			if (i >= Tokens.Count - 1)
+			if (i > Tokens.Count - 1)
 			{
 				Valid = false;
 				Console.WriteLine($"Error line {Tokens[Tokens.Count - 1].LineNumber}: Expected ';'");
@@ -170,7 +169,6 @@ namespace LSNr
 			i++; // 'i' should now point to the opening parenthesis.
 			if (Tokens[i].Value != "(")
 				throw new ApplicationException("...");
-			i++;
 
 			var paramTokens = new List<IToken>();
 			while (Tokens[++i].Value != ")") // This starts with the token after '('.
@@ -211,7 +209,7 @@ namespace LSNr
 			}
 			else throw new ApplicationException("Unexpected token...");
 
-			if (i >= Tokens.Count - 1)
+			if (i > Tokens.Count - 1)
 			{
 				Valid = false;
 				Console.WriteLine($"Error line {Tokens[Tokens.Count - 1].LineNumber}: Expected ';'");

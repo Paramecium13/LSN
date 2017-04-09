@@ -46,7 +46,7 @@ namespace LSNr
 		private int DefaultStateIndex;
 
 
-		public PreScriptObject(string name, PreResource resource, HostInterfaceType host, IReadOnlyList<IToken> tokens):base(tokens, new TypeId(name),resource, host)
+		public PreScriptObject(string name, PreResource resource, string hostName, IReadOnlyList<IToken> tokens):base(tokens, new TypeId(name),resource,hostName)
 		{
 			Name = name;
 		}
@@ -225,7 +225,7 @@ namespace LSNr
 			ParseMethods();
 
 			// Parse event listeners
-			ParseEventListeners()
+			ParseEventListeners();
 
 			// Parse states
 

@@ -17,6 +17,7 @@ namespace LsnCore.Types
 		{
 			if (paramaters.Any(p => !p.DefaultValue.IsNull)) throw new ArgumentException("Event parameters cannot have default values.", "parameters");
 			Parameters = paramaters.ToList();
+			Name = name;
 		}
 
 		public bool Equivalent(EventDefinition other, bool requireMatchingNames = false)

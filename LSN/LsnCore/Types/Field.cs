@@ -18,6 +18,11 @@ namespace LsnCore.Types
 			Index = index; Name = name; Type = type.Id;
 		}
 
+		public Field(int index, string name, TypeId type)
+		{
+			Index = index; Name = name; Type = type;
+		}
+
 		public bool Equals(Field other)
 			=> Index == other.Index && Name == other.Name && Type == other.Type;
 	}

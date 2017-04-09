@@ -17,10 +17,12 @@ namespace LSNr
 		public abstract bool Valid { get; set; }
 
 		// The Id of the ScriptObject this is for.
-		public readonly TypeId Id;
+		internal readonly TypeId Id;
 		protected readonly IReadOnlyList<IToken> Tokens;
 		protected readonly PreResource Resource;
-		protected readonly HostInterfaceType HostType;
+
+		internal readonly string HostName;
+		internal HostInterfaceType HostType;
 
 		protected readonly Dictionary<string, ScriptObjectMethod> Methods = new Dictionary<string, ScriptObjectMethod>();
 		protected readonly Dictionary<string, IReadOnlyList<IToken>> MethodBodies = new Dictionary<string, IReadOnlyList<IToken>>();
@@ -38,9 +40,9 @@ namespace LSNr
 		public abstract bool TypeExists(string name);
 
 
-		protected BasePreScriptObject(IReadOnlyList<IToken> tokens, TypeId id, PreResource resource, HostInterfaceType host)
+		protected BasePreScriptObject(IReadOnlyList<IToken> tokens, TypeId id, PreResource resource, string hostName)
 		{
-			Tokens = tokens; Id = id; Resource = resource; HostType = host;
+			Tokens = tokens; Id = id; Resource = resource; HostName = hostName;
 		}
 
 
@@ -63,7 +65,7 @@ namespace LSNr
 				string name = tokens[i].Value;
 				if (tokens[++i].Value != ":")
 					throw new ApplicationException($"Error: Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.");
-				LsnType type = this.ParseType(tokens, ++i, out i);
+				var type = this.ParseTypeId(tokens, ++i, out i);
 				LsnValue defaultValue = LsnValue.Nil;
 				if (i < tokens.Count && tokens[i].Value == "=")
 				{
@@ -71,7 +73,7 @@ namespace LSNr
 					Console.Write($"Error line {tokens[i].LineNumber}: Cannot have default values for host interface methods or events.");
 					i++;
 				}
-				paramaters.Add(new Parameter(name, type.Id, defaultValue, index++));
+				paramaters.Add(new Parameter(name, type, defaultValue, index++));
 				if (i < tokens.Count && tokens[i].Value != ",")
 					throw new ApplicationException($"Error: expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.");
 			}
@@ -96,9 +98,9 @@ namespace LSNr
 			}
 			// 'i' points to the name.
 			var name = Tokens[i].Value;
+			i++;
 			if (Tokens[i].Value != "(")
 				throw new ApplicationException("...");
-			i++;
 
 			var paramTokens = new List<IToken>();
 			while (Tokens[++i].Value != ")") // This starts with the token after '('.
