@@ -41,7 +41,9 @@ namespace LSNr
 			if (tokens.Any(t => t.Value == "goto"))
 				throw new NotImplementedException("GoTo statement considered not implemented.");
 
-			var symType = script.CheckSymbol(v);
+			// Expression statement.
+			
+			/*var symType = script.CheckSymbol(v);
 			switch (symType)
 			{
 				case SymbolType.Undefined:
@@ -62,8 +64,8 @@ namespace LSNr
 					break;
 				default:
 					break;
-			}
-
+			}*/
+			
 			throw new ApplicationException(v);
 		}
 
