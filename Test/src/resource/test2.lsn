@@ -15,6 +15,59 @@ fn Meow(cat : Cat)
 	say cat . Name + ": Meow!";
 }
 
+
+ScriptObject StandardDoor < IStandardDoor
+{
+	property InitiallyLocked : bool;
+	property KeyId : string;
+	property DestMap : string;
+	property DestX : int;
+	property DestY : int;
+	
+	/*auto state StartState
+	{
+		fn Start()
+		{
+			if(InitiallyLocked){
+				SetState LockedState;
+			} else {
+				SetState UnlockedState;
+			}
+		}
+	}
+	
+	state LockedState
+	{		
+		on Activate(actor : IActor)
+		{
+			// If the player has the key, unlock the door.
+			if(actor.HasItem(KeyId))
+			{
+				SetState UnlockedState;
+			}
+			return;
+		}
+	}
+	
+	state UnlockedState
+	{	
+		on Activate(actor : IActor)
+		{
+			// Open the door.
+			actor goto DestMap` DestX` DestY;
+			return;
+		}    
+	}*/
+  
+}
+
+HostInterface IEnemy
+{
+	fn GetHP() -> int;
+	fn Kill();
+}
+
+
 HostInterface IActor
 {
 	fn HasItem(itemId : string ) -> bool;

@@ -55,7 +55,9 @@ namespace LSNr
 			Tokenize();
 			PreParseFunctions(PreParseTypes());
 			ParseHostInterfaces();
+			PreParseScriptObjects();
 			ParseFunctions();
+			ParseScriptObjects();
         }
 		
 
@@ -119,7 +121,33 @@ namespace LSNr
 				else if (val == "scriptobject")
 				{
 					string name = Tokens[++i].Value; // Move on to the next token, get the name.
-					throw new NotImplementedException();
+					string hostName = null;
+					i++;// Move on to the next token...
+					if (Tokens[i].Value == "<")
+					{
+						i++;
+						hostName = Tokens[i].Value;
+						i++;
+					}
+
+					if (Tokens[i].Value != "{")
+						throw new ApplicationException("");
+
+					var tokens = new List<IToken>();
+					int openCount = 1;
+					while (openCount > 0)
+					{
+						i++;
+
+						var v = Tokens[i].Value;
+						if (v == "{")
+							openCount++;
+						else if (v == "}")
+							openCount--;
+
+						if (openCount > 0) tokens.Add(Tokens[i]);
+					}
+					PreScriptObjects.Add(name, new PreScriptObject(name, this, hostName, tokens));
 				}
 				else otherTokens.Add(Tokens[i]);
 			}
@@ -241,6 +269,28 @@ namespace LSNr
 			{
 				var host = pre.Parse();
 				HostInterfaces.Add(host.Name, host);
+			}
+		}
+
+
+		private void PreParseScriptObjects()
+		{
+			foreach (var pre in PreScriptObjects.Values)
+			{
+				if (!TypeExists(pre.HostName))
+					throw new ApplicationException("...");
+				pre.HostType = HostInterfaces[pre.HostName];
+				pre.PreParse();
+			}
+		}
+
+
+		private void ParseScriptObjects()
+		{
+			foreach(var pre in PreScriptObjects.Values)
+			{
+				var sc = pre.Parse();
+				ScriptObjects.Add(sc.Name, sc);
 			}
 		}
 
@@ -408,6 +458,7 @@ namespace LSNr
 			resource.Usings = Usings;
 			resource.HostInterfaces = HostInterfaces;
 			resource.ScriptObjectTypes = ScriptObjects;
+			//TODO: Add IncludedTypes.
 			return resource;
 		}
 

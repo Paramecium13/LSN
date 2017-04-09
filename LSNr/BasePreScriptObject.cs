@@ -27,7 +27,7 @@ namespace LSNr
 		protected readonly Dictionary<string, ScriptObjectMethod> Methods = new Dictionary<string, ScriptObjectMethod>();
 		protected readonly Dictionary<string, IReadOnlyList<IToken>> MethodBodies = new Dictionary<string, IReadOnlyList<IToken>>();
 		protected readonly Dictionary<string, EventListener> EventListeners = new Dictionary<string, EventListener>();
-		protected readonly Dictionary<string, IReadOnlyList<IToken>> EventListenerBodies;
+		protected readonly Dictionary<string, IReadOnlyList<IToken>> EventListenerBodies = new Dictionary<string, IReadOnlyList<IToken>>();
 
 		public abstract SymbolType CheckSymbol(string name);
 		public abstract bool FunctionExists(string name);

@@ -63,6 +63,8 @@ namespace LSNr
 		public override GenericType GetGenericType(string name) => Resource.GetGenericType(name);
 
 
+		private bool PreParsed = false;
+
 		public override SymbolType CheckSymbol(string name)
 		{
 			if (Methods.ContainsKey(name)) return SymbolType.ScriptObjectMethod;
@@ -106,7 +108,7 @@ namespace LSNr
 		protected override bool MethodSignatureValid(FunctionSignature signature) => !Methods.ContainsKey(signature.Name); // No method exists with this name.
 
 
-		private void PreParse()
+		internal void PreParse()
 		{
 			bool defaultStateDefined = false;
 			int previousStateIndex = -1;
@@ -181,7 +183,7 @@ namespace LSNr
 						throw new NotImplementedException("");
 				}
 			}
-
+			PreParsed = true;
 		}
 
 		
@@ -219,8 +221,8 @@ namespace LSNr
 
 		public ScriptObjectType Parse()
 		{
-			PreParse();
-
+			if (!PreParsed)
+				throw new InvalidOperationException();
 			// Parse methods
 			ParseMethods();
 

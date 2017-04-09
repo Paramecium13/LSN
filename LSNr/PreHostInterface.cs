@@ -207,7 +207,8 @@ namespace LSNr
 					}
 				}
 			}
-			else throw new ApplicationException("Unexpected token...");
+			else if(Tokens[i].Value != ";")
+				throw new ApplicationException("Unexpected token...");
 
 			if (i > Tokens.Count - 1)
 			{

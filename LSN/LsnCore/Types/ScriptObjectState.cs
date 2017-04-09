@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Types
 {
+	[Serializable]
 	public sealed class ScriptObjectState
 	{
 		//public readonly string Name;

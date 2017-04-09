@@ -19,17 +19,9 @@ namespace LSNr
 		/// 
 		/// </summary>
 		protected readonly string Source;
-
-
 		protected string Text;
-
-
 		private bool _Mutable = false;
-
-
 		protected IReadOnlyList<IToken> Tokens;
-
-
 		public abstract IScope CurrentScope { get; set; }
 
 		/// <summary>
@@ -44,7 +36,6 @@ namespace LSNr
 
 
 		protected readonly List<string> Usings = new List<string>();
-
 
 		protected readonly List<string> Includes = new List<string>();
 
@@ -101,6 +92,16 @@ namespace LSNr
 			{
 				IncludedTypes.Add(stType);
 				stType.Id.Load(stType);
+			}
+			foreach (var hostInterface in resource.HostInterfaces.Values)
+			{
+				IncludedTypes.Add(hostInterface);
+				hostInterface.Id.Load(hostInterface);
+			}
+			foreach(var scObj in resource.ScriptObjectTypes.Values)
+			{
+				IncludedTypes.Add(scObj);
+				scObj.Id.Load(scObj);
 			}
 			//ToDo: Generic types and functions...
 
@@ -247,6 +248,16 @@ namespace LSNr
 			{
 				LoadedTypes.Add(stType);
 				stType.Id.Load(stType);
+			}
+			foreach (var hostInterface in resource.HostInterfaces.Values)
+			{
+				LoadedTypes.Add(hostInterface);
+				hostInterface.Id.Load(hostInterface);
+			}
+			foreach (var scObj in resource.ScriptObjectTypes.Values)
+			{
+				LoadedTypes.Add(scObj);
+				scObj.Id.Load(scObj);
 			}
 			//ToDo: Generic types and functions...
 			Usings.Add(path);
