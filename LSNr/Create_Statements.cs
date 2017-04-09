@@ -42,7 +42,11 @@ namespace LSNr
 				throw new NotImplementedException("GoTo statement considered not implemented.");
 
 			if (tokens.Any(t => t.Value == "="))
-				throw new NotImplementedException("AdvancedReassignmentStatement not yet implemented.");
+			{
+				var leftTokens = tokens.TakeWhile(t => t.Value != "=").ToList();
+				var rightTokens = tokens.Skip(leftTokens.Count + 1).ToList();
+				return AdvancedReassignment(Express(leftTokens, script), Express(rightTokens, script));
+			}
 			// Assignment of a field or an element in a collection. May have multiple levels, e.g. 'a.b[i-1].x = 42;'
 			// Parse both sides of the '=' as expressions. The left side should be either a field access expression or a
 			// collection value access expression. Parse this expression. If it is a field access expression, take the 'Value' and
@@ -111,6 +115,27 @@ namespace LSNr
 			v.AddReasignment(reassign);
 			return reassign;
 		}
+
+
+		private static Statement AdvancedReassignment(IExpression left, IExpression right)
+		{
+			var field = left as FieldAccessExpression;
+			var collection = left as CollectionValueAccessExpression;
+			if(field != null)
+			{
+				if (field.Type != right.Type)
+					throw new ApplicationException("Type error...");
+				return new FieldAssignmentStatement(field.Value, field.Index, right);
+			}
+			if(collection != null)
+			{
+				if (collection.Type != right.Type)
+					throw new ApplicationException("Type error...");
+				return new CollectionValueReassignmentStatement(collection.Collection, collection.Index, right);
+			}
+			throw new ApplicationException("...");
+		}
+
 
 		/// <summary>
 		/// 

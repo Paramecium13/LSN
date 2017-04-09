@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace LsnCore.Values
 {
 	/// <summary>
-	/// A(n) LSN collection value. It's contains values that can be read.
+	/// A(n) LSN collection value. It contains values that can be read.
 	/// </summary>
 	public interface ICollectionValue
 	{

@@ -95,7 +95,9 @@
     <Compile Include="LsnCore\GlobalVariableValueWatched.cs" />
     <Compile Include="LsnCore\LsnFunction.cs" />
     <Compile Include="LsnCore\Statements\ChangeGlobalVariableStatement.cs" />
+    <Compile Include="LsnCore\Statements\CollectionValueReassignmentStatement.cs" />
     <Compile Include="LsnCore\Statements\ExpressionStatement.cs" />
+    <Compile Include="LsnCore\Statements\FieldAssignmentStatement.cs" />
     <Compile Include="LsnCore\Statements\GoToStatement.cs" />
     <Compile Include="LsnCore\Types\EventDefinition.cs" />
     <Compile Include="LsnCore\Types\EventListener.cs" />
