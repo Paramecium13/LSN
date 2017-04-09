@@ -166,13 +166,11 @@ namespace LsnCore.ControlStructures
 
 	public class ElseControl : ControlStructure
 	{
-		public IExpression Condition;
 
 		public List<Component> Body;
 
-		public ElseControl(IExpression c, List<Component> body)
+		public ElseControl(List<Component> body)
 		{
-			Condition = c;
 			Body = body;
 		}
 
@@ -182,8 +180,6 @@ namespace LsnCore.ControlStructures
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
-		{
-			if (Condition.Equals(oldExpr)) Condition = newExpr;
-		}
+		{}
 	}
 }

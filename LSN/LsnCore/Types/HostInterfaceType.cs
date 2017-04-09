@@ -10,11 +10,11 @@ namespace LsnCore.Types
 	public sealed class HostInterfaceType : LsnType
 	{
 		// Method definitions
-		private readonly IReadOnlyDictionary<string, FunctionSignature> MethodDefinitions;
+		internal readonly IReadOnlyDictionary<string, FunctionSignature> MethodDefinitions;
 		
 		
 		// Event definitions
-		private readonly IReadOnlyDictionary<string, EventDefinition> EventDefinitions;
+		internal readonly IReadOnlyDictionary<string, EventDefinition> EventDefinitions;
 
 
 		public HostInterfaceType(TypeId id, Dictionary<string, FunctionSignature> methods, Dictionary<string, EventDefinition> events)

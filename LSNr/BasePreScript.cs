@@ -339,6 +339,16 @@ namespace LSNr
 			}
 		}
 
+		protected void LoadFunctionParamAndReturnTypes(FunctionSignature func)
+		{
+			if (func.ReturnType != null)
+				LoadType(GetType(func.ReturnType.Name));
+			foreach (var param in func.Parameters)
+			{
+				LoadType(GetType(param.Type.Name));
+			}
+		}
+
 		#region Types
 
 
@@ -347,18 +357,31 @@ namespace LSNr
 			if (type.Id.Type == null)
 			{
 				type.Id.Load(type);
+				// Methods...
+				foreach (var func in type.Methods.Values)
+					LoadFunctionParamAndReturnTypes(func);
+				
 				var fType = type as IHasFieldsType;
+				var hType = type as HostInterfaceType;
 				if (fType != null)
 				{
 					foreach (var field in fType.FieldsB)
 						LoadType(GetType(field.Type.Name));
 					// ScriptObject: Load host, methods, properties
 				}
-				// Methods...
-				foreach (var func in type.Methods.Values)
-					LoadFunctionParamAndReturnTypes(func);
-
 				// HostInterface: Load method defs (FunctionDefinition), event defs.
+				else if (hType != null)
+				{
+					foreach(var method in hType.MethodDefinitions.Values)
+						LoadFunctionParamAndReturnTypes(method);
+					foreach(var ev in hType.EventDefinitions.Values)
+					{
+						foreach (var param in ev.Parameters)
+						{
+							LoadType(GetType(param.Type.Name));
+						}
+					}
+				}
 			}
 		}
 

@@ -121,7 +121,7 @@ namespace LSNr
 						var method = leftExpr.Type.Type.Methods[memberName];
 						if (method.Parameters.Count == 1)
 						{
-							if (!(i + 3 < InitialTokens.Count - 1 && InitialTokens[i + 2].Value == "(" && InitialTokens[i + 3].Value == ")"))
+							if (!(i + 3 < InitialTokens.Count && InitialTokens[i + 2].Value == "(" && InitialTokens[i + 3].Value == ")"))
 								throw new ApplicationException($"Error line {InitialTokens[i + 1].LineNumber}: Improperly formated method call.");
 							memberExpression = method.CreateMethodCall
 								  (new List<Tuple<string, IExpression>>(), leftExpr, true/*Script.MethodIsIncluded(name)*/);

@@ -52,8 +52,13 @@ namespace LSNr
 				Parser p = new Parser(body,script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
-				script.CurrentScope = script.CurrentScope.Pop(components);
-				return new ElseControl(Express(head.Skip(1).ToList(), script), components);
+				script.CurrentScope = script.CurrentScope.Pop(components); // 'head.Count == 1'
+				if (head.Count > 1)
+				{
+					script.Valid = false;
+					Console.WriteLine($"Error line {head[1].LineNumber}: Unexpected token '{head[1]}'. Expected '{{'.");
+				}
+				return new ElseControl(components);
 			}
 			if(h == "choice")
 			{
