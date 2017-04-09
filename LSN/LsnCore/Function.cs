@@ -47,32 +47,7 @@ namespace LsnCore
 
 		public virtual FunctionCall CreateCall(IList<Tuple<string,IExpression>> args, bool included = false)
 		{
-			var argsArray = new IExpression[Parameters.Count];
-
-			if (args.Count > 0 && args.Any(a => a.Item1 != ""))
-			{
-				var dict = new Dictionary<string, IExpression>(args.Count);//args.ToDictionary(t => t.Item1, t => t.Item2);
-
-				for (int i = 0; i < args.Count; i++)
-				{
-					if (args[i].Item1 != "")
-						dict.Add(args[i].Item1, args[i].Item2);
-					else dict.Add(Parameters[i].Name, args[i].Item2);
-				}
-				
-
-				foreach (var param in Parameters)
-					argsArray[param.Index] = dict.ContainsKey(param.Name) ? dict[param.Name] : param.DefaultValue;
-			}
-			else
-			{
-				for(int i = 0; i < args.Count; i++)
-					argsArray[i] = args[i].Item2;
-
-				for (int i = args.Count; i < Parameters.Count; i++)
-					argsArray[i] = Parameters[i].DefaultValue;
-				
-			}
+			var argsArray = Signature.CreateArgsArray(args);
 
 			return new FunctionCall(this, argsArray, included);
 		}

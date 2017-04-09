@@ -18,14 +18,14 @@ namespace LsnCore.Expressions
 
 		private readonly string Name;
 
-		private IExpression ScriptObject;
+		private IExpression HostInterface;
 
 		private IExpression[] Arguments;
 
 
-		public HostIntefaceMethodCall(FunctionSignature def, IExpression scriptObject, IExpression[] args)
+		public HostIntefaceMethodCall(FunctionSignature def, IExpression hostInterface, IExpression[] args)
 		{
-			_Type = def.ReturnType; Name = def.Name; ScriptObject = scriptObject; Arguments = args;
+			_Type = def.ReturnType; Name = def.Name; HostInterface = hostInterface; Arguments = args;
 		}
 
 
@@ -36,12 +36,12 @@ namespace LsnCore.Expressions
 
 		public LsnValue Eval(IInterpreter i)
 		{
-			return (ScriptObject.Eval(i).Value as ScriptObject).ExecuteHostInterfaceMethod(Name, Arguments.Select(a => a.Eval(i)).ToArray());
+			return (HostInterface.Eval(i).Value as IHostInterface).CallMethod(Name, Arguments.Select(a => a.Eval(i)).ToArray());
 		}
 
 		public IExpression Fold()
 		{
-			ScriptObject = ScriptObject.Fold();
+			HostInterface = HostInterface.Fold();
 			for (int i = 0; i < Arguments.Length; i++)
 				Arguments[i] = Arguments[i].Fold();
 
@@ -52,10 +52,11 @@ namespace LsnCore.Expressions
 
 		public void Replace(IExpression oldExpr, IExpression newExpr)
 		{
-			if (ScriptObject == oldExpr)
-				ScriptObject = newExpr;
+			if (HostInterface == oldExpr)
+				HostInterface = newExpr;
 			for (int i = 0; i < Arguments.Length; i++)
 				if (Arguments[i] == oldExpr) Arguments[i] = newExpr; 
 		}
+
 	}
 }

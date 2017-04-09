@@ -43,7 +43,9 @@ namespace LsnCore
 		/// <returns></returns>
 		public MethodCall CreateMethodCall(IList<Tuple<string, IExpression>> args, IExpression expression, bool included = false)
 		{
-			var dict = args.ToDictionary(t => t.Item1, t => t.Item2);
+			// This requires that the call use the named parameters. Do something like if (args.Any(a=>a.Item1=="")){...}
+			// to check if it uses parameters by position, rather than name...
+			var dict = args.ToDictionary(t => t.Item1, t => t.Item2); // TODO: Fix.
 			var argsArray = new IExpression[Parameters.Count];
 			argsArray[0] = expression;
 			foreach (var param in Parameters)

@@ -41,30 +41,18 @@ namespace LSNr
 			if (tokens.Any(t => t.Value == "goto"))
 				throw new NotImplementedException("GoTo statement considered not implemented.");
 
+			if (tokens.Any(t => t.Value == "="))
+				throw new NotImplementedException("AdvancedReassignmentStatement not yet implemented.");
+			// Assignment of a field or an element in a collection. May have multiple levels, e.g. 'a.b[i-1].x = 42;'
+			// Parse both sides of the '=' as expressions. The left side should be either a field access expression or a
+			// collection value access expression. Parse this expression. If it is a field access expression, take the 'Value' and
+			// the field index. ... If it is a collection value access expression, take the 'Value' expression and the 'Index' expression.
+
 			// Expression statement.
-			
-			/*var symType = script.CheckSymbol(v);
-			switch (symType)
-			{
-				case SymbolType.Undefined:
-					break;
-				case SymbolType.Variable:
-					break;
-				case SymbolType.GlobalVariable:
-					break;
-				case SymbolType.Field:
-					break;
-				case SymbolType.Property:
-					break;
-				case SymbolType.ScriptObjectMethod:
-					break;
-				case SymbolType.HostInterfaceMethod:
-					break;
-				case SymbolType.Function:
-					break;
-				default:
-					break;
-			}*/
+			// When all else fails, parse the whole thing as an expression. The top level expression should be a function call, method call,
+			// ScriptObjectMethodCall, or HostInterfaceMethodCall. If it isn't, complain.
+
+			return new ExpressionStatement(Express(tokens, script));
 			
 			throw new ApplicationException(v);
 		}

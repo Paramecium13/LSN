@@ -32,7 +32,7 @@ namespace LsnCore.Types
 		public bool HasMethod(string name) => MethodDefinitions.ContainsKey(name);
 
 		/// <summary>
-		/// 
+		/// Note: Does not have a 'self' parameter.
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>

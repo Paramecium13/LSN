@@ -107,6 +107,7 @@ namespace LsnCore.Values
 			return Host.CallMethod(name, values);
 		}
 
+		public LsnValue GetHost() => new LsnValue(Host);
 
 		public EventListener GetEventListener(string name)
 		{

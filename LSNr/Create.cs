@@ -240,7 +240,7 @@ namespace LSNr
 			var parameters = new List<List<IToken>>();
 			parameters.Add(new List<IToken>());
 			int paramIndex = 0;
-			if (tokens.Count(t => t.Value == ",") > paramCount)
+			if (tokens.Count(t => t.Value == ",") > paramCount - 1) // There is one less comma than parameter. numCommas = numParameters - 1, where numParameters > 0
 			{
 				int lPCount = 0;
 				int rPCount = 0;

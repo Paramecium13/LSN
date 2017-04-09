@@ -11,7 +11,7 @@ namespace LsnCore.Statements
 	/// return type of the expression (which itself must be valid).
 	/// </summary>
 	[Serializable]
-	public class ReassignmentStatement : Statement
+	public sealed class ReassignmentStatement : Statement
 	{
 		//protected string Name { get; set; }
 

@@ -83,9 +83,9 @@ namespace LSNr
 						throw new ApplicationException("An expression cannot start with \'.\'.");
 					if (i + 1 > InitialTokens.Count)
 						throw new ApplicationException("An expression cannot end with \'.\'.");
-					IExpression expr;
+					IExpression leftExpr;
 
-					int nextIndex = i + 1; // This is the default next index.
+					int nextIndex = i + 1; // This is the default next index. It now points to the thing after '.', i.e. the member name
 					// Get the expression for the object calling the method or accessing a member
 					if (InitialTokens[i - 1].Value == ")")
 					{
@@ -105,25 +105,27 @@ namespace LSNr
 							tokens.Add(InitialTokens[j]);
 							j--;
 						}
-						expr = Build(tokens, Script);
+						leftExpr = Build(tokens, Script);
 					}
 					else
 					{
-						expr = GetExpression(InitialTokens[i - 1]);
+						leftExpr = GetExpression(InitialTokens[i - 1]);
 						CurrentTokens.RemoveAt(CurrentTokens.Count - 1); // Remove the value to the left.
 					}
 
-					var name = InitialTokens[i + 1].Value;
-					IExpression expr2 = null;
+					var memberName = InitialTokens[i + 1].Value;
+					IExpression memberExpression = null;
 					// Is it a method call or a field access expression?
-					if (expr.Type.Type.Methods.ContainsKey(name)) // It's a method call.
+					if (leftExpr.Type.Type.Methods.ContainsKey(memberName)) // It's a method call.
 					{
-						var method =expr.Type.Type.Methods[name];
+						var method = leftExpr.Type.Type.Methods[memberName];
 						if (method.Parameters.Count == 1)
 						{
-							expr2 = method.CreateMethodCall
-								  (new List<Tuple<string, IExpression>>(), expr, true/*Script.MethodIsIncluded(name)*/);
-							nextIndex = i + 4; //Skip the parenthesis.
+							if (!(i + 3 < InitialTokens.Count - 1 && InitialTokens[i + 2].Value == "(" && InitialTokens[i + 3].Value == ")"))
+								throw new ApplicationException($"Error line {InitialTokens[i + 1].LineNumber}: Improperly formated method call.");
+							memberExpression = method.CreateMethodCall
+								  (new List<Tuple<string, IExpression>>(), leftExpr, true/*Script.MethodIsIncluded(name)*/);
+							nextIndex = i + 4; //Skip the name and the parenthesis. It now points to the thing after the closing ')'.
 						}
 						else
 						{
@@ -145,24 +147,67 @@ namespace LSNr
 								fnTokens.Add(InitialTokens[i + j]);
 								j++;
 							}
-							nextIndex += j;
-							expr2 = Create.CreateMethodCall(fnTokens, method, expr, Script);
+							nextIndex += j; // nextIndex = i + 1 + j. Points to the thing after the closing ')'.
+							memberExpression = Create.CreateMethodCall(fnTokens, method, leftExpr, Script);
 						}
 					}
-					else if (expr.Type.Type is IHasFieldsType) // It's a field access expression.typeof(IHasFieldsType).IsAssignableFrom(expr.Type.GetType())
+					else if (leftExpr.Type.Type is IHasFieldsType) // It's a field access expression.
+							//typeof(IHasFieldsType).IsAssignableFrom(expr.Type.GetType())
 					{
-						var type = (IHasFieldsType)expr.Type.Type;
-						var field = type.FieldsB.FirstOrDefault(f => f.Name == name);
+						var type = (IHasFieldsType)leftExpr.Type.Type;
+						var field = type.FieldsB.FirstOrDefault(f => f.Name == memberName);
 						if (field.Name == null)
-							throw new ApplicationException($"The type {expr.Type.Name} does not have a field named {name}.");
-						expr2 = new FieldAccessExpression(expr, name, field.Type);
+							throw new ApplicationException($"The type {leftExpr.Type.Name} does not have a field named {memberName}.");
+						memberExpression = new FieldAccessExpression(leftExpr, memberName, field.Type);
 						nextIndex++; // Skip over the field name.
 					}
+					else if(leftExpr.Type.Type is HostInterfaceType)
+					{
+						var type = leftExpr.Type.Type as HostInterfaceType;
+						if (type.HasMethod(memberName))
+						{
+							var methodDef = type.GetMethodDefinition(memberName);
+							IExpression[] args;
+							if (methodDef.Parameters.Count == 0)
+							{ // Note: 'i' still points to '.'
+								if (!(i + 3 < InitialTokens.Count && InitialTokens[i + 2].Value == "(" && InitialTokens[i + 3].Value == ")"))
+									throw new ApplicationException($"Error line {InitialTokens[i + 1].LineNumber}: Improperly formated method call.");
+								args = new IExpression[0];
+								nextIndex = i + 4; //Skip the name and the parenthesis. It now points to the thing after the closing ')'.
+							}
+							else
+							{
+								int lCount = 1;
+								int rCount = 0;
+								int j = 2; // Move to the right twice, now looking at token after the opening '('.
+								var fnTokens = new List<IToken>();
+								while (lCount != rCount)
+								{
+									if (InitialTokens[i + j].Value == ")")
+									{
+										rCount++;
+										if (lCount == rCount) break;
+									}
+									else if (InitialTokens[i + j].Value == "(")
+									{
+										lCount++;
+									}
+									fnTokens.Add(InitialTokens[i + j]);
+									j++;
+								}
+								nextIndex += j; // nextIndex = i + 1 + j. Points to the thing after the closing ')'.
+								args = methodDef.CreateArgsArray(Create.CreateParamList(fnTokens, methodDef.Parameters.Count, Script));
+							}
+							memberExpression = new HostIntefaceMethodCall(methodDef, leftExpr, args);
+						}
+						else
+							throw new ApplicationException($"Error line {InitialTokens[i].LineNumber}: The HostInterface type '{type.Name}' does not have a method '{memberName}'.");
+					}
 					else
-						throw new ApplicationException($"The type {expr.Type.Name} does not have a method named {name}.");
+						throw new ApplicationException($"The type {leftExpr.Type.Name} does not have a method named {memberName}.");
 					
 					var sub = SUB + SubCount++;
-					Substitutions.Add(new Identifier(sub), expr2);
+					Substitutions.Add(new Identifier(sub), memberExpression);
 					CurrentTokens.Add(new Identifier(sub));
 					i = nextIndex -1; // In the next iteration, i == nextIndex.
 					#endregion
