@@ -37,7 +37,7 @@ namespace LSNr
 
 		public SymbolType CheckSymbol(string name)
 		{
-			if (_CurrentScope.HasVariable(name))
+			if (_CurrentScope.VariableExists(name))
 				return SymbolType.Variable;
 			return Parent.CheckSymbol(name);
 		}

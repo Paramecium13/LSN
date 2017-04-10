@@ -304,7 +304,7 @@ namespace LSNr
 					{
 						var tokens1 = tokens0.TakeWhile(t => t.Value != "`").ToList();
 						var tokens2 = tokens0.Skip(tokens1.Count + 1).TakeWhile(t => t.Value != "`").ToList();
-						var tokens3 = tokens0.Skip(tokens2.Count + 1).ToList();
+						var tokens3 = tokens0.Skip(tokens1.Count + tokens2.Count + 2).ToList();
 						expr0 = Express(tokens1, script);
 						expr1 = Express(tokens2, script);
 						expr2 = Express(tokens3, script);

@@ -61,7 +61,7 @@ ScriptObject StandardDoor < IStandardDoor
 	
 	on Activate(actor : IActor)
 	{
-		if(actor.HasItem(KeyId))
+		if ( actor.HasItem(KeyId) ) 
 		{
 			actor goto DestMap ` DestX`DestY;
 		}

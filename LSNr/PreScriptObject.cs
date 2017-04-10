@@ -177,6 +177,7 @@ namespace LSNr
 								Valid = false;
 								Console.WriteLine($"Error line {Tokens[i].LineNumber}: Unexpected token '{Tokens[i].Value}'. Expected ';'.");
 							}
+							Properties.Add(new Property(name, typeId, defaultVal, metadata));
 						}
 						break;
 					default:

@@ -30,7 +30,7 @@ namespace LSNr
 			int n = head.Count;
 			if (h == "if")
 			{
-				var cnd = Express(head.Skip(1).ToList(), script);
+				var cnd = Express(head.Skip(2).Take(head.Count - 3).ToList(), script);
 				script.CurrentScope = script.CurrentScope.CreateChild();
 				Parser p = new Parser(body, script);
 				p.Parse();
@@ -331,7 +331,7 @@ namespace LSNr
 			else
 			{
 				// Split the list of tokens into multiple lists by commas.
-				for (int i = 1; i < tokens.Count - 1; i++) // Takes into account starting and closing parenthesis.
+				for (int i = 0; i < tokens.Count; i++) // Takes into account starting and closing parenthesis.
 														   // (int i = 0; i < tokens.Count; i++) [old]
 				{
 					if (tokens[i].Value == ",")

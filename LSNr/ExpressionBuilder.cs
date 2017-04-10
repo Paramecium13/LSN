@@ -131,7 +131,7 @@ namespace LSNr
 						{
 							int lCount = 1;
 							int rCount = 0;
-							int j = 2; // Move to the right twice, now looking at token after the opening '('.
+							int j = 3; // Move to the right twice, now looking at token after the opening '('.
 							var fnTokens = new List<IToken>();
 							while (lCount != rCount)
 							{
@@ -179,7 +179,7 @@ namespace LSNr
 							{
 								int lCount = 1;
 								int rCount = 0;
-								int j = 2; // Move to the right twice, now looking at token after the opening '('.
+								int j = 3; // Move to the right twice, now looking at token after the opening '('.
 								var fnTokens = new List<IToken>();
 								while (lCount != rCount)
 								{
@@ -357,7 +357,8 @@ namespace LSNr
 								nextIndex = j + 1;
 								// Create the function call, add it to the dictionary, and add its identifier to the list (ls).
 								var name = SUB + SubCount++;
-								var fnCall = Create.CreateFunctionCall(paramTokens, fn, Script);
+								var pt = paramTokens.Skip(1).Take(paramTokens.Count - 2).ToList();
+								var fnCall = Create.CreateFunctionCall(pt, fn, Script);
 								Substitutions.Add(new Identifier(name), fnCall);
 								CurrentTokens.Add(new Identifier(name));
 							}
