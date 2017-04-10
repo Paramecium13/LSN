@@ -30,7 +30,7 @@ Currently, none of the collections are fully functional. The syntax for initiali
 Structs are user defined types that consist of named and typed members. They are immutable and effectively passed by reference, though they appear to be passed by value. Currently, there is no syntax for initializing values of a struct type.
 #### Records
 Records are user defined types that, like structs, consist of named and typed members. They differ from structs in that they are mutable and passed by value. This means that when a record is passed to a function or method as an argument, the function recieves a new record with the same values. The function can make changes to that record but those changes are not made on the record that was passed to the function.
-### tatements
+### Statements
 LSN will have many different statements, though currently only a few are implemented.
 
 #### General statements
