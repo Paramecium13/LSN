@@ -180,7 +180,10 @@ namespace LSNr
 						}
 						break;
 					default:
-						throw new NotImplementedException("");
+						if (!(i == Tokens.Count - 1 && val == "}"))
+							throw new NotImplementedException("");
+						i++;
+						break;
 				}
 			}
 			PreParsed = true;

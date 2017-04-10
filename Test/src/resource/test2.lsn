@@ -58,7 +58,15 @@ ScriptObject StandardDoor < IStandardDoor
 			return;
 		}    
 	}*/
-  
+	
+	on Activate(actor : IActor)
+	{
+		if(actor.HasItem(KeyId))
+		{
+			actor goto DestMap ` DestX`DestY;
+		}
+	}
+	
 }
 
 HostInterface IEnemy

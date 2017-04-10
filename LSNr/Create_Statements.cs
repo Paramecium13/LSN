@@ -35,11 +35,11 @@ namespace LSNr
 			if (v == "next")	return new NextStatement();
 			if (v == "return")	return new ReturnStatement(n > 1 ? Express(tokens.Skip(1), script) : null);
 			if (v == "say")		return Say(tokens.Skip(1).ToList(),script);
-			if (v == "goto")	throw new NotImplementedException("GoTo statement considered not implemented.");
+			if (v == "goto")	return GotoStatement(tokens,script);
 
 
 			if (tokens.Any(t => t.Value == "goto"))
-				throw new NotImplementedException("GoTo statement considered not implemented.");
+				return GotoStatement(tokens, script);
 
 			if (tokens.Any(t => t.Value == "="))
 			{
@@ -52,11 +52,12 @@ namespace LSNr
 			// collection value access expression. Parse this expression. If it is a field access expression, take the 'Value' and
 			// the field index. ... If it is a collection value access expression, take the 'Value' expression and the 'Index' expression.
 
-			// Expression statement.
-			// When all else fails, parse the whole thing as an expression. The top level expression should be a function call, method call,
-			// ScriptObjectMethodCall, or HostInterfaceMethodCall. If it isn't, complain.
-
+			// Expression statement:
+			// When all else fails, parse the whole thing as an expression. 
 			return new ExpressionStatement(Express(tokens, script));
+			// The top level expression should be a function call, method call, ScriptObjectMethodCall, or HostInterfaceMethodCall.
+			// If it isn't, complain.
+
 			
 			throw new ApplicationException(v);
 		}
@@ -267,5 +268,53 @@ namespace LSNr
 				Amount = Express(tokens.Skip(1).Take(indexOfKeywordGold - 1).ToList(), script);
 			return new GiveGoldStatement(Amount,receiver);
 		}
+
+
+		private static Statement GotoStatement(IReadOnlyList<IToken> tokens, IPreScript script)
+		{
+			IExpression actor = null;
+			IReadOnlyList<IToken> tokens0 = null;
+			if (tokens[0].Value == "goto")
+				tokens0 = tokens;
+			else
+			{
+				var actorTokens = tokens.TakeWhile(t => t.Value != "goto").ToList();
+				tokens0 = tokens.Skip(actorTokens.Count + 1).ToList();
+				actor = Express(actorTokens, script);
+			}
+
+			var metaCommaCount = tokens0.Count(t => t.Value == "`");
+			IExpression expr0 = null;
+			IExpression expr1 = null;
+			IExpression expr2 = null;
+			switch (metaCommaCount)
+			{
+				case 0:
+					expr0 = Express(tokens0, script);
+					break;
+				case 1:
+					{
+						var tokens1 = tokens0.TakeWhile(t => t.Value != "`").ToList();
+						var tokens2 = tokens0.Skip(tokens1.Count + 1).ToList();
+						expr0 = Express(tokens1, script);
+						expr1 = Express(tokens2, script);
+						break;
+					}
+				case 2:
+					{
+						var tokens1 = tokens0.TakeWhile(t => t.Value != "`").ToList();
+						var tokens2 = tokens0.Skip(tokens1.Count + 1).TakeWhile(t => t.Value != "`").ToList();
+						var tokens3 = tokens0.Skip(tokens2.Count + 1).ToList();
+						expr0 = Express(tokens1, script);
+						expr1 = Express(tokens2, script);
+						expr2 = Express(tokens3, script);
+						break;
+					}
+				default:
+					throw new ApplicationException();
+			}
+			return new GoToStatement(expr0, expr1, expr2, actor);
+		}
+
 	}
 }

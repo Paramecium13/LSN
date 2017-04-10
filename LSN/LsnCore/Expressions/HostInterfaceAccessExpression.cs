@@ -19,6 +19,12 @@ namespace LsnCore.Expressions
 		private readonly IExpression _ScriptObject;
 
 
+		public HostInterfaceAccessExpression(IExpression scrObj, TypeId type)
+		{
+			_ScriptObject = scrObj; _Type = type;
+		}
+
+
 		public bool Equals(IExpression other)
 		{
 			var o = other as HostInterfaceAccessExpression;

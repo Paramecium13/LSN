@@ -16,7 +16,7 @@ namespace LsnCore.Types
 		public readonly TypeId HostInterface;
 
 		// Properties
-		private readonly IReadOnlyList<Property> Properties;
+		private readonly IList<Property> Properties;
 
 		// Fields
 		private readonly IReadOnlyList<Field> Fields;
@@ -36,7 +36,7 @@ namespace LsnCore.Types
 		public IReadOnlyCollection<Field> FieldsB => Fields;
 
 
-		public ScriptObjectType(TypeId id, TypeId host, IReadOnlyList<Property> properties, IReadOnlyList<Field> fields,
+		public ScriptObjectType(TypeId id, TypeId host, IList<Property> properties, IReadOnlyList<Field> fields,
 			IReadOnlyDictionary<string,ScriptObjectMethod> methods, IReadOnlyDictionary<string,EventListener> eventListeners,
 			IReadOnlyDictionary<int,ScriptObjectState> states, int defaultStateIndex)
 		{
@@ -53,13 +53,25 @@ namespace LsnCore.Types
 			=> LsnValue.Nil;
 
 
-		public int GetIndex(string name)
+		int IHasFieldsType.GetIndex(string name)
 		{
 			if (Fields.Any(f => f.Name == name))
 				return Fields.First(f => f.Name == name).Index;
 			else throw new ApplicationException($"The ScriptObject type {Name} does not have a field named {name}.");
 		}
 
+		public int GetFieldIndex(string name)
+			=> (this as IHasFieldsType).GetIndex(name);
+		
+		public int GetPropertyIndex(string name)
+		{
+			if (Properties.Any(f => f.Name == name))
+			{
+				var prop = Properties.First(f => f.Name == name);
+				return Properties.IndexOf(prop);
+			}
+			else throw new ApplicationException($"The ScriptObject type {Name} does not have a property named {name}.");
+		}
 
 		public bool HasMethod(string name)
 			=> ScriptObjectMethods.ContainsKey(name);

@@ -30,12 +30,13 @@ namespace LSNr
 			int n = head.Count;
 			if (h == "if")
 			{
+				var cnd = Express(head.Skip(1).ToList(), script);
 				script.CurrentScope = script.CurrentScope.CreateChild();
 				Parser p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
                 script.CurrentScope = script.CurrentScope.Pop(components);
-				return new IfControl(Express(head.Skip(1).ToList(), script), components);
+				return new IfControl(cnd, components);
 			}
 			if (h == "elsif")
 			{
@@ -204,33 +205,64 @@ namespace LSNr
 		public static IExpression SingleTokenExpress(IToken token, IPreScript script, IExpressionContainer container = null, IList<Variable> variables = null)
 		{
 			var val = token.Value;
+			var symType = script.CheckSymbol(val);
+			IExpression expr;
+			switch (symType)
+			{
+				case SymbolType.Variable:
+					var v = script.CurrentScope.GetVariable(val);
+					if (!v.Mutable && (v.InitialValue?.IsReifyTimeConst() ?? false))
+						return v.InitialValue.Fold();
+					expr = v.GetAccessExpression();//new VariableExpression(v.Name, v.Type);
+					if (container != null)
+						v.AddUser(container);
+					else
+						variables?.Add(v);
+					return expr;
+				case SymbolType.GlobalVariable:
+					throw new NotImplementedException();
+				case SymbolType.Field:
+					throw new NotImplementedException();
+				case SymbolType.Property:
+					var preScrFn = script as PreScriptObjectFunction;
+					var preScr = preScrFn.Parent;
+					IExpression scrObjExpr = new VariableExpression(0, preScr.Id);
+					expr = new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
+					return expr;
+				default:
+					break;
+			}
 			if (script.CurrentScope.VariableExists(val))
 			{
-				var v = script.CurrentScope.GetVariable(val);
-				if (!v.Mutable && (v.InitialValue?.IsReifyTimeConst() ?? false))
-					return v.InitialValue.Fold();
-				var expr = v.GetAccessExpression();//new VariableExpression(v.Name, v.Type);
-				if (container != null)
-					v.AddUser(container);
-				else
-					variables?.Add(v);
-				return expr;
+				
 			}
-			else if (token.GetType() == typeof(FloatToken))
-			{
+			if (token.GetType() == typeof(FloatToken))
 				return new LsnValue(((FloatToken)token).DVal);
-			}
-			else if (token.GetType() == typeof(IntToken))
-			{
+			if (token.GetType() == typeof(IntToken))
 				return new LsnValue(((IntToken)token).IVal);
-			}
-			else if (token.GetType() == typeof(StringToken))
-			{
+			if (token.GetType() == typeof(StringToken))
 				return new StringValue(val);
+			if (val == "true")
+				return LsnBoolValue.GetBoolValue(true);
+			if (val == "false")
+				return LsnBoolValue.GetBoolValue(false);
+			var preScObjFn = script as PreScriptObjectFunction;
+			if (val == "this")
+			{
+				if (preScObjFn == null)
+					throw new ApplicationException("Cannot use 'this' outside a script object method or event listener.");
+				return new VariableExpression(0, preScObjFn.Parent.Id);
 			}
-			else if (val == "true") return LsnBoolValue.GetBoolValue(true);
-			else if (val == "false") return LsnBoolValue.GetBoolValue(false);
-			return null;
+			if (val == "host")
+			{
+				if (preScObjFn == null)
+					throw new ApplicationException("Cannot use 'host' outside a script object method or event listener.");
+				return new HostInterfaceAccessExpression(new VariableExpression(0, preScObjFn.Parent.Id), preScObjFn.Parent.HostType.Id);
+			}
+
+			
+
+			throw new ApplicationException(); //return null;
 		}
 
 

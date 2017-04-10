@@ -269,7 +269,26 @@ namespace LSNr
 									CurrentTokens.Add(new Identifier(sub));
 									#endregion
 							}
-							else CurrentTokens.Add(InitialTokens[i]);
+							else if (val == "this" )
+							{
+								var preScrFn = Script as PreScriptObjectFunction;
+								if (preScrFn == null)
+									throw new ApplicationException("...");
+								var name = SUB + SubCount++;
+								Substitutions.Add(new Identifier(name), new VariableExpression(0, preScrFn.Parent.Id));
+								CurrentTokens.Add(new Identifier(name));
+							}
+							else if (val == "host")
+							{
+								var preScrFn = Script as PreScriptObjectFunction;
+								if (preScrFn == null)
+									throw new ApplicationException("...");
+								var name = SUB + SubCount++;
+								Substitutions.Add(new Identifier(name), new HostInterfaceAccessExpression(new VariableExpression(0, preScrFn.Parent.Id), preScrFn.Parent.HostType.Id));
+								CurrentTokens.Add(new Identifier(name));
+							}
+							else
+								CurrentTokens.Add(InitialTokens[i]);
 							break;
 						}
 						case SymbolType.Variable:
@@ -292,7 +311,16 @@ namespace LSNr
 						case SymbolType.Field:
 							break;
 						case SymbolType.Property:
+						{
+							var preScrFn = Script as PreScriptObjectFunction;
+							var preScr = preScrFn.Parent;
+							IExpression scrObjExpr = new VariableExpression(0, preScr.Id);
+							var expr = new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
+							var name = SUB + SubCount++;
+							Substitutions.Add(new Identifier(name), expr);
+							CurrentTokens.Add(new Identifier(name));
 							break;
+						}
 						case SymbolType.Function:
 						{
 							#region Function
@@ -338,9 +366,17 @@ namespace LSNr
 							break;
 						}
 						case SymbolType.ScriptObjectMethod:
-							break;
+						{
+							var preScrFn = Script as PreScriptObjectFunction;
+							IExpression scrObjExpr = new VariableExpression(0, preScrFn.Parent.Id);
+							throw new NotImplementedException();
+						}
 						case SymbolType.HostInterfaceMethod:
-							break;
+						{
+							var preScrFn = Script as PreScriptObjectFunction;
+							IExpression scrObjExpr = new VariableExpression(0, preScrFn.Parent.Id);
+							throw new NotImplementedException();
+						}
 						default:
 							break;
 					}
