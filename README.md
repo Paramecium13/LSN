@@ -1,5 +1,5 @@
 # LSN
-LSN is a reified scripting language that is designed for use in RPGs and similar games. It is statically typed and variables are immutable by default. Its syntax is very similar to (and inspired by) that of rust. Many of its features are inspired by the event system of RPG Maker VX Ace, and I would like to make it translate to RGSS3. Very early versions of it had that functionality, which is still visible in the #sub/#endsub directive, which would substitute their contents into the generated code.
+LSN is a reified scripting language that is designed for use in RPGs and similar games. It is statically typed and variables are immutable by default. Its syntax is very similar to (and inspired by) that of rust. 
 
 LSN is a reified language; the reifier, LSNr, generates .NET objects from .lsn source files and saves them to the disk. These files can be loaded by a game and run using an implementation of *IInterpreter*.
 
