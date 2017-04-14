@@ -29,3 +29,13 @@ fn foo(a:int, b:double)
 	}
 	let mut f = a /(b+1);
 }
+
+
+fn GetNames(dogs : Vector<Dog>) -> Vector<string>
+{
+	let names = new List<string>();
+	for(i = 0` i < dogs.Length()` i = i + 1)
+	{
+		names.Add(dogs[i].Name);
+	}
+}

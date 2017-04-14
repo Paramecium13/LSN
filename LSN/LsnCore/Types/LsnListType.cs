@@ -67,8 +67,17 @@ namespace LsnCore
 			));
 		}
 
+		[NonSerialized]
 		private LsnType _Generic;
-		public LsnType GenericType { get { return _Generic; } private set { _Generic = value; } }
+		public LsnType GenericType {
+			get
+			{
+				if (_Generic == null)
+					_Generic = GenericId.Type;
+				return _Generic;
+			}
+			private set { _Generic = value; }
+		}
 
 		public readonly TypeId GenericId;
 

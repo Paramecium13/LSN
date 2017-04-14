@@ -11,7 +11,7 @@ namespace LsnCore.Values
 	{
 		private readonly List<LsnValue> Values = new List<LsnValue>();
 
-		public override bool BoolValue { get { return true; } }
+		public override bool BoolValue => true;
 
 		//public readonly LsnListType _Type;
 
@@ -43,6 +43,16 @@ namespace LsnCore.Values
 			Values = values.ToList();
 		}
 		
+		public LsnList(TypeId type)
+		{
+			Type = type;
+		}
+
+		public LsnList(TypeId type, IEnumerable<LsnValue> values)
+		{
+			Type = type;
+			Values = values.ToList();
+		}
 
 		internal void Add(LsnValue value)
 		{

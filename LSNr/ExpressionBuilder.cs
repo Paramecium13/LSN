@@ -34,11 +34,11 @@ namespace LSNr
 		}
 
 
-		private ExpressionBuilder(List<IToken> tokens, IPreScript script, Dictionary<IToken, IExpression> subs, int count)
+		private ExpressionBuilder(List<IToken> tokens, IPreScript script, IReadOnlyDictionary<IToken, IExpression> subs, int count)
 		{
 			InitialTokens = tokens;
 			Script = script;
-			Substitutions = subs;
+			Substitutions = subs.ToDictionary();
 			SubCount = count;
 			
 		}
@@ -50,10 +50,14 @@ namespace LSNr
 				if (Substitutions.ContainsKey(InitialTokens[0])) return Substitutions[InitialTokens[0]];
 				return Create.SingleTokenExpress(InitialTokens[0], Script, null, Variables);
 			}
+			//CurrentTokens = InitialTokens.ToList();
+			//if(CurrentTokens.Count != 1)
+			//	ParseParenthesis();
 			ParseVariablesAndFunctions();
-			if(CurrentTokens.Count != 1)
-				ParseParenthesis();
 			ParseInexers();// Put this with functions and variables?
+			ParseMemberAccess();
+			if (CurrentTokens.Count != 1)
+				ParseParenthesis();
 			if (CurrentTokens.Any(t => t.Value == "^")) ParseExponents();
 			if (CurrentTokens.Any(t => { var v = t.Value; return v == "*" || v == "/" || v == "%"; }))
 				ParseMultDivMod();
@@ -74,151 +78,12 @@ namespace LSNr
 		{
 			for (int i = 0; i < InitialTokens.Count; i++)
 			{
-				var val = InitialTokens[i].Value;
-				
-				if (val == ".") //Member Access
+				var val = InitialTokens[i].Value;				
+				var symbolType = Script.CheckSymbol(val);
+				switch (symbolType)
 				{
-					#region .
-					if (i == 0)
-						throw new ApplicationException("An expression cannot start with \'.\'.");
-					if (i + 1 > InitialTokens.Count)
-						throw new ApplicationException("An expression cannot end with \'.\'.");
-					IExpression leftExpr;
-
-					int nextIndex = i + 1; // This is the default next index. It now points to the thing after '.', i.e. the member name
-					// Get the expression for the object calling the method or accessing a member
-					if (InitialTokens[i - 1].Value == ")")
+					case SymbolType.Undefined:
 					{
-						// I'm not too sure this will work...
-						var tokens = new List<IToken>();
-						int rightCount = 1;
-						int leftCount = 0;
-						int j = i - 1;
-						while(true)
-						{
-							if (j < 0) throw new ApplicationException("Mismatched parenthesis.");
-							var v = InitialTokens[j].Value;
-							CurrentTokens.RemoveAt(CurrentTokens.Count - 1); // Remove the token at the end of the list.
-							if (v == ")") rightCount++;
-							else if (v == "(") leftCount++;
-							if (leftCount == rightCount) break;
-							tokens.Add(InitialTokens[j]);
-							j--;
-						}
-						leftExpr = Build(tokens, Script);
-					}
-					else
-					{
-						leftExpr = GetExpression(InitialTokens[i - 1]);
-						CurrentTokens.RemoveAt(CurrentTokens.Count - 1); // Remove the value to the left.
-					}
-
-					var memberName = InitialTokens[i + 1].Value;
-					IExpression memberExpression = null;
-					// Is it a method call or a field access expression?
-					if (leftExpr.Type.Type.Methods.ContainsKey(memberName)) // It's a method call.
-					{
-						var method = leftExpr.Type.Type.Methods[memberName];
-						if (method.Parameters.Count == 1)
-						{
-							if (!(i + 3 < InitialTokens.Count && InitialTokens[i + 2].Value == "(" && InitialTokens[i + 3].Value == ")"))
-								throw new ApplicationException($"Error line {InitialTokens[i + 1].LineNumber}: Improperly formated method call.");
-							memberExpression = method.CreateMethodCall
-								  (new List<Tuple<string, IExpression>>(), leftExpr, true/*Script.MethodIsIncluded(name)*/);
-							nextIndex = i + 4; //Skip the name and the parenthesis. It now points to the thing after the closing ')'.
-						}
-						else
-						{
-							int lCount = 1;
-							int rCount = 0;
-							int j = 3; // Move to the right twice, now looking at token after the opening '('.
-							var fnTokens = new List<IToken>();
-							while (lCount != rCount)
-							{
-								if (InitialTokens[i + j].Value == ")")
-								{
-									rCount++;
-									if (lCount == rCount) break;
-								}
-								else if (InitialTokens[i + j].Value == "(")
-								{
-									lCount++;
-								}
-								fnTokens.Add(InitialTokens[i + j]);
-								j++;
-							}
-							nextIndex += j; // nextIndex = i + 1 + j. Points to the thing after the closing ')'.
-							memberExpression = Create.CreateMethodCall(fnTokens, method, leftExpr, Script);
-						}
-					}
-					else if (leftExpr.Type.Type is IHasFieldsType) // It's a field access expression.
-							//typeof(IHasFieldsType).IsAssignableFrom(expr.Type.GetType())
-					{
-						var type = (IHasFieldsType)leftExpr.Type.Type;
-						var field = type.FieldsB.FirstOrDefault(f => f.Name == memberName);
-						if (field.Name == null)
-							throw new ApplicationException($"The type {leftExpr.Type.Name} does not have a field named {memberName}.");
-						memberExpression = new FieldAccessExpression(leftExpr, memberName, field.Type);
-						nextIndex++; // Skip over the field name.
-					}
-					else if(leftExpr.Type.Type is HostInterfaceType)
-					{
-						var type = leftExpr.Type.Type as HostInterfaceType;
-						if (type.HasMethod(memberName))
-						{
-							var methodDef = type.GetMethodDefinition(memberName);
-							IExpression[] args;
-							if (methodDef.Parameters.Count == 0)
-							{ // Note: 'i' still points to '.'
-								if (!(i + 3 < InitialTokens.Count && InitialTokens[i + 2].Value == "(" && InitialTokens[i + 3].Value == ")"))
-									throw new ApplicationException($"Error line {InitialTokens[i + 1].LineNumber}: Improperly formated method call.");
-								args = new IExpression[0];
-								nextIndex = i + 4; //Skip the name and the parenthesis. It now points to the thing after the closing ')'.
-							}
-							else
-							{
-								int lCount = 1;
-								int rCount = 0;
-								int j = 3; // Move to the right twice, now looking at token after the opening '('.
-								var fnTokens = new List<IToken>();
-								while (lCount != rCount)
-								{
-									if (InitialTokens[i + j].Value == ")")
-									{
-										rCount++;
-										if (lCount == rCount) break;
-									}
-									else if (InitialTokens[i + j].Value == "(")
-									{
-										lCount++;
-									}
-									fnTokens.Add(InitialTokens[i + j]);
-									j++;
-								}
-								nextIndex += j; // nextIndex = i + 1 + j. Points to the thing after the closing ')'.
-								args = methodDef.CreateArgsArray(Create.CreateParamList(fnTokens, methodDef.Parameters.Count, Script));
-							}
-							memberExpression = new HostIntefaceMethodCall(methodDef, leftExpr, args);
-						}
-						else
-							throw new ApplicationException($"Error line {InitialTokens[i].LineNumber}: The HostInterface type '{type.Name}' does not have a method '{memberName}'.");
-					}
-					else
-						throw new ApplicationException($"The type {leftExpr.Type.Name} does not have a method named {memberName}.");
-					
-					var sub = SUB + SubCount++;
-					Substitutions.Add(new Identifier(sub), memberExpression);
-					CurrentTokens.Add(new Identifier(sub));
-					i = nextIndex -1; // In the next iteration, i == nextIndex.
-					#endregion
-				}				
-				else
-				{
-					var symbolType = Script.CheckSymbol(val);
-					switch (symbolType)
-					{
-						case SymbolType.Undefined:
-						{
 							if (val == "true" || val == "false")
 							{
 								var name = SUB + SubCount++;
@@ -232,98 +97,109 @@ namespace LSNr
 										throw new ApplicationException("An expression cannot end with \'new\'.");
 									IExpression expr = null;
 									int j = i;
-									string typeName = InitialTokens[++j].Value; // j points to the type name;
-									if (!Script.TypeExists(typeName))
-										throw new ApplicationException($"The type \'{typeName}\' could not be found. Are You missing a \'#using\' or \'#include\'?");
+									//string typeName = InitialTokens[++j].Value; // j points to the type name;
+									var typeId = Script.ParseTypeId(InitialTokens, i + 1, out j);
+									// j points to the thing after the end of the name.
+									j--; // j points to the last token of the name.
+										 //if (!Script.TypeExists(typeName))
+										 //	throw new ApplicationException($"The type \'{typeName}\' could not be found. Are You missing a \'#using\' or \'#include\'?");
 
-									LsnType type = Script.GetType(typeName);
+									LsnType type = typeId.Type;//Script.GetType(typeName);
 									var structType = type as LsnStructType;
 									var recordType = type as RecordType;
+									var listType = type as LsnListType;
 
-									if (structType == null && recordType == null)
-										throw new ApplicationException($"Cannot use \'new\' with type \'{typeName}\'.");
+									if (structType == null && recordType == null && listType == null)
+										throw new ApplicationException($"Cannot use \'new\' with type \'{typeId.Name}\'.");
 									if (j + 2 >= InitialTokens.Count)
 										throw new ApplicationException("No parenthesis.");
-									var paramTokens = new List<IToken>();
-									/*int lCount = 0;
-									int rCount = 0;*/
-									int pCount = 0;
-									do
+									if (listType == null)
 									{
-										if (++j >= InitialTokens.Count)
-											throw new ApplicationException("Mismatched parenthesis...");
-										var t = InitialTokens[j];
-										var v = t.Value;
-										if (v == "(") ++pCount; // ++lCount;
-										if (v == ")") --pCount; // ++rCount
-										paramTokens.Add(t);
-									} while (/*lCount != rCount*/pCount != 0);
-									var parameters = Create.CreateParamList(paramTokens, -1, Script);
-									if (structType != null)
-										expr = new StructConstructor(structType, parameters.ToDictionary());
-									else // recordType != null
-										expr = new RecordConstructor(recordType, parameters.ToDictionary());
+										var paramTokens = new List<IToken>();
+										int pCount = 0;
+										do
+										{
+											if (++j >= InitialTokens.Count)
+												throw new ApplicationException("Mismatched parenthesis...");
+											var t = InitialTokens[j];
+											var v = t.Value;
+											if (v == "(") ++pCount; // ++lCount;
+											if (v == ")") --pCount; // ++rCount
+											paramTokens.Add(t);
+										} while (/*lCount != rCount*/pCount != 0);
+										var parameters = Create.CreateParamList(paramTokens, -1, Script, Substitutions.Where(s => paramTokens.Contains(s.Key)).ToDictionary());
+										if (structType != null)
+											expr = new StructConstructor(structType, parameters.ToDictionary());
+										else // recordType != null
+											expr = new RecordConstructor(recordType, parameters.ToDictionary());
+									}
+									else
+									{
+										if (!(j + 2 <= InitialTokens.Count && InitialTokens[j + 1].Value == "(" && InitialTokens[j + 2].Value == ")"))
+											throw new ApplicationException("No parenthesis...");
+										expr = new ListConstructor(listType);
+										j += 2;
+									}
 									i = j;
 									var sub = SUB + SubCount++;
 									Substitutions.Add(new Identifier(sub), expr);
 									CurrentTokens.Add(new Identifier(sub));
 									#endregion
-							}
-							else if (val == "this" )
-							{
-								var preScrFn = Script as PreScriptObjectFunction;
-								if (preScrFn == null)
-									throw new ApplicationException("...");
-								var name = SUB + SubCount++;
-								Substitutions.Add(new Identifier(name), new VariableExpression(0, preScrFn.Parent.Id));
-								CurrentTokens.Add(new Identifier(name));
-							}
-							else if (val == "host")
-							{
-								var preScrFn = Script as PreScriptObjectFunction;
-								if (preScrFn == null)
-									throw new ApplicationException("...");
-								var name = SUB + SubCount++;
-								Substitutions.Add(new Identifier(name), new HostInterfaceAccessExpression(new VariableExpression(0, preScrFn.Parent.Id), preScrFn.Parent.HostType.Id));
-								CurrentTokens.Add(new Identifier(name));
-							}
-							else
-								CurrentTokens.Add(InitialTokens[i]);
-							break;
 						}
-						case SymbolType.Variable:
-						{
-							var v = Script.CurrentScope.GetVariable(val);
-							IExpression expr = v.GetAccessExpression();
-							/*if (!v.Mutable && ( v.InitialValue?.IsReifyTimeConst()?? false ) )
-								expr = v.InitialValue.Fold();
-							else expr = new VariableExpression(val, v.Type);*/
-
-							var name = SUB + SubCount++;
-							Variables.Add(v);
-							Substitutions.Add(new Identifier(name), expr);
-							CurrentTokens.Add(new Identifier(name));
-							break;
-						}
-							
-						case SymbolType.GlobalVariable:
-							break;
-						case SymbolType.Field:
-							break;
-						case SymbolType.Property:
+						else if (val == "this" )
 						{
 							var preScrFn = Script as PreScriptObjectFunction;
-							var preScr = preScrFn.Parent;
-							IExpression scrObjExpr = new VariableExpression(0, preScr.Id);
-							var expr = new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
+							if (preScrFn == null)
+								throw new ApplicationException("...");
 							var name = SUB + SubCount++;
-							Substitutions.Add(new Identifier(name), expr);
+							Substitutions.Add(new Identifier(name), new VariableExpression(0, preScrFn.Parent.Id));
 							CurrentTokens.Add(new Identifier(name));
-							break;
 						}
-						case SymbolType.Function:
+						else if (val == "host")
 						{
-							#region Function
+							var preScrFn = Script as PreScriptObjectFunction;
+							if (preScrFn == null)
+								throw new ApplicationException("...");
+							var name = SUB + SubCount++;
+							Substitutions.Add(new Identifier(name), new HostInterfaceAccessExpression(new VariableExpression(0, preScrFn.Parent.Id), preScrFn.Parent.HostType.Id));
+							CurrentTokens.Add(new Identifier(name));
+						}
+						else
+							CurrentTokens.Add(InitialTokens[i]);
+						break;
+					}
+					case SymbolType.Variable:
+					{
+						var v = Script.CurrentScope.GetVariable(val);
+						IExpression expr = v.GetAccessExpression();
+						/*if (!v.Mutable && ( v.InitialValue?.IsReifyTimeConst()?? false ) )
+							expr = v.InitialValue.Fold();
+						else expr = new VariableExpression(val, v.Type);*/
+						var name = SUB + SubCount++;
+						Variables.Add(v);
+						Substitutions.Add(new Identifier(name), expr);
+						CurrentTokens.Add(new Identifier(name));
+						break;
+					}
+						
+					case SymbolType.GlobalVariable:
+						break;
+					case SymbolType.Field:
+						break;
+					case SymbolType.Property:
+					{
+						var preScrFn = Script as PreScriptObjectFunction;
+						var preScr = preScrFn.Parent;
+						IExpression scrObjExpr = new VariableExpression(0, preScr.Id);
+						var expr = new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
+						var name = SUB + SubCount++;
+						Substitutions.Add(new Identifier(name), expr);
+						CurrentTokens.Add(new Identifier(name));
+						break;
+					}
+					case SymbolType.Function:
+					{
+						#region Function
 							var fn = Script.GetFunction(val);
 							int nextIndex = i + 1; // This is the default next index.
 							if (InitialTokens[i + 1].Value != "(")
@@ -358,34 +234,181 @@ namespace LSNr
 								// Create the function call, add it to the dictionary, and add its identifier to the list (ls).
 								var name = SUB + SubCount++;
 								var pt = paramTokens.Skip(1).Take(paramTokens.Count - 2).ToList();
-								var fnCall = Create.CreateFunctionCall(pt, fn, Script);
+								var fnCall = Create.CreateFunctionCall(pt, fn, Script, Substitutions.Where(p => pt.Contains(p.Key)).ToDictionary());
 								Substitutions.Add(new Identifier(name), fnCall);
 								CurrentTokens.Add(new Identifier(name));
 							}
 							i = nextIndex - 1; // In the next iteration, i == nextIndex.
 							#endregion
-							break;
-						}
-						case SymbolType.ScriptObjectMethod:
-						{
-							var preScrFn = Script as PreScriptObjectFunction;
-							IExpression scrObjExpr = new VariableExpression(0, preScrFn.Parent.Id);
-							throw new NotImplementedException();
-						}
-						case SymbolType.HostInterfaceMethod:
-						{
-							var preScrFn = Script as PreScriptObjectFunction;
-							IExpression scrObjExpr = new VariableExpression(0, preScrFn.Parent.Id);
-							throw new NotImplementedException();
-						}
-						default:
-							break;
+						break;
 					}
-					
+					case SymbolType.ScriptObjectMethod:
+					{
+						var preScrFn = Script as PreScriptObjectFunction;
+						IExpression scrObjExpr = new VariableExpression(0, preScrFn.Parent.Id);
+						throw new NotImplementedException();
+					}
+					case SymbolType.HostInterfaceMethod:
+					{
+						var preScrFn = Script as PreScriptObjectFunction;
+						IExpression scrObjExpr = new VariableExpression(0, preScrFn.Parent.Id);
+						throw new NotImplementedException();
+					}
+					default:
+						break;
 				}
+				
 			}
 		}
 
+		private void ParseMemberAccess()
+		{
+			var newTokens = new List<IToken>();
+			for(int i = 0; i < CurrentTokens.Count; i++)
+			{
+				var val = CurrentTokens[i].Value;
+				if (val == ".") //Member Access
+				{
+					#region .
+					if (i == 0)
+						throw new ApplicationException("An expression cannot start with \'.\'.");
+					if (i + 1 > CurrentTokens.Count)
+						throw new ApplicationException("An expression cannot end with \'.\'.");
+					IExpression leftExpr;
+
+					int nextIndex = i + 1; // This is the default next index. It now points to the thing after '.', i.e. the member name
+										   // Get the expression for the object calling the method or accessing a member
+					if (CurrentTokens[i - 1].Value == ")")
+					{
+						// I'm not too sure this will work...
+						var tokens = new List<IToken>();
+						int rightCount = 1;
+						int leftCount = 0;
+						int j = i - 1;
+						while (true) //TODO: Fix this!!!
+						{
+							if (j < 0) throw new ApplicationException("Mismatched parenthesis.");
+							var v = CurrentTokens[j].Value;
+							newTokens.RemoveAt(newTokens.Count - 1); // Remove the token at the end of the list.
+							if (v == ")") rightCount++;
+							else if (v == "(") leftCount++;
+							if (leftCount == rightCount) break;
+							tokens.Add(CurrentTokens[j]);
+							j--;
+						}
+						leftExpr = Build(tokens, Script);
+					}
+					else
+					{
+						leftExpr = GetExpression(CurrentTokens[i - 1]);
+						newTokens.RemoveAt(newTokens.Count - 1); // Remove the value to the left.
+					}
+
+					var memberName = CurrentTokens[i + 1].Value;
+					IExpression memberExpression = null;
+					// Is it a method call or a field access expression?
+					if (leftExpr.Type.Type.Methods.ContainsKey(memberName)) // It's a method call.
+					{
+						var method = leftExpr.Type.Type.Methods[memberName];
+						if (method.Parameters.Count == 1)
+						{
+							if (!(i + 3 < CurrentTokens.Count && CurrentTokens[i + 2].Value == "(" && CurrentTokens[i + 3].Value == ")"))
+								throw new ApplicationException($"Error line {CurrentTokens[i + 1].LineNumber}: Improperly formated method call.");
+							memberExpression = method.CreateMethodCall
+								  (new List<Tuple<string, IExpression>>(), leftExpr, true/*Script.MethodIsIncluded(name)*/);
+							nextIndex = i + 4; //Skip the name and the parenthesis. It now points to the thing after the closing ')'.
+						}
+						else
+						{
+							int lCount = 1;
+							int rCount = 0;
+							int j = 3; // Move to the right twice, now looking at token after the opening '('.
+							var fnTokens = new List<IToken>();
+							while (lCount != rCount)
+							{
+								if (CurrentTokens[i + j].Value == ")")
+								{
+									rCount++;
+									if (lCount == rCount) break;
+								}
+								else if (CurrentTokens[i + j].Value == "(")
+								{
+									lCount++;
+								}
+								fnTokens.Add(CurrentTokens[i + j]);
+								j++;
+							}
+							nextIndex += j; // nextIndex = i + 1 + j. Points to the thing after the closing ')'.
+							memberExpression = Create.CreateMethodCall(fnTokens, method, leftExpr, Script, Substitutions.Where(s => fnTokens.Contains(s.Key)).ToDictionary());
+						}
+					}
+					else if (leftExpr.Type.Type is IHasFieldsType) // It's a field access expression.
+																   //typeof(IHasFieldsType).IsAssignableFrom(expr.Type.GetType())
+					{
+						var type = (IHasFieldsType)leftExpr.Type.Type;
+						var field = type.FieldsB.FirstOrDefault(f => f.Name == memberName);
+						if (field.Name == null)
+							throw new ApplicationException($"The type {leftExpr.Type.Name} does not have a field named {memberName}.");
+						memberExpression = new FieldAccessExpression(leftExpr, memberName, field.Type);
+						nextIndex++; // Skip over the field name.
+					}
+					else if (leftExpr.Type.Type is HostInterfaceType)
+					{
+						var type = leftExpr.Type.Type as HostInterfaceType;
+						if (type.HasMethod(memberName))
+						{
+							var methodDef = type.GetMethodDefinition(memberName);
+							IExpression[] args;
+							if (methodDef.Parameters.Count == 0)
+							{ // Note: 'i' still points to '.'
+								if (!(i + 3 < CurrentTokens.Count && CurrentTokens[i + 2].Value == "(" && CurrentTokens[i + 3].Value == ")"))
+									throw new ApplicationException($"Error line {CurrentTokens[i + 1].LineNumber}: Improperly formated method call.");
+								args = new IExpression[0];
+								nextIndex = i + 4; //Skip the name and the parenthesis. It now points to the thing after the closing ')'.
+							}
+							else
+							{
+								int lCount = 1;
+								int rCount = 0;
+								int j = 3; // Move to the right twice, now looking at token after the opening '('.
+								var fnTokens = new List<IToken>();
+								while (lCount != rCount)
+								{
+									if (CurrentTokens[i + j].Value == ")")
+									{
+										rCount++;
+										if (lCount == rCount) break;
+									}
+									else if (CurrentTokens[i + j].Value == "(")
+									{
+										lCount++;
+									}
+									fnTokens.Add(CurrentTokens[i + j]);
+									j++;
+								}
+								nextIndex += j; // nextIndex = i + 1 + j. Points to the thing after the closing ')'.
+								args = methodDef.CreateArgsArray(
+									Create.CreateParamList(fnTokens, methodDef.Parameters.Count, Script, Substitutions.Where(p => fnTokens.Contains(p.Key)).ToDictionary()));
+							}
+							memberExpression = new HostIntefaceMethodCall(methodDef, leftExpr, args);
+						}
+						else
+							throw new ApplicationException($"Error line {CurrentTokens[i].LineNumber}: The HostInterface type '{type.Name}' does not have a method '{memberName}'.");
+					}
+					else
+						throw new ApplicationException($"The type {leftExpr.Type.Name} does not have a method named {memberName}.");
+
+					var sub = SUB + SubCount++;
+					Substitutions.Add(new Identifier(sub), memberExpression);
+					newTokens.Add(new Identifier(sub));
+					i = nextIndex - 1; // In the next iteration, i == nextIndex.
+					#endregion
+				}
+				else
+					newTokens.Add(CurrentTokens[i]);
+			}
+			CurrentTokens = newTokens;
+		}
 
 		private void ParseParenthesis()
 		{
@@ -596,6 +619,7 @@ namespace LSNr
 					var right = GetExpression(CurrentTokens[i + 1]);
 					var key = new Tuple<LsnCore.Operator, TypeId>(op,right.Type);
 
+
 					if (!left.Type.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
@@ -637,7 +661,7 @@ namespace LSNr
 		}
 
 
-		private static IExpression Build(List<IToken> tokens, IPreScript script, Dictionary<IToken,IExpression> subs, int i)
+		public static IExpression Build(List<IToken> tokens, IPreScript script, IReadOnlyDictionary<IToken,IExpression> subs, int i)
 		{
 			var b = new ExpressionBuilder(tokens, script, subs, i);
 			return b.Parse();

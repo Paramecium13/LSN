@@ -181,7 +181,7 @@ namespace LSNr
 		/// <param name="list"> The list of tokens.</param>
 		/// <param name="script"> The script.</param>
 		/// <returns></returns>
-		public static IExpression Express(List<IToken> list, IPreScript script)
+		public static IExpression Express(List<IToken> list, IPreScript script, IReadOnlyDictionary<IToken,IExpression> substitutions = null)
 		{
 			if (list[0].Value/*.ToLower()*/ == "get")
 			{
@@ -190,6 +190,8 @@ namespace LSNr
 			if(list.Count == 1)
 			{
 				var token = list[0];
+				if (substitutions != null && substitutions.ContainsKey(token))
+					return substitutions[token];
 				var expr = SingleTokenExpress(token, script, null, __variables);
 				if(__variables.Count != 0)
 				{
@@ -199,7 +201,9 @@ namespace LSNr
 					
 				return expr;
 			}
-			return ExpressionBuilder.Build(list, script);
+			if(substitutions == null)
+				return ExpressionBuilder.Build(list, script);
+			return ExpressionBuilder.Build(list, script, substitutions, substitutions.Count);
         }
 
 		public static IExpression SingleTokenExpress(IToken token, IPreScript script, IExpressionContainer container = null, IList<Variable> variables = null)
@@ -271,7 +275,7 @@ namespace LSNr
 			throw new NotImplementedException();
 		}
 
-		public static IList<Tuple<string,IExpression>> CreateParamList(List<IToken> tokens, int paramCount, IPreScript script)
+		public static IList<Tuple<string,IExpression>> CreateParamList(List<IToken> tokens, int paramCount, IPreScript script, IReadOnlyDictionary<IToken,IExpression> substitutions)
 		{
 			var ls = new List<Tuple<string, IExpression>>();
 			var parameters = new List<List<IToken>>();
@@ -350,11 +354,11 @@ namespace LSNr
 				var p = parameters[i];
 				if (p.Count > 2 && p[1].Value == ":") // It's named
 				{
-					ls.Add(new Tuple<string, IExpression>(p[0].Value, Express(p.Skip(2).ToList(), script)));
+					ls.Add(new Tuple<string, IExpression>(p[0].Value, Express(p.Skip(2).ToList(), script, substitutions)));
 				}
 				else
 				{
-					ls.Add(new Tuple<string, IExpression>("", Express(p, script)));
+					ls.Add(new Tuple<string, IExpression>("", Express(p, script,substitutions)));
 				}
 			}
 			return ls;
@@ -366,15 +370,15 @@ namespace LSNr
 		/// <param name="tokens"> The tokens, without the function name and containing parenthesis</param>
 		/// <param name="fn"></param>
 		/// <returns></returns>
-		public static FunctionCall CreateFunctionCall(List<IToken> tokens, Function fn, IPreScript script)
+		public static FunctionCall CreateFunctionCall(List<IToken> tokens, Function fn, IPreScript script, IReadOnlyDictionary<IToken, IExpression> substitutions = null)
 		{
-			var ls = CreateParamList(tokens, fn.Parameters.Count, script);
+			var ls = CreateParamList(tokens, fn.Parameters.Count, script, substitutions);
 			return fn.CreateCall(ls);
 		}
 
-		public static MethodCall CreateMethodCall(List<IToken> tokens, Method method, IExpression obj, IPreScript script)
+		public static MethodCall CreateMethodCall(List<IToken> tokens, Method method, IExpression obj, IPreScript script, IReadOnlyDictionary<IToken,IExpression> substitutions = null)
 		{
-			var ls = CreateParamList(tokens, method.Parameters.Count, script);
+			var ls = CreateParamList(tokens, method.Parameters.Count, script,substitutions);
 			return method.CreateMethodCall(ls,obj,true/*script.TypeIsIncluded(obj.Type)*/);
 		}
 		

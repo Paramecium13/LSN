@@ -33,7 +33,7 @@ namespace LSNr
 			"record","repeat","is",
 
 			//Statement headers
-			"give","rotate","publish","add","remove","callcommonevent","cce","recover",
+			"give","rotate","publish",/*"add","remove",*/"callcommonevent","cce","recover",
 			"goto","open","fadein","fadeout","tint","flash","shake","play","show","end","exit",
 			"wait","start","stop","change","say","turn",//move
 

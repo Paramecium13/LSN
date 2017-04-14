@@ -77,6 +77,7 @@
     <Compile Include="LsnCore\Expressions\HostIntefaceMethodCall.cs" />
     <Compile Include="LsnCore\Expressions\HostInterfaceAccessExpression.cs" />
     <Compile Include="LsnCore\Expressions\IExpressionContainer.cs" />
+    <Compile Include="LsnCore\Expressions\ListConstructor.cs" />
     <Compile Include="LsnCore\Expressions\PropertyAccessExpression.cs" />
     <Compile Include="LsnCore\Expressions\RecordConstructor.cs" />
     <Compile Include="LsnCore\Expressions\ScriptObjectMethodCall.cs" />
