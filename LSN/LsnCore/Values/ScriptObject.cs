@@ -40,6 +40,13 @@ namespace LsnCore.Values
 				Host = host;
 
 				//TODO: Subscribe to events.
+				foreach (var evName in (host.Type.Type as HostInterfaceType).EventDefinitions.Keys)
+				{
+					if((CurrentState?.HasEventListener(evName)?? false ) || ScObjType.HasEventListener(evName))
+					{
+						host.SubscribeToEvent(evName, this);
+					}
+				}
 			}
 			else
 			{

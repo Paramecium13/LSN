@@ -35,12 +35,12 @@ namespace LsnCore.Values
 		public bool IsReifyTimeConst() => false;
 		public void Replace(IExpression oldExpr, IExpression newExpr){}
 
-		public void SubscribeToEvent(string eventName, object eventListener)
+		public void SubscribeToEvent(string eventName, ScriptObject eventListener)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void UnsubscribeToEvent(string eventName, object eventListener)
+		public void UnsubscribeToEvent(string eventName, ScriptObject eventListener)
 		{
 			throw new NotImplementedException();
 		}

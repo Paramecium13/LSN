@@ -10,8 +10,8 @@ namespace LsnCore.Values
 	{
 		LsnValue CallMethod(string name, LsnValue[] arguments);
 
-		void SubscribeToEvent(string eventName, object eventListener);
+		void SubscribeToEvent(string eventName, ScriptObject eventListener);
 
-		void UnsubscribeToEvent(string eventName, object eventListener);
+		void UnsubscribeToEvent(string eventName, ScriptObject eventListener);
 	}
 }

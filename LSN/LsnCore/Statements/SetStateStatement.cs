@@ -10,9 +10,9 @@ namespace LsnCore.Statements
 {
 	public sealed class SetStateStatement : Statement
 	{
-		private readonly string State;
+		private readonly int State;
 
-		public SetStateStatement(string state)
+		public SetStateStatement(int state)
 		{
 			State = state;
 		}
