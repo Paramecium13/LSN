@@ -78,11 +78,6 @@ namespace LSNr
 
 		protected void Include(LsnScriptBase resource, string path)
 		{
-			foreach(var pair in resource.Functions)
-			{
-				// if (IncludedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
-				if (! IncludedFunctions.ContainsKey(pair.Key)) IncludedFunctions.Add(pair.Key, pair.Value);
-			}
 			foreach (var recType in resource.RecordTypes.Values)
 			{
 				IncludedTypes.Add(recType);
@@ -97,13 +92,21 @@ namespace LSNr
 			{
 				IncludedTypes.Add(hostInterface);
 				hostInterface.Id.Load(hostInterface);
+				LoadType(hostInterface);
 			}
 			foreach(var scObj in resource.ScriptObjectTypes.Values)
 			{
 				IncludedTypes.Add(scObj);
 				scObj.Id.Load(scObj);
+				LoadType(scObj);
 			}
 			//ToDo: Generic types and functions...
+			foreach(var pair in resource.Functions)
+			{
+				// if (IncludedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
+				if (! IncludedFunctions.ContainsKey(pair.Key)) IncludedFunctions.Add(pair.Key, pair.Value);
+				LoadFunctionParamAndReturnTypes(pair.Value);
+			}
 
 			Includes.Add(path);
 		}
@@ -233,12 +236,6 @@ namespace LSNr
 
 		protected void Use(LsnScriptBase resource, string path)
 		{
-			foreach (var pair in resource.Functions)
-			{
-				if (LoadedExternallyDefinedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
-				LoadedExternallyDefinedFunctions.Add(pair.Key, pair.Value);
-			}
-			
 			foreach (var recType in resource.RecordTypes.Values)
 			{
 				LoadedTypes.Add(recType);
@@ -252,13 +249,21 @@ namespace LSNr
 			foreach (var hostInterface in resource.HostInterfaces.Values)
 			{
 				LoadedTypes.Add(hostInterface);
-				hostInterface.Id.Load(hostInterface);
+				LoadType(hostInterface);
 			}
 			foreach (var scObj in resource.ScriptObjectTypes.Values)
 			{
 				LoadedTypes.Add(scObj);
 				scObj.Id.Load(scObj);
+				LoadType(scObj);
 			}
+			foreach (var pair in resource.Functions)
+			{
+				if (LoadedExternallyDefinedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
+				LoadedExternallyDefinedFunctions.Add(pair.Key, pair.Value);
+				LoadFunctionParamAndReturnTypes(pair.Value);
+			}
+			
 			//ToDo: Generic types and functions...
 			Usings.Add(path);
 		}		
@@ -342,10 +347,14 @@ namespace LSNr
 		protected void LoadFunctionParamAndReturnTypes(FunctionSignature func)
 		{
 			if (func.ReturnType != null)
-				LoadType(GetType(func.ReturnType.Name));
+			{
+				func.ReturnType.Load(GetType(func.ReturnType.Name));
+				LoadType(func.ReturnType.Type);
+			}
 			foreach (var param in func.Parameters)
 			{
-				LoadType(GetType(param.Type.Name));
+				param.Type.Load(GetType(param.Type.Name));
+				LoadType(param.Type.Type);
 			}
 		}
 
@@ -375,12 +384,8 @@ namespace LSNr
 					foreach(var method in hType.MethodDefinitions.Values)
 						LoadFunctionParamAndReturnTypes(method);
 					foreach(var ev in hType.EventDefinitions.Values)
-					{
 						foreach (var param in ev.Parameters)
-						{
-							LoadType(GetType(param.Type.Name));
-						}
-					}
+							LoadType(GetType(param.Type.Name));					
 				}
 			}
 		}
@@ -409,6 +414,16 @@ namespace LSNr
 
 		public virtual LsnType GetType(string name)
 		{
+			if (name.Contains('`'))
+			{
+				var names = name.Split('`');
+				if (GenericTypeExists(names[0]))
+				{
+					var generic = GetGenericType(names[0]);
+					return generic.GetType(names.Skip(1).Select(n => GetType(n)).Select(t => t.Id).ToList());
+				}
+				else throw new ApplicationException();
+			}
 			var type = IncludedTypes.FirstOrDefault(t => t.Name == name);
 			if (type != null) return type;
 			type = LoadedTypes.FirstOrDefault(t => t.Name == name);
