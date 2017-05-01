@@ -7,7 +7,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tokens;
-using Tokens.Tokens;
 
 namespace LSNr
 {
@@ -312,32 +311,32 @@ namespace LSNr
 				LsnValue defaultValue = LsnValue.Nil;
 				if (i < tokens.Count && tokens[i].Value == "=")
 				{
-					if (tokens[++i] is StringToken)
+					if ((tokens[++i] as Token).Type == TokenType.String)
 					{
 						if (type != LsnType.string_.Id)
 							throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type string to a parameter of type {type.Name}");
 						defaultValue = new LsnValue (new StringValue(tokens[i].Value));
 						if (i + 1 < tokens.Count) i++;
 					}
-					else if (tokens[i] is IntToken)
+					else if ((tokens[i] as Token).Type == TokenType.Integer)
 					{
 						if (type != LsnType.int_.Id)
 						{
 							if (type == LsnType.double_.Id)
 							{
-								defaultValue = new LsnValue((tokens[i] as IntToken?)?.IVal ?? 0);
+								defaultValue = new LsnValue((tokens[i] as Token)?.IntValue ?? 0);
 							}
 							else
 								throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type int to a parameter of type {type.Name}");
 						}
-						else defaultValue = new LsnValue((tokens[i] as IntToken?)?.IVal ?? 0);
+						else defaultValue = new LsnValue((tokens[i] as Token)?.IntValue ?? 0);
 						if (i + 1 < tokens.Count) i++;
 					}
-					else if (tokens[i] is FloatToken)
+					else if ((tokens[i] as Token)?.Type == TokenType.Float)
 					{
 						if (type != LsnType.double_.Id)
 							throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type double to a parameter of type {type.Name}");
-						defaultValue = new LsnValue((tokens[i] as FloatToken?)?.DVal ?? 0.0);
+						defaultValue = new LsnValue((tokens[i] as Token).DoubleValue);
 						if(i + 1 < tokens.Count) i++;
 					}
 					// Bools and other stuff...

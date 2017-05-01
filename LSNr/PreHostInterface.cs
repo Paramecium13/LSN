@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
 using Tokens;
-using Tokens.Tokens;
 
 namespace LSNr
 {

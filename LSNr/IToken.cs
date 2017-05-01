@@ -46,6 +46,17 @@ namespace Tokens
 		{
 			return other.Value == Value;
 		}
+
+		public override bool Equals(object obj)
+		{
+			var o = obj as Token;
+			if (o == null)
+				return false;
+			return o.Value == Value;
+		}
+
+		public override int GetHashCode() => Value.GetHashCode();
+
 	}
 
 	public static class TokenExtensions

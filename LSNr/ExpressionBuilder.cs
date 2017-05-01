@@ -1,7 +1,6 @@
 ﻿using LsnCore;
 using LsnCore.Expressions;
 using Tokens;
-using Tokens.Tokens;
 using LsnCore.Types;
 using LsnCore.Values;
 using System;
@@ -87,8 +86,8 @@ namespace LSNr
 						if (val == "true" || val == "false")
 						{
 							var name = SUB + SubCount++;
-							Substitutions.Add(new Identifier(name), LsnBoolValue.GetBoolValue(bool.Parse(val)));
-							CurrentTokens.Add(new Identifier(name));
+							Substitutions.Add(new Token(name,-1,TokenType.Substitution), LsnBoolValue.GetBoolValue(bool.Parse(val)));
+							CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 						}
 						else if (val == "new") // new
 						{
@@ -144,8 +143,8 @@ namespace LSNr
 							}
 							i = j;
 							var sub = SUB + SubCount++;
-							Substitutions.Add(new Identifier(sub), expr);
-							CurrentTokens.Add(new Identifier(sub));
+							Substitutions.Add(new Token(sub, -1, TokenType.Substitution), expr);
+							CurrentTokens.Add(new Token(sub, -1, TokenType.Substitution));
 							#endregion
 						}
 						else if (val == "this" )
@@ -154,8 +153,8 @@ namespace LSNr
 							if (preScrFn == null)
 								throw new ApplicationException("...");
 							var name = SUB + SubCount++;
-							Substitutions.Add(new Identifier(name), new VariableExpression(0, preScrFn.Parent.Id));
-							CurrentTokens.Add(new Identifier(name));
+							Substitutions.Add(new Token(name, -1, TokenType.Substitution), new VariableExpression(0, preScrFn.Parent.Id));
+							CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 						}
 						else if (val == "host")
 						{
@@ -163,8 +162,8 @@ namespace LSNr
 							if (preScrFn == null)
 								throw new ApplicationException("...");
 							var name = SUB + SubCount++;
-							Substitutions.Add(new Identifier(name), new HostInterfaceAccessExpression(new VariableExpression(0, preScrFn.Parent.Id), preScrFn.Parent.HostType.Id));
-							CurrentTokens.Add(new Identifier(name));
+							Substitutions.Add(new Token(name, -1, TokenType.Substitution), new HostInterfaceAccessExpression(new VariableExpression(0, preScrFn.Parent.Id), preScrFn.Parent.HostType.Id));
+							CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 						}
 						else
 							CurrentTokens.Add(InitialTokens[i]);
@@ -179,8 +178,8 @@ namespace LSNr
 						else expr = new VariableExpression(val, v.Type);*/
 						var name = SUB + SubCount++;
 						Variables.Add(v);
-						Substitutions.Add(new Identifier(name), expr);
-						CurrentTokens.Add(new Identifier(name));
+						Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
+						CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 						break;
 					}
 						
@@ -195,8 +194,8 @@ namespace LSNr
 						IExpression scrObjExpr = new VariableExpression(0, preScr.Id);
 						var expr = new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
 						var name = SUB + SubCount++;
-						Substitutions.Add(new Identifier(name), expr);
-						CurrentTokens.Add(new Identifier(name));
+						Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
+						CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 						break;
 					}
 					case SymbolType.Function:
@@ -210,8 +209,8 @@ namespace LSNr
 									throw new ApplicationException(); // Or throw or log something...
 								var fnCall = fn.CreateCall(new List<Tuple<string, IExpression>>());
 								var name = SUB + SubCount++;
-								Substitutions.Add(new Identifier(name), fnCall);
-								CurrentTokens.Add(new Identifier(name));
+								Substitutions.Add(new Token(name, -1, TokenType.Substitution), fnCall);
+								CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 							}
 							else
 							{
@@ -237,8 +236,8 @@ namespace LSNr
 								var name = SUB + SubCount++;
 								var pt = paramTokens.Skip(1).Take(paramTokens.Count - 2).ToList();
 								var fnCall = Create.CreateFunctionCall(pt, fn, Script, Substitutions.Where(p => pt.Contains(p.Key)).ToDictionary());
-								Substitutions.Add(new Identifier(name), fnCall);
-								CurrentTokens.Add(new Identifier(name));
+								Substitutions.Add(new Token(name, -1, TokenType.Substitution), fnCall);
+								CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 							}
 							i = nextIndex - 1; // In the next iteration, i == nextIndex.
 							#endregion
@@ -401,8 +400,8 @@ namespace LSNr
 						throw new ApplicationException($"The type {leftExpr.Type.Name} does not have a method named {memberName}.");
 
 					var sub = SUB + SubCount++;
-					Substitutions.Add(new Identifier(sub), memberExpression);
-					newTokens.Add(new Identifier(sub));
+					Substitutions.Add(new Token(sub, -1, TokenType.Substitution), memberExpression);
+					newTokens.Add(new Token(sub, -1, TokenType.Substitution));
 					i = nextIndex - 1; // In the next iteration, i == nextIndex.
 					#endregion
 				}
@@ -437,8 +436,8 @@ namespace LSNr
 					}
 					var expr = Build(pTokens, Script, Substitutions.Where(p => pTokens.Contains(p.Key)).ToDictionary(),SubCount);
 					var name = SUB + SubCount++;
-					Substitutions.Add(new Identifier(name), expr);
-					newTokens.Add(new Identifier(name));
+					Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
+					newTokens.Add(new Token(name, -1, TokenType.Substitution));
 					nextIndex += j;
 					i = nextIndex - 1; // In the next iteration, i == nextIndex.
 				}
@@ -480,11 +479,12 @@ namespace LSNr
 					newTokens.RemoveAt(newTokens.Count - 1);
 					var t = coll.Type.Type as ICollectionType;
 					if (t == null)// typeof(ICollectionType).IsAssignableFrom(coll.Type.GetType()
-						throw new ApplicationException($"{coll.Type.Name} cannot be indexed.");					
+						throw new ApplicationException($"{coll.Type.Name} cannot be indexed.");
 					if (t.IndexType != expr.Type)
 						throw new ApplicationException($"{coll.Type.Name} cannot be indexed by type {expr.Type.Name}.");
-                    Substitutions.Add(new Identifier(name), new CollectionValueAccessExpression(coll,expr, t.ContentsType.Id));
-					newTokens.Add(new Identifier(name));
+					var nt = new Token(name, -1, TokenType.Substitution);
+					Substitutions.Add(nt, new CollectionValueAccessExpression(coll,expr, t.ContentsType.Id));
+					newTokens.Add(nt);
 					nextIndex += j;
 					i = nextIndex - 1; // In the next iteration, i == nextIndex.
 				}
@@ -529,8 +529,9 @@ namespace LSNr
 					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
-					Substitutions.Add(new Identifier(name), expr);
-					newTokens.Add(new Identifier(name));
+					var nt = new Token(name, -1, TokenType.Substitution);
+					Substitutions.Add(nt, expr);
+					newTokens.Add(nt);
 					i++; // This skips to the token after the right hand side of this expression.
 				}
 				else newTokens.Add(CurrentTokens[i]);
@@ -558,8 +559,9 @@ namespace LSNr
 					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, LsnCore.Operator.Power);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
-					Substitutions.Add(new Identifier(name), expr);
-					newTokens.Add(new Identifier(name));
+					var nt = new Token(name, -1, TokenType.Substitution);
+					Substitutions.Add(nt, expr);
+					newTokens.Add(nt);
 					i++; // This skips to the token after the right hand side of this expression.
 				}
 				else newTokens.Add(CurrentTokens[i]);
@@ -591,8 +593,9 @@ namespace LSNr
 					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
-					Substitutions.Add(new Identifier(name), expr);
-					newTokens.Add(new Identifier(name));
+					var nt = new Token(name, -1, TokenType.Substitution);
+					Substitutions.Add(nt, expr);
+					newTokens.Add(nt);
 					i++; // This skips to the token after the right hand side of this expression.
 				}
 				else newTokens.Add(CurrentTokens[i]);
@@ -629,8 +632,9 @@ namespace LSNr
 					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
 					var name = SUB + SubCount++;
 					if(newTokens.Count > 0) newTokens.RemoveAt(newTokens.Count - 1);
-					Substitutions.Add(new Identifier(name), expr);
-					newTokens.Add(new Identifier(name));
+					var nt = new Token(name, -1, TokenType.Substitution);
+					Substitutions.Add(nt, expr);
+					newTokens.Add(nt);
 					i++; // This skips to the token after the right hand side of this expression.
 				}
 				else newTokens.Add(CurrentTokens[i]);

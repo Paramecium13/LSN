@@ -1,6 +1,5 @@
 ﻿using LsnCore;
 using Tokens;
-using Tokens.Tokens;
 using LsnCore.ControlStructures;
 using LsnCore.Expressions;
 using LsnCore.Statements;
@@ -240,12 +239,24 @@ namespace LSNr
 			{
 				
 			}
-			if (token.GetType() == typeof(FloatToken))
-				return new LsnValue(((FloatToken)token).DVal);
-			if (token.GetType() == typeof(IntToken))
-				return new LsnValue(((IntToken)token).IVal);
-			if (token.GetType() == typeof(StringToken))
-				return new StringValue(val);
+			var t = token as Token;
+			if(t != null)
+			{
+				switch (t.Type)
+				{
+					case TokenType.Float:
+						return new LsnValue(t.DoubleValue);
+					case TokenType.Integer:
+						return new LsnValue(t.IntValue);
+					case TokenType.String:
+						return new LsnValue(new StringValue(t.Value));
+					case TokenType.Substitution:
+						throw new ApplicationException();
+					default:
+						break;
+				}
+			}
+			
 			if (val == "true")
 				return LsnBoolValue.GetBoolValue(true);
 			if (val == "false")

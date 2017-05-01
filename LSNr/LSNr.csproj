@@ -105,16 +105,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scope.cs" />
-    <Compile Include="Tokens\Ambiguous.cs" />
-    <Compile Include="Tokens\Assignment.cs" />
-    <Compile Include="Tokens\FloatToken.cs" />
-    <Compile Include="Tokens\Identifier.cs" />
-    <Compile Include="Tokens\IntToken.cs" />
-    <Compile Include="Tokens\Keyword.cs" />
-    <Compile Include="Tokens\Operator.cs" />
-    <Compile Include="Tokens\StringToken.cs" />
-    <Compile Include="Tokens\SubToken.cs" />
-    <Compile Include="Tokens\SyntaxSymbol.cs" />
     <Compile Include="Variable.cs" />
     <Compile Include="VariableTable.cs" />
   </ItemGroup>
@@ -140,6 +130,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tokens\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

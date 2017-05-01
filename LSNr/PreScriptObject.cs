@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
 using Tokens;
-using Tokens.Tokens;
 
 namespace LSNr
 {
@@ -148,9 +147,9 @@ namespace LSNr
 							else if(v == ":" || v == "=")
 							{
 								i++; // Looking at token after the association indicator (i.e. ':' or '=').
-								var indexToken = Tokens[i] as IntToken?;
-								if (indexToken.HasValue)
-									previousStateIndex = indexToken.Value.IVal;
+								var indexToken = Tokens[i] as Token;
+								if (indexToken != null && indexToken.Type == TokenType.Integer)
+									previousStateIndex = indexToken.IntValue;
 								else
 									throw new ApplicationException($"Error line {Tokens[i].LineNumber}: Unexpected token '{Tokens[i].Value}'. Expected integer token.");
 							}
