@@ -18,7 +18,7 @@ namespace LSNr
 		/// <param name="ignoreCase"> Should case be ignored. Default is true.</param>
 		/// <returns></returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1304:SpecifyCultureInfo", MessageId = "System.String.ToLower")]
-		public static bool HasToken(this IEnumerable<IToken> self, string value, bool ignoreCase = true)
+		public static bool HasToken(this IEnumerable<Token> self, string value, bool ignoreCase = true)
 			=> ignoreCase ?
 				self.Any(t => t.Value.ToLower() == value)
 				: self.Any(t => t.Value == value);
@@ -30,7 +30,7 @@ namespace LSNr
 		/// <param name="value"> The value to look for. If ignore case is true, this should be all lowercase.</param>
 		/// <param name="ignoreCase"> Should case be ignored. Default is true.</param>
 		/// <returns></returns>
-		public static int IndexOf(this List<IToken> self, string value, bool ignoreCase = true)
+		public static int IndexOf(this List<Token> self, string value, bool ignoreCase = true)
 		{
 			if(ignoreCase)
 			{

@@ -23,7 +23,7 @@ namespace LSNr
 		/// <param name="body"> The body tokens.</param>
 		/// <param name="script"> The script.</param>
 		/// <returns></returns>
-		public static ControlStructure ControlStructure(List<IToken> head, List<IToken> body, IPreScript script)
+		public static ControlStructure ControlStructure(List<Token> head, List<Token> body, IPreScript script)
 		{
 			string h = head[0].Value;
 			int n = head.Count;
@@ -94,7 +94,7 @@ namespace LSNr
 				
 				if (head[3].Value != "=") throw new ApplicationException("...");
 
-				var exprTokens = new List<IToken>();
+				var exprTokens = new List<Token>();
 				int i = 4;
 				do
 				{
@@ -169,7 +169,7 @@ namespace LSNr
 		}
 		
 
-		private static IExpression Express(IEnumerable<IToken> tokens, IPreScript script/*, IExpressionContainer container*/)
+		private static IExpression Express(IEnumerable<Token> tokens, IPreScript script/*, IExpressionContainer container*/)
 			=> Express(tokens.ToList(), script);
 
 		private static List<Variable> __variables = new List<Variable>();
@@ -180,7 +180,7 @@ namespace LSNr
 		/// <param name="list"> The list of tokens.</param>
 		/// <param name="script"> The script.</param>
 		/// <returns></returns>
-		public static IExpression Express(List<IToken> list, IPreScript script, IReadOnlyDictionary<IToken,IExpression> substitutions = null)
+		public static IExpression Express(List<Token> list, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions = null)
 		{
 			if (list[0].Value/*.ToLower()*/ == "get")
 			{
@@ -205,7 +205,7 @@ namespace LSNr
 			return ExpressionBuilder.Build(list, script, substitutions, substitutions.Count);
         }
 
-		public static IExpression SingleTokenExpress(IToken token, IPreScript script, IExpressionContainer container = null, IList<Variable> variables = null)
+		public static IExpression SingleTokenExpress(Token token, IPreScript script, IExpressionContainer container = null, IList<Variable> variables = null)
 		{
 			var val = token.Value;
 			var symType = script.CheckSymbol(val);
@@ -281,16 +281,16 @@ namespace LSNr
 		}
 
 
-		private static Expression CreateGet(List<IToken> tokens, IPreScript script)
+		private static Expression CreateGet(List<Token> tokens, IPreScript script)
 		{
 			throw new NotImplementedException();
 		}
 
-		public static IList<Tuple<string,IExpression>> CreateParamList(List<IToken> tokens, int paramCount, IPreScript script, IReadOnlyDictionary<IToken,IExpression> substitutions)
+		public static IList<Tuple<string,IExpression>> CreateParamList(List<Token> tokens, int paramCount, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions)
 		{
 			var ls = new List<Tuple<string, IExpression>>();
-			var parameters = new List<List<IToken>>();
-			parameters.Add(new List<IToken>());
+			var parameters = new List<List<Token>>();
+			parameters.Add(new List<Token>());
 			int paramIndex = 0;
 			if (tokens.Count(t => t.Value == ",") > paramCount - 1) // There is one less comma than parameter. numCommas = numParameters - 1, where numParameters > 0
 			{
@@ -313,7 +313,7 @@ namespace LSNr
 					{
 						if (lPCount == rPCount && lBCount == rBCount)
 						{ // This is not inside a nested function or index thing.
-							parameters.Add(new List<IToken>());
+							parameters.Add(new List<Token>());
 							++paramIndex;
 						}
 						else // This is inside a nested function or index thing.
@@ -351,7 +351,7 @@ namespace LSNr
 				{
 					if (tokens[i].Value == ",")
 					{
-						parameters.Add(new List<IToken>());
+						parameters.Add(new List<Token>());
 						++paramIndex;
 					}
 					else
@@ -381,13 +381,13 @@ namespace LSNr
 		/// <param name="tokens"> The tokens, without the function name and containing parenthesis</param>
 		/// <param name="fn"></param>
 		/// <returns></returns>
-		public static FunctionCall CreateFunctionCall(List<IToken> tokens, Function fn, IPreScript script, IReadOnlyDictionary<IToken, IExpression> substitutions = null)
+		public static FunctionCall CreateFunctionCall(List<Token> tokens, Function fn, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions = null)
 		{
 			var ls = CreateParamList(tokens, fn.Parameters.Count, script, substitutions);
 			return fn.CreateCall(ls);
 		}
 
-		public static MethodCall CreateMethodCall(List<IToken> tokens, Method method, IExpression obj, IPreScript script, IReadOnlyDictionary<IToken,IExpression> substitutions = null)
+		public static MethodCall CreateMethodCall(List<Token> tokens, Method method, IExpression obj, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions = null)
 		{
 			var ls = CreateParamList(tokens, method.Parameters.Count, script,substitutions);
 			return method.CreateMethodCall(ls,obj,true/*script.TypeIsIncluded(obj.Type)*/);

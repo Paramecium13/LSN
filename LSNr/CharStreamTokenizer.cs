@@ -120,21 +120,21 @@ namespace LSNr
 
 		protected readonly StringBuilder UEscStrB = new StringBuilder();
 
-		private readonly Action<IToken> TokenOutput;
+		private readonly Action<Token> TokenOutput;
 
-		private readonly List<IToken> Tokens;
+		private readonly List<Token> Tokens;
 
 		private int LineNumber = 1;
 
 
 		internal CharStreamTokenizer()
 		{
-			Tokens = new List<IToken>();
+			Tokens = new List<Token>();
 			TokenOutput = (t) => Tokens.Add(t);
 		}
 
 
-		internal IReadOnlyList<IToken> Tokenize(string src)
+		internal IReadOnlyList<Token> Tokenize(string src)
 		{
 			int lngth = src.Length;
 			for (int i = 0; i < lngth; i++)
@@ -633,7 +633,7 @@ namespace LSNr
 		{
 			CanBeNegativeSign = false;
 			var str = StrB.ToString();
-			IToken token;
+			Token token;
 			switch (tokenType)
 			{
 				case TokenizerTokenType.Unknown:

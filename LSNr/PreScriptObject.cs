@@ -37,7 +37,7 @@ namespace LSNr
 			set{ Resource.Valid = value; }
 		}
 
-		public PreScriptObject(string name, PreResource resource, string hostName, IReadOnlyList<IToken> tokens):base(tokens, new TypeId(name),resource,hostName)
+		public PreScriptObject(string name, PreResource resource, string hostName, IReadOnlyList<Token> tokens):base(tokens, new TypeId(name),resource,hostName)
 		{
 			Name = name;
 		}
@@ -147,16 +147,15 @@ namespace LSNr
 							else if(v == ":" || v == "=")
 							{
 								i++; // Looking at token after the association indicator (i.e. ':' or '=').
-								var indexToken = Tokens[i] as Token;
-								if (indexToken != null && indexToken.Type == TokenType.Integer)
-									previousStateIndex = indexToken.IntValue;
+								if (Tokens[i].Type == TokenType.Integer)
+									previousStateIndex = Tokens[i].IntValue;
 								else
 									throw new ApplicationException($"Error line {Tokens[i].LineNumber}: Unexpected token '{Tokens[i].Value}'. Expected integer token.");
 							}
 							else
 								throw new ApplicationException($"Error line {Tokens[i].LineNumber}: Unexpected token '{v}'. Expected '{{', ':', or '='.");
 
-							var tokens = new List<IToken>();
+							var tokens = new List<Token>();
 							int openCount = 1;
 							while (openCount > 0)
 							{

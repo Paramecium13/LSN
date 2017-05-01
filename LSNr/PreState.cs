@@ -16,7 +16,7 @@ namespace LSNr
 		private readonly string StateName;
 		private readonly int Index;
 
-		public PreState(PreScriptObject parent, string name, int index,PreResource resource, IReadOnlyList<IToken> tokens)
+		public PreState(PreScriptObject parent, string name, int index,PreResource resource, IReadOnlyList<Token> tokens)
 			:base(tokens,parent.Id,resource,parent.HostName)
 		{
 			Parent = parent; StateName = name; Index = index;

@@ -12,13 +12,13 @@ namespace LSNr
 {
 	public class Parser
 	{
-		private IReadOnlyList<IToken> Tokens;
+		private IReadOnlyList<Token> Tokens;
 		private int i = 0;
-		private List<IToken> TempTokens = new List<IToken>();
+		private List<Token> TempTokens = new List<Token>();
 		internal List<Component> Components = new List<Component>();
 		private IPreScript Script;
 
-		public Parser(IReadOnlyList<IToken> tokens, IPreScript script)
+		public Parser(IReadOnlyList<Token> tokens, IPreScript script)
 		{
 			Tokens = tokens;
 			Script = script;
@@ -54,7 +54,7 @@ namespace LSNr
 		{
 			int openCount = 0;
 			int closeCount = 0;
-			var bodyTokens = new List<IToken>();
+			var bodyTokens = new List<Token>();
 			do
 			{
 				var token = Tokens[i];

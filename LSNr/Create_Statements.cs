@@ -22,7 +22,7 @@ namespace LSNr
 		/// <param name="tokens"> The tokens of the statement, not including the ';'.</param>
 		/// <param name="script"> The script.</param>
 		/// <returns></returns>
-		public static Statement State(List<IToken> tokens, IPreScript script)
+		public static Statement State(List<Token> tokens, IPreScript script)
 		{
 			var v = tokens[0].Value.ToLower();
 			int n = tokens.Count;
@@ -67,7 +67,7 @@ namespace LSNr
 		/// <param name="tokens"></param>
 		/// <param name="script"></param>
 		/// <returns></returns>
-		private static AssignmentStatement Assignment(List<IToken> tokens, IPreScript script)
+		private static AssignmentStatement Assignment(List<Token> tokens, IPreScript script)
 		{
 			bool mut = tokens.Any(t => t.Value/*.ToLower()*/ == "mut");
 			bool mutable = script.Mutable || mut;
@@ -87,7 +87,7 @@ namespace LSNr
 		/// <param name="tokens"> The tokens.</param>
 		/// <param name="script"> The script.</param>
 		/// <returns></returns>
-		private static Statement Reassignment(List<IToken> tokens, IPreScript script)
+		private static Statement Reassignment(List<Token> tokens, IPreScript script)
 		{
 			if (!script.CurrentScope.VariableExists(tokens[0].Value))
 			{
@@ -143,7 +143,7 @@ namespace LSNr
 		/// <param name="tokens"> The tokens of the statement; without the 'say' and ';' tokens.</param>
 		/// <param name="script"></param>
 		/// <returns></returns>
-		private static SayStatement Say(List<IToken> tokens, IPreScript script)
+		private static SayStatement Say(List<Token> tokens, IPreScript script)
 		{
 			IExpression message, graphic = null, title = null;
 			if(tokens.HasToken("with") || tokens.HasToken("withgraphic"))
@@ -187,10 +187,10 @@ namespace LSNr
 		/// <param name="str"></param>
 		/// <param name="indexOfString"></param>
 		/// <returns></returns>
-		private static IExpression GetExpression(IEnumerable<IToken> tokens, string str, out int indexOfString, IPreScript script)
+		private static IExpression GetExpression(IEnumerable<Token> tokens, string str, out int indexOfString, IPreScript script)
 		{
 			indexOfString = tokens.Select(t => t.Value.ToLower()).ToList().IndexOf(str);
-			List<IToken> exprTokens = tokens.Take(indexOfString - 1).ToList();
+			List<Token> exprTokens = tokens.Take(indexOfString - 1).ToList();
 			return Express(exprTokens, script);
 		}
 
@@ -200,7 +200,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="tokens"></param>
 		/// <returns></returns>
-		private static GiveStatement Give(List<IToken> tokens, IPreScript script)
+		private static GiveStatement Give(List<Token> tokens, IPreScript script)
 		{
 			if (tokens.Count < 2) throw new NotImplementedException();
 			if (tokens.Any(t => t.Value == "item"))
@@ -224,7 +224,7 @@ namespace LSNr
 				return null;
 		}
 
-		private static GiveItemStatement GiveItem(List<IToken> tokens, IPreScript script)
+		private static GiveItemStatement GiveItem(List<Token> tokens, IPreScript script)
 		{
 			int index1, index2;
 			IExpression Amount;
@@ -251,7 +251,7 @@ namespace LSNr
 			return new GiveItemStatement(Id, Amount,receiver);
 		}
 
-		private static GiveGoldStatement GiveGold(List<IToken> tokens, IPreScript script)
+		private static GiveGoldStatement GiveGold(List<Token> tokens, IPreScript script)
 		{
 			IExpression Amount;
 			IExpression receiver = LsnValue.Nil;
@@ -269,10 +269,10 @@ namespace LSNr
 		}
 
 
-		private static Statement GotoStatement(IReadOnlyList<IToken> tokens, IPreScript script)
+		private static Statement GotoStatement(IReadOnlyList<Token> tokens, IPreScript script)
 		{
 			IExpression actor = null;
-			IReadOnlyList<IToken> tokens0 = null;
+			IReadOnlyList<Token> tokens0 = null;
 			if (tokens[0].Value == "goto")
 				tokens0 = tokens;
 			else

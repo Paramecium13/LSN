@@ -21,7 +21,7 @@ namespace LSNr
 		protected readonly string Source;
 		protected string Text;
 		private bool _Mutable = false;
-		protected IReadOnlyList<IToken> Tokens;
+		protected IReadOnlyList<Token> Tokens;
 		public abstract IScope CurrentScope { get; set; }
 
 		/// <summary>

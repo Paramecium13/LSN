@@ -18,16 +18,16 @@ namespace LSNr
 
 		// The Id of the ScriptObject this is for.
 		internal readonly TypeId Id;
-		protected readonly IReadOnlyList<IToken> Tokens;
+		protected readonly IReadOnlyList<Token> Tokens;
 		protected readonly PreResource Resource;
 
 		internal readonly string HostName;
 		internal HostInterfaceType HostType;
 
 		protected readonly Dictionary<string, ScriptObjectMethod> Methods = new Dictionary<string, ScriptObjectMethod>();
-		protected readonly Dictionary<string, IReadOnlyList<IToken>> MethodBodies = new Dictionary<string, IReadOnlyList<IToken>>();
+		protected readonly Dictionary<string, IReadOnlyList<Token>> MethodBodies = new Dictionary<string, IReadOnlyList<Token>>();
 		protected readonly Dictionary<string, EventListener> EventListeners = new Dictionary<string, EventListener>();
-		protected readonly Dictionary<string, IReadOnlyList<IToken>> EventListenerBodies = new Dictionary<string, IReadOnlyList<IToken>>();
+		protected readonly Dictionary<string, IReadOnlyList<Token>> EventListenerBodies = new Dictionary<string, IReadOnlyList<Token>>();
 
 		public abstract SymbolType CheckSymbol(string name);
 		public abstract bool FunctionExists(string name);
@@ -40,7 +40,7 @@ namespace LSNr
 		public abstract bool TypeExists(string name);
 
 
-		protected BasePreScriptObject(IReadOnlyList<IToken> tokens, TypeId id, PreResource resource, string hostName)
+		protected BasePreScriptObject(IReadOnlyList<Token> tokens, TypeId id, PreResource resource, string hostName)
 		{
 			Tokens = tokens; Id = id; Resource = resource; HostName = hostName;
 		}
@@ -56,7 +56,7 @@ namespace LSNr
 		internal FunctionSignature GetHostMethodSignature(string name) => HostType?.GetMethodDefinition(name);
 
 
-		private List<Parameter> ParseParameters(IReadOnlyList<IToken> tokens)
+		private List<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
 		{
 			var paramaters = new List<Parameter>();
 			ushort index = 0;
@@ -102,7 +102,7 @@ namespace LSNr
 			if (Tokens[i].Value != "(")
 				throw new ApplicationException("...");
 
-			var paramTokens = new List<IToken>();
+			var paramTokens = new List<Token>();
 			while (Tokens[++i].Value != ")") // This starts with the token after '('.
 				paramTokens.Add(Tokens[i]);
 
@@ -166,7 +166,7 @@ namespace LSNr
 					return new ScriptObjectMethod(Id, returnType, parameters, Resource.Environment, isVirtual, isAbstract, name);
 				}*/
 
-				var tokens = new List<IToken>();
+				var tokens = new List<Token>();
 				int openCount = 1;
 				while (openCount > 0)
 				{
@@ -211,7 +211,7 @@ namespace LSNr
 				throw new ApplicationException();
 			}
 
-			var paramTokens = new List<IToken>();
+			var paramTokens = new List<Token>();
 			while (Tokens[++i].Value != ")") // This starts with the token after '('.
 				paramTokens.Add(Tokens[i]);
 
@@ -238,7 +238,7 @@ namespace LSNr
 				throw new ApplicationException("");
 			}
 
-			var tokens = new List<IToken>();
+			var tokens = new List<Token>();
 			int openCount = 1;
 			while (openCount > 0)
 			{

@@ -15,9 +15,9 @@ namespace LSNr
 	{
 		const string SUB = "Ƨ";
 
-		private Dictionary<IToken, IExpression> Substitutions = new Dictionary<IToken, IExpression>();
-		private readonly List<IToken> InitialTokens;
-		private List<IToken> CurrentTokens = new List<IToken>();
+		private Dictionary<Token, IExpression> Substitutions = new Dictionary<Token, IExpression>();
+		private readonly List<Token> InitialTokens;
+		private List<Token> CurrentTokens = new List<Token>();
 		private int SubCount = 0;
 		private readonly IPreScript Script;
 
@@ -26,14 +26,14 @@ namespace LSNr
 		/// </summary>
 		private List<Variable> Variables = new List<Variable>();
 
-		private ExpressionBuilder(List<IToken> tokens, IPreScript script)
+		private ExpressionBuilder(List<Token> tokens, IPreScript script)
 		{
 			InitialTokens = tokens;
 			Script = script;
 		}
 
 
-		private ExpressionBuilder(List<IToken> tokens, IPreScript script, IReadOnlyDictionary<IToken, IExpression> subs, int count)
+		private ExpressionBuilder(List<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> subs, int count)
 		{
 			InitialTokens = tokens;
 			Script = script;
@@ -116,7 +116,7 @@ namespace LSNr
 								throw new ApplicationException("No parenthesis.");
 							if (listType == null)
 							{
-								var paramTokens = new List<IToken>();
+								var paramTokens = new List<Token>();
 								int pCount = 0;
 								do
 								{
@@ -217,7 +217,7 @@ namespace LSNr
 								//int lCount = 1;
 								//int rCount = 0;
 								int j = i; // Move to the right twice, now looking at token after the opening '('.
-								var paramTokens = new List<IToken>();
+								var paramTokens = new List<Token>();
 								/*int lCount = 0;
 								int rCount = 0;*/
 								int pCount = 0;
@@ -264,7 +264,7 @@ namespace LSNr
 
 		private void ParseMemberAccess()
 		{
-			var newTokens = new List<IToken>();
+			var newTokens = new List<Token>();
 			for(int i = 0; i < CurrentTokens.Count; i++)
 			{
 				var val = CurrentTokens[i].Value;
@@ -282,7 +282,7 @@ namespace LSNr
 					if (CurrentTokens[i - 1].Value == ")")
 					{
 						// I'm not too sure this will work...
-						var tokens = new List<IToken>();
+						var tokens = new List<Token>();
 						int rightCount = 1;
 						int leftCount = 0;
 						int j = i - 1;
@@ -324,7 +324,7 @@ namespace LSNr
 							int lCount = 1;
 							int rCount = 0;
 							int j = 3; // Move to the right twice, now looking at token after the opening '('.
-							var fnTokens = new List<IToken>();
+							var fnTokens = new List<Token>();
 							while (lCount != rCount)
 							{
 								if (CurrentTokens[i + j].Value == ")")
@@ -372,7 +372,7 @@ namespace LSNr
 								int lCount = 1;
 								int rCount = 0;
 								int j = 3; // Move to the right twice, now looking at token after the opening '('.
-								var fnTokens = new List<IToken>();
+								var fnTokens = new List<Token>();
 								while (lCount != rCount)
 								{
 									if (CurrentTokens[i + j].Value == ")")
@@ -413,7 +413,7 @@ namespace LSNr
 
 		private void ParseParenthesis()
 		{
-			var newTokens = new List<IToken>();
+			var newTokens = new List<Token>();
 			for(int i = 0; i < CurrentTokens.Count; i++)
 			{
 				var val = CurrentTokens[i].Value;
@@ -423,7 +423,7 @@ namespace LSNr
 					int lCount = 1;
 					int rCount = 0;
 					int j = 1;
-					List<IToken> pTokens = new List<IToken>();
+					List<Token> pTokens = new List<Token>();
 					while(lCount != rCount)
 					{
 						if (CurrentTokens[i + j].Value == ")")
@@ -452,7 +452,7 @@ namespace LSNr
 
 		private void ParseInexers()
 		{
-			var newTokens = new List<IToken>();
+			var newTokens = new List<Token>();
 			for (int i = 0; i < CurrentTokens.Count; i++)
 			{
 				var val = CurrentTokens[i].Value;
@@ -462,7 +462,7 @@ namespace LSNr
 					int lCount = 1;
 					int rCount = 0;
 					int j = 1;
-					List<IToken> iTokens = new List<IToken>();
+					List<Token> iTokens = new List<Token>();
 					while (lCount != rCount)
 					{
 						if (CurrentTokens[i + j].Value == "]")
@@ -499,7 +499,7 @@ namespace LSNr
 
 		private void ParseMultDivMod()
 		{
-			var newTokens = new List<IToken>();
+			var newTokens = new List<Token>();
 			for(int i = 0; i < CurrentTokens.Count; i++)
 			{
 				var val = CurrentTokens[i].Value;
@@ -543,7 +543,7 @@ namespace LSNr
 
 		private void ParseExponents()
 		{
-			var newTokens = new List<IToken>();
+			var newTokens = new List<Token>();
 			for (int i = 0; i < CurrentTokens.Count; i++)
 			{
 				if (CurrentTokens[i].Value == "^")
@@ -572,7 +572,7 @@ namespace LSNr
 
 		private void ParseAddSubtract()
 		{
-			var newTokens = new List<IToken>();
+			var newTokens = new List<Token>();
 			for (int i = 0; i < CurrentTokens.Count; i++)
 			{
 				var val = CurrentTokens[i].Value;
@@ -606,7 +606,7 @@ namespace LSNr
 
 		private void ParseComparisons()
 		{
-			var newTokens = new List<IToken>();
+			var newTokens = new List<Token>();
 			for (int i = 0; i < CurrentTokens.Count; i++)
 			{
 				var val = CurrentTokens[i].Value;
@@ -643,7 +643,7 @@ namespace LSNr
 		}
 
 
-		private IExpression GetExpression(IToken token)
+		private IExpression GetExpression(Token token)
 		{
 			if (Substitutions.ContainsKey(token)) return Substitutions[token];
 			return Create.SingleTokenExpress(token, Script);
@@ -660,14 +660,14 @@ namespace LSNr
 		}
 		
 
-		public static IExpression Build(List<IToken> tokens, IPreScript script)
+		public static IExpression Build(List<Token> tokens, IPreScript script)
 		{
 			var b = new ExpressionBuilder(tokens, script);
 			return b.Parse();
 		}
 
 
-		public static IExpression Build(List<IToken> tokens, IPreScript script, IReadOnlyDictionary<IToken,IExpression> subs, int i)
+		public static IExpression Build(List<Token> tokens, IPreScript script, IReadOnlyDictionary<Token,IExpression> subs, int i)
 		{
 			var b = new ExpressionBuilder(tokens, script, subs, i);
 			return b.Parse();

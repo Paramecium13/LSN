@@ -17,7 +17,7 @@ namespace LSNr
 
 		private readonly BasePreScript Parent;
 
-		private readonly IReadOnlyList<IToken> Tokens; // The tokens between (and not including) the opening and closing braces.
+		private readonly IReadOnlyList<Token> Tokens; // The tokens between (and not including) the opening and closing braces.
 
 		private readonly Dictionary<string, EventDefinition> Events = new Dictionary<string, EventDefinition>();
 
@@ -34,7 +34,7 @@ namespace LSNr
 		}
 
 
-		internal PreHostInterface(string name, BasePreScript parent, IReadOnlyList<IToken> tokens)
+		internal PreHostInterface(string name, BasePreScript parent, IReadOnlyList<Token> tokens)
 		{
 			Name = name; HostInterfaceId = new TypeId(name);  Parent = parent; Tokens = tokens;
 		}
@@ -100,7 +100,7 @@ namespace LSNr
 			return hostType;
 		}
 
-		private List<Parameter> ParseParameters(IReadOnlyList<IToken> tokens)
+		private List<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
 		{
 			var paramaters = new List<Parameter>();
 			ushort index = 0;
@@ -136,7 +136,7 @@ namespace LSNr
 			if (Tokens[i].Value != "(")
 				throw new ApplicationException("...");
 
-			var paramTokens = new List<IToken>();
+			var paramTokens = new List<Token>();
 			while (Tokens[++i].Value != ")") // This starts with the token after '('.
 				paramTokens.Add(Tokens[i]);
 
@@ -169,7 +169,7 @@ namespace LSNr
 			if (Tokens[i].Value != "(")
 				throw new ApplicationException("...");
 
-			var paramTokens = new List<IToken>();
+			var paramTokens = new List<Token>();
 			while (Tokens[++i].Value != ")") // This starts with the token after '('.
 				paramTokens.Add(Tokens[i]);
 

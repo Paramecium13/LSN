@@ -8,13 +8,7 @@ namespace Tokens
 {
 	public enum TokenType { Ambiguous, Assignment, Float, Identifier, Integer, Keyword, Operator, String, Substitution, SyntaxSymbol}
 
-	public interface IToken : IEquatable<IToken>
-	{
-		string Value { get; }
-		int LineNumber { get; }
-	}
-
-	public sealed class Token : IToken
+	public sealed class Token
 	{
 		private readonly int _LineNumber;
 		private readonly string _Value;
@@ -42,7 +36,7 @@ namespace Tokens
 			IntValue = value;
 		}
 
-		public bool Equals(IToken other)
+		public bool Equals(Token other)
 		{
 			return other.Value == Value;
 		}
@@ -62,7 +56,7 @@ namespace Tokens
 	public static class TokenExtensions
 	{
 
-		public static bool Equals(IToken a, IToken b)
+		public static bool Equals(Token a, Token b)
 		{
 			// Putting Value comparison first to improve performance by short circuiting becaues it is
 			// most likely to fail and I think it is easier to do.

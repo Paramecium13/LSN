@@ -30,7 +30,7 @@ namespace LSNr
 
 		private readonly Dictionary<string, LsnFunction> MyFunctions = new Dictionary<string, LsnFunction>();
 
-		private readonly Dictionary<string, List<IToken>> FunctionBodies = new Dictionary<string, List<IToken>>();
+		private readonly Dictionary<string, List<Token>> FunctionBodies = new Dictionary<string, List<Token>>();
 
 
 		//private readonly List<GenericType> GenericTypes = LsnType.GetBaseGenerics();
@@ -72,9 +72,9 @@ namespace LSNr
 		/// Go through the source, parsing structs and records.
 		/// </summary>
 		/// <returns> Tokens that are not part of a struct or record.</returns>
-		private IReadOnlyList<IToken> PreParseTypes()
+		private IReadOnlyList<Token> PreParseTypes()
 		{
-			var otherTokens = new List<IToken>();
+			var otherTokens = new List<Token>();
 			for(int i = 0; i < Tokens.Count; i++)
 			{
 				var val = Tokens[i].Value;
@@ -87,7 +87,7 @@ namespace LSNr
 						Valid = false;
 					}
 					else ++i; // Move on to the token after '{'.
-					var tokens = new List<IToken>();
+					var tokens = new List<Token>();
 					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
 					MakeStruct(name, tokens);
 				}
@@ -100,7 +100,7 @@ namespace LSNr
 						Valid = false;
 					}
 					else ++i; // Move on to the token after '{'.
-					var tokens = new List<IToken>();
+					var tokens = new List<Token>();
 					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
 					MakeRecord(name, tokens);
 				}
@@ -113,7 +113,7 @@ namespace LSNr
 						Valid = false;
 					}
 					else ++i; // Move on to the token after '{'.
-					var tokens = new List<IToken>();
+					var tokens = new List<Token>();
 					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
 					PreHostInterfaces.Add(name, new PreHostInterface(name, this, tokens));
 				}
@@ -132,7 +132,7 @@ namespace LSNr
 					if (Tokens[i].Value != "{")
 						throw new ApplicationException("");
 
-					var tokens = new List<IToken>();
+					var tokens = new List<Token>();
 					int openCount = 1;
 					while (openCount > 0)
 					{
@@ -159,9 +159,9 @@ namespace LSNr
 		//		* Store the name and body in a Dictionary<string,List<IToken>> named FunctionBodies.
 		//	* Go through FunctionBodies and parse the tokens.
 		//		* Put the resulting List<Component> in the LSN_Function of the same name stored in Functions.
-		private List<IToken> PreParseFunctions(IReadOnlyList<IToken> tokens)
+		private List<Token> PreParseFunctions(IReadOnlyList<Token> tokens)
 		{
-			var otherTokens = new List<IToken>();
+			var otherTokens = new List<Token>();
 			for (int i = 0; i < tokens.Count; i++)
 			{
 				if (tokens[i].Value == "fn")
@@ -172,7 +172,7 @@ namespace LSNr
 						Console.WriteLine($"Error in parsing function {name} expected token '(', received '{tokens[i].Value}'.");
 						Valid = false; continue;
 					}
-					var paramTokens = new List<IToken>();
+					var paramTokens = new List<Token>();
 					while (tokens[++i].Value != ")") // This starts with the token after '('.
 						paramTokens.Add(tokens[i]);
 					List<Parameter> paramaters = null;
@@ -217,7 +217,7 @@ namespace LSNr
 						Console.WriteLine($"Error in parsing function {name} expected token '{{', received '{tokens[i].Value}'.");
 						Valid = false; continue;
 					}
-					var fnBody = new List<IToken>();
+					var fnBody = new List<Token>();
 					int openCount = 1;
 					int closeCount = 0;
 					string v = null;
@@ -298,7 +298,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="tokens"></param>
 		/// <returns></returns>
-		private List<Parameter> ParseParameters(IReadOnlyList<IToken> tokens)
+		private List<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
 		{
 			var paramaters = new List<Parameter>();
 			ushort index = 0;
@@ -311,32 +311,32 @@ namespace LSNr
 				LsnValue defaultValue = LsnValue.Nil;
 				if (i < tokens.Count && tokens[i].Value == "=")
 				{
-					if ((tokens[++i] as Token).Type == TokenType.String)
+					if (tokens[++i].Type == TokenType.String)
 					{
 						if (type != LsnType.string_.Id)
 							throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type string to a parameter of type {type.Name}");
 						defaultValue = new LsnValue (new StringValue(tokens[i].Value));
 						if (i + 1 < tokens.Count) i++;
 					}
-					else if ((tokens[i] as Token).Type == TokenType.Integer)
+					else if (tokens[i].Type == TokenType.Integer)
 					{
 						if (type != LsnType.int_.Id)
 						{
 							if (type == LsnType.double_.Id)
 							{
-								defaultValue = new LsnValue((tokens[i] as Token)?.IntValue ?? 0);
+								defaultValue = new LsnValue(tokens[i].IntValue );
 							}
 							else
 								throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type int to a parameter of type {type.Name}");
 						}
-						else defaultValue = new LsnValue((tokens[i] as Token)?.IntValue ?? 0);
+						else defaultValue = new LsnValue(tokens[i].IntValue);
 						if (i + 1 < tokens.Count) i++;
 					}
-					else if ((tokens[i] as Token)?.Type == TokenType.Float)
+					else if (tokens[i].Type == TokenType.Float)
 					{
 						if (type != LsnType.double_.Id)
 							throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type double to a parameter of type {type.Name}");
-						defaultValue = new LsnValue((tokens[i] as Token).DoubleValue);
+						defaultValue = new LsnValue(tokens[i].DoubleValue);
 						if(i + 1 < tokens.Count) i++;
 					}
 					// Bools and other stuff...
@@ -356,7 +356,7 @@ namespace LSNr
 		/// <param name="typeOfType">struct or record.</param>
 		/// <param name="tokens"></param>
 		/// <returns></returns>
-		private Dictionary<string, LsnType> ParseFields(string name, string typeOfType, IReadOnlyList<IToken> tokens)
+		private Dictionary<string, LsnType> ParseFields(string name, string typeOfType, IReadOnlyList<Token> tokens)
 		{
 			if (tokens.Count < 3) // struct Circle { Radius : double}
 			{
@@ -404,7 +404,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="name"> The name of the struct to make.</param>
 		/// <param name="tokens"> The tokens defining the struct.</param>
-		private void MakeStruct(string name, IReadOnlyList<IToken> tokens)
+		private void MakeStruct(string name, IReadOnlyList<Token> tokens)
 		{
 			Dictionary<string, LsnType> fields = null;
 			try
@@ -428,7 +428,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="name"> The name of the record.</param>
 		/// <param name="tokens"> The tokens defining the record.</param>
-		private void MakeRecord(string name, IReadOnlyList<IToken> tokens)
+		private void MakeRecord(string name, IReadOnlyList<Token> tokens)
 		{
 			Dictionary<string, LsnType> fields = null;
 			try
