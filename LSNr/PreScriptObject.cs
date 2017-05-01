@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
 using Tokens;
+using Tokens.Tokens;
 
 namespace LSNr
 {
@@ -19,12 +20,13 @@ namespace LSNr
 
 		private readonly string Name;
 
+		private readonly IList<PreState> PreStates = new List<PreState>();
 
 		private readonly List<Property> Properties = new List<Property>();
 
 		private readonly List<Field> Fields = new List<Field>();
 
-
+		private int DefaultStateIndex = -1;
 
 		public override IScope CurrentScope { get; set; }
 
@@ -32,19 +34,9 @@ namespace LSNr
 
 		public override bool Valid
 		{
-			get
-			{
-				return Resource.Valid;
-			}
-			set
-			{
-				Resource.Valid = value;
-			}
+			get{ return Resource.Valid; }
+			set{ Resource.Valid = value; }
 		}
-
-		
-		private int DefaultStateIndex;
-
 
 		public PreScriptObject(string name, PreResource resource, string hostName, IReadOnlyList<IToken> tokens):base(tokens, new TypeId(name),resource,hostName)
 		{
@@ -105,14 +97,20 @@ namespace LSNr
 
 		internal int GetStateIndex(string name) => -1;
 
-		protected override bool MethodSignatureValid(FunctionSignature signature) => !Methods.ContainsKey(signature.Name); // No method exists with this name.
+		/// <summary>
+		/// No method with this name has been defined already.
+		/// </summary>
+		/// <param name="signature"></param>
+		/// <returns></returns>
+		public override bool IsMethodSignatureValid(FunctionSignature signature) => !Methods.ContainsKey(signature.Name); // No method exists with this name.
 
 
 		internal void PreParse()
 		{
 			bool defaultStateDefined = false;
+			bool isDefaultState = false;
 			int previousStateIndex = -1;
-
+			
 			int i = 0;
 			while (i < Tokens.Count)
 			{
@@ -138,6 +136,58 @@ namespace LSNr
 							throw new ApplicationException();
 						goto case "state";
 					case "state":
+						try
+						{
+							i++; // Looking at token after 'state'
+							var stateName = Tokens[i].Value;
+							// TODO: Make sure it's an identifier token.
+							i++; // Looking at token after the state name.
+							var v = Tokens[i].Value;
+							if (v == "{")
+								previousStateIndex++; // This is the current index.
+							else if(v == ":" || v == "=")
+							{
+								i++; // Looking at token after the association indicator (i.e. ':' or '=').
+								var indexToken = Tokens[i] as IntToken?;
+								if (indexToken.HasValue)
+									previousStateIndex = indexToken.Value.IVal;
+								else
+									throw new ApplicationException($"Error line {Tokens[i].LineNumber}: Unexpected token '{Tokens[i].Value}'. Expected integer token.");
+							}
+							else
+								throw new ApplicationException($"Error line {Tokens[i].LineNumber}: Unexpected token '{v}'. Expected '{{', ':', or '='.");
+
+							var tokens = new List<IToken>();
+							int openCount = 1;
+							while (openCount > 0)
+							{
+								i++;
+
+								var v1 = Tokens[i].Value;
+								if (v1 == "{")
+									openCount++;
+								else if (v1 == "}")
+									openCount--;
+
+								if (openCount > 0) tokens.Add(Tokens[i]);
+							}
+
+							if(isDefaultState)
+							{
+								DefaultStateIndex = previousStateIndex;
+								isDefaultState = false;
+							}
+
+							PreStates.Add( new PreState(this,stateName,previousStateIndex,Resource,tokens));
+						}
+						catch (ApplicationException e) { throw e; }
+						catch (Exception e)
+						{
+							if (i >= Tokens.Count)
+								throw new ApplicationException($"Error Line {Tokens[Tokens.Count-1]}: Unexpected end of file.");
+							else
+								throw new ApplicationException($"Error Line {Tokens[i].LineNumber}: Unspecified state preparsing error.",e);
+						}
 						throw new NotImplementedException();
 					case "property":
 						{

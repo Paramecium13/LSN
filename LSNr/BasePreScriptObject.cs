@@ -47,7 +47,7 @@ namespace LSNr
 
 
 
-		protected abstract bool MethodSignatureValid(FunctionSignature signature);
+		public abstract bool IsMethodSignatureValid(FunctionSignature signature);
 
 		internal bool HostEventExists(string name) => HostType?.HasEventDefinition(name) ?? false;
 		internal EventDefinition GetHostEventDefinition(string name) => HostType?.GetEventDefinition(name);
