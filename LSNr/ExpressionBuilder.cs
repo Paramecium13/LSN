@@ -84,67 +84,69 @@ namespace LSNr
 				{
 					case SymbolType.Undefined:
 					{
-							if (val == "true" || val == "false")
+						if (val == "true" || val == "false")
+						{
+							var name = SUB + SubCount++;
+							Substitutions.Add(new Identifier(name), LsnBoolValue.GetBoolValue(bool.Parse(val)));
+							CurrentTokens.Add(new Identifier(name));
+						}
+						else if (val == "new") // new
+						{
+							#region new
+							if (i + 1 > InitialTokens.Count)
+								throw new ApplicationException("An expression cannot end with \'new\'.");
+							IExpression expr = null;
+							int j = i;
+							//string typeName = InitialTokens[++j].Value; // j points to the type name;
+							var typeId = Script.ParseTypeId(InitialTokens, i + 1, out j);
+							// j points to the thing after the end of the name.
+							if (j < 0)
+								throw new ApplicationException($"Error line {InitialTokens[i].LineNumber}: Failed to parse type name...");
+							j--; // j points to the last token of the name.
+								 //if (!Script.TypeExists(typeName))
+								 //	throw new ApplicationException($"The type \'{typeName}\' could not be found. Are You missing a \'#using\' or \'#include\'?");						
+
+							LsnType type = typeId.Type;//Script.GetType(typeName);
+							var structType = type as LsnStructType;
+							var recordType = type as RecordType;
+							var listType = type as LsnListType;
+
+							if (structType == null && recordType == null && listType == null)
+								throw new ApplicationException($"Cannot use \'new\' with type \'{typeId.Name}\'.");
+							if (j + 2 >= InitialTokens.Count)
+								throw new ApplicationException("No parenthesis.");
+							if (listType == null)
 							{
-								var name = SUB + SubCount++;
-								Substitutions.Add(new Identifier(name), LsnBoolValue.GetBoolValue(bool.Parse(val)));
-								CurrentTokens.Add(new Identifier(name));
+								var paramTokens = new List<IToken>();
+								int pCount = 0;
+								do
+								{
+									if (++j >= InitialTokens.Count)
+										throw new ApplicationException("Mismatched parenthesis...");
+									var t = InitialTokens[j];
+									var v = t.Value;
+									if (v == "(") ++pCount; // ++lCount;
+									if (v == ")") --pCount; // ++rCount
+									paramTokens.Add(t);
+								} while (/*lCount != rCount*/pCount != 0);
+								var parameters = Create.CreateParamList(paramTokens, -1, Script, Substitutions.Where(s => paramTokens.Contains(s.Key)).ToDictionary());
+								if (structType != null)
+									expr = new StructConstructor(structType, parameters.ToDictionary());
+								else // recordType != null
+									expr = new RecordConstructor(recordType, parameters.ToDictionary());
 							}
-							else if (val == "new") // new
+							else
 							{
-								#region new
-									if (i + 1 > InitialTokens.Count)
-										throw new ApplicationException("An expression cannot end with \'new\'.");
-									IExpression expr = null;
-									int j = i;
-									//string typeName = InitialTokens[++j].Value; // j points to the type name;
-									var typeId = Script.ParseTypeId(InitialTokens, i + 1, out j);
-									// j points to the thing after the end of the name.
-									j--; // j points to the last token of the name.
-										 //if (!Script.TypeExists(typeName))
-										 //	throw new ApplicationException($"The type \'{typeName}\' could not be found. Are You missing a \'#using\' or \'#include\'?");
-
-									LsnType type = typeId.Type;//Script.GetType(typeName);
-									var structType = type as LsnStructType;
-									var recordType = type as RecordType;
-									var listType = type as LsnListType;
-
-									if (structType == null && recordType == null && listType == null)
-										throw new ApplicationException($"Cannot use \'new\' with type \'{typeId.Name}\'.");
-									if (j + 2 >= InitialTokens.Count)
-										throw new ApplicationException("No parenthesis.");
-									if (listType == null)
-									{
-										var paramTokens = new List<IToken>();
-										int pCount = 0;
-										do
-										{
-											if (++j >= InitialTokens.Count)
-												throw new ApplicationException("Mismatched parenthesis...");
-											var t = InitialTokens[j];
-											var v = t.Value;
-											if (v == "(") ++pCount; // ++lCount;
-											if (v == ")") --pCount; // ++rCount
-											paramTokens.Add(t);
-										} while (/*lCount != rCount*/pCount != 0);
-										var parameters = Create.CreateParamList(paramTokens, -1, Script, Substitutions.Where(s => paramTokens.Contains(s.Key)).ToDictionary());
-										if (structType != null)
-											expr = new StructConstructor(structType, parameters.ToDictionary());
-										else // recordType != null
-											expr = new RecordConstructor(recordType, parameters.ToDictionary());
-									}
-									else
-									{
-										if (!(j + 2 <= InitialTokens.Count && InitialTokens[j + 1].Value == "(" && InitialTokens[j + 2].Value == ")"))
-											throw new ApplicationException("No parenthesis...");
-										expr = new ListConstructor(listType);
-										j += 2;
-									}
-									i = j;
-									var sub = SUB + SubCount++;
-									Substitutions.Add(new Identifier(sub), expr);
-									CurrentTokens.Add(new Identifier(sub));
-									#endregion
+								if (!(j + 2 <= InitialTokens.Count && InitialTokens[j + 1].Value == "(" && InitialTokens[j + 2].Value == ")"))
+									throw new ApplicationException("No parenthesis...");
+								expr = new ListConstructor(listType);
+								j += 2;
+							}
+							i = j;
+							var sub = SUB + SubCount++;
+							Substitutions.Add(new Identifier(sub), expr);
+							CurrentTokens.Add(new Identifier(sub));
+							#endregion
 						}
 						else if (val == "this" )
 						{
