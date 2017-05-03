@@ -139,8 +139,9 @@ namespace LSNr
 						try
 						{
 							i++; // Looking at token after 'state'
+							if (Tokens[i].Type != TokenType.Identifier)
+								throw new ApplicationException();
 							var stateName = Tokens[i].Value;
-							// TODO: Make sure it's an identifier token.
 							i++; // Looking at token after the state name.
 							var v = Tokens[i].Value;
 							if (v == "{")

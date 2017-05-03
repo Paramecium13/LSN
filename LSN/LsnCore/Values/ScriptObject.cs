@@ -39,19 +39,15 @@ namespace LsnCore.Values
 
 				Host = host;
 
-				//TODO: Subscribe to events.
+				// Subscribe to events.
 				foreach (var evName in (host.Type.Type as HostInterfaceType).EventDefinitions.Keys)
-				{
 					if((CurrentState?.HasEventListener(evName)?? false ) || ScObjType.HasEventListener(evName))
-					{
-						host.SubscribeToEvent(evName, this);
-					}
-				}
+						host.SubscribeToEvent(evName, this);				
+				
 			}
-			else
-			{
-				if (ScObjType.HostInterface != null) throw new ArgumentException("This type of ScriptObject cannot survive without a host.", "host");
-			}
+			else if (ScObjType.HostInterface != null)
+				throw new ArgumentException("This type of ScriptObject cannot survive without a host.", "host");
+			
 		}
 
 
@@ -129,11 +125,22 @@ namespace LsnCore.Values
 
 		internal void SetState(int index)
 		{
-			//TODO: Unsubscribe from old state's event subscriptions (if valid). Run old state exit method.
+			var nextState = ScObjType.GetState(index);
+			var expiringSubscriptions = CurrentState.EventsListenedTo.Except(nextState.EventsListenedTo);
+			var newSubscriptions = nextState.EventsListenedTo.Except(CurrentState.EventsListenedTo);
+
+			// Unsubscribe from old state's event subscriptions (if valid). Run old state exit method.
+			if (Host != null)
+				foreach (var subscription in expiringSubscriptions)
+					Host.UnsubscribeToEvent(subscription, this);
+
 			CurrentStateIndex = index;
-			CurrentState = ScObjType.GetState(index);
-			throw new NotImplementedException();
-			//TODO: Subscribe to new state's event subscriptions (if valid). Run new state Start method.
+			CurrentState = nextState;
+			
+			// Subscribe to new state's event subscriptions (if valid). Run new state Start method.
+			if (Host != null)
+				foreach (var subscription in newSubscriptions)
+					Host.SubscribeToEvent(subscription, this);
 		}
 
 
