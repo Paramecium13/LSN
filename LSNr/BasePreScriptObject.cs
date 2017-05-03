@@ -39,6 +39,10 @@ namespace LSNr
 		public abstract TypeId GetTypeId(string name);
 		public abstract bool TypeExists(string name);
 
+		internal abstract Property GetProperty(string val);
+		internal abstract int GetPropertyIndex(string val);
+		internal abstract bool StateExists(string name);
+		internal abstract int GetStateIndex(string name);
 
 		protected BasePreScriptObject(IReadOnlyList<Token> tokens, TypeId id, PreResource resource, string hostName)
 		{
@@ -107,8 +111,11 @@ namespace LSNr
 				paramTokens.Add(Tokens[i]);
 
 
-			var parameters = ParseParameters(paramTokens);
+			var preParameters = ParseParameters(paramTokens);
 
+			List<Parameter> parameters = new List<Parameter>();
+			parameters.Add(new Parameter("self", Id, LsnValue.Nil, 0));
+			parameters.AddRange(preParameters.Select(p => new Parameter(p.Name, p.Type, p.DefaultValue, (ushort)(p.Index + 1))));
 
 			TypeId returnType = null;
 			i++; // 'i' Points to the thing after the closing parenthesis.
@@ -215,7 +222,15 @@ namespace LSNr
 			while (Tokens[++i].Value != ")") // This starts with the token after '('.
 				paramTokens.Add(Tokens[i]);
 
-			var parameters = ParseParameters(paramTokens);
+			//var parameters = ParseParameters(paramTokens);
+
+
+			var preParameters = ParseParameters(paramTokens);
+
+			List<Parameter> parameters = new List<Parameter>();
+			parameters.Add(new Parameter("self", Id, LsnValue.Nil, 0));
+			parameters.AddRange(preParameters.Select(p => new Parameter(p.Name, p.Type, p.DefaultValue, (ushort)(p.Index + 1))));
+
 
 			i++;// 'i' Points to the thing after the closing parenthesis.
 			if (i > Tokens.Count - 1)
@@ -231,8 +246,10 @@ namespace LSNr
 			}
 
 			var def = new EventDefinition(name, parameters);
+			var preDef = new EventDefinition(name, preParameters);
+
 			var hostDef = GetHostEventDefinition(name);
-			if (!hostDef.Equivalent(def))
+			if (!hostDef.Equivalent(preDef))
 			{
 				Console.WriteLine($"Error line {Tokens[i].Value}: the event '{name}' does not match the event definition in the HostInterface '{HostType.Name}'.");
 				throw new ApplicationException("");
@@ -254,8 +271,42 @@ namespace LSNr
 			}
 			EventListenerBodies.Add(name, tokens);
 
-
-			return new EventListener(hostDef, Resource.Environment);
+			// Use def, which contains a self parameter, instead of hostDef, which doesn't.
+			return new EventListener(def, Resource.Environment);
 		}
+
+		protected void ParseMethods()
+		{
+			foreach (var pair in MethodBodies)
+			{
+				var method = Methods[pair.Key];
+				var pre = new PreScriptObjectFunction(this);
+				foreach (var param in method.Parameters)
+					pre.CurrentScope.CreateVariable(param);
+				var parser = new Parser(pair.Value, pre);
+				parser.Parse();
+				pre.CurrentScope.Pop(parser.Components);
+				method.Components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
+				method.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
+			}
+		}
+
+		protected void ParseEventListeners()
+		{
+			foreach (var pair in EventListenerBodies)
+			{
+				var eventListener = EventListeners[pair.Key];
+				var pre = new PreScriptObjectFunction(this);
+				
+				foreach (var param in eventListener.Definition.Parameters)
+					pre.CurrentScope.CreateVariable(param);
+				var parser = new Parser(pair.Value, pre);
+				parser.Parse();
+				pre.CurrentScope.Pop(parser.Components);
+				eventListener.Components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
+				eventListener.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
+			}
+		}
+
 	}
 }

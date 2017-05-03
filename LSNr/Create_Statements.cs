@@ -35,7 +35,22 @@ namespace LSNr
 			if (v == "return")	return new ReturnStatement(n > 1 ? Express(tokens.Skip(1), script) : null);
 			if (v == "say")		return Say(tokens.Skip(1).ToList(),script);
 			if (v == "goto")	return GotoStatement(tokens,script);
+			if (v == "setstate")
+			{
+				if (tokens.Count != 2)
+					throw new ApplicationException(); // Wrong number of tokens.
 
+				var stateName = tokens[1].Value;
+				var preScObjFn = script as PreScriptObjectFunction;
+				if (preScObjFn == null)
+					throw new ApplicationException(); // Cannot use SetState here.
+
+				var preScObj = preScObjFn.Parent;
+
+				if (!preScObj.StateExists(stateName))
+					throw new ApplicationException(); // State does not exist.
+				return new SetStateStatement(preScObj.GetStateIndex(stateName));
+			}
 
 			if (tokens.Any(t => t.Value == "goto"))
 				return GotoStatement(tokens, script);

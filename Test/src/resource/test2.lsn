@@ -24,7 +24,7 @@ ScriptObject StandardDoor < IStandardDoor
 	property DestX : int;
 	property DestY : int;
 	
-	/*auto state StartState
+	auto state StartState
 	{
 		fn Start()
 		{
@@ -57,15 +57,15 @@ ScriptObject StandardDoor < IStandardDoor
 			actor goto DestMap` DestX` DestY;
 			return;
 		}    
-	}*/
+	}
 	
-	on Activate(actor : IActor)
+	/*on Activate(actor : IActor)
 	{
 		if ( actor.HasItem(KeyId) ) 
 		{
 			actor goto DestMap ` DestX`DestY;
 		}
-	}
+	}*/
 	
 }
 

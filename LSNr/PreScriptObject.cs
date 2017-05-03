@@ -79,22 +79,23 @@ namespace LSNr
 		internal ScriptObjectMethod GetMethod(string name) => Methods[name];
 
 
-		internal int GetPropertyIndex(string name)
+		internal override int GetPropertyIndex(string name)
 		{
 			var prop = Properties.FirstOrDefault(p => p.Name == name);
 			return Properties.IndexOf(prop);
 		}
 
-		internal Property GetProperty(string name) => Properties.FirstOrDefault(p => p.Name == name);
+		internal override Property GetProperty(string name) => Properties.FirstOrDefault(p => p.Name == name);
 
 
 		internal Field GetField(string name) 
 			=> Fields.First(f => f.Name == name);
 
-		internal bool StateExists(string name) => false;
+		internal override bool StateExists(string name) => PreStates.Any(p => p.StateName == name);
 
 
-		internal int GetStateIndex(string name) => -1;
+		internal override int GetStateIndex(string name) => PreStates.FirstOrDefault(p => p.StateName == name).Index;
+
 
 		/// <summary>
 		/// No method with this name has been defined already.
@@ -186,7 +187,7 @@ namespace LSNr
 							else
 								throw new ApplicationException($"Error Line {Tokens[i].LineNumber}: Unspecified state preparsing error.",e);
 						}
-						throw new NotImplementedException();
+						break;
 					case "property":
 						{
 							i++;
@@ -229,8 +230,8 @@ namespace LSNr
 						}
 						break;
 					default:
-						if (!(i == Tokens.Count - 1 && val == "}"))
-							throw new NotImplementedException("");
+						/*if (!(i == Tokens.Count - 1 && val == "}"))
+							throw new NotImplementedException("");*/
 						i++;
 						break;
 				}
@@ -238,43 +239,15 @@ namespace LSNr
 			PreParsed = true;
 		}
 
-		
-		private void ParseMethods()
-		{
-			foreach(var pair in MethodBodies)
-			{
-				var method = Methods[pair.Key];
-				var pre = new PreScriptObjectFunction(this);
-				foreach (var param in method.Parameters)
-					pre.CurrentScope.CreateVariable(param);
-				var parser = new Parser(pair.Value, pre);
-				parser.Parse();
-				pre.CurrentScope.Pop(parser.Components);
-				method.Components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
-				method.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
-			}
-		}
-
-		private void ParseEventListeners()
-		{
-			foreach(var pair in  EventListenerBodies)
-			{
-				var eventListener = EventListeners[pair.Key];
-				var pre = new PreScriptObjectFunction(this);
-				foreach (var param in eventListener.Definition.Parameters)
-					pre.CurrentScope.CreateVariable(param);
-				var parser = new Parser(pair.Value, pre);
-				parser.Parse();
-				pre.CurrentScope.Pop(parser.Components);
-				eventListener.Components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
-				eventListener.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
-			}
-		}
 
 		public ScriptObjectType Parse()
 		{
 			if (!PreParsed)
 				throw new InvalidOperationException();
+			// PreParse states
+			foreach (var state in PreStates)
+				state.PreParse();			
+
 			// Parse methods
 			ParseMethods();
 
@@ -282,9 +255,7 @@ namespace LSNr
 			ParseEventListeners();
 
 			// Parse states
-
-			var states = new Dictionary<int, ScriptObjectState>(1);
-			states.Add(DefaultStateIndex, new ScriptObjectState(0,new Dictionary<string,ScriptObjectMethod>(),new Dictionary<string,EventListener>()));
+			var states = PreStates.Select(p => p.Parse()).ToDictionary(s => s.Id);
 			var type = new ScriptObjectType(Id, HostType.Id, Properties, Fields, Methods, EventListeners,
 				states, DefaultStateIndex);
 			Id.Load(type);

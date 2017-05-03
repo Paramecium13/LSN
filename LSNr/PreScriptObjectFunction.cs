@@ -10,10 +10,10 @@ namespace LSNr
 {
 	public sealed class PreScriptObjectFunction : IPreScript
 	{
-		internal readonly PreScriptObject Parent;
+		internal readonly BasePreScriptObject Parent;
 
 
-		internal PreScriptObjectFunction(PreScriptObject parent)
+		internal PreScriptObjectFunction(BasePreScriptObject parent)
 		{
 			Parent = parent;
 		}

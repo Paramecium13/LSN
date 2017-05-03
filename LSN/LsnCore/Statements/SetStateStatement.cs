@@ -8,6 +8,7 @@ using LsnCore.Values;
 
 namespace LsnCore.Statements
 {
+	[Serializable]
 	public sealed class SetStateStatement : Statement
 	{
 		private readonly int State;
