@@ -230,6 +230,36 @@ namespace LSNr
 							Properties.Add(new Property(name, typeId, defaultVal, metadata));
 						}
 						break;
+					case "mut":
+						{
+							i++;
+							string name = Tokens[i].Value;
+							if (Properties.Any(p => p.Name == name) || Fields.Any(f => f.Name == name))
+								throw new ApplicationException($"Name already in use...");
+							i++;
+							LsnType type;
+							if (Tokens[i].Value == ":")
+							{
+								i++;
+								type = GetType(Tokens[i].Value);
+								i++; // 'i' should point to ';'
+							}
+							else if (Tokens[i].Value == "=")
+							{
+								throw new ApplicationException("...");
+								/*i++;
+								var ex = Tokens.Skip(i).TakeWhile(t => t.Value != ";").ToList();
+								var expr = Create.Express(ex, this);
+								i += ex.Count; // 'i' should point to ';'*/
+							}
+							else
+								throw new ApplicationException();
+							if (Tokens[i].Value != ";")
+								throw new ApplicationException();
+							i++;
+							Fields.Add(new Field(Fields.Count, name, type));
+						}
+						break;
 					default:
 						/*if (!(i == Tokens.Count - 1 && val == "}"))
 							throw new NotImplementedException("");*/
