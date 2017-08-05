@@ -42,14 +42,19 @@ namespace LSNr
 
 		public SymbolType CheckSymbol(string name)
 		{
-			if (FunctionExists(name))
-				return SymbolType.Function;
+			/*if (FunctionExists(name))
+				return SymbolType.Function;*/
 			if (_CurrentScope.VariableExists(name))
 				return SymbolType.Variable;
 
-			return SymbolType.Undefined;
+			return Resource.CheckSymbol(name);
 		}
 
 		public TypeId GetTypeId(string name) => Resource.GetTypeId(name);
+
+		public bool TypeIsIncluded(TypeId type)
+		{
+			return Resource.TypeIsIncluded(type);
+		}
 	}
 }

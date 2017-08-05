@@ -430,6 +430,8 @@ namespace LSNr
 			return type;
 		}
 
+		public virtual bool UniqueScriptObjectTypeExists(string name)
+			=> LoadedTypes.Union(IncludedTypes).Any((t) => t.Name == name && ((t as ScriptObjectType)?.Unique ?? false));
 
 		public virtual bool GenericTypeExists(string name)
 			=> IncludedGenerics.Any(t => t.Name == name) || LoadedGenerics.Any(t => t.Name == name);
@@ -444,6 +446,10 @@ namespace LSNr
 		}
 
 		public virtual TypeId GetTypeId(string name) => GetType(name).Id;
+
+
+		public bool TypeIsIncluded(TypeId type)
+			=> IncludedTypes.Contains(type.Type);
 
 
 		/*public virtual void AddType(LsnType type)

@@ -42,5 +42,9 @@ namespace LSNr
 			return Parent.CheckSymbol(name);
 		}
 
+		public bool TypeIsIncluded(TypeId type)
+		{
+			return Parent.TypeIsIncluded(type);
+		}
 	}
 }

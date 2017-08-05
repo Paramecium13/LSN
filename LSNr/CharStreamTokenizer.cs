@@ -108,7 +108,7 @@ namespace LSNr
 			SyntaxSymbol
 		}
 
-		protected TokenizerTokenType tokenType;
+		protected TokenizerTokenType TokenType;
 
 		protected TokenizerState State;
 
@@ -172,7 +172,7 @@ namespace LSNr
 			if (OtherOperators.Contains(c)) // It's a one char operator.
 			{
 				Pop();
-				tokenType = TokenizerTokenType.Operator;
+				TokenType = TokenizerTokenType.Operator;
 				Push(c);
 				Pop();
 				return;
@@ -180,7 +180,7 @@ namespace LSNr
 			if (SyntaxSymbols.Contains(c))
 			{
 				Pop();
-				tokenType = TokenizerTokenType.SyntaxSymbol;
+				TokenType = TokenizerTokenType.SyntaxSymbol;
 				Push(c);
 				Pop();
 				return;
@@ -189,7 +189,7 @@ namespace LSNr
 			{
 				Pop();
 				State = TokenizerState.StringBase;
-				tokenType = TokenizerTokenType.String;
+				TokenType = TokenizerTokenType.String;
 				return;
 			}
 			switch (State)
@@ -199,19 +199,19 @@ namespace LSNr
 					{
 						Push(c);
 						State = TokenizerState.Number;
-						tokenType = TokenizerTokenType.Int;
+						TokenType = TokenizerTokenType.Int;
 					}
 					else if (c == '.')
 					{
 						Push('.');
-						tokenType = TokenizerTokenType.SyntaxSymbol;
+						TokenType = TokenizerTokenType.SyntaxSymbol;
 						Pop();
 					}
 					else
 					{
 						Push(c);
 						State = TokenizerState.Word;
-						tokenType = TokenizerTokenType.Word;
+						TokenType = TokenizerTokenType.Word;
 					}
 					break;
 				case TokenizerState.Base:
@@ -219,19 +219,19 @@ namespace LSNr
 					{
 						Push(c);
 						State = TokenizerState.Number;
-						tokenType = TokenizerTokenType.Int;
+						TokenType = TokenizerTokenType.Int;
 					}
 					else if (c == '.')
 					{
 						Push('.');
-						tokenType = TokenizerTokenType.SyntaxSymbol;
+						TokenType = TokenizerTokenType.SyntaxSymbol;
 						Pop();
 					}
 					else
 					{
 						Push(c);
 						State = TokenizerState.Word;
-						tokenType = TokenizerTokenType.Word;
+						TokenType = TokenizerTokenType.Word;
 					}
 					break;
 				case TokenizerState.Word:
@@ -243,7 +243,7 @@ namespace LSNr
 					{
 						Pop();
 						Push('.');
-						tokenType = TokenizerTokenType.SyntaxSymbol;
+						TokenType = TokenizerTokenType.SyntaxSymbol;
 						Pop();
 					}
 					else Push(c);
@@ -255,7 +255,7 @@ namespace LSNr
 					{
 						Push(c);
 						State = TokenizerState.Decimal;
-						tokenType = TokenizerTokenType.Float;
+						TokenType = TokenizerTokenType.Float;
 					}
 					else if (char.IsWhiteSpace(c))
 					{
@@ -286,7 +286,7 @@ namespace LSNr
 		protected void SymReadInitChar(char c)
 		{
 			Push(c);
-			tokenType = TokenizerTokenType.Operator;
+			TokenType = TokenizerTokenType.Operator;
 			switch (c)
 			{
 				//'~',':','?','@','$'
@@ -337,7 +337,7 @@ namespace LSNr
 			{
 				Pop();
 				State = TokenizerState.StringBase;
-				tokenType = TokenizerTokenType.String;
+				TokenType = TokenizerTokenType.String;
 				return;
 			}
 			switch (State)
@@ -346,18 +346,18 @@ namespace LSNr
 					if (c == '=')
 					{
 						Push('+');
-						tokenType = TokenizerTokenType.Assignment;
+						TokenType = TokenizerTokenType.Assignment;
 						Pop();
 					}
 					else if (c == '+')
 					{
 						Push('+');
-						tokenType = TokenizerTokenType.Assignment;
+						TokenType = TokenizerTokenType.Assignment;
 						Pop();
 					}
 					else
 					{
-						tokenType = TokenizerTokenType.Operator;
+						TokenType = TokenizerTokenType.Operator;
 						Pop();
 						BaseReadChar(c);
 					}
@@ -366,12 +366,12 @@ namespace LSNr
 					if(c == '=')
 					{
 						Push('=');
-						tokenType = TokenizerTokenType.Operator;
+						TokenType = TokenizerTokenType.Operator;
 						Pop();
 					}
 					else
 					{
-						tokenType = TokenizerTokenType.Assignment;
+						TokenType = TokenizerTokenType.Assignment;
 						Pop();
 						BaseReadChar(c);
 					}
@@ -380,12 +380,12 @@ namespace LSNr
 					if (c == '=')
 					{
 						Push('=');
-						tokenType = TokenizerTokenType.Assignment;
+						TokenType = TokenizerTokenType.Assignment;
 						Pop();
 					}
 					else
 					{
-						tokenType = TokenizerTokenType.Operator;
+						TokenType = TokenizerTokenType.Operator;
 						Pop();
 						BaseReadChar(c);
 					}
@@ -398,18 +398,18 @@ namespace LSNr
 					if (c == '=')
 					{
 						Push('=');
-						tokenType = TokenizerTokenType.Assignment;
+						TokenType = TokenizerTokenType.Assignment;
 						Pop();
 					}
 					else
 					{
-						tokenType = TokenizerTokenType.Operator;
+						TokenType = TokenizerTokenType.Operator;
 						Pop();
 						BaseReadChar(c);
 					}
 					break;
 				case TokenizerState.SymbolLess:
-					tokenType = TokenizerTokenType.Operator;
+					TokenType = TokenizerTokenType.Operator;
 					if (c == '=')
 					{
 						Push('=');
@@ -443,30 +443,30 @@ namespace LSNr
 					if (c == '=')
 					{
 						Push('=');
-						tokenType = TokenizerTokenType.Assignment;
+						TokenType = TokenizerTokenType.Assignment;
 						Pop();
 					}
 					else if (c == '/')
 					{
 						State = TokenizerState.CommentSingleLine;
-						tokenType = TokenizerTokenType.Unknown;
+						TokenType = TokenizerTokenType.Unknown;
 						StrB.Clear();
 					}
 					else if (c == '*')
 					{
 						State = TokenizerState.CommentMultiLine;
-						tokenType = TokenizerTokenType.Unknown;
+						TokenType = TokenizerTokenType.Unknown;
 						StrB.Clear();
 					}
 					else
 					{
-						tokenType = TokenizerTokenType.Operator;
+						TokenType = TokenizerTokenType.Operator;
 						Pop();
 						BaseReadChar(c);
 					}
 					break;
 				case TokenizerState.SymbolExclamation:
-					tokenType = TokenizerTokenType.Operator;
+					TokenType = TokenizerTokenType.Operator;
 					if (c == '=')
 					{
 						Push('=');
@@ -478,29 +478,30 @@ namespace LSNr
 					if (c == '=')
 					{
 						Push('=');
-						tokenType = TokenizerTokenType.Assignment;
+						TokenType = TokenizerTokenType.Assignment;
 						Pop();
 					}
 					else if (c == '-')
 					{
 						Push('-');
-						tokenType = TokenizerTokenType.Assignment;
+						TokenType = TokenizerTokenType.Assignment;
 						Pop();
 					}
 					else if (c == '>')
 					{
 						Push('>');
-						tokenType = TokenizerTokenType.SyntaxSymbol;
+						TokenType = TokenizerTokenType.SyntaxSymbol;
 						Pop();
 					}
 					else if(CanBeNegativeSign && char.IsDigit(c))
 					{
 						Push(c);
 						State = TokenizerState.Number;
+						TokenType = TokenizerTokenType.Int;
 					}
 					else
 					{
-						tokenType = TokenizerTokenType.Operator;
+						TokenType = TokenizerTokenType.Operator;
 						Pop();
 						BaseReadChar(c);
 					}
@@ -631,15 +632,16 @@ namespace LSNr
 
 		protected void Pop()
 		{
-			CanBeNegativeSign = false;
 			var str = StrB.ToString();
+			if(!string.IsNullOrEmpty(str))
+				CanBeNegativeSign = false;
 			Token token;
-			switch (tokenType)
+			switch (TokenType)
 			{
 				case TokenizerTokenType.Unknown:
 					if(string.IsNullOrEmpty(str))
 					{
-						tokenType = TokenizerTokenType.Unknown;
+						TokenType = TokenizerTokenType.Unknown;
 						State = TokenizerState.Base;
 						StrB.Clear();
 						return;
@@ -647,9 +649,9 @@ namespace LSNr
 					throw new ApplicationException();
 				case TokenizerTokenType.Word:
 					if (Keywords.Contains(str.ToLower()))
-						token = new Token(str.ToLower(), LineNumber, TokenType.Keyword);
+						token = new Token(str.ToLower(), LineNumber, global::Tokens.TokenType.Keyword);
 					else
-						token = new Token(str, LineNumber, TokenType.Identifier);
+						token = new Token(str, LineNumber, global::Tokens.TokenType.Identifier);
 					break;
 				case TokenizerTokenType.Float:
 					token = new Token(LineNumber, double.Parse(str));
@@ -658,18 +660,18 @@ namespace LSNr
 					token = new Token(LineNumber, int.Parse(str));
 					break;
 				case TokenizerTokenType.String:
-					token = new Token(str, LineNumber, TokenType.String);
+					token = new Token(str, LineNumber, global::Tokens.TokenType.String);
 					break;
 				case TokenizerTokenType.Assignment:
-					token = new Token(str, LineNumber, TokenType.Assignment);
+					token = new Token(str, LineNumber, global::Tokens.TokenType.Assignment);
 					CanBeNegativeSign = true;
 					break;
 				case TokenizerTokenType.Operator:
-					token = new Token(str, LineNumber, TokenType.Operator);
+					token = new Token(str, LineNumber, global::Tokens.TokenType.Operator);
 					CanBeNegativeSign = true;
 					break;
 				case TokenizerTokenType.SyntaxSymbol:
-					token = new Token(str, LineNumber, TokenType.SyntaxSymbol);
+					token = new Token(str, LineNumber, global::Tokens.TokenType.SyntaxSymbol);
 					CanBeNegativeSign = true;
 					break;
 				default:
@@ -677,7 +679,7 @@ namespace LSNr
 			}
 			//PreviousToken = token;
 			TokenOutput(token);
-			tokenType = TokenizerTokenType.Unknown;
+			TokenType = TokenizerTokenType.Unknown;
 			State = TokenizerState.Base;
 			StrB.Clear();
 		}

@@ -16,7 +16,7 @@ fn Meow(cat : Cat)
 }
 
 
-ScriptObject StandardDoor < IStandardDoor
+ScriptObject StandardDoor < IStandardActivator
 {
 	property InitiallyLocked : bool;
 	property KeyId : string;
@@ -98,7 +98,7 @@ struct Circle
 	Radius : double
 }
 
-HostInterface IStandardDoor
+HostInterface IStandardActivator
 {
 	event Activate(actor : IActor);
 }

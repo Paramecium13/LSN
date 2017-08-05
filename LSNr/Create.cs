@@ -222,10 +222,15 @@ namespace LSNr
 					else
 						variables?.Add(v);
 					return expr;
+				case SymbolType.UniqueScriptObject:
+					return new UniqueScriptObjectAccessExpression(val, script.GetTypeId(val));
 				case SymbolType.GlobalVariable:
 					throw new NotImplementedException();
 				case SymbolType.Field:
-					throw new NotImplementedException();
+					{
+						var preScrObjFn = script as PreScriptObjectFunction;
+						return new FieldAccessExpression(new VariableExpression(0, preScrObjFn.Parent.Id), preScrObjFn.Parent.GetField(val));
+					}
 				case SymbolType.Property:
 					var preScrFn = script as PreScriptObjectFunction;
 					var preScr = preScrFn.Parent;
@@ -239,17 +244,16 @@ namespace LSNr
 			{
 				
 			}
-			var t = token as Token;
-			if(t != null)
+			if (token != null)
 			{
-				switch (t.Type)
+				switch (token.Type)
 				{
 					case TokenType.Float:
-						return new LsnValue(t.DoubleValue);
+						return new LsnValue(token.DoubleValue);
 					case TokenType.Integer:
-						return new LsnValue(t.IntValue);
+						return new LsnValue(token.IntValue);
 					case TokenType.String:
-						return new LsnValue(new StringValue(t.Value));
+						return new LsnValue(new StringValue(token.Value));
 					case TokenType.Substitution:
 						throw new ApplicationException();
 					default:
@@ -261,6 +265,7 @@ namespace LSNr
 				return LsnBoolValue.GetBoolValue(true);
 			if (val == "false")
 				return LsnBoolValue.GetBoolValue(false);
+
 			var preScObjFn = script as PreScriptObjectFunction;
 			if (val == "this")
 			{
@@ -387,10 +392,10 @@ namespace LSNr
 			return fn.CreateCall(ls);
 		}
 
-		public static MethodCall CreateMethodCall(List<Token> tokens, Method method, IExpression obj, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions = null)
+		public static IExpression CreateMethodCall(List<Token> tokens, Method method, IExpression obj, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions = null)
 		{
 			var ls = CreateParamList(tokens, method.Parameters.Count, script,substitutions);
-			return method.CreateMethodCall(ls,obj,true/*script.TypeIsIncluded(obj.Type)*/);
+			return method.CreateMethodCall(ls,obj,script.TypeIsIncluded(obj.Type));
 		}
 		
 	}

@@ -43,9 +43,22 @@ namespace LsnCore.Types
 				throw new ApplicationException();
 
 			//if (IsVirtual)
-				return new ScriptObjectVirtualMethodCall(parameters, Name);
+				return new ScriptObjectVirtualMethodCall(parameters, Name, ReturnType);
 			//else
 				//return new MethodCall(this, parameters); Can't do this, would result in this method being serialized along with it's call.
+		}
+
+		public override IExpression CreateMethodCall(IList<Tuple<string, IExpression>> args, IExpression expression, bool included = false)
+		{
+			var argsArray = new IExpression[Parameters.Count];
+			argsArray[0] = expression;
+			var dict = args.ToDictionary(t => t.Item1, t => t.Item2);
+			for (int i = 1; i < Parameters.Count; i++)
+			{
+				var p = Parameters[i];
+				argsArray[i] = dict.ContainsKey(p.Name) ? dict[p.Name] : p.DefaultValue;
+			}
+			return CreateScriptObjectMethodCall(argsArray);
 		}
 
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)

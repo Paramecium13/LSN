@@ -15,9 +15,9 @@ namespace LSNr
 
 	public sealed class PreScriptObject : BasePreScriptObject
 	{
-		
-
 		private readonly string Name;
+
+		internal readonly bool IsUnique;
 
 		private readonly IList<PreState> PreStates = new List<PreState>();
 
@@ -37,9 +37,9 @@ namespace LSNr
 			set{ Resource.Valid = value; }
 		}
 
-		public PreScriptObject(string name, PreResource resource, string hostName, IReadOnlyList<Token> tokens):base(tokens, new TypeId(name),resource,hostName)
+		public PreScriptObject(string name, PreResource resource, string hostName, bool isUnique, IReadOnlyList<Token> tokens):base(tokens, new TypeId(name),resource,hostName)
 		{
-			Name = name;
+			Name = name; IsUnique = isUnique;
 		}
 
 
@@ -61,9 +61,9 @@ namespace LSNr
 			if (Methods.ContainsKey(name)) return SymbolType.ScriptObjectMethod;
 			if (Fields.Any(f => f.Name == name)) return SymbolType.Field;
 			if (Properties.Any(p => p.Name == name)) return SymbolType.Property;
-
-			if (HostType.HasMethod(name)) return SymbolType.HostInterfaceMethod;
-
+			if (HostType != null && HostType.HasMethod(name)) return SymbolType.HostInterfaceMethod;
+			if (name == Name && IsUnique) return SymbolType.UniqueScriptObject;
+			
 			return Resource.CheckSymbol(name);
 		}
 
@@ -287,8 +287,8 @@ namespace LSNr
 
 			// Parse states
 			var states = PreStates.Select(p => p.Parse()).ToDictionary(s => s.Id);
-			var type = new ScriptObjectType(Id, HostType.Id, Properties, Fields, Methods, EventListeners,
-				states, DefaultStateIndex);
+			var type = new ScriptObjectType(Id, HostType?.Id, Properties, Fields, Methods, EventListeners,
+				states, DefaultStateIndex, IsUnique);
 			Id.Load(type);
 			return type;
 		}

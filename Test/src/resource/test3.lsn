@@ -39,3 +39,66 @@ fn GetNames(dogs : Vector<Dog>) -> Vector<string>
 		names.Add(dogs[i].Name);
 	}
 }
+
+
+fn FnTestA()-> int
+{
+	TestA.ValueChange();
+	let value = TestA.GetValue();
+	if(value > 100)
+	{
+		TestA.ChangeB();
+	}
+	elsif(value < -100)
+	{
+		TestA.ChangeA()
+	}
+}
+
+
+
+unique ScriptObject TestA
+{
+	mut Value : int;
+	
+	fn abstract ValueChange()->();
+	
+	fn ChangeA()
+	{
+		setstate StateA;
+	}
+	
+	fn ChangeB()
+	{
+		setstate StateB;
+	}
+	
+	fn GetValue() -> int
+	{
+		return Value;
+	}
+	
+	auto state StateA
+	{
+		
+		fn ValueChange()->()
+		{
+			Value = Value + 5;
+		}
+		
+	}
+	
+	state StateB
+	{
+		
+		
+		fn ValueChange()->()
+		{
+			Value = Value - 3;
+		}
+		
+	}
+	
+	
+	
+}

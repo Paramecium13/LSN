@@ -88,6 +88,7 @@
     <Compile Include="LsnCore\Expressions\GetExpression.cs" />
     <Compile Include="LsnCore\Expressions\IExpression.cs" />
     <Compile Include="LsnCore\Expressions\OrExpression.cs" />
+    <Compile Include="LsnCore\Expressions\UniqueScriptObjectAccessExpression.cs" />
     <Compile Include="LsnCore\Expressions\VariableExpression.cs" />
     <Compile Include="LsnCore\ExternalFunction.cs" />
     <Compile Include="LsnCore\Function.cs" />

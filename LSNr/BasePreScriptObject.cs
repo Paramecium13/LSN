@@ -309,5 +309,9 @@ namespace LSNr
 			}
 		}
 
+		public bool TypeIsIncluded(TypeId type)
+		{
+			return Resource.TypeIsIncluded(type);
+		}
 	}
 }

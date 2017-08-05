@@ -182,7 +182,14 @@ namespace LSNr
 						CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 						break;
 					}
-						
+					case SymbolType.UniqueScriptObject:
+						{
+							var expr = new UniqueScriptObjectAccessExpression(val, Script.GetTypeId(val));
+							var name = SUB + SubCount++;
+							Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
+							CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
+							break;
+						}
 					case SymbolType.GlobalVariable:
 						break;
 					case SymbolType.Field:
@@ -321,7 +328,7 @@ namespace LSNr
 					if (leftExpr.Type.Type.Methods.ContainsKey(memberName)) // It's a method call.
 					{
 						var method = leftExpr.Type.Type.Methods[memberName];
-						if (method.Parameters.Count == 1)
+						if (method.Parameters.Count == 1) // The only argument is the object on which it is called
 						{
 							if (!(i + 3 < CurrentTokens.Count && CurrentTokens[i + 2].Value == "(" && CurrentTokens[i + 3].Value == ")"))
 								throw new ApplicationException($"Error line {CurrentTokens[i + 1].LineNumber}: Improperly formated method call.");
@@ -349,20 +356,11 @@ namespace LSNr
 								fnTokens.Add(CurrentTokens[i + j]);
 								j++;
 							}
-							nextIndex += j; // nextIndex = i + 1 + j. Points to the thing after the closing ')'.
 							memberExpression = Create.CreateMethodCall(fnTokens, method, leftExpr, Script, Substitutions.Where(s => fnTokens.Contains(s.Key)).ToDictionary());
+							nextIndex += j; // nextIndex = i + 1 + j. Points to the thing after the closing ')'.
 						}
 					}
-					else if (leftExpr.Type.Type is IHasFieldsType) // It's a field access expression.
-																   //typeof(IHasFieldsType).IsAssignableFrom(expr.Type.GetType())
-					{
-						var type = (IHasFieldsType)leftExpr.Type.Type;
-						var field = type.FieldsB.FirstOrDefault(f => f.Name == memberName);
-						if (field.Name == null)
-							throw new ApplicationException($"The type {leftExpr.Type.Name} does not have a field named {memberName}.");
-						memberExpression = new FieldAccessExpression(leftExpr, memberName, field.Type);
-						nextIndex++; // Skip over the field name.
-					}
+					
 					else if (leftExpr.Type.Type is HostInterfaceType)
 					{
 						var type = leftExpr.Type.Type as HostInterfaceType;
@@ -405,6 +403,53 @@ namespace LSNr
 						}
 						else
 							throw new ApplicationException($"Error line {CurrentTokens[i].LineNumber}: The HostInterface type '{type.Name}' does not have a method '{memberName}'.");
+					}
+					else if (leftExpr.Type.Type is ScriptObjectType)
+					{
+						var scrObjType = leftExpr.Type.Type as ScriptObjectType;
+						var method = scrObjType.GetMethod(memberName);
+						if (method.Parameters.Count == 1) // The only argument is the object on which it is called
+						{
+							if (!(i + 3 < CurrentTokens.Count && CurrentTokens[i + 2].Value == "(" && CurrentTokens[i + 3].Value == ")"))
+								throw new ApplicationException($"Error line {CurrentTokens[i + 1].LineNumber}: Improperly formated method call.");
+							memberExpression = method.CreateMethodCall
+								  (new List<Tuple<string, IExpression>>(), leftExpr, true/*Script.MethodIsIncluded(name)*/);
+							nextIndex = i + 4; //Skip the name and the parenthesis. It now points to the thing after the closing ')'.
+						}
+						else
+						{
+							int lCount = 1;
+							int rCount = 0;
+							int j = 3; // Move to the right twice, now looking at token after the opening '('.
+							var fnTokens = new List<Token>();
+							while (lCount != rCount)
+							{
+								if (CurrentTokens[i + j].Value == ")")
+								{
+									rCount++;
+									if (lCount == rCount) break;
+								}
+								else if (CurrentTokens[i + j].Value == "(")
+								{
+									lCount++;
+								}
+								fnTokens.Add(CurrentTokens[i + j]);
+								j++;
+							}
+							memberExpression = Create.CreateMethodCall(fnTokens, method, leftExpr, Script, Substitutions.Where(s => fnTokens.Contains(s.Key)).ToDictionary());
+							nextIndex += j; // nextIndex = i + 1 + j. Points to the thing after the closing ')'.
+
+						}
+					}
+					else if (leftExpr.Type.Type is IHasFieldsType) // It's a field access expression.
+																   //typeof(IHasFieldsType).IsAssignableFrom(expr.Type.GetType())
+					{
+						var type = (IHasFieldsType)leftExpr.Type.Type;
+						var field = type.FieldsB.FirstOrDefault(f => f.Name == memberName);
+						if (field.Name == null)
+							throw new ApplicationException($"The type {leftExpr.Type.Name} does not have a field named {memberName}.");
+						memberExpression = new FieldAccessExpression(leftExpr, memberName, field.Type);
+						nextIndex++; // Skip over the field name.
 					}
 					else
 						throw new ApplicationException($"The type {leftExpr.Type.Name} does not have a method named {memberName}.");

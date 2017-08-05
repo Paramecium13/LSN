@@ -55,8 +55,8 @@ namespace LSNr
 			PreParseFunctions(PreParseTypes());
 			ParseHostInterfaces();
 			PreParseScriptObjects();
-			ParseFunctions();
 			ParseScriptObjects();
+			ParseFunctions();
         }
 		
 
@@ -117,8 +117,14 @@ namespace LSNr
 					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
 					PreHostInterfaces.Add(name, new PreHostInterface(name, this, tokens));
 				}
-				else if (val == "scriptobject")
+				else if (val == "unique" || val == "scriptobject")
 				{
+					bool unique = false;
+					if(val == "unique")
+					{
+						unique = true;
+						i++;
+					}
 					string name = Tokens[++i].Value; // Move on to the next token, get the name.
 					string hostName = null;
 					i++;// Move on to the next token...
@@ -146,7 +152,7 @@ namespace LSNr
 
 						if (openCount > 0) tokens.Add(Tokens[i]);
 					}
-					PreScriptObjects.Add(name, new PreScriptObject(name, this, hostName, tokens));
+					PreScriptObjects.Add(name, new PreScriptObject(name, this, hostName, unique, tokens));
 				}
 				else otherTokens.Add(Tokens[i]);
 			}
@@ -276,9 +282,12 @@ namespace LSNr
 		{
 			foreach (var pre in PreScriptObjects.Values)
 			{
-				if (!TypeExists(pre.HostName))
-					throw new ApplicationException("...");
-				pre.HostType = HostInterfaces[pre.HostName];
+				if(pre.HostName != null)
+				{
+					if (!TypeExists(pre.HostName))
+						throw new ApplicationException("...");
+					pre.HostType = HostInterfaces[pre.HostName];
+				}
 				pre.PreParse();
 			}
 		}
@@ -480,8 +489,14 @@ namespace LSNr
 				return SymbolType.Function;
 			if (_CurrentScope.VariableExists(name))
 				return SymbolType.Variable;
+			if (UniqueScriptObjectTypeExists(name))
+				return SymbolType.UniqueScriptObject;
 
 			return SymbolType.Undefined;
 		}
+
+		public override bool UniqueScriptObjectTypeExists(string name)
+			=> base.UniqueScriptObjectTypeExists(name) || PreScriptObjects.Any(p => p.Key == name && p.Value.IsUnique);
+		
 	}
 }

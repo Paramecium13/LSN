@@ -38,10 +38,10 @@ namespace LsnCore.Types
 
 		public ScriptObjectType(TypeId id, TypeId host, IList<Property> properties, IReadOnlyList<Field> fields,
 			IReadOnlyDictionary<string,ScriptObjectMethod> methods, IReadOnlyDictionary<string,EventListener> eventListeners,
-			IReadOnlyDictionary<int,ScriptObjectState> states, int defaultStateIndex)
+			IReadOnlyDictionary<int,ScriptObjectState> states, int defaultStateIndex, bool unique)
 		{
 			Name = id.Name; Id = id; HostInterface = host; Properties = properties; Fields = fields; ScriptObjectMethods = methods;
-			EventListeners = eventListeners; _States = states; DefaultStateIndex = defaultStateIndex;
+			EventListeners = eventListeners; _States = states; DefaultStateIndex = defaultStateIndex; Unique = unique;
 		}
 
 

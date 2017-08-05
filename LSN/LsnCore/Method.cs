@@ -41,7 +41,7 @@ namespace LsnCore
 		/// <param name="expression"> The object the method is called on</param>
 		/// <param name="included"></param>
 		/// <returns></returns>
-		public MethodCall CreateMethodCall(IList<Tuple<string, IExpression>> args, IExpression expression, bool included = false)
+		public virtual IExpression CreateMethodCall(IList<Tuple<string, IExpression>> args, IExpression expression, bool included = false)
 		{
 			// This requires that the call use the named parameters. Do something like if (args.Any(a=>a.Item1=="")){...}
 			// to check if it uses parameters by position, rather than name...

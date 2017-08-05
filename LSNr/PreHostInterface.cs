@@ -225,9 +225,10 @@ namespace LSNr
 
 			return new FunctionSignature(parameters, name, returnType);
 		}
-		
 
-
-
+		public bool TypeIsIncluded(TypeId type)
+		{
+			return Parent.TypeIsIncluded(type);
+		}
 	}
 }

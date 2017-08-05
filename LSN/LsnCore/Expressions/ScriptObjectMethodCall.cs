@@ -1,4 +1,5 @@
-﻿using LsnCore.Values;
+﻿using LsnCore.Types;
+using LsnCore.Values;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,9 @@ namespace LsnCore.Expressions
 		public override bool IsPure => false;
 
 
-		public ScriptObjectVirtualMethodCall(IExpression[] parameters, string name)
+		public ScriptObjectVirtualMethodCall(IExpression[] parameters, string name, TypeId type)
 		{
-			Parameters = parameters; Name = name;
+			Parameters = parameters; Name = name; Type = type;
 		}
 
 
@@ -33,7 +34,7 @@ namespace LsnCore.Expressions
 		}
 
 		public override IExpression Fold()
-			=> new ScriptObjectVirtualMethodCall(Parameters.Select(p => p.Fold()).ToArray(), Name);
+			=> new ScriptObjectVirtualMethodCall(Parameters.Select(p => p.Fold()).ToArray(), Name, Type);
 
 		public override bool IsReifyTimeConst() => false;
 	}

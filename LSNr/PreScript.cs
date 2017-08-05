@@ -71,6 +71,8 @@ namespace LSNr
 				return SymbolType.Function;
 			if (_CurrentScope.VariableExists(name))
 				return SymbolType.Variable;
+			if (UniqueScriptObjectTypeExists(name))
+				return SymbolType.UniqueScriptObject;
 
 			return SymbolType.Undefined;
 		}
