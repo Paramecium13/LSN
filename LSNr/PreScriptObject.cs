@@ -88,7 +88,7 @@ namespace LSNr
 		internal override Property GetProperty(string name) => Properties.FirstOrDefault(p => p.Name == name);
 
 
-		internal Field GetField(string name) 
+		internal override Field GetField(string name)
 			=> Fields.First(f => f.Name == name);
 
 		internal override bool StateExists(string name) => PreStates.Any(p => p.StateName == name);

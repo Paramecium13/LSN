@@ -57,6 +57,9 @@ namespace LSNr
 
 		internal override int GetPropertyIndex(string val) => Parent.GetPropertyIndex(val);
 
+		internal override Field GetField(string name)
+		=> Parent.GetField(name);
+
 		internal override bool StateExists(string name) => Parent.StateExists(name);
 
 		internal override int GetStateIndex(string name) => Parent.GetStateIndex(name);

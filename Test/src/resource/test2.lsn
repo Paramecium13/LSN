@@ -24,6 +24,8 @@ ScriptObject StandardDoor < IStandardDoor
 	property DestX : int;
 	property DestY : int;
 	
+	mut OpenCount: int;
+	
 	auto state StartState
 	{
 		fn Start()
@@ -55,6 +57,7 @@ ScriptObject StandardDoor < IStandardDoor
 		{
 			// Open the door.
 			actor goto DestMap` DestX` DestY;
+			OpenCount = OpenCount + 1;
 			return;
 		}    
 	}

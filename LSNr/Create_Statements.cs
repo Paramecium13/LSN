@@ -104,31 +104,44 @@ namespace LSNr
 		/// <returns></returns>
 		private static Statement Reassignment(List<Token> tokens, IPreScript script)
 		{
-			if (!script.CurrentScope.VariableExists(tokens[0].Value))
-			{
-				// The variable does not exist.
-				Console.WriteLine($"The variable {tokens[0].Value} does not exist at this point.");
-				script.Valid = false;
-				return null;
-			}
-			Variable v = script.CurrentScope.GetVariable(tokens[0].Value);
-			if (!v.Mutable)
-			{
-				// The variable is immutable.
-				Console.WriteLine($"The variable {tokens[0].Value} is immutable.");
-				script.Valid = false;
-				return null;
-			}
+			var sy = script.CheckSymbol(tokens[0].Value);
 			IExpression expr = Express(tokens.Skip(2).ToList(), script);
-			if (!v.Type.Subsumes(expr.Type.Type))
-			{
-				Console.WriteLine($"Cannot assign a value of type {expr.Type.Name} to a variable ({v.Name}) of type {v.Type.Name}.");
-				script.Valid = false;
-				return null;
+			switch (sy)
+			{			
+				case SymbolType.Variable:
+					Variable v = script.CurrentScope.GetVariable(tokens[0].Value);
+					if (!v.Mutable)
+					{
+						// The variable is immutable.
+						Console.WriteLine($"The variable {tokens[0].Value} is immutable.");
+						script.Valid = false;
+						return null;
+					}
+					if (!v.Type.Subsumes(expr.Type.Type))
+					{
+						Console.WriteLine($"Cannot assign a value of type {expr.Type.Name} to a variable ({v.Name}) of type {v.Type.Name}.");
+						script.Valid = false;
+						return null;
+					}
+					var reassign = new ReassignmentStatement(v.Index, expr);
+					v.AddReasignment(reassign);
+					return reassign;
+				case SymbolType.Field:
+					return new FieldAssignmentStatement(new VariableExpression(0,(script as PreScriptObjectFunction).Parent.Id),
+						(script as PreScriptObjectFunction).Parent.GetField(tokens[0].Value).Index,
+						expr);
+				case SymbolType.GlobalVariable:
+					throw new NotImplementedException("");
+				case SymbolType.Property:
+					throw new ApplicationException($"Error Line {tokens[0].LineNumber}: Attempt to modify property \"{tokens[0].Value}\"; properties are immutable.");
+				case SymbolType.Undefined:
+					throw new ApplicationException($"Error Line {tokens[0].LineNumber}: The symbol \"{tokens[0].Value}\" is undefined.");
+				case SymbolType.ScriptObjectMethod:
+				case SymbolType.HostInterfaceMethod:
+				case SymbolType.Function:
+				default:
+					throw new ApplicationException($"Error Line {tokens[0].LineNumber}: Cannot use a method or function as a variable.");
 			}
-			var reassign = new ReassignmentStatement(v.Index, expr);
-			v.AddReasignment(reassign);
-			return reassign;
 		}
 
 

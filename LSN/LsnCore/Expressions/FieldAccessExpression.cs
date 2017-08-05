@@ -31,6 +31,13 @@ namespace LsnCore.Expressions
 			Type = type;
 		}
 
+
+		public  FieldAccessExpression(IExpression fieldOwner, Field field)
+		{
+			Value = fieldOwner; Index = field.Index; Type = field.Type;
+		}
+
+
 		public override bool IsReifyTimeConst()
 			=> Value.IsReifyTimeConst();
 

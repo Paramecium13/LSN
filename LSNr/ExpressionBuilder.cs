@@ -177,7 +177,7 @@ namespace LSNr
 							expr = v.InitialValue.Fold();
 						else expr = new VariableExpression(val, v.Type);*/
 						var name = SUB + SubCount++;
-						Variables.Add(v);
+						Variables.Add(v); //TODO: Create a method for adding a substitution.
 						Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
 						CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 						break;
@@ -186,6 +186,16 @@ namespace LSNr
 					case SymbolType.GlobalVariable:
 						break;
 					case SymbolType.Field:
+						{
+							var preScrFn = Script as PreScriptObjectFunction;
+							var preScr = preScrFn.Parent;
+							IExpression scrObjExpr = new VariableExpression(0, preScr.Id);
+							var f = preScr.GetField(val);
+							var expr = new FieldAccessExpression(scrObjExpr, f);
+							var name = SUB + SubCount++;
+							Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
+							CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
+						}
 						break;
 					case SymbolType.Property:
 					{
