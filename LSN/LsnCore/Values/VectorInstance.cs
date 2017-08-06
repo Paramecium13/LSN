@@ -40,12 +40,6 @@ namespace LsnCore.Values
 			Values = values;
 		}
 
-
-		public VectorInstance(TypeId type, TypeId genericType, LsnValue[] values)
-		{
-			throw new NotImplementedException();
-		}
-
 		public override ILsnValue Clone() => this;
 
 

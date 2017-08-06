@@ -10,6 +10,8 @@ using System.Runtime.CompilerServices;
 namespace LsnCore
 {
 #pragma warning disable CS1718 // Comparison made to same variable
+#pragma warning disable RECS0088 // Comparing equal expression for equality is usually useless
+
 	[Serializable]
 	public unsafe struct LsnValue : IExpression, IEquatable<LsnValue>
 	{
@@ -31,7 +33,7 @@ namespace LsnCore
 
 
 		public bool BoolValue =>
-			Data == Data ? Data != 0 : Value?.BoolValue ?? false;
+			Data == Data ? Math.Abs(Data) > double.Epsilon : Value?.BoolValue ?? false;
 
 
 		/// <summary>
@@ -140,7 +142,7 @@ namespace LsnCore
 			{
 				var val = v.Value;
 				var data = val.Data;
-				return (data == Data || (data != data && Data != Data)) && val.Value == Value;
+				return (Math.Abs(data - Data) < double.Epsilon || (data != data && Data != Data)) && val.Value == Value;
 			}
 			return false;
 		}
@@ -275,5 +277,5 @@ namespace LsnCore
 		}
 	}
 }
-
+#pragma warning restore RECS0088 // Comparing equal expression for equality is usually useless
 #pragma warning restore CS1718 // Comparison made to same variable

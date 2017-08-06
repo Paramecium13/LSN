@@ -58,7 +58,7 @@ namespace LSNr.Optimization
 				}
 				else if (leftType == LsnType.double_.Id)
 				{
-					if (((LsnValue)b.Left).DoubleValue == 0) return b.Right;
+					if (Math.Abs(((LsnValue)b.Left).DoubleValue) < double.Epsilon) return b.Right;
 				}
 				else if (leftType == LsnType.string_.Id)
 				{
@@ -73,7 +73,7 @@ namespace LSNr.Optimization
 				}
 				else if (rightType == LsnType.double_.Id)
 				{
-					if (((LsnValue)b.Right).DoubleValue == 0) return b.Left;
+					if (Math.Abs(((LsnValue)b.Right).DoubleValue) < double.Epsilon) return b.Left;
 				}
 				else if (rightType == LsnType.string_.Id)
 				{
@@ -84,7 +84,7 @@ namespace LSNr.Optimization
 			return b;
 		}
 
-		private static IExpression CheckDiff(BinaryExpression b)
+		private static IExpression CheckDiff(BinaryExpression b) //ToDo: Use...
 		{
 			var leftType = b.Left.Type;
 			var rightType = b.Right.Type;
@@ -97,7 +97,7 @@ namespace LSNr.Optimization
 				}
 				else if (leftType == LsnType.double_.Id)
 				{
-					if (((LsnValue)b.Left).DoubleValue == 0) return b.Right;
+					if (Math.Abs(((LsnValue)b.Left).DoubleValue) < double.Epsilon) return b.Right;
 				}
 			}
 			else if (b.Right is LsnValue?)
@@ -108,7 +108,7 @@ namespace LSNr.Optimization
 				}
 				else if (rightType == LsnType.double_.Id)
 				{
-					if (((LsnValue)b.Right).DoubleValue == 0) return b.Left;
+					if (Math.Abs(((LsnValue)b.Right).DoubleValue) < double.Epsilon) return b.Left;
 				}
 			}
 
@@ -161,8 +161,8 @@ namespace LSNr.Optimization
 				}
 				else if (leftType == LsnType.double_.Id)
 				{
-					if (((LsnValue)b.Left).DoubleValue == 1) return b.Right;
-					if (((LsnValue)b.Left).DoubleValue == 0) return b.Type.Type.CreateDefaultValue();
+					if (Math.Abs(((LsnValue)b.Left).DoubleValue - 1) < double.Epsilon) return b.Right;
+					if (Math.Abs(((LsnValue)b.Left).DoubleValue) < double.Epsilon) return b.Type.Type.CreateDefaultValue();
 				}
 				else if (leftType == LsnType.string_.Id)
 				{
@@ -178,8 +178,8 @@ namespace LSNr.Optimization
 				}
 				else if (rightType == LsnType.double_.Id)
 				{
-					if (((LsnValue)b.Right).DoubleValue == 1) return b.Left;
-					if (((LsnValue)b.Right).DoubleValue == 0) return b.Type.Type.CreateDefaultValue();
+					if (Math.Abs(((LsnValue)b.Right).DoubleValue - 1) < double.Epsilon) return b.Left;
+					if (Math.Abs(((LsnValue)b.Right).DoubleValue) < double.Epsilon) return b.Type.Type.CreateDefaultValue();
 				}
 				else if (rightType == LsnType.string_.Id)
 				{

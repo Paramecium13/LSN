@@ -22,13 +22,13 @@ namespace LsnCore.Statements
 
 		private IExpression Y;
 
-		//private IExpression LocLabel;
+		//private readonly IExpression LocLabel;
 
 		private IExpression Position;
 
 		private IExpression Actor;
 
-		private Form MyForm;
+		private readonly Form MyForm;
 
 		/// <summary>
 		/// 
@@ -37,7 +37,7 @@ namespace LsnCore.Statements
 		/// <param name="ex1"></param>
 		/// <param name="ex2"></param>
 		/// <param name="actor"></param>
-		/// <param name="hasKeywordLabel"></param>
+		// <param name="hasKeywordLabel"></param>
 		public GoToStatement(IExpression ex0, IExpression ex1, IExpression ex2, IExpression actor = null/*, bool hasKeywordLabel = false*/)
 		{
 			if (ex0 == null) throw new ArgumentNullException();

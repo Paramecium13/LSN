@@ -16,12 +16,12 @@ namespace LsnCore.Expressions
 		private readonly TypeId _Type;
 		public TypeId Type => _Type;
 
-		private readonly TypeId GenericTypeId;
+		private readonly TypeId GenericTypeId; //ToDo: Use
 
 		public ListConstructor(TypeId genericTypeId)
 		{
 			GenericTypeId = genericTypeId;
-			_Type = LsnListGeneric.Instance.GetType(new List<TypeId>() { genericTypeId }).Id;
+			_Type = LsnListGeneric.Instance.GetType(new List<TypeId> { genericTypeId }).Id;
 		}
 
 		public ListConstructor(LsnListType listType)

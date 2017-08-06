@@ -14,7 +14,7 @@ namespace LSNr
 	/// <summary>
 	/// 
 	/// </summary>
-	static partial class Create
+	internal static partial class Create
 	{
 		/// <summary>
 		/// Creates a statement.
@@ -214,6 +214,7 @@ namespace LSNr
 		/// <param name="tokens"></param>
 		/// <param name="str"></param>
 		/// <param name="indexOfString"></param>
+		/// <param name="script"></param>
 		/// <returns></returns>
 		private static IExpression GetExpression(IEnumerable<Token> tokens, string str, out int indexOfString, IPreScript script)
 		{
@@ -227,6 +228,7 @@ namespace LSNr
 		/// 
 		/// </summary>
 		/// <param name="tokens"></param>
+		/// <param name="script"></param>
 		/// <returns></returns>
 		private static GiveStatement Give(List<Token> tokens, IPreScript script)
 		{

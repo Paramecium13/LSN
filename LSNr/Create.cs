@@ -234,7 +234,6 @@ namespace LSNr
 				case SymbolType.Property:
 					var preScrFn = script as PreScriptObjectFunction;
 					var preScr = preScrFn.Parent;
-					IExpression scrObjExpr = new VariableExpression(0, preScr.Id);
 					expr = new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
 					return expr;
 				default:
@@ -294,8 +293,7 @@ namespace LSNr
 		public static IList<Tuple<string,IExpression>> CreateParamList(List<Token> tokens, int paramCount, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions)
 		{
 			var ls = new List<Tuple<string, IExpression>>();
-			var parameters = new List<List<Token>>();
-			parameters.Add(new List<Token>());
+			var parameterTokens = new List<List<Token>> { new List<Token>() };
 			int paramIndex = 0;
 			if (tokens.Count(t => t.Value == ",") > paramCount - 1) // There is one less comma than parameter. numCommas = numParameters - 1, where numParameters > 0
 			{
@@ -318,34 +316,34 @@ namespace LSNr
 					{
 						if (lPCount == rPCount && lBCount == rBCount)
 						{ // This is not inside a nested function or index thing.
-							parameters.Add(new List<Token>());
+							parameterTokens.Add(new List<Token>());
 							++paramIndex;
 						}
 						else // This is inside a nested function or index thing.
-							parameters[paramIndex].Add(tokens[i]);
+							parameterTokens[paramIndex].Add(tokens[i]);
 					}
 					else if (tokens[i].Value == "(")
 					{
 						++lPCount;
-						parameters[paramIndex].Add(tokens[i]);
+						parameterTokens[paramIndex].Add(tokens[i]);
 					}
 					else if (tokens[i].Value == ")")
 					{
 						++rPCount;
-						parameters[paramIndex].Add(tokens[i]);
+						parameterTokens[paramIndex].Add(tokens[i]);
 					}
 					else if (tokens[i].Value == "[")
 					{
 						++lBCount;
-						parameters[paramIndex].Add(tokens[i]);
+						parameterTokens[paramIndex].Add(tokens[i]);
 					}
 					else if (tokens[i].Value == "]")
 					{
 						++rBCount;
-						parameters[paramIndex].Add(tokens[i]);
+						parameterTokens[paramIndex].Add(tokens[i]);
 					}
 					else
-						parameters[paramIndex].Add(tokens[i]);
+						parameterTokens[paramIndex].Add(tokens[i]);
 				}
 			}
 			else
@@ -356,18 +354,18 @@ namespace LSNr
 				{
 					if (tokens[i].Value == ",")
 					{
-						parameters.Add(new List<Token>());
+						parameterTokens.Add(new List<Token>());
 						++paramIndex;
 					}
 					else
-						parameters[paramIndex].Add(tokens[i]);
+						parameterTokens[paramIndex].Add(tokens[i]);
 				}
 			}
 
 			// Parse the parameters
-			for (int i = 0; i < parameters.Count; i++)
+			for (int i = 0; i < parameterTokens.Count; i++)
 			{
-				var p = parameters[i];
+				var p = parameterTokens[i];
 				if (p.Count > 2 && p[1].Value == ":") // It's named
 				{
 					ls.Add(new Tuple<string, IExpression>(p[0].Value, Express(p.Skip(2).ToList(), script, substitutions)));

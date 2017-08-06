@@ -13,7 +13,7 @@ namespace LsnCore.Expressions
 
 		public override bool IsPure => false;
 
-		//ToDo: Encapsulate?
+		//ToDo: Encapsulate? Used in ExpressionWalker...
 		public readonly IExpression[] Args;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]

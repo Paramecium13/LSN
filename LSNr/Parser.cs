@@ -12,7 +12,7 @@ namespace LSNr
 {
 	public class Parser
 	{
-		private IReadOnlyList<Token> Tokens;
+		private readonly IReadOnlyList<Token> Tokens;
 		private int i = 0;
 		private List<Token> TempTokens = new List<Token>();
 		internal List<Component> Components = new List<Component>();

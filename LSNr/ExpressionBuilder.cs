@@ -13,9 +13,9 @@ namespace LSNr
 {
 	public class ExpressionBuilder
 	{
-		const string SUB = "Ƨ";
+		private const string SUB = "Ƨ";
 
-		private Dictionary<Token, IExpression> Substitutions = new Dictionary<Token, IExpression>();
+		private readonly Dictionary<Token, IExpression> Substitutions;
 		private readonly List<Token> InitialTokens;
 		private List<Token> CurrentTokens = new List<Token>();
 		private int SubCount = 0;
@@ -30,6 +30,7 @@ namespace LSNr
 		{
 			InitialTokens = tokens;
 			Script = script;
+			Substitutions = new Dictionary<Token, IExpression>();
 		}
 
 
@@ -75,17 +76,17 @@ namespace LSNr
 		/// </summary>
 		private void ParseVariablesAndFunctions()
 		{
+			string name; IExpression expr;
 			for (int i = 0; i < InitialTokens.Count; i++)
 			{
-				var val = InitialTokens[i].Value;				
-				var symbolType = Script.CheckSymbol(val);
-				switch (symbolType)
+				var val = InitialTokens[i].Value;
+				switch (Script.CheckSymbol(val))
 				{
 					case SymbolType.Undefined:
 					{
 						if (val == "true" || val == "false")
 						{
-							var name = SUB + SubCount++;
+							name = SUB + SubCount++;
 							Substitutions.Add(new Token(name,-1,TokenType.Substitution), LsnBoolValue.GetBoolValue(bool.Parse(val)));
 							CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 						}
@@ -94,7 +95,7 @@ namespace LSNr
 							#region new
 							if (i + 1 > InitialTokens.Count)
 								throw new ApplicationException("An expression cannot end with \'new\'.");
-							IExpression expr = null;
+							expr = null;
 							int j = i;
 							//string typeName = InitialTokens[++j].Value; // j points to the type name;
 							var typeId = Script.ParseTypeId(InitialTokens, i + 1, out j);
@@ -142,9 +143,9 @@ namespace LSNr
 								j += 2;
 							}
 							i = j;
-							var sub = SUB + SubCount++;
-							Substitutions.Add(new Token(sub, -1, TokenType.Substitution), expr);
-							CurrentTokens.Add(new Token(sub, -1, TokenType.Substitution));
+							name = SUB + SubCount++;
+							Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
+							CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 							#endregion
 						}
 						else if (val == "this" )
@@ -152,7 +153,7 @@ namespace LSNr
 							var preScrFn = Script as PreScriptObjectFunction;
 							if (preScrFn == null)
 								throw new ApplicationException("...");
-							var name = SUB + SubCount++;
+							name = SUB + SubCount++;
 							Substitutions.Add(new Token(name, -1, TokenType.Substitution), new VariableExpression(0, preScrFn.Parent.Id));
 							CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 						}
@@ -161,7 +162,7 @@ namespace LSNr
 							var preScrFn = Script as PreScriptObjectFunction;
 							if (preScrFn == null)
 								throw new ApplicationException("...");
-							var name = SUB + SubCount++;
+							name = SUB + SubCount++;
 							Substitutions.Add(new Token(name, -1, TokenType.Substitution), new HostInterfaceAccessExpression(new VariableExpression(0, preScrFn.Parent.Id), preScrFn.Parent.HostType.Id));
 							CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 						}
@@ -172,11 +173,11 @@ namespace LSNr
 					case SymbolType.Variable:
 					{
 						var v = Script.CurrentScope.GetVariable(val);
-						IExpression expr = v.GetAccessExpression();
+						expr = v.GetAccessExpression();
 						/*if (!v.Mutable && ( v.InitialValue?.IsReifyTimeConst()?? false ) )
 							expr = v.InitialValue.Fold();
 						else expr = new VariableExpression(val, v.Type);*/
-						var name = SUB + SubCount++;
+						name = SUB + SubCount++;
 						Variables.Add(v); //TODO: Create a method for adding a substitution.
 						Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
 						CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
@@ -184,22 +185,22 @@ namespace LSNr
 					}
 					case SymbolType.UniqueScriptObject:
 						{
-							var expr = new UniqueScriptObjectAccessExpression(val, Script.GetTypeId(val));
-							var name = SUB + SubCount++;
+							expr = new UniqueScriptObjectAccessExpression(val, Script.GetTypeId(val));
+							name = SUB + SubCount++;
 							Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
 							CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 							break;
 						}
 					case SymbolType.GlobalVariable:
-						break;
+						throw new NotImplementedException();
 					case SymbolType.Field:
 						{
 							var preScrFn = Script as PreScriptObjectFunction;
 							var preScr = preScrFn.Parent;
 							IExpression scrObjExpr = new VariableExpression(0, preScr.Id);
 							var f = preScr.GetField(val);
-							var expr = new FieldAccessExpression(scrObjExpr, f);
-							var name = SUB + SubCount++;
+							expr = new FieldAccessExpression(scrObjExpr, f);
+							name = SUB + SubCount++;
 							Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
 							CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 						}
@@ -208,9 +209,8 @@ namespace LSNr
 					{
 						var preScrFn = Script as PreScriptObjectFunction;
 						var preScr = preScrFn.Parent;
-						IExpression scrObjExpr = new VariableExpression(0, preScr.Id);
-						var expr = new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
-						var name = SUB + SubCount++;
+						expr = new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
+						name = SUB + SubCount++;
 						Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
 						CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 						break;
@@ -225,7 +225,7 @@ namespace LSNr
 								if (fn.Parameters.Count != 0)
 									throw new ApplicationException(); // Or throw or log something...
 								var fnCall = fn.CreateCall(new List<Tuple<string, IExpression>>());
-								var name = SUB + SubCount++;
+								name = SUB + SubCount++;
 								Substitutions.Add(new Token(name, -1, TokenType.Substitution), fnCall);
 								CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 							}
@@ -250,10 +250,10 @@ namespace LSNr
 								} while (/*lCount != rCount*/pCount != 0);
 								nextIndex = j + 1;
 								// Create the function call, add it to the dictionary, and add its identifier to the list (ls).
-								var name = SUB + SubCount++;
+								name = SUB + SubCount++;
 								var pt = paramTokens.Skip(1).Take(paramTokens.Count - 2).ToList();
-								var fnCall = Create.CreateFunctionCall(pt, fn, Script, Substitutions.Where(p => pt.Contains(p.Key)).ToDictionary());
-								Substitutions.Add(new Token(name, -1, TokenType.Substitution), fnCall);
+								expr = Create.CreateFunctionCall(pt, fn, Script, Substitutions.Where(p => pt.Contains(p.Key)).ToDictionary());
+								Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
 								CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 							}
 							i = nextIndex - 1; // In the next iteration, i == nextIndex.
@@ -275,14 +275,14 @@ namespace LSNr
 					default:
 						break;
 				}
-				
+
 			}
 		}
 
 		private void ParseMemberAccess()
 		{
-			var newTokens = new List<Token>();
-			for(int i = 0; i < CurrentTokens.Count; i++)
+			var newTokens = new List<Token>(); int lCount ,rCount,j;
+			for (int i = 0; i < CurrentTokens.Count; i++)
 			{
 				var val = CurrentTokens[i].Value;
 				if (val == ".") //Member Access
@@ -300,17 +300,17 @@ namespace LSNr
 					{
 						// I'm not too sure this will work...
 						var tokens = new List<Token>();
-						int rightCount = 1;
-						int leftCount = 0;
-						int j = i - 1;
+						rCount = 1;
+						lCount = 0;
+						j = i - 1;
 						while (true) //TODO: Fix this!!!
 						{
 							if (j < 0) throw new ApplicationException("Mismatched parenthesis.");
 							var v = CurrentTokens[j].Value;
 							newTokens.RemoveAt(newTokens.Count - 1); // Remove the token at the end of the list.
-							if (v == ")") rightCount++;
-							else if (v == "(") leftCount++;
-							if (leftCount == rightCount) break;
+							if (v == ")") rCount++;
+							else if (v == "(") lCount++;
+							if (lCount == rCount) break;
 							tokens.Add(CurrentTokens[j]);
 							j--;
 						}
@@ -338,9 +338,9 @@ namespace LSNr
 						}
 						else
 						{
-							int lCount = 1;
-							int rCount = 0;
-							int j = 3; // Move to the right twice, now looking at token after the opening '('.
+							lCount = 1;
+							rCount = 0;
+							j = 3; // Move to the right twice, now looking at token after the opening '('.
 							var fnTokens = new List<Token>();
 							while (lCount != rCount)
 							{
@@ -377,9 +377,9 @@ namespace LSNr
 							}
 							else
 							{
-								int lCount = 1;
-								int rCount = 0;
-								int j = 3; // Move to the right twice, now looking at token after the opening '('.
+								lCount = 1;
+								rCount = 0;
+								j = 3; // Move to the right twice, now looking at token after the opening '('.
 								var fnTokens = new List<Token>();
 								while (lCount != rCount)
 								{
@@ -418,9 +418,9 @@ namespace LSNr
 						}
 						else
 						{
-							int lCount = 1;
-							int rCount = 0;
-							int j = 3; // Move to the right twice, now looking at token after the opening '('.
+							lCount = 1;
+							rCount = 0;
+							j = 3; // Move to the right twice, now looking at token after the opening '('.
 							var fnTokens = new List<Token>();
 							while (lCount != rCount)
 							{
@@ -666,18 +666,31 @@ namespace LSNr
 			{
 				var val = CurrentTokens[i].Value;
 				if (val.Length > 2) continue;
-				LsnCore.Operator op = LsnCore.Operator.Multiply;
-				if (val == "<") op = LsnCore.Operator.LessThan;
-				else if (val == ">") op = LsnCore.Operator.GreaterThan;
-				else if (val == "==") op = LsnCore.Operator.Equals;
-				else if (val == ">=") op = LsnCore.Operator.GTE;
-				else if (val == "<=") op = LsnCore.Operator.LTE;
+				var op = Operator.Multiply;
+				switch (val)
+				{
+					case "<":
+						op = Operator.LessThan;
+						break;
+					case ">":
+						op = Operator.GreaterThan;
+						break;
+					case "==":
+						op = Operator.Equals;
+						break;
+					case ">=":
+						op = Operator.GTE;
+						break;
+					case "<=":
+						op = Operator.LTE;
+						break;
+				}
 
-				if (op != LsnCore.Operator.Multiply)
+				if (op != Operator.Multiply)
 				{
 					var left = GetExpression(CurrentTokens[i - 1]);
 					var right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LsnCore.Operator, TypeId>(op,right.Type);
+					var key = new Tuple<Operator, TypeId>(op,right.Type);
 
 
 					if (!left.Type.Type.Operators.ContainsKey(key))

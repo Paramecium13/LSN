@@ -38,13 +38,13 @@ namespace LsnCore
 		{
 			var argsArray = new IExpression[Parameters.Count];
 
-			if (args.Count > 0 && args.Any(a => a.Item1 != ""))
+			if (args.Count > 0 && args.Any(a => !string.IsNullOrEmpty(a.Item1)))
 			{
 				var dict = new Dictionary<string, IExpression>(args.Count);//args.ToDictionary(t => t.Item1, t => t.Item2);
 
 				for (int i = 0; i < args.Count; i++)
 				{
-					if (args[i].Item1 != "")
+					if (!string.IsNullOrEmpty( args[i].Item1 ))
 						dict.Add(args[i].Item1, args[i].Item2);
 					else dict.Add(Parameters[i].Name, args[i].Item2);
 				}

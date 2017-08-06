@@ -8,143 +8,120 @@ namespace LsnCore
 {
 	public static class LsnMath
 	{
-
-		static LsnMath()
-		{
-
-
-			Sqrt = new BoundedFunction(d =>
+		
+		public readonly static Function Sqrt 
+			= new BoundedFunction(d =>
 			{
 				var v = d[0];
 				return new LsnValue(Math.Sqrt(v.DoubleValue));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sqrt");
+			}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sqrt");
 
-			// Triginometric Functions
-
-			Sin = new BoundedFunction(d =>
+		public readonly static Function Sin 
+			= new BoundedFunction(d =>
 			{
 				var v = d[0];
 				return new LsnValue(Math.Sin(v.DoubleValue));
-			}, new List<Parameter>() { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sin");
+			}, new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sin");
 
-			Cos = new BoundedFunction(d =>
+		public readonly static Function Cos 
+			= new BoundedFunction(d =>
 			{
 				var v = d[0];
 				return new LsnValue(Math.Cos(v.DoubleValue));
-			}, new List<Parameter>() { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Cos");
+			}, new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Cos");
 
-			Tan = new BoundedFunction(d =>
+		public readonly static Function Tan 
+			= new BoundedFunction(d =>
 			{
 				var v = d[0];
 				return new LsnValue(Math.Tan(v.DoubleValue));
-			}, new List<Parameter>() { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Tan");
+			}, new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Tan");
 
 
-			Hypot = new BoundedFunction(d =>
+		public readonly static Function Hypot
+			= new BoundedFunction(d =>
 			{
 				var x = d[0].DoubleValue;
 				var y = d[1].DoubleValue;
-				return new LsnValue( Math.Sqrt(x * x + y * y));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0),
+				return new LsnValue(Math.Sqrt(x * x + y * y));
+			}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0),
 				new Parameter("y", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Hypot");
 
-
-			// Inverse Trigonometric Functions
-
-			ASin = new BoundedFunction(d =>
+		public readonly static Function ASin 
+			= new BoundedFunction(d =>
 			{
 				var v = d[0];
 				return new LsnValue(Math.Asin(v.DoubleValue));
-			}, new List<Parameter>() { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ASin");
+			}, new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ASin");
 
-			ACos = new BoundedFunction(d =>
+		public readonly static Function ACos 
+			= new BoundedFunction(d =>
 			{
 				var v = d[0];
 				return new LsnValue(Math.Acos(v.DoubleValue));
-			}, new List<Parameter>() { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ACos");
+			}, new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ACos");
 
-			ATan = new BoundedFunction(d =>
+		public readonly static Function ATan 
+			= new BoundedFunction(d =>
 			{
 				var v = d[0];
 				return new LsnValue(Math.Atan(v.DoubleValue));
-			}, new List<Parameter>() { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ATan");
+			}, new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ATan");
 
-			// Hyperbolic Functions
 
-			Sinh = new BoundedFunction(d =>
+		public readonly static Function Sinh
+			= new BoundedFunction(d =>
 			{
 				var v = d[0];
 				return new LsnValue(Math.Sinh(v.DoubleValue));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sinh");
+			}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sinh");
 
-			Cosh = new BoundedFunction(d =>
+		public readonly static Function Cosh
+			= new BoundedFunction(d =>
 			{
 				var v = d[0];
-				
-				return new LsnValue(Math.Cosh(v.DoubleValue));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Cosh");
 
-			Tanh = new BoundedFunction(d =>
+				return new LsnValue(Math.Cosh(v.DoubleValue));
+			}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Cosh");
+
+		public readonly static Function Tanh
+			= new BoundedFunction(d =>
 			{
 				var v = d[0];
 				return new LsnValue(Math.Tanh(v.DoubleValue));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Tanh");
+			}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Tanh");
 
 
-			Log = new BoundedFunction(d =>
+		public readonly static Function Log
+			= new BoundedFunction(d =>
 			{
 				var v = d[0];
-				return (new LsnValue(Math.Log(v.DoubleValue)));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Log");
+				return new LsnValue(Math.Log(v.DoubleValue));
+			}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Log");
 
-			Log10 = new BoundedFunction(d =>
+		public readonly static Function Log10
+			= new BoundedFunction(d =>
 			{
 				var v = d[0];
-				return (new LsnValue(Math.Log10(v.DoubleValue)));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Log10");
-
-
-
-			ErrorFunction = new BoundedFunction(d =>
-			{
-				var v = d[0];
-				return (new LsnValue(Erf(v.DoubleValue)));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ErrorFunction");
-
-			Gamma = new BoundedFunction(d =>
-			{
-				var v = d[0];
-				return (new LsnValue(Γ(v.DoubleValue)));
-			}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Gamma");
-
-		}
-
-		public readonly static Function Sqrt;
-
-		public readonly static Function Sin;
-		public readonly static Function Cos;
-		public readonly static Function Tan;
-
-		public readonly static Function Hypot;
-
-		public readonly static Function ASin;
-		public readonly static Function ACos;
-		public readonly static Function ATan;
-
-		public readonly static Function Sinh;
-		public readonly static Function Cosh;
-		public readonly static Function Tanh;
-
-		public readonly static Function Log;
-		public readonly static Function Log10;
+				return new LsnValue(Math.Log10(v.DoubleValue));
+			}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Log10");
 
 		/// <summary>
 		/// The error function.
 		/// </summary>
-		public readonly static Function ErrorFunction;
+		public readonly static Function ErrorFunction = new BoundedFunction(d =>
+		{
+			var v = d[0];
+			return (new LsnValue(Erf(v.DoubleValue)));
+		}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ErrorFunction");
 
 
-		public readonly static Function Gamma;
+
+		public readonly static Function Gamma = new BoundedFunction(d =>
+		{
+			var v = d[0];
+			return (new LsnValue(Γ(v.DoubleValue)));
+		}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Gamma");
 
 		public readonly static double φ = (1 + Math.Sqrt(5)) / 2;
 

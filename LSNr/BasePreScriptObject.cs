@@ -57,8 +57,8 @@ namespace LSNr
 		internal bool HostEventExists(string name) => HostType?.HasEventDefinition(name) ?? false;
 		internal EventDefinition GetHostEventDefinition(string name) => HostType?.GetEventDefinition(name);
 
-		internal bool HostMethodExists(string name) => HostType?.HasMethod(name) ?? false;
-		internal FunctionSignature GetHostMethodSignature(string name) => HostType?.GetMethodDefinition(name);
+		internal bool HostMethodExists(string name) => HostType?.HasMethod(name) ?? false; //ToDo: Use...
+		internal FunctionSignature GetHostMethodSignature(string name) => HostType?.GetMethodDefinition(name); //ToDo: Use...
 
 
 		private List<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
@@ -114,8 +114,7 @@ namespace LSNr
 
 			var preParameters = ParseParameters(paramTokens);
 
-			List<Parameter> parameters = new List<Parameter>();
-			parameters.Add(new Parameter("self", Id, LsnValue.Nil, 0));
+			var parameters = new List<Parameter> { new Parameter("self", Id, LsnValue.Nil, 0) };
 			parameters.AddRange(preParameters.Select(p => new Parameter(p.Name, p.Type, p.DefaultValue, (ushort)(p.Index + 1))));
 
 			TypeId returnType = null;
@@ -228,10 +227,8 @@ namespace LSNr
 
 			var preParameters = ParseParameters(paramTokens);
 
-			List<Parameter> parameters = new List<Parameter>();
-			parameters.Add(new Parameter("self", Id, LsnValue.Nil, 0));
+			var parameters = new List<Parameter> { new Parameter("self", Id, LsnValue.Nil, 0) };
 			parameters.AddRange(preParameters.Select(p => new Parameter(p.Name, p.Type, p.DefaultValue, (ushort)(p.Index + 1))));
-
 
 			i++;// 'i' Points to the thing after the closing parenthesis.
 			if (i > Tokens.Count - 1)

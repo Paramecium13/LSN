@@ -73,19 +73,19 @@ namespace LSNr
 			return Resource.GetTypeId(name);
 		}
 
-		internal bool MethodExists(string name) => Methods.ContainsKey(name);
+		internal bool MethodExists(string name) => Methods.ContainsKey(name); //ToDo: Use...
 
 
-		internal ScriptObjectMethod GetMethod(string name) => Methods[name];
+		internal ScriptObjectMethod GetMethod(string name) => Methods[name]; //ToDo: Use...
 
 
 		internal override int GetPropertyIndex(string name)
 		{
-			var prop = Properties.FirstOrDefault(p => p.Name == name);
+			var prop = Properties.Find(p => p.Name == name);
 			return Properties.IndexOf(prop);
 		}
 
-		internal override Property GetProperty(string name) => Properties.FirstOrDefault(p => p.Name == name);
+		internal override Property GetProperty(string name) => Properties.Find(p => p.Name == name);
 
 
 		internal override Field GetField(string name)

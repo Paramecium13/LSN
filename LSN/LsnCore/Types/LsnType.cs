@@ -22,28 +22,14 @@ namespace LsnCore
 	[Serializable]
 	public abstract class LsnType
 	{
+		public static LsnType int_ { get; } = new LsnBoundedType<int>("int", () => new LsnValue(0), "Integer");
+		public static LsnType double_ { get; } = new LsnBoundedType<double>("double", () => new LsnValue(0.0));
+		public static LsnType string_ { get; } = new LsnBoundedType<string>("string", () => new LsnValue(new StringValue("")));
+		public static LsnType Bool_ { get; } = new BoolType("bool", "Boolean");
+		public static LsnType object_ { get; } = new LsnBoundedType<object>("object", () => LsnValue.Nil);
 
-        public static List<LsnType> BaseTypes;
-		public static LsnType int_ { get; private set; }
-		public static LsnType double_ { get; private set; }
-		public static LsnType string_ { get; private set; }
-		public static LsnType Bool_ { get; private set; } = new BoolType("bool","Boolean");
-		public static LsnType dynamic_ { get; private set; }
-		public static LsnType object_ { get; private set; }
-		
 		static LsnType()
 		{
-			BaseTypes = new List<LsnType>();
-			int_ = new LsnBoundedType<int>("int",()=> new LsnValue(0),"Integer");
-			double_ = new LsnBoundedType<double>("double", () => new LsnValue(0.0));
-			string_ = new LsnBoundedType<string>("string", () => new LsnValue(new StringValue("")));
-			dynamic_ = new LsnBoundedType<Object>("dynamic",()=> LsnValue.Nil);
-			object_ = new LsnBoundedType<object>("object", () => LsnValue.Nil);
-
-			BaseTypes.Add(int_);
-			BaseTypes.Add(double_);
-			BaseTypes.Add(string_);
-			
 			SetUpOperators(); SetUpMethods();
         }
 
@@ -108,13 +94,13 @@ namespace LsnCore
 			int_._Operators.Add(new Tuple<Operator, TypeId>(Operator.LessThan, double_.Id),
 				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue(a.IntValue < b.DoubleValue), Bool_.Id));
 			int_._Operators.Add(new Tuple<Operator, TypeId>(Operator.Equals, double_.Id),
-				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue(a.IntValue == b.DoubleValue), Bool_.Id));
+				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue(Math.Abs(a.IntValue - b.DoubleValue) < double.Epsilon), Bool_.Id));
 			int_._Operators.Add(new Tuple<Operator, TypeId>(Operator.LTE, double_.Id),
 				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue(a.IntValue <= b.DoubleValue), Bool_.Id));
 			int_._Operators.Add(new Tuple<Operator, TypeId>(Operator.GTE, double_.Id),
 				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue(a.IntValue >= b.DoubleValue), Bool_.Id));
 			int_._Operators.Add(new Tuple<Operator, TypeId>(Operator.NotEquals, double_.Id),
-				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue(a.IntValue != b.DoubleValue), Bool_.Id));
+				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue(Math.Abs(a.IntValue - b.DoubleValue) >= double.Epsilon), Bool_.Id));
 
 			// double 'op' double -> double
 			double_._Operators.Add(new Tuple<Operator, TypeId>(Operator.Add, double_.Id),
@@ -139,16 +125,16 @@ namespace LsnCore
 				LsnBoolValue.GetBoolValue(a.DoubleValue > b.DoubleValue), Bool_.Id));
 			double_._Operators.Add(new Tuple<Operator, TypeId>(Operator.Equals, double_.Id),
 				new Tuple<BinOp, TypeId>((a, b) =>
-				LsnBoolValue.GetBoolValue((a).DoubleValue == b.DoubleValue), Bool_.Id));
+				LsnBoolValue.GetBoolValue(Math.Abs(a.DoubleValue - b.DoubleValue) < double.Epsilon), Bool_.Id));
 			double_._Operators.Add(new Tuple<Operator, TypeId>(Operator.LTE, double_.Id),
 				new Tuple<BinOp, TypeId>((a, b) =>
-				LsnBoolValue.GetBoolValue((a).DoubleValue <= (b).DoubleValue), Bool_.Id));
+				LsnBoolValue.GetBoolValue(a.DoubleValue <= b.DoubleValue), Bool_.Id));
 			double_._Operators.Add(new Tuple<Operator, TypeId>(Operator.GTE, double_.Id),
 				new Tuple<BinOp, TypeId>((a, b) =>
-				LsnBoolValue.GetBoolValue((a).DoubleValue >= (b).DoubleValue), Bool_.Id));
+				LsnBoolValue.GetBoolValue(a.DoubleValue >= b.DoubleValue), Bool_.Id));
 			double_._Operators.Add(new Tuple<Operator, TypeId>(Operator.NotEquals, double_.Id),
 				new Tuple<BinOp, TypeId>((a, b) =>
-				LsnBoolValue.GetBoolValue((a).DoubleValue != (b).DoubleValue), Bool_.Id));
+				LsnBoolValue.GetBoolValue(Math.Abs(a.DoubleValue - b.DoubleValue) >= double.Epsilon), Bool_.Id));
 
 			// double 'op' int -> double
 			double_._Operators.Add(new Tuple<Operator, TypeId>(Operator.Add, int_.Id),
@@ -166,17 +152,17 @@ namespace LsnCore
 
 			// Comparisons: double 'op' int -> bool
 			double_._Operators.Add(new Tuple<Operator, TypeId>(Operator.LessThan, int_.Id),
-				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue((a).DoubleValue < (b).IntValue), Bool_.Id));
+				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue(a.DoubleValue < b.IntValue), Bool_.Id));
 			double_._Operators.Add(new Tuple<Operator, TypeId>(Operator.GreaterThan, int_.Id),
-				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue((a).DoubleValue > (b).IntValue), Bool_.Id));
+				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue(a.DoubleValue > b.IntValue), Bool_.Id));
 			double_._Operators.Add(new Tuple<Operator, TypeId>(Operator.Equals, int_.Id),
-				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue((a).DoubleValue == (b).IntValue), Bool_.Id));
+				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue(Math.Abs(a.DoubleValue - b.IntValue) < double.Epsilon), Bool_.Id));
 			double_._Operators.Add(new Tuple<Operator, TypeId>(Operator.LTE, int_.Id),
-				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue((a).DoubleValue <= (b).IntValue), Bool_.Id));
+				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue(a.DoubleValue <= b.IntValue), Bool_.Id));
 			double_._Operators.Add(new Tuple<Operator, TypeId>(Operator.GTE, int_.Id),
-				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue((a).DoubleValue >= (b).IntValue), Bool_.Id));
+				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue(a.DoubleValue >= b.IntValue), Bool_.Id));
 			double_._Operators.Add(new Tuple<Operator, TypeId>(Operator.NotEquals, int_.Id),
-				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue((a).DoubleValue != (b).IntValue), Bool_.Id));
+				new Tuple<BinOp, TypeId>((a, b) => LsnBoolValue.GetBoolValue(Math.Abs(a.DoubleValue - b.IntValue) >= double.Epsilon), Bool_.Id));
 
 			// string + string -> string
 			string_._Operators.Add(new Tuple<Operator, TypeId>(Operator.Add, string_.Id),
@@ -260,7 +246,7 @@ namespace LsnCore
 							args[2].IntValue)
 						)
 				), "SubString",
-				new List<Parameter>() { new Parameter("start",int_,LsnValue.Nil,1), new Parameter("length", int_,LsnValue.Nil,2)})
+				new List<Parameter> { new Parameter("start",int_,LsnValue.Nil,1), new Parameter("length", int_,LsnValue.Nil,2)})
 			);
 
 			string_._Methods.Add("ToLower", new BoundedMethod(string_, string_,
@@ -286,14 +272,11 @@ namespace LsnCore
 		}
 
 
-		public static List<GenericType> GetBaseGenerics()
-		{
-			var generics = new List<GenericType>();
-			generics.Add(VectorGeneric.Instance);
-			generics.Add(LsnListGeneric.Instance);
-			return generics;
-        }
-
+		public static List<GenericType> GetBaseGenerics() => new List<GenericType>
+			{
+				VectorGeneric.Instance,
+				LsnListGeneric.Instance
+			};
 
 		public virtual bool IsBounded { get { return false; } }
 

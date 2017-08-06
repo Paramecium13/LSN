@@ -41,7 +41,9 @@ namespace LsnCore
 		/// <param name="returnType"></param>
 		public ExternalFunction(string name, List<Parameter> parameters, int stackSize, LsnType returnType = null)
 			:base(new FunctionSignature(parameters,name,returnType?.Id))
-		{}
+		{
+			StackSize = stackSize;
+		}
 
 		/// <summary>
 		/// 
@@ -51,7 +53,9 @@ namespace LsnCore
 		/// <param name="returnType"></param>
 		public ExternalFunction(string name, List<Parameter> parameters, int stackSize, TypeId returnType = null)
 			: base(new FunctionSignature(parameters, name, returnType))
-		{}
+		{
+			StackSize = stackSize;
+		}
 
 		/// <summary>
 		/// 

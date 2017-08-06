@@ -440,30 +440,30 @@ namespace LSNr
 					}
 					break;
 				case TokenizerState.SymbolSlash:
-					if (c == '=')
+					switch (c)
 					{
-						Push('=');
-						TokenType = TokenizerTokenType.Assignment;
-						Pop();
+						case '=':
+							Push('=');
+							TokenType = TokenizerTokenType.Assignment;
+							Pop();
+							break;
+						case '/':
+							State = TokenizerState.CommentSingleLine;
+							TokenType = TokenizerTokenType.Unknown;
+							StrB.Clear();
+							break;
+						case '*':
+							State = TokenizerState.CommentMultiLine;
+							TokenType = TokenizerTokenType.Unknown;
+							StrB.Clear();
+							break;
+						default:
+							TokenType = TokenizerTokenType.Operator;
+							Pop();
+							BaseReadChar(c);
+							break;
 					}
-					else if (c == '/')
-					{
-						State = TokenizerState.CommentSingleLine;
-						TokenType = TokenizerTokenType.Unknown;
-						StrB.Clear();
-					}
-					else if (c == '*')
-					{
-						State = TokenizerState.CommentMultiLine;
-						TokenType = TokenizerTokenType.Unknown;
-						StrB.Clear();
-					}
-					else
-					{
-						TokenType = TokenizerTokenType.Operator;
-						Pop();
-						BaseReadChar(c);
-					}
+
 					break;
 				case TokenizerState.SymbolExclamation:
 					TokenType = TokenizerTokenType.Operator;

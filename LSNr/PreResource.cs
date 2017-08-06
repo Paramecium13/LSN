@@ -458,16 +458,17 @@ namespace LSNr
 
 		public LsnResourceThing GetResource()
 		{
-			var resource = new LsnResourceThing();
-			resource.Functions = IncludedFunctions;
-			resource.Includes = Includes;
-			resource.RecordTypes = RecordTypes;
-			resource.StructTypes = StructTypes;
-			resource.Usings = Usings;
-			resource.HostInterfaces = HostInterfaces;
-			resource.ScriptObjectTypes = ScriptObjects;
-			//TODO: Add IncludedTypes.
-			return resource;
+			return new LsnResourceThing()
+			{
+				Functions = IncludedFunctions,
+				Includes = Includes,
+				RecordTypes = RecordTypes,
+				StructTypes = StructTypes,
+				Usings = Usings,
+				HostInterfaces = HostInterfaces,
+				ScriptObjectTypes = ScriptObjects
+				//TODO: Add IncludedTypes.
+			};
 		}
 
 

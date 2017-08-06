@@ -19,7 +19,7 @@ namespace LsnCore
 		/// <summary>
 		/// The .NET type that this type is bound to
 		/// </summary>
-		public Type Type { get { return this.GetType().GetGenericArguments()[0]; } }
+		public Type Type { get { return typeof(T); } }
 		public override bool IsBounded { get { return true; } }
 		protected int Size;
 

@@ -14,7 +14,6 @@ namespace LSNr
 {
 	public abstract class BasePreScript : IPreScript
 	{
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -33,7 +32,6 @@ namespace LSNr
 		/// Is this script valid (free of errors)?
 		/// </summary>
 		public bool Valid { get; set; } = true;
-
 
 		protected readonly List<string> Usings = new List<string>();
 
@@ -62,6 +60,8 @@ namespace LSNr
 			IncludeFunction(LsnMath.Sqrt);
 			//IncludeFunction(LsnMath.Tan);
 			//IncludeFunction(LsnMath.Tanh);
+			
+			//ToDo: Make it use, rather than include, math functions.
 
 			foreach (var t in LoadedTypes)
 				t.Id.Load(t);// Load/bind it's type ids...
@@ -75,7 +75,7 @@ namespace LSNr
 			Tokens = new CharStreamTokenizer().Tokenize(Text);
 		}
 
-
+		//
 		protected void Include(LsnScriptBase resource, string path)
 		{
 			foreach (var recType in resource.RecordTypes.Values)
@@ -111,9 +111,8 @@ namespace LSNr
 			Includes.Add(path);
 		}
 
-
+		//
 		public abstract SymbolType CheckSymbol(string name);
-
 
 		/// <summary>
 		/// 
@@ -128,20 +127,20 @@ namespace LSNr
 			if (ObjectFileUpToDate(path,out res))
 			{
 				if (res == null)
+				{
 					using (var fs = new FileStream(objPath, FileMode.Open))
 					{
 						res = (LsnResourceThing)(new BinaryFormatter().Deserialize(fs));
 					}
+				}
 			}
 			else
 			{
 				if (Program.MakeResource(System.IO.Path.GetFileNameWithoutExtension(path),File.ReadAllText(srcPath), objPath, out res, new string[0]) != 0)
 					throw new ApplicationException();
 			}
-			
 			return res;
 		}
-			
 
 		protected static bool ObjectFileUpToDate(string path, out LsnResourceThing res)
 		{
@@ -190,8 +189,7 @@ namespace LSNr
 		/// <returns></returns>
 		protected string ProcessDirectives(string source)
 		{
-			var usePaths = new List<string>();
-			usePaths.Add(Path);
+			var usePaths = new List<string> { Path };
 			if (Regex.IsMatch(source, "#using", RegexOptions.IgnoreCase))
 			{
 				//Process #using directive(s)
@@ -263,10 +261,9 @@ namespace LSNr
 				LoadedExternallyDefinedFunctions.Add(pair.Key, pair.Value);
 				LoadFunctionParamAndReturnTypes(pair.Value);
 			}
-			
 			//ToDo: Generic types and functions...
 			Usings.Add(path);
-		}		
+		}
 
 		#region Functions
 
@@ -283,7 +280,7 @@ namespace LSNr
 		/// <summary>
 		/// 
 		/// </summary>
-		private Dictionary<string, Function> LoadedExternallyDefinedFunctions = new Dictionary<string, Function>();
+		private readonly Dictionary<string, Function> LoadedExternallyDefinedFunctions = new Dictionary<string, Function>();
 
 
 		public bool FunctionExists(string name)

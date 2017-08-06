@@ -190,10 +190,10 @@ namespace LSNr
 		/// 
 		/// </summary>
 		/// <param name="index"></param>
-		private void ParentVariableAdded(int index)
+		/*private void ParentVariableAdded(int index)
 		{
 			throw new NotImplementedException();
-		}
+		}*/
 
 
 		public IScope CreateChild()

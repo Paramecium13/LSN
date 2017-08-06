@@ -61,7 +61,7 @@ namespace LsnCore
 	[Serializable]
 	public class StringValue : IBoundValue<string>
 	{
-		public static TypeId id = LsnType.string_.Id;
+		private static readonly TypeId id = LsnType.string_.Id;
 
 		public TypeId Type { get { return id; } }
 
