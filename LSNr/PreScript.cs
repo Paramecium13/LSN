@@ -1,4 +1,5 @@
 ﻿using LsnCore;
+using LSNr.Optimization;
 using Tokens;
 using System;
 using System.Collections.Generic;
@@ -7,12 +8,15 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using LsnCore.Types;
+using LsnCore.Statements;
 
 namespace LSNr
 {
 	public class PreScript : BasePreScript
 	{
 		private List<Component> Components;
+
+		private Statement[] Statements;
 
 		//private Dictionary<string, string> Subs = new Dictionary<string, string>();
 		//private Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
@@ -46,7 +50,7 @@ namespace LSNr
 		/// <returns></returns>
 		public LsnScript GetScript()
 		{
-			return new LsnScript(Components);
+			return new LsnScript(Statements);
 		}
 
 		/// <summary>
@@ -63,6 +67,8 @@ namespace LSNr
 			parser.Parse();
 			Components = Parser.Consolidate(parser.Components);
 			//CurrentScope.Pop(Components);
+			var flattener = new ComponentFlattener();
+			Statements = flattener.Flatten(Components);
 		}
 
 		public override SymbolType CheckSymbol(string name)

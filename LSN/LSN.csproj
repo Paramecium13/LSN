@@ -102,6 +102,8 @@
     <Compile Include="LsnCore\Statements\ExpressionStatement.cs" />
     <Compile Include="LsnCore\Statements\FieldAssignmentStatement.cs" />
     <Compile Include="LsnCore\Statements\GoToStatement.cs" />
+    <Compile Include="LsnCore\Statements\JumpStatements.cs" />
+    <Compile Include="LsnCore\Statements\RegisterChoiceStatement.cs" />
     <Compile Include="LsnCore\Statements\SetStateStatement.cs" />
     <Compile Include="LsnCore\Types\EventDefinition.cs" />
     <Compile Include="LsnCore\Types\EventListener.cs" />

@@ -9,10 +9,15 @@ namespace LsnCore
 	[Serializable]
 	public class LsnScript : LsnScriptBase
 	{
-		public List<Component> Components { get; protected set; }
+		public Component[] Components { get; protected set; }
 
 
 		public LsnScript(List<Component> components)
+		{
+			Components = components.ToArray();
+		}
+
+		public LsnScript(Component[] components)
 		{
 			Components = components;
 		}

@@ -45,7 +45,7 @@ namespace LsnCore
 		/// <param name="script"></param>
 		public virtual void Run(LsnScript script)
 		{
-			for(int i = 0; i < script.Components.Count; i++)
+			for(int i = 0; i < script.Components.Length; i++)
 			{
 				var c = script.Components[i];
 				c.Interpret(this);

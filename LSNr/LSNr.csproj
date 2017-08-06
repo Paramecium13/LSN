@@ -79,7 +79,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasePreScript.cs" />
-    <Compile Include="BasePreScriptObject.cs" />
+    <Compile Include="Optimization\ComponentFlattener.cs" />
+    <Compile Include="PreStatement.cs" />
+    <Compile Include="ScriptObjects\BasePreScriptObject.cs" />
     <Compile Include="CharStreamTokenizer.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Create.cs" />
@@ -95,13 +97,13 @@
     <Compile Include="Optimization\ExpressionWalker.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="PreFunction.cs" />
-    <Compile Include="PreHostInterface.cs" />
+    <Compile Include="ScriptObjects\PreHostInterface.cs" />
     <Compile Include="Preprocessor.cs" />
     <Compile Include="PreResource.cs" />
     <Compile Include="PreScript.cs" />
-    <Compile Include="PreScriptObject.cs" />
-    <Compile Include="PreScriptObjectFunction.cs" />
-    <Compile Include="PreState.cs" />
+    <Compile Include="ScriptObjects\PreScriptObject.cs" />
+    <Compile Include="ScriptObjects\PreScriptObjectFunction.cs" />
+    <Compile Include="ScriptObjects\PreState.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scope.cs" />

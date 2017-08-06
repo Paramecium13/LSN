@@ -45,22 +45,22 @@ namespace LSNr
 		protected BasePreScript(string src, string path)
 		{
 			Source = src;
-			//IncludeFunction(LsnMath.ACos);
-			//IncludeFunction(LsnMath.ASin);
-			//IncludeFunction(LsnMath.ATan);
-			//IncludeFunction(LsnMath.Cos);
-			//IncludeFunction(LsnMath.Cosh);
-			//IncludeFunction(LsnMath.ErrorFunction);
-			//IncludeFunction(LsnMath.Gamma);
-			IncludeFunction(LsnMath.Hypot);
-			//IncludeFunction(LsnMath.Log);
-			//IncludeFunction(LsnMath.Log10);
-			//IncludeFunction(LsnMath.Sin);
-			//IncludeFunction(LsnMath.Sinh);
-			IncludeFunction(LsnMath.Sqrt);
-			//IncludeFunction(LsnMath.Tan);
-			//IncludeFunction(LsnMath.Tanh);
+			IncludeFunction(LsnMath.ACos);
+			IncludeFunction(LsnMath.ASin);
+			IncludeFunction(LsnMath.ATan);
+			IncludeFunction(LsnMath.Cos);
+			IncludeFunction(LsnMath.Cosh);
+			IncludeFunction(LsnMath.ErrorFunction);
+			IncludeFunction(LsnMath.Gamma);
+			IncludeFunction(LsnMath.Log);
+			IncludeFunction(LsnMath.Log10);
+			IncludeFunction(LsnMath.Sin);
+			IncludeFunction(LsnMath.Sinh);
+			IncludeFunction(LsnMath.Tan);
+			IncludeFunction(LsnMath.Tanh);
 			
+			IncludeFunction(LsnMath.Sqrt);
+			IncludeFunction(LsnMath.Hypot);
 			//ToDo: Make it use, rather than include, math functions.
 
 			foreach (var t in LoadedTypes)
@@ -234,6 +234,12 @@ namespace LSNr
 
 		protected void Use(LsnScriptBase resource, string path)
 		{
+			foreach (var u in resource.Usings)
+			{
+				var res = Load(u);
+				Use(res, u);
+			}
+
 			foreach (var recType in resource.RecordTypes.Values)
 			{
 				LoadedTypes.Add(recType);
@@ -257,9 +263,11 @@ namespace LSNr
 			}
 			foreach (var pair in resource.Functions)
 			{
-				if (LoadedExternallyDefinedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
-				LoadedExternallyDefinedFunctions.Add(pair.Key, pair.Value);
-				LoadFunctionParamAndReturnTypes(pair.Value);
+				if (!LoadedExternallyDefinedFunctions.ContainsKey(pair.Key))
+				{
+					LoadedExternallyDefinedFunctions.Add(pair.Key, pair.Value);
+					LoadFunctionParamAndReturnTypes(pair.Value);
+				}
 			}
 			//ToDo: Generic types and functions...
 			Usings.Add(path);

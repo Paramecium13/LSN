@@ -15,12 +15,13 @@ namespace LSNr.Optimization
 		public void Walk(Component c)
 		{
 			var cs = c as ControlStructure;
-			if (cs != null) Walk(cs);
+			if (cs != null)
+				Walk(cs);
 			else View((Statement)c);
 		}
 
 
-		protected void Walk(IList<Component> components)
+		protected virtual void Walk(IList<Component> components)
 		{
 			int length = components.Count;
 			for (int i = 0; i < length; i++)
@@ -48,6 +49,7 @@ namespace LSNr.Optimization
 				WalkCbc(cbc);
 				return;
 			}
+
 			var fl = c as ForLoop;
 			if(fl != null)
 			{
@@ -77,6 +79,8 @@ namespace LSNr.Optimization
 		protected virtual void WalkCaseStructure(CaseStructure c)
 		{
 			View(c);
+			foreach (var component in c.Components)
+				Walk(component);
 		}
 
 
