@@ -15,7 +15,7 @@ namespace LsnCore.ControlStructures
 	public class ForLoop : ControlStructure
 	{
 
-		public readonly string VarName;
+		public int Index;
 
 		public IExpression VarValue;
 
@@ -26,9 +26,9 @@ namespace LsnCore.ControlStructures
 		public Statement Post;
 
 
-		public ForLoop(string varName,IExpression val, IExpression con, List<Component> body, Statement post)
+		public ForLoop(int index, IExpression val, IExpression con, List<Component> body, Statement post)
 		{
-			VarName = varName; VarValue = val; Condition = con; Body = body; Post = post;
+			Index = index; VarValue = val; Condition = con; Body = body; Post = post;
 		}
 
 

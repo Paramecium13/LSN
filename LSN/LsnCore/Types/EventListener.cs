@@ -25,7 +25,8 @@ namespace LsnCore.Types
 
 		public void Run(LsnValue[] args, IInterpreter i)
 		{
-			i.EnterFunctionScope(Environment, StackSize);
+			i.Run(/*Components*/ null, Environment, StackSize, args);
+			/*i.EnterFunctionScope(Environment, StackSize);
 
 			// Assign arguments to the stack.
 			for (int argI = 0; argI < args.Length; argI++)
@@ -49,7 +50,7 @@ namespace LsnCore.Types
 					default:
 						throw new ApplicationException("This should not happen.");
 				}
-			}
+			}*/
 		}
 
 	}

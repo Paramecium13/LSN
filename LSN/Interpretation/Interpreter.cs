@@ -39,6 +39,43 @@ namespace LsnCore
 		// The current environment.
 		private LsnEnvironment CurrentEnvironment;
 
+
+		public int NextStatement { get; set; }
+
+
+		public void Run(Statements.Statement[] code, LsnEnvironment environment, int stackSize, LsnValue[] parameters)
+		{
+			EnterFunctionScope(environment, stackSize);
+			for (int i = 0; i < parameters.Length; i++)
+				CurrentStackFrame[i] = parameters[i];
+
+			NextStatement = 0;
+			int currentStatement = NextStatement++;
+			int codeSize = code.Length;
+			var v = InterpretValue.Base;
+			while (currentStatement < codeSize && v != InterpretValue.Return)
+			{
+				v = code[currentStatement].Interpret(this);
+				currentStatement = NextStatement++;
+			}
+		}
+
+		public void Run(Statements.Statement[] code, LsnValue[] parameters)
+		{
+			for (int i = 0; i < parameters.Length; i++)
+				CurrentStackFrame[i] = parameters[i];
+
+			NextStatement = 0;
+			int currentStatement = NextStatement++;
+			int codeSize = code.Length;
+			var v = InterpretValue.Base;
+			while (currentStatement < codeSize && v != InterpretValue.Return)
+			{
+				v = code[currentStatement].Interpret(this);
+				currentStatement = NextStatement++;
+			}
+		}
+
 		/// <summary>
 		/// Run the script.
 		/// </summary>
@@ -61,6 +98,21 @@ namespace LsnCore
 			CurrentEnvironment = env;
 
 			StackFrames.Push(CurrentStackFrame);
+			int i = NearestPower(scopeSize);
+			if (StackFrameStore.ContainsKey(i))
+			{
+				if (!StackFrameStore[i].TryPop(out CurrentStackFrame))
+					CurrentStackFrame = new LsnValue[i];
+			}
+			else
+			{
+				StackFrameStore.Add(i, new ConcurrentStack<LsnValue[]>());
+				CurrentStackFrame = new LsnValue[i];
+			}
+		}
+
+		private void RequestStack(int scopeSize)
+		{
 			int i = NearestPower(scopeSize);
 			if (StackFrameStore.ContainsKey(i))
 			{

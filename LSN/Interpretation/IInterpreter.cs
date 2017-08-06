@@ -6,6 +6,12 @@ namespace LsnCore
 	{
 		LsnValue ReturnValue { get; set; }
 
+		int NextStatement { get; set; }
+
+		void Run(Statements.Statement[] code, LsnEnvironment environment, int stackSize, LsnValue[] parameters);
+
+		void Run(Statements.Statement[] code, LsnValue[] parameters);
+
 		/// <summary>
 		/// Should CompoundExpressions pass variable names to this (rather than their values), may save time.
 		/// </summary>

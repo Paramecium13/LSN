@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LsnCore.ControlStructures;
 using LsnCore.Statements;
 using LsnCore;
+using LsnCore.Expressions;
 
 namespace LSNr.Optimization
 {
@@ -14,7 +15,7 @@ namespace LSNr.Optimization
 
 		private readonly List<PreStatement> PreStatements = new List<PreStatement>();
 
-		private readonly Stack<string> ExitingLabels = new Stack<string>();
+		private readonly Stack<string> NextLabelStack = new Stack<string>();
 
 		private readonly Stack<string> InnerMostLoopStartLabels = new Stack<string>();
 
@@ -37,24 +38,24 @@ namespace LSNr.Optimization
 			for(int i = 0; i < PreStatements.Count; i++)
 				if (PreStatements[i].Label == label)
 					return i;
-			throw new ApplicationException("");
+			return PreStatements.Count;
 		}
 
 		private int IfCount;
 		protected override void WalkIfElse(IfElseControl f)
 		{
 			string endifLabel = "EndIf" + (IfCount++).ToString();
-			var preSt = new PreStatement(new ConditionalJumpStatement(f.Condition))
+			var preSt = new PreStatement(new ConditionalJumpStatement(new NotExpression(f.Condition)))
 			{
 				Target = endifLabel
 			};
 
-			if (ExitingLabels.Count > 0)
-				preSt.Label = ExitingLabels.Pop();
+			if (NextLabelStack.Count > 0)
+				preSt.Label = NextLabelStack.Pop();
 			PreStatements.Add(preSt);
 
 			Walk(f.Body);
-			ExitingLabels.Push(endifLabel);
+			NextLabelStack.Push(endifLabel);
 			for (int i = 0; i < f.Elsifs.Count; i++)
 			{
 				WalkElsif(f.Elsifs[i]);
@@ -66,26 +67,83 @@ namespace LSNr.Optimization
 		protected override void WalkElsif(ElsifControl e)
 		{
 			string endifLabel = "EndIf" + (IfCount++).ToString();
-			var preSt = new PreStatement(new ConditionalJumpStatement(e.Condition))
+			var preSt = new PreStatement(new ConditionalJumpStatement(new NotExpression(e.Condition)))
 			{
 				Target = endifLabel
 			};
 
-			if (ExitingLabels.Count > 0)
-				preSt.Label = ExitingLabels.Pop();
+			if (NextLabelStack.Count > 0)
+				preSt.Label = NextLabelStack.Pop();
 			PreStatements.Add(preSt);
 
 			Walk(e.Body);
-			ExitingLabels.Push(endifLabel);
+			NextLabelStack.Push(endifLabel);
 
 		}
 
 
+		private int WhileLoopCount;
+		protected override void WalkWhileLoop(WhileLoop wl)
+		{
+			var index = WhileLoopCount++;
+			var cndLabel = "While" + index.ToString();
+			var endLabel = "EndWhile" + index.ToString();
+
+			var preSt = new PreStatement(new ConditionalJumpStatement(new NotExpression(wl.Condition)))
+			{ Target = endLabel, Label = cndLabel };
+			if (NextLabelStack.Count > 0) preSt.Label = NextLabelStack.Pop();
+			PreStatements.Add(preSt);
+
+			InnerMostLoopStartLabels.Push(cndLabel);
+			InnerMostLoopEndLabels.Push(endLabel);
+
+			Walk(wl.Body);
+			var loopPreSt = new PreStatement(new JumpStatement()){Target = cndLabel};
+			if (NextLabelStack.Count > 0) loopPreSt.Label = NextLabelStack.Pop();
+
+			PreStatements.Add(loopPreSt);
+
+			NextLabelStack.Push(endLabel);
+
+			InnerMostLoopStartLabels.Pop();
+			InnerMostLoopEndLabels.Pop();
+		}
 
 
+		private int ForLoopCount;
+		protected override void WalkForLoop(ForLoop f)
+		{
+			var index = ForLoopCount++;
+			var cndLabel = "For" + index.ToString();
+			var endLabel = "EndFor" + index.ToString();
 
+			var assignPreSt = new PreStatement(new AssignmentStatement(f.Index, f.VarValue));
+			if (NextLabelStack.Count > 0)
+				assignPreSt.Label = NextLabelStack.Pop();
+			PreStatements.Add(assignPreSt);
 
+			var cndPreSt = new PreStatement(new ConditionalJumpStatement(new NotExpression(f.Condition)))
+			{ Label = cndLabel, Target = endLabel };    // Jump to EndLabel if cnd is false
+			PreStatements.Add(cndPreSt);
 
+			InnerMostLoopStartLabels.Push(cndLabel);
+			InnerMostLoopEndLabels.Push(endLabel);
+
+			Walk(f.Body);
+
+			// Increment
+			var postPreSt = new PreStatement(f.Post);
+			if (NextLabelStack.Count > 0)
+				postPreSt.Label = NextLabelStack.Pop();
+			PreStatements.Add(postPreSt);
+
+			PreStatements.Add(new PreStatement(new JumpStatement()) { Target = cndLabel });
+
+			NextLabelStack.Push(endLabel);
+
+			InnerMostLoopStartLabels.Pop();
+			InnerMostLoopEndLabels.Pop();
+		}
 
 
 
@@ -119,8 +177,8 @@ namespace LSNr.Optimization
 			{
 				preSt = new PreStatement(s);
 			}
-			if (ExitingLabels.Count > 0)
-				preSt.Label = ExitingLabels.Pop();
+			if (NextLabelStack.Count > 0)
+				preSt.Label = NextLabelStack.Pop();
 			PreStatements.Add(preSt);
 		}
 

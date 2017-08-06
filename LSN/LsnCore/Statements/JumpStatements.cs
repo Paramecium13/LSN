@@ -21,7 +21,8 @@ namespace LsnCore.Statements
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			throw new NotImplementedException();
+			i.NextStatement = Target;
+			return InterpretValue.Base;
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
@@ -30,22 +31,19 @@ namespace LsnCore.Statements
 	[Serializable]
 	public sealed class ConditionalJumpStatement : Statement, IHasTargetStatement
 	{
-		bool JumpIfTrue;
 		internal IExpression Condition;
 		public int Target { get; set; } = -1;
 
-		internal ConditionalJumpStatement(IExpression condition, bool jumpIfTrue = false)
+		internal ConditionalJumpStatement(IExpression condition)
 		{
-			Condition = condition; JumpIfTrue = jumpIfTrue;
+			Condition = condition;
 		}
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			if (Condition.Eval(i).BoolValue == JumpIfTrue)
-			{
-
-			}
-			throw new NotImplementedException();
+			if (Condition.Eval(i).BoolValue)
+				i.NextStatement = Target;
+			return InterpretValue.Base;
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)

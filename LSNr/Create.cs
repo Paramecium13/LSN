@@ -91,7 +91,8 @@ namespace LSNr
 				if (head[1].Value != "(") throw new ApplicationException("A for loop must use parenthesis...");//[e.g \'for   (   i = 0` i < cat`i++   )   \']");
 
 				string varName = head[2].Value; // Check if it exists, type, mutable...
-				
+
+
 				if (head[3].Value != "=") throw new ApplicationException("...");
 
 				var exprTokens = new List<Token>();
@@ -102,7 +103,13 @@ namespace LSNr
 				} while (head[++i].Value != "`");
 				// i points to `.
 				var val = Express(exprTokens, script);
-				if (!script.CurrentScope.HasVariable(varName)) script.CurrentScope.CreateVariable(varName, true, val);
+
+				Variable vr;
+				if (script.CurrentScope.HasVariable(varName))
+				{
+					vr = script.CurrentScope.GetVariable(varName);
+				}
+				else vr = script.CurrentScope.CreateVariable(varName, true, val);
 
 				exprTokens.Clear(); // Recycle the list.
 				i++;
@@ -147,12 +154,13 @@ namespace LSNr
 					throw new NotImplementedException();
 				}
 
+				
 				Parser p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
 				script.CurrentScope = script.CurrentScope.Pop(components);
-
-				return new ForLoop(varName, val, con, components, post);
+				
+				return new ForLoop(vr.Index, val, con, components, post);
 			}
 			if(n > 1 && head.Last().Value == "->")
 			{
