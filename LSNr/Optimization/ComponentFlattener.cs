@@ -14,12 +14,12 @@ namespace LSNr.Optimization
 	{
 
 		private readonly List<PreStatement> PreStatements = new List<PreStatement>();
-
-		private readonly Stack<string> NextLabelStack = new Stack<string>();
-
+		
 		private readonly Stack<string> InnerMostLoopStartLabels = new Stack<string>();
 
 		private readonly Stack<string> InnerMostLoopEndLabels = new Stack<string>();
+
+		private string NextLabel;
 
 
 		public Statement[] Flatten(List<Component> components)
@@ -50,12 +50,15 @@ namespace LSNr.Optimization
 				Target = endifLabel
 			};
 
-			if (NextLabelStack.Count > 0)
-				preSt.Label = NextLabelStack.Pop();
+			if (NextLabel != null)
+			{
+				preSt.Label = NextLabel;
+				NextLabel = null;
+			}
 			PreStatements.Add(preSt);
 
 			Walk(f.Body);
-			NextLabelStack.Push(endifLabel);
+			NextLabel = endifLabel;
 			for (int i = 0; i < f.Elsifs.Count; i++)
 			{
 				WalkElsif(f.Elsifs[i]);
@@ -72,12 +75,15 @@ namespace LSNr.Optimization
 				Target = endifLabel
 			};
 
-			if (NextLabelStack.Count > 0)
-				preSt.Label = NextLabelStack.Pop();
+			if (NextLabel != null)
+			{
+				preSt.Label = NextLabel;
+				NextLabel = null;
+			}
 			PreStatements.Add(preSt);
 
 			Walk(e.Body);
-			NextLabelStack.Push(endifLabel);
+			NextLabel = endifLabel;
 
 		}
 
@@ -91,7 +97,11 @@ namespace LSNr.Optimization
 
 			var preSt = new PreStatement(new ConditionalJumpStatement(new NotExpression(wl.Condition)))
 			{ Target = endLabel, Label = cndLabel };
-			if (NextLabelStack.Count > 0) preSt.Label = NextLabelStack.Pop();
+			if (NextLabel != null)
+			{
+				preSt.Label = NextLabel;
+				NextLabel = null;
+			}
 			PreStatements.Add(preSt);
 
 			InnerMostLoopStartLabels.Push(cndLabel);
@@ -99,11 +109,14 @@ namespace LSNr.Optimization
 
 			Walk(wl.Body);
 			var loopPreSt = new PreStatement(new JumpStatement()){Target = cndLabel};
-			if (NextLabelStack.Count > 0) loopPreSt.Label = NextLabelStack.Pop();
-
+			if (NextLabel != null)
+			{
+				loopPreSt.Label = NextLabel;
+				NextLabel = null;
+			}
 			PreStatements.Add(loopPreSt);
 
-			NextLabelStack.Push(endLabel);
+			NextLabel = endLabel;
 
 			InnerMostLoopStartLabels.Pop();
 			InnerMostLoopEndLabels.Pop();
@@ -118,8 +131,11 @@ namespace LSNr.Optimization
 			var endLabel = "EndFor" + index.ToString();
 
 			var assignPreSt = new PreStatement(new AssignmentStatement(f.Index, f.VarValue));
-			if (NextLabelStack.Count > 0)
-				assignPreSt.Label = NextLabelStack.Pop();
+			if (NextLabel != null)
+			{
+				assignPreSt.Label = NextLabel;
+				NextLabel = null;
+			}
 			PreStatements.Add(assignPreSt);
 
 			var cndPreSt = new PreStatement(new ConditionalJumpStatement(new NotExpression(f.Condition)))
@@ -133,27 +149,65 @@ namespace LSNr.Optimization
 
 			// Increment
 			var postPreSt = new PreStatement(f.Post);
-			if (NextLabelStack.Count > 0)
-				postPreSt.Label = NextLabelStack.Pop();
+			if (NextLabel != null)
+			{
+				postPreSt.Label = NextLabel;
+				NextLabel = null;
+			}
 			PreStatements.Add(postPreSt);
 
 			PreStatements.Add(new PreStatement(new JumpStatement()) { Target = cndLabel });
 
-			NextLabelStack.Push(endLabel);
+			NextLabel = endLabel;
 
 			InnerMostLoopStartLabels.Pop();
 			InnerMostLoopEndLabels.Pop();
 		}
 
+		int ChoiceCount;
+		protected override void WalkCbc(ChoicesBlockControl c)
+		{
+			var index = (ChoiceCount++).ToString();
+			string endLabel = "ChoiceEnd" + index;
 
 
+			var choices = new Tuple<IList<Component>, string>[c.Choices.Count];
 
+			int chCount = 0;
+			for (int i = 0; i < c.Choices.Count; i++)
+			{
+				var ch = c.Choices[i];
+				string chTarget = "Choice" + index + "Target" + i.ToString();
+				var regPreSt = new PreStatement(new RegisterChoiceStatement(ch.Condition ?? LsnBoolValue.GetBoolValue(true), ch.Title))
+				{Target = chTarget};
+				if (i == 0 && NextLabel != null)
+				{
+					regPreSt.Label = NextLabel; NextLabel = null;
+				}
 
+				PreStatements.Add(regPreSt);
 
+				choices[i] = new Tuple<IList<Component>, string>(ch.Components, chTarget);
+			}
 
+			PreStatements.Add(new PreStatement(new DisplayChoicesStatement()));
 
+			foreach (var ch in choices)
+			{
+				NextLabel = ch.Item2;
+				Walk(ch.Item1);
+				var jEndPreSt = new PreStatement(new JumpStatement()) { Target = endLabel };
+				if (NextLabel != null)
+				{
+					jEndPreSt.Label = NextLabel;
+					NextLabel = null;
+				}
+				PreStatements.Add(jEndPreSt);
+			}
 
-
+			NextLabel = endLabel;
+		}
+		
 		protected override void View(Statement s)
 		{
 			PreStatement preSt;
@@ -177,8 +231,13 @@ namespace LSNr.Optimization
 			{
 				preSt = new PreStatement(s);
 			}
-			if (NextLabelStack.Count > 0)
-				preSt.Label = NextLabelStack.Pop();
+			/*if (ExitLabelStack.Count > 0)
+				preSt.Label = ExitLabelStack.Pop();*/
+			if(NextLabel != null)
+			{
+				preSt.Label = NextLabel;
+				NextLabel = null;
+			}
 			PreStatements.Add(preSt);
 		}
 

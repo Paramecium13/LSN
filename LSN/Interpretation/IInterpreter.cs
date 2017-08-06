@@ -78,7 +78,6 @@ namespace LsnCore
 		/// <returns></returns>
 		int Choice(List<string> choices); // TODO: Replace with Dictionary<string,int>.
 
-
 		LsnValue GetGlobalVariable(string globalVarName/*, string fileName*/);
 
 		void SetGlobalVariable(LsnValue value, string globalVarName/*, string fileName*/);
@@ -87,5 +86,10 @@ namespace LsnCore
 
 		void UnwatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange);
 
+		void RegisterChoice(string text, int target);
+
+		int DisplayChoices();
+
+		void ClearChoices();
 	}
 }

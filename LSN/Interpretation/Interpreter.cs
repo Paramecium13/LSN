@@ -32,7 +32,6 @@ namespace LsnCore
 
 
 
-
 		// Where the current environment is pushed when a new function scope is entered.
 		private readonly Stack<LsnEnvironment> EnvStack = new Stack<LsnEnvironment>();
 
@@ -42,6 +41,9 @@ namespace LsnCore
 
 		public int NextStatement { get; set; }
 
+
+		private readonly List<Tuple<string, int>> _Choices = new List<Tuple<string, int>>();
+		protected IReadOnlyList<Tuple<string, int>> Choices => _Choices; 
 
 		public void Run(Statements.Statement[] code, LsnEnvironment environment, int stackSize, LsnValue[] parameters)
 		{
@@ -82,12 +84,12 @@ namespace LsnCore
 		/// <param name="script"></param>
 		public virtual void Run(LsnScript script)
 		{
-			for(int i = 0; i < script.Components.Length; i++)
+			for (int i = 0; i < script.Components.Length; i++)
 			{
 				var c = script.Components[i];
 				c.Interpret(this);
 			}
-		}		
+		}
 
 		/// <summary>
 		/// Enters a new scope for interpreting a function. Previously defined variables are inaccessable.
@@ -161,7 +163,7 @@ namespace LsnCore
 			{
 				for (int i = 0; i < stack.Length; i++)
 					stack[i] = LsnValue.Nil;
-				if(StackFrameStore.ContainsKey(stack.Length))
+				if (StackFrameStore.ContainsKey(stack.Length))
 					StackFrameStore[stack.Length].Push(stack);
 				else
 				{
@@ -186,9 +188,9 @@ namespace LsnCore
 		{
 			GetGlobalVariableValue(globalVarName/*, fileName*/).Value = value;
 		}
-		
 
-		public virtual void WatchGlobalVariable(string globalVarName/*, string fileName*/,OnGlobalVariableValueChanged onChange)
+
+		public virtual void WatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange)
 		{
 			(GetGlobalVariableValue(globalVarName/*, fileName*/) as GlobalVariableValueWatched).OnValueChanged += onChange;
 		}
@@ -198,6 +200,15 @@ namespace LsnCore
 			(GetGlobalVariableValue(globalVarName/*, fileName*/) as GlobalVariableValueWatched).OnValueChanged -= onChange;
 		}
 
+		public void RegisterChoice(string text, int target)
+		{
+			_Choices.Add(new Tuple<string, int>(text, target));
+		}
+
+		public void ClearChoices()
+		{
+			_Choices.Clear();
+		}
 
 		/*
 		#region unsafe
@@ -272,6 +283,6 @@ namespace LsnCore
 
 		public abstract void Say(string message, LsnValue graphic, string title);
 		public abstract int Choice(List<string> choices);
-
+		public abstract int DisplayChoices();
 	}
 }

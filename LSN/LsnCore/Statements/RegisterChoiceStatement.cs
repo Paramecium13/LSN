@@ -24,10 +24,8 @@ namespace LsnCore.Statements
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			if(Condition.Eval(i).BoolValue)
-			{
-
-			}
-			throw new NotImplementedException();
+				i.RegisterChoice((ChoiceText.Eval(i).Value as StringValue).Value, Target);
+			return InterpretValue.Base;
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
