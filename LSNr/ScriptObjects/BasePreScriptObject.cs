@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
+using LSNr.Optimization;
 using Tokens;
 
 namespace LSNr
@@ -284,7 +285,9 @@ namespace LSNr
 				var parser = new Parser(pair.Value, pre);
 				parser.Parse();
 				pre.CurrentScope.Pop(parser.Components);
-				method.Components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
+
+				var components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
+				method.Code = new ComponentFlattener().Flatten(components);
 				method.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
 			}
 		}
@@ -301,7 +304,7 @@ namespace LSNr
 				var parser = new Parser(pair.Value, pre);
 				parser.Parse();
 				pre.CurrentScope.Pop(parser.Components);
-				eventListener.Components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
+				eventListener.Code = new ComponentFlattener().Flatten(Parser.Consolidate(parser.Components).Where(c => c != null).ToList());
 				eventListener.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
 			}
 		}

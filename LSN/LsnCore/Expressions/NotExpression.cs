@@ -7,6 +7,7 @@ using LsnCore.Types;
 
 namespace LsnCore.Expressions
 {
+	[Serializable]
 	public sealed class NotExpression : IExpression
 	{
 		internal IExpression Value;

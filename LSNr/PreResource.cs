@@ -1,5 +1,6 @@
 ﻿using LsnCore;
 using LsnCore.Types;
+using LSNr.Optimization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -262,7 +263,7 @@ namespace LSNr
 				var parser = new Parser(FunctionBodies[pair.Key], preFn);
 				parser.Parse();
 				preFn.CurrentScope.Pop(parser.Components);
-				pair.Value.Components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
+				pair.Value.Code = new ComponentFlattener().Flatten(Parser.Consolidate(parser.Components).Where(c => c != null).ToList());
 				pair.Value.StackSize = (preFn.CurrentScope as VariableTable)?.MaxSize?? -1;		
 			}
 		}

@@ -60,7 +60,7 @@ namespace LSNr.Optimization
 			{
 				WalkElsif(f.Elsifs[i]);
 			}
-			Walk(f.ElseBlock);
+			if(f.ElseBlock != null) Walk(f.ElseBlock);
 
 		}
 

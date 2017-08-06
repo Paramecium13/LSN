@@ -42,10 +42,8 @@ namespace LsnCore.Expressions
 
 			var fn = Fn ?? i.GetFunction(FnName);
 
-			if (! fn.HandlesScope) i.EnterFunctionScope(fn.Environment, fn.StackSize);
 			var val = fn.Eval(args, i);
-			if (! fn.HandlesScope) i.ExitFunctionScope();
-
+			
 			return val;
 		}
 

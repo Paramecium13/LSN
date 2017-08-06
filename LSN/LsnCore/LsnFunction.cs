@@ -1,4 +1,5 @@
 ﻿using LsnCore.Expressions;
+using LsnCore.Statements;
 using LsnCore.Types;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace LsnCore
 		/// <summary>
 		/// This should only be set from within LSNr, where function bodies are parsed.
 		/// </summary>
-		public IReadOnlyList<Component> Components;
+		public Statement[] Code;
 		
 
 		public override bool HandlesScope { get { return true; } }
@@ -38,30 +39,7 @@ namespace LsnCore
 
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{
-			i.EnterFunctionScope(Environment ?? LsnEnvironment.Default, StackSize);
-			//ToDo: assign variables to stack;
-			//foreach (var pair in args) i.AddVariable(pair.Key, pair.Value); // ToDo: remove AddVariable(...)
-			for (int argI = 0; argI < args.Length; argI++)
-				i.SetValue(argI, args[argI]);
-
-			for (int x = 0; x < Components.Count; x++)
-			{
-				var val = Components[x].Interpret(i);
-				switch (val)
-				{
-					case InterpretValue.Base:
-						break;
-					case InterpretValue.Next:
-						throw new ApplicationException("This should not happen.");
-					case InterpretValue.Break:
-						throw new ApplicationException("I SHALL NOT BE BROKEN!!!\nYou cannot have a break statement directly in a function.");
-					case InterpretValue.Return: //Exit the function.
-						x = Components.Count; // This breaks the for loop.
-						break;
-					default:
-						throw new ApplicationException("This should not happen.");
-				}
-			}
+			i.Run(Code, Environment, StackSize, args);
 			i.ExitFunctionScope();
 			return i.ReturnValue;
 		}
