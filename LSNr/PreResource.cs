@@ -38,10 +38,8 @@ namespace LSNr
 
 		//private readonly Dictionary<string, IReadOnlyList<IToken>> HostInterfaceBodies = new Dictionary<string, IReadOnlyList<IToken>>();
 		private readonly Dictionary<string, PreHostInterface> PreHostInterfaces = new Dictionary<string, PreHostInterface>();
-		private readonly Dictionary<string, HostInterfaceType> HostInterfaces = new Dictionary<string, HostInterfaceType>();
 
 		private readonly Dictionary<string, PreScriptObject> PreScriptObjects = new Dictionary<string, PreScriptObject>();
-		private readonly Dictionary<string, ScriptObjectType> ScriptObjects = new Dictionary<string, ScriptObjectType>();
 
 
 		public PreResource(string src, string path) : base(src,path){}
@@ -56,7 +54,8 @@ namespace LSNr
 			PreParseFunctions(PreParseTypes());
 			ParseHostInterfaces();
 			PreParseScriptObjects();
-			ParseScriptObjects();
+			foreach (var pre in PreScriptObjects.Values)
+				pre.Parse();
 			ParseFunctions();
         }
 		
@@ -153,7 +152,8 @@ namespace LSNr
 
 						if (openCount > 0) tokens.Add(Tokens[i]);
 					}
-					PreScriptObjects.Add(name, new PreScriptObject(name, this, hostName, unique, tokens));
+					var sc = new PreScriptObject(name, this, hostName, unique, tokens);
+					PreScriptObjects.Add(name, sc);
 				}
 				else otherTokens.Add(Tokens[i]);
 			}
@@ -289,19 +289,11 @@ namespace LSNr
 						throw new ApplicationException("...");
 					pre.HostType = HostInterfaces[pre.HostName];
 				}
-				pre.PreParse();
-			}
-		}
-
-
-		private void ParseScriptObjects()
-		{
-			foreach(var pre in PreScriptObjects.Values)
-			{
-				var sc = pre.Parse();
+				var sc = pre.PreParse();
 				ScriptObjects.Add(sc.Name, sc);
 			}
 		}
+		
 
 		/// <summary>
 		/// 

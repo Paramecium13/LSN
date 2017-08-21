@@ -11,6 +11,9 @@ namespace LsnCore.Values
 	{
 		private readonly List<LsnValue> Values = new List<LsnValue>();
 
+		public LsnValue[] GetValues()
+			=> Values.ToArray();
+
 		public override bool BoolValue => true;
 
 		//public readonly LsnListType _Type;

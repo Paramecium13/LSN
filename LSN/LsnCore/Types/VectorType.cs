@@ -64,7 +64,7 @@ namespace LsnCore
 
 		[NonSerialized]
 		private LsnType _Generic;
-		public LsnType GenericType { get { return _Generic; } private set { _Generic = value; } }
+		public LsnType GenericType => GenericId.Type;
 
 		public readonly TypeId GenericId;
 
@@ -75,20 +75,21 @@ namespace LsnCore
 
 		internal VectorType(TypeId type, string name)
 		{
-			if (type == null) throw new ApplicationException();
-			if (type.Name == null) throw new ApplicationException();
+			if (type == null)
+				throw new ApplicationException();
+			if (type.Name == null)
+				throw new ApplicationException();
 
 			Name = name;
-			GenericType = type.Type;
 			GenericId = type;
 			_Methods.Add("Length", new BoundedMethod(this, int_,
 				(args) => ((VectorInstance)args[0].Value).Length(), "Length"));
-			_Methods.Add("ToList",
+			/*_Methods.Add("ToList",
 				new BoundedMethod(this,
 					LsnListGeneric.Instance.GetType(new List<TypeId>() { type }),
 					(args) => new LsnValue(((VectorInstance)args[0].Value).ToLsnList())
 				, "ToList")	
-			);
+			);*/
 		}
 
 		/// <summary>

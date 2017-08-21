@@ -254,12 +254,16 @@ namespace LSNr
 			{
 				LoadedTypes.Add(hostInterface);
 				LoadType(hostInterface);
+				if(!HostInterfaces.ContainsKey(hostInterface.Name))
+					HostInterfaces.Add(hostInterface.Name, hostInterface);
 			}
 			foreach (var scObj in resource.ScriptObjectTypes.Values)
 			{
 				LoadedTypes.Add(scObj);
 				scObj.Id.Load(scObj);
 				LoadType(scObj);
+				if(!ScriptObjects.ContainsKey(scObj.Name))
+					ScriptObjects.Add(scObj.Name, scObj);
 			}
 			foreach (var pair in resource.Functions)
 			{
@@ -368,7 +372,7 @@ namespace LSNr
 
 		protected void LoadType(LsnType type)
 		{
-			if (type.Id.Type == null)
+			if (type != null && type.Id.Type == null)
 			{
 				type.Id.Load(type);
 				// Methods...
@@ -405,6 +409,8 @@ namespace LSNr
 		/// The types that will not be included by the output.
 		/// </summary>
 		protected readonly IList<LsnType> LoadedTypes = LsnType.GetBaseTypes();
+		protected readonly Dictionary<string, HostInterfaceType> HostInterfaces = new Dictionary<string, HostInterfaceType>();
+		protected readonly Dictionary<string, ScriptObjectType> ScriptObjects = new Dictionary<string, ScriptObjectType>();
 
 
 		protected readonly IList<GenericType> IncludedGenerics = new List<GenericType>();
@@ -432,6 +438,8 @@ namespace LSNr
 			var type = IncludedTypes.FirstOrDefault(t => t.Name == name);
 			if (type != null) return type;
 			type = LoadedTypes.FirstOrDefault(t => t.Name == name);
+			/*if (type == null)
+				throw new ApplicationException();*/
 			return type;
 		}
 

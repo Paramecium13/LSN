@@ -22,13 +22,13 @@ namespace LsnCore.Types
 		private readonly IReadOnlyList<Field> Fields;
 
 		// Methods
-		private readonly IReadOnlyDictionary<string,ScriptObjectMethod> ScriptObjectMethods;
+		internal IReadOnlyDictionary<string,ScriptObjectMethod> ScriptObjectMethods;
 
 		// Events
-		private readonly IReadOnlyDictionary<string, EventListener> EventListeners;
+		internal IReadOnlyDictionary<string, EventListener> EventListeners;
 		
 		// States
-		private readonly IReadOnlyDictionary<int,ScriptObjectState> _States;
+		internal IReadOnlyDictionary<int,ScriptObjectState> _States;
 
 		private readonly int DefaultStateIndex;
 
@@ -40,8 +40,16 @@ namespace LsnCore.Types
 			IReadOnlyDictionary<string,ScriptObjectMethod> methods, IReadOnlyDictionary<string,EventListener> eventListeners,
 			IReadOnlyDictionary<int,ScriptObjectState> states, int defaultStateIndex, bool unique)
 		{
-			Name = id.Name; Id = id; HostInterface = host; Properties = properties; Fields = fields; ScriptObjectMethods = methods;
-			EventListeners = eventListeners; _States = states; DefaultStateIndex = defaultStateIndex; Unique = unique;
+			Name = id.Name;
+			Id = id;
+			HostInterface = host;
+			Unique = unique;
+			Properties = properties;
+			Fields = fields;
+			ScriptObjectMethods = methods;
+			EventListeners = eventListeners;
+			_States = states;
+			DefaultStateIndex = defaultStateIndex;
 		}
 
 

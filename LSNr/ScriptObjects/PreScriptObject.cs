@@ -37,7 +37,8 @@ namespace LSNr
 			set{ Resource.Valid = value; }
 		}
 
-		public PreScriptObject(string name, PreResource resource, string hostName, bool isUnique, IReadOnlyList<Token> tokens):base(tokens, new TypeId(name),resource,hostName)
+		public PreScriptObject(string name, PreResource resource, string hostName, bool isUnique, IReadOnlyList<Token> tokens)
+			:base(tokens, new TypeId(name),resource,hostName)
 		{
 			Name = name; IsUnique = isUnique;
 		}
@@ -104,8 +105,8 @@ namespace LSNr
 		/// <returns></returns>
 		public override bool IsMethodSignatureValid(FunctionSignature signature) => !Methods.ContainsKey(signature.Name); // No method exists with this name.
 
-
-		internal void PreParse()
+		// ToDo: Make this return a ScriptObjectType
+		internal ScriptObjectType PreParse()
 		{
 			bool defaultStateDefined = false;
 			bool isDefaultState = false;
@@ -268,17 +269,17 @@ namespace LSNr
 				}
 			}
 			PreParsed = true;
+
+			// PreParse states
+			var states = PreStates.Select(p => p.PreParse()).ToDictionary((s) => s.Id);
+			var scObjType = new ScriptObjectType(Id, HostType?.Id, Properties, Fields, Methods, EventListeners, states, DefaultStateIndex, IsUnique);
+			Id.Load(scObjType);
+			return scObjType;
 		}
 
-
-		public ScriptObjectType Parse()
+		internal void Parse()
 		{
-			if (!PreParsed)
-				throw new InvalidOperationException();
-			// PreParse states
-			foreach (var state in PreStates)
-				state.PreParse();			
-
+			if (!PreParsed) throw new InvalidOperationException();
 			// Parse methods
 			ParseMethods();
 
@@ -286,11 +287,7 @@ namespace LSNr
 			ParseEventListeners();
 
 			// Parse states
-			var states = PreStates.Select(p => p.Parse()).ToDictionary(s => s.Id);
-			var type = new ScriptObjectType(Id, HostType?.Id, Properties, Fields, Methods, EventListeners,
-				states, DefaultStateIndex, IsUnique);
-			Id.Load(type);
-			return type;
+			foreach (var state in PreStates) state.Parse();
 		}
 
 	}

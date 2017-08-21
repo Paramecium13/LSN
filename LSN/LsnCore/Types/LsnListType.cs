@@ -99,6 +99,8 @@ namespace LsnCore
 				new List<Parameter>() { new Parameter("self",this, LsnValue.Nil, 0), new Parameter("value",type, LsnValue.Nil, 1)}
 			));
 			_Methods.Add("Length", new BoundedMethod(this, int_, (args) => ((LsnList)args[0].Value).Length(), "Length"));
+			//var vtype = VectorGeneric.Instance.GetType(new List<TypeId> { GenericId }) as VectorType;
+			//_Methods.Add("ToVector", new BoundedMethod(this, vtype, (args) => new LsnValue(new VectorInstance(vtype, ((LsnList)args[0].Value).GetValues())), "ToVector"));
 		}
 
 		public override LsnValue CreateDefaultValue()

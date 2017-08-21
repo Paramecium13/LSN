@@ -33,7 +33,8 @@ namespace LSNr
 		public PreState(PreScriptObject parent, string name, int index,PreResource resource, IReadOnlyList<Token> tokens)
 			:base(tokens,parent.Id,resource,parent.HostName)
 		{
-			Parent = parent; _StateName = name; _Index = index; HostType = parent.HostType;
+			Parent = parent; _StateName = name; _Index = index;
+			HostType = parent.HostType;
 		}
 
 		public override bool FunctionExists(string name) => Resource.FunctionExists(name);
@@ -74,7 +75,7 @@ namespace LSNr
 
 
 
-		internal void PreParse()
+		internal ScriptObjectState PreParse()
 		{
 			int i = 0;
 			while (i < Tokens.Count)
@@ -97,15 +98,14 @@ namespace LSNr
 						break;
 				}
 			}
+			return new ScriptObjectState(_Index, Methods, EventListeners);
 		}
 
 
-		internal ScriptObjectState Parse()
+		internal void Parse()
 		{
 			ParseMethods();
 			ParseEventListeners();
-
-			return new ScriptObjectState(_Index, Methods, EventListeners);
 		}
 
 	}

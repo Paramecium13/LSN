@@ -201,7 +201,11 @@ namespace LSNr
 			return new ScriptObjectMethod(Id, returnType, parameters, Resource.Environment, isVirtual, isAbstract, name);
 		}
 
-
+		/// <summary>
+		/// Adds the body tokens to EventListenerBodies.
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
 		protected EventListener PreParseEventListener(ref int i)
 		{
 			var name = Tokens[i].Value;

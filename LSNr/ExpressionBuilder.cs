@@ -268,9 +268,11 @@ namespace LSNr
 					}
 					case SymbolType.HostInterfaceMethod:
 					{
-						var preScrFn = Script as PreScriptObjectFunction;
-						IExpression scrObjExpr = new VariableExpression(0, preScrFn.Parent.Id);
-						throw new NotImplementedException();
+							/*var preScrFn = Script as PreScriptObjectFunction;
+							IExpression scrObjExpr = new VariableExpression(0, preScrFn.Parent.Id);
+							throw new NotImplementedException();*/
+							CurrentTokens.Add(InitialTokens[i]);
+							break;
 					}
 					default:
 						break;
@@ -325,7 +327,7 @@ namespace LSNr
 					var memberName = CurrentTokens[i + 1].Value;
 					IExpression memberExpression = null;
 					// Is it a method call or a field access expression?
-					if (leftExpr.Type.Type.Methods.ContainsKey(memberName)) // It's a method call.
+					if (leftExpr.Type.Type != null && leftExpr.Type.Type.Methods.ContainsKey(memberName)) // It's a method call.
 					{
 						var method = leftExpr.Type.Type.Methods[memberName];
 						if (method.Parameters.Count == 1) // The only argument is the object on which it is called
@@ -452,7 +454,8 @@ namespace LSNr
 						nextIndex++; // Skip over the field name.
 					}
 					else
-						throw new ApplicationException($"The type {leftExpr.Type.Name} does not have a method named {memberName}.");
+						throw new ApplicationException($"The type {leftExpr.Type.Name} does not have a method named {memberName}."); 
+					// Two unique script objects calling methods on each other. ... Only one of them is 'complete'.
 
 					var sub = SUB + SubCount++;
 					Substitutions.Add(new Token(sub, -1, TokenType.Substitution), memberExpression);
