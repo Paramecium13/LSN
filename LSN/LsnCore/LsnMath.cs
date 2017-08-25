@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore
 {
-	public static class LsnMath
+	/*public static class LsnMath
 	{
 		
 		public readonly static Function Sqrt 
@@ -166,5 +166,5 @@ namespace LsnCore
 			return Sqrt2Pi * Math.Pow(t, x + 0.5) * Math.Exp(-t) * y;
 		}
 
-	}
+	}*/
 }

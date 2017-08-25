@@ -45,7 +45,7 @@ namespace LSNr
 		protected BasePreScript(string src, string path)
 		{
 			Source = src;
-			IncludeFunction(LsnMath.ACos);
+			/*IncludeFunction(LsnMath.ACos);
 			IncludeFunction(LsnMath.ASin);
 			IncludeFunction(LsnMath.ATan);
 			IncludeFunction(LsnMath.Cos);
@@ -60,7 +60,7 @@ namespace LSNr
 			IncludeFunction(LsnMath.Tanh);
 			
 			IncludeFunction(LsnMath.Sqrt);
-			IncludeFunction(LsnMath.Hypot);
+			IncludeFunction(LsnMath.Hypot);*/
 			//ToDo: Make it use, rather than include, math functions.
 
 			foreach (var t in LoadedTypes)
@@ -196,7 +196,15 @@ namespace LSNr
 				foreach (var match in Regex.Matches(source, "#using\\s+\"(.+)\"").Cast<Match>())
 				{
 					var path = match.Groups.OfType<object>().Select(o => o.ToString()).Skip(1).First();
-					var res = Load(path);
+					LsnResourceThing res;
+
+					if (path.StartsWith(@"Lsn Core\", StringComparison.Ordinal))
+						res = ResourceManager.GetStandardLibraryResource(new string(path.Skip(9).ToArray()));
+					else if (path.StartsWith(@"std\", StringComparison.Ordinal))
+						res = ResourceManager.GetStandardLibraryResource(new string(path.Skip(4).ToArray()));
+					else
+						res = Load(path);
+
 					Use(res, path);
 					source = source.Replace(match.Value, ""); // TODO: Test.
 					usePaths.Add(path);
@@ -234,9 +242,15 @@ namespace LSNr
 
 		protected void Use(LsnScriptBase resource, string path)
 		{
+			LsnScriptBase res;
 			foreach (var u in resource.Usings)
 			{
-				var res = Load(u);
+				if (path.StartsWith(@"Lsn Core\", StringComparison.Ordinal))
+					res = ResourceManager.GetStandardLibraryResource(new string(path.Skip(9).ToArray()));
+				else if (path.StartsWith(@"std\", StringComparison.Ordinal))
+					res = ResourceManager.GetStandardLibraryResource(new string(path.Skip(4).ToArray()));
+				else
+					res = Load(path);
 				Use(res, u);
 			}
 

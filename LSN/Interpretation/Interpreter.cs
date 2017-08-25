@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using LsnCore.Values;
 
 namespace LsnCore
 {
@@ -94,6 +95,8 @@ namespace LsnCore
 		/// <summary>
 		/// Enters a new scope for interpreting a function. Previously defined variables are inaccessable.
 		/// </summary>
+		/// <param name="env">todo: describe env parameter on EnterFunctionScope</param>
+		/// <param name="scopeSize">todo: describe scopeSize parameter on EnterFunctionScope</param>
 		public virtual void EnterFunctionScope(LsnEnvironment env, int scopeSize)
 		{
 			EnvStack.Push(CurrentEnvironment);
@@ -147,11 +150,11 @@ namespace LsnCore
 			=> CurrentEnvironment.Functions[name];
 
 
-		public LsnValue GetValue(int index)
+		public LsnValue GetVariable(int index)
 			=> CurrentStackFrame[index];
 
 
-		public void SetValue(int index, LsnValue value)
+		public void SetVariable(int index, LsnValue value)
 		{
 			CurrentStackFrame[index] = value;
 		}
@@ -177,28 +180,36 @@ namespace LsnCore
 		private static int NearestPower(int i)
 			=> 1 << (int)Math.Ceiling(Math.Log(i, 2));
 
+
+
+		public ScriptObject GetUniqueScriptObject(/*string path,*/ string name)
+		{
+			throw new NotImplementedException();
+		}
+
+
 		protected abstract GlobalVariableValue GetGlobalVariableValue(string globalVarName/*, string fileName*/);
 
 
-		public LsnValue GetGlobalVariable(string globalVarName/*, string fileName*/)
-			=> GetGlobalVariableValue(globalVarName/*, filename*/).Value;
+		//public LsnValue GetGlobalVariable(string globalVarName/*, string fileName*/)
+		//	=> GetGlobalVariableValue(globalVarName/*, filename*/).Value;
 
 
-		public void SetGlobalVariable(LsnValue value, string globalVarName/*, string fileName*/)
-		{
-			GetGlobalVariableValue(globalVarName/*, fileName*/).Value = value;
-		}
+		//public void SetGlobalVariable(LsnValue value, string globalVarName/*, string fileName*/)
+		//{
+		//	GetGlobalVariableValue(globalVarName/*, fileName*/).Value = value;
+		//}
 
 
-		public virtual void WatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange)
-		{
-			(GetGlobalVariableValue(globalVarName/*, fileName*/) as GlobalVariableValueWatched).OnValueChanged += onChange;
-		}
+		//public virtual void WatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange)
+		//{
+		//	(GetGlobalVariableValue(globalVarName/*, fileName*/) as GlobalVariableValueWatched).OnValueChanged += onChange;
+		//}
 
-		public virtual void UnwatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange)
-		{
-			(GetGlobalVariableValue(globalVarName/*, fileName*/) as GlobalVariableValueWatched).OnValueChanged -= onChange;
-		}
+		//public virtual void UnwatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange)
+		//{
+		//	(GetGlobalVariableValue(globalVarName/*, fileName*/) as GlobalVariableValueWatched).OnValueChanged -= onChange;
+		//}
 
 		public void RegisterChoice(string text, int target)
 		{
@@ -279,10 +290,11 @@ namespace LsnCore
 		public abstract void GiveWeaponTo(LsnValue id, int amount, LsnValue target);
 		public abstract void GiveGoldTo(int amount, LsnValue target);
 
-		public abstract IActor GetActor(LsnValue id);
+		//public abstract IActor GetActor(LsnValue id);
 
 		public abstract void Say(string message, LsnValue graphic, string title);
 		public abstract int Choice(List<string> choices);
 		public abstract int DisplayChoices();
+
 	}
 }

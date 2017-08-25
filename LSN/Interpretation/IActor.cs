@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Represents a character on the map.
 	/// </summary>
-	public interface IActor
+	/*public interface IActor
 	{
 		int Health { get; }
 
@@ -21,5 +21,5 @@
 		int GetY();
 		void SetX(int value);
 		void SetY(int value);
-	}
+	}*/
 }

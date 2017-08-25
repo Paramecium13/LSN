@@ -20,7 +20,8 @@ namespace LsnCore.Statements
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			i.SetGlobalVariable(Value.Eval(i), GlobalVarName);
+			//i.SetGlobalVariable(Value.Eval(i), GlobalVarName);
+			throw new NotImplementedException();
 			return InterpretValue.Base;
 		}
 

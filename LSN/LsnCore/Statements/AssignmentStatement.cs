@@ -24,7 +24,7 @@ namespace LsnCore.Statements
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			//i.AddVariable(VariableName,Value.Eval(i));
-			i.SetValue(Index, Value.Eval(i));
+			i.SetVariable(Index, Value.Eval(i));
 			return InterpretValue.Base;
 		}
 

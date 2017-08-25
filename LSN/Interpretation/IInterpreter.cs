@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using LsnCore.Values;
+using System.Collections.Generic;
 
 namespace LsnCore
 {
@@ -27,14 +28,14 @@ namespace LsnCore
 		/// </summary>
 		void ExitFunctionScope();
 
-		IActor GetActor(LsnValue id);
+		//IActor GetActor(LsnValue id);
 		
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		LsnValue GetValue(int index);
+		LsnValue GetVariable(int index);
 
 		/// <summary>
 		/// 
@@ -42,7 +43,7 @@ namespace LsnCore
 		/// <param name="index"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		void SetValue(int index, LsnValue value);
+		void SetVariable(int index, LsnValue value);
 
 		/// <summary>
 		/// Get a function.
@@ -51,6 +52,8 @@ namespace LsnCore
 		/// <returns></returns>
 		Function GetFunction(string name);
 
+
+		ScriptObject GetUniqueScriptObject(/*string path,*/ string name);
 
 		void GiveArmorTo(LsnValue id, int amount, LsnValue target);
 
@@ -78,13 +81,13 @@ namespace LsnCore
 		/// <returns></returns>
 		int Choice(List<string> choices); // TODO: Replace with Dictionary<string,int>.
 
-		LsnValue GetGlobalVariable(string globalVarName/*, string fileName*/);
+		//LsnValue GetGlobalVariable(string globalVarName/*, string fileName*/);
 
-		void SetGlobalVariable(LsnValue value, string globalVarName/*, string fileName*/);
+		//void SetGlobalVariable(LsnValue value, string globalVarName/*, string fileName*/);
 
-		void WatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange);
+		//void WatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange);
 
-		void UnwatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange);
+		//void UnwatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange);*/
 
 		void RegisterChoice(string text, int target);
 

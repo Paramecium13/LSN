@@ -1,4 +1,4 @@
-﻿
+﻿#using "std\Math"
 
 
 struct Cat {Age:int, Name:string}

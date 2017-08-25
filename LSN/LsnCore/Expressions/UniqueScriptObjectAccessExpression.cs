@@ -21,10 +21,8 @@ namespace LsnCore.Expressions
 
 
 		public override LsnValue Eval(IInterpreter i)
-		{
-			throw new NotImplementedException();
-		}
-
+			=> new LsnValue(i.GetUniqueScriptObject(Name));
+		
 		public override IExpression Fold() => this;
 
 		public override bool IsReifyTimeConst() => false;

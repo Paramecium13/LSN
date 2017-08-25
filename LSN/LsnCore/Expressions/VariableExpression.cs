@@ -20,7 +20,7 @@ namespace LsnCore.Expressions
 		
 
 		public override LsnValue Eval(IInterpreter i)
-			=> i.GetValue(Index);
+			=> i.GetVariable(Index);
 		
 
 		public override IExpression Fold() => this;

@@ -20,7 +20,7 @@ namespace LsnCore.Statements
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			(i.GetValue(0).Value as ScriptObject).SetState(State);
+			(i.GetVariable(0).Value as ScriptObject).SetState(State);
 			return InterpretValue.Base;
 		}
 

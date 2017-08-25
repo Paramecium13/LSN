@@ -49,10 +49,10 @@ namespace LsnCore
 		/// </summary>
 		private LsnEnvironment()
 		{
-			_Functions.Add("Sqrt", LsnMath.Sqrt);
+			/*_Functions.Add("Sqrt", LsnMath.Sqrt);
 			_Functions.Add("Sin", LsnMath.Sin);
 			_Functions.Add("Cos", LsnMath.Cos);
-			_Functions.Add("Tan", LsnMath.Tan);
+			_Functions.Add("Tan", LsnMath.Tan);*/
 		}
 
 		/// <summary>

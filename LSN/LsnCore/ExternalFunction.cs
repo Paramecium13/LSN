@@ -10,6 +10,7 @@ namespace LsnCore
 	/// <summary>
 	/// 
 	/// </summary>
+	[Serializable]
 	public class ExternalFunction : Function
 	{
 

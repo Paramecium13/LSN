@@ -31,7 +31,7 @@ namespace LsnCore.Expressions
 			return gl.GlobalVarName == GlobalVarName;
 		}
 
-		public LsnValue Eval(IInterpreter i) => i.GetGlobalVariable(GlobalVarName/*, GlobalVarFileName*/);
+		public LsnValue Eval(IInterpreter i) => throw new NotImplementedException();//i.GetGlobalVariable(GlobalVarName/*, GlobalVarFileName*/);
 
 		public IExpression Fold() => this;
 
