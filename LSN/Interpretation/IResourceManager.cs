@@ -152,7 +152,7 @@ namespace LsnCore
 				}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Gamma")
 			};
 
-			return new LsnResourceThing
+			return new LsnResourceThing(new TypeId[0])
 			{
 				HostInterfaces = new Dictionary<string, HostInterfaceType>(),
 				StructTypes = new Dictionary<string, StructType>(),

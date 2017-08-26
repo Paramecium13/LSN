@@ -68,7 +68,7 @@ namespace LsnCore.Types
 				methods.Add(method.Name, method);
 			}
 
-			var nListeners = reader.ReadInt32();
+			var nListeners = reader.ReadUInt16();
 			var listeners = new Dictionary<string, EventListener>();
 			for (int i = 0; i < nListeners; i++)
 			{

@@ -35,7 +35,7 @@ namespace LsnCore.Types
 		public void Serialize(BinaryDataWriter writer)
 		{
 			Definition.Serialize(writer);
-			writer.Write(StackSize);
+			writer.Write((int)StackSize);
 			new BinaryFormatter().Serialize(writer.BaseStream, Code);
 		}
 
@@ -48,7 +48,8 @@ namespace LsnCore.Types
 
 			return new EventListener(def, resourceFilePath)
 			{
-				StackSize = stackSize
+				StackSize = stackSize,
+				Code = code
 			};
 		}
 

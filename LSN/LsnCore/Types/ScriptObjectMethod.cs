@@ -107,7 +107,8 @@ namespace LsnCore.Types
 
 			return new ScriptObjectMethod(type, signature.ReturnType, signature.Parameters.ToList(), resourceFilePath, isVirtual, isAbstract, signature.Name)
 			{
-				StackSize = stackSize
+				StackSize = stackSize,
+				Code = code
 			};
 		}
 

@@ -136,7 +136,7 @@ namespace LSNr
 			}
 			else
 			{
-				if (Program.MakeResource(System.IO.Path.GetFileNameWithoutExtension(path),File.ReadAllText(srcPath), objPath, out res, new string[0]) != 0)
+				if (Program.MakeResource(path, File.ReadAllText(srcPath), objPath, out res, new string[0]) != 0)
 					throw new ApplicationException();
 			}
 			return res;
@@ -161,8 +161,7 @@ namespace LSNr
 						using (var fs = new FileStream(objPath, FileMode.Open))
 						{
 							var bf = new BinaryFormatter();
-							var obj = bf.Deserialize(fs);
-							res = (LsnResourceThing) obj;
+							res = LsnResourceThing.Read(fs, new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()));
 						}
 						LsnResourceThing x = null;
 						foreach (var include in res.Includes)
@@ -424,6 +423,7 @@ namespace LSNr
 		/// </summary>
 		protected readonly IList<LsnType> LoadedTypes = LsnType.GetBaseTypes();
 		protected readonly Dictionary<string, HostInterfaceType> HostInterfaces = new Dictionary<string, HostInterfaceType>();
+		protected readonly Dictionary<string, HostInterfaceType> MyHostInterfaces = new Dictionary<string, HostInterfaceType>();
 		protected readonly Dictionary<string, ScriptObjectType> ScriptObjects = new Dictionary<string, ScriptObjectType>();
 
 

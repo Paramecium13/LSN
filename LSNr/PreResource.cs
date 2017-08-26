@@ -282,6 +282,7 @@ namespace LSNr
 			{
 				var host = pre.Parse();
 				HostInterfaces.Add(host.Name, host);
+				MyHostInterfaces.Add(host.Name, host);
 			}
 		}
 
@@ -458,14 +459,19 @@ namespace LSNr
 
 		public LsnResourceThing GetResource()
 		{
-			return new LsnResourceThing
+			return new LsnResourceThing(LoadedTypes.Select(t => t.Id)
+				.Union(StructTypes.Select(t => t.Value.Id))
+				.Union(RecordTypes.Select(t => t.Value.Id))
+				.Union(HostInterfaces.Select(t => t.Value.Id))
+				.Union(ScriptObjects.Select(t=>t.Value.Id))
+				.ToArray())
 			{
 				Functions = IncludedFunctions,
 				Includes = Includes,
 				StructTypes = StructTypes,
 				RecordTypes = RecordTypes,
 				Usings = Usings,
-				HostInterfaces = HostInterfaces,
+				HostInterfaces = MyHostInterfaces,
 				ScriptObjectTypes = ScriptObjects
 				//TODO: Add IncludedTypes.
 			};

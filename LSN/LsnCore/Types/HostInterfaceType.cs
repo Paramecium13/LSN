@@ -85,7 +85,7 @@ namespace LsnCore.Types
 
 			var type = typeContainer.GetTypeId(name);
 
-			var nEventDefs = reader.ReadInt32();
+			var nEventDefs = reader.ReadUInt16();
 			var eventDefs = new Dictionary<string, EventDefinition>(nEventDefs);
 			for (int i = 0; i < nEventDefs; i++)
 			{
@@ -93,7 +93,7 @@ namespace LsnCore.Types
 				eventDefs.Add(ev.Name, ev);
 			}
 
-			var nMethodDefs = reader.ReadInt32();
+			var nMethodDefs = reader.ReadUInt16();
 			var methodDefs = new Dictionary<string, FunctionSignature>(nMethodDefs);
 			for (int i = 0; i < nMethodDefs; i++)
 			{

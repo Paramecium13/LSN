@@ -110,7 +110,7 @@ namespace LsnCore.Types
 		{
 			writer.Write(Name);
 			writer.Write(Unique);
-			writer.Write(HostInterface.Name);
+			writer.Write(HostInterface?.Name ?? "");
 			writer.Write(DefaultStateId);
 
 			writer.Write((ushort)Properties.Count);
@@ -173,7 +173,7 @@ namespace LsnCore.Types
 				methods.Add(m.Name, m);
 			}
 
-			var nListeners = reader.ReadInt32();
+			var nListeners = reader.ReadUInt16();
 			var listeners = new Dictionary<string, EventListener>();
 			for (int i = 0; i < nListeners; i++)
 			{

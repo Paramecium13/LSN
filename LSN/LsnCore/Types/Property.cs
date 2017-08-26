@@ -34,7 +34,7 @@ namespace LsnCore.Types
 		{
 			writer.Write(Name);
 			writer.Write(Type.Name);
-			writer.Write(MetaData);
+			writer.Write(MetaData??"");
 		}
 
 		public static Property Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
@@ -42,6 +42,8 @@ namespace LsnCore.Types
 			var name = reader.ReadString();
 			var typeName = reader.ReadString();
 			var metadata = reader.ReadString();
+			if (metadata == "")
+				metadata = null;
 
 			return new Property(name, typeContainer.GetTypeId(typeName), metadata);
 		}

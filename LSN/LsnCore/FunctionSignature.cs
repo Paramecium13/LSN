@@ -68,7 +68,7 @@ namespace LsnCore
 		public void Serialize(BinaryDataWriter writer)
 		{
 			writer.Write(Name);
-			writer.Write(ReturnType.Name);
+			writer.Write(ReturnType?.Name ?? "");
 			writer.Write((ushort)Parameters.Count);
 			foreach (var param in Parameters)
 				param.Serialize(writer);
@@ -78,13 +78,15 @@ namespace LsnCore
 		{
 			var name = reader.ReadString();
 			var retTName = reader.ReadString();
+			if (retTName == "")
+				retTName = null;
 			var nParams = reader.ReadUInt16();
 			var parameters = new List<Parameter>(nParams);
 			for (ushort i = 0; i < nParams; i++)
 			{
 				parameters.Add(Parameter.Read(i, reader, typeContainer));
 			}
-			return new FunctionSignature(parameters, name, typeContainer.GetTypeId(retTName));
+			return new FunctionSignature(parameters, name, retTName == null ? null: typeContainer.GetTypeId(retTName));
 		}
 	}
 

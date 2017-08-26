@@ -101,8 +101,8 @@ namespace LsnCore
 			var name = reader.ReadString();
 			var typeName = reader.ReadString();
 			var hasDefault = reader.ReadBoolean();
-			if (hasDefault)
-				throw new ApplicationException();
+			/*if (hasDefault)
+				throw new ApplicationException();*/
 			return new Parameter(name, typeContainer.GetTypeId(typeName), LsnValue.Nil, index);
 		}
 

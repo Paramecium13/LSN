@@ -81,7 +81,7 @@ namespace LSNr
 				if (type == "resource" || type == "res")
 				{
 					LsnResourceThing res = null;
-					return MakeResource(Path.GetFileNameWithoutExtension(args[0]),src, destination, out res, args);
+					return MakeResource(new string(args[0].Take(args[0].Length - 4).ToArray()),src, destination, out res, args);
 				}
 
 				if (type == "quest") throw new NotImplementedException();
@@ -126,7 +126,7 @@ namespace LSNr
 			res = rs.GetResource();
 			using (var fs = new FileStream(destination, FileMode.Create))
 			{
-				new BinaryFormatter().Serialize(fs, res);
+				res.Serialize(fs);
 			}
 			return 0;
 		}
