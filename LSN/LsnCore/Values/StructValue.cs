@@ -1,80 +1,75 @@
-﻿using System;
+﻿using LsnCore.Types;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using LsnCore.Expressions;
-using LsnCore.Types;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace LsnCore
+namespace LsnCore.Values
 {
 	[Serializable]
-	public class StructValue : ILsnValue, IHasFieldsValue
+	public class StructValue : LsnValueB, IHasMutableFieldsValue
 	{
-		private readonly LsnValue[] Fields;
-
-		public bool IsPure => true;
-
 		[NonSerialized]
-		private readonly LsnStructType _Type;
+		private readonly StructType _Type;
+		public override bool BoolValue { get { return true; } }
 
-		private readonly TypeId Id;
-		public TypeId Type => Id;
+		private readonly LsnValue[] Values;
 
-		public bool BoolValue { get{ return true; } }
-
-		public StructValue(LsnStructType type, IDictionary<string, LsnValue> values)
+		public StructValue(StructType type, IDictionary<string,LsnValue> values)
 		{
 			_Type = type;
-			Id = type.Id;
-			Fields = new LsnValue[_Type.FieldCount];
-			foreach(var pair in values)
+			Type = type.Id;
+			// Assume 'values' has already been type checked.
+			Values = new LsnValue[_Type.FieldCount];
+			foreach (var pair in values)
 			{
-				Fields[_Type.GetIndex(pair.Key)] = pair.Value;
+				int i = _Type.GetIndex(pair.Key);
+				Values[i] = pair.Value;
 			}
 		}
 
-		public StructValue(LsnStructType type, LsnValue[] values)
+		
+		public StructValue(StructType type, LsnValue[] values, bool clone = false)
 		{
-			_Type = type; Id = type.Id; Fields = values;
+			_Type = type;
+			Type = type.Id;
+			if (clone)
+			{
+				int length = _Type.FieldCount;
+				Values = new LsnValue[length];
+				for(int i = 0; i < length; i++)
+					Values[i] = values[i].Clone();
+			}
+			else
+				Values = values;
 		}
 
 
-		public StructValue(LsnValue[] values, TypeId id)
+		public StructValue(TypeId id, LsnValue[] values, bool clone = false)
 		{
-			Id = id; Fields = values;
+			Type = id;
+			if (clone)
+			{
+				int length = values.Length;
+				Values = new LsnValue[length];
+				for (int i = 0; i < length; i++)
+					Values[i] = values[i].Clone();
+			}
+			else
+				Values = values;
 		}
 		
 
-		public LsnValue GetFieldValue(int index) => Fields[index];
+		public override ILsnValue Clone() => new StructValue(Type, Values.Select(v=>v.Clone()).ToArray(), true);
 
 
-		public ILsnValue Clone() => this;//new StructValue(_Type, Members);
+		public LsnValue GetFieldValue(int index) => Values[index];
 
-		public ILsnValue DeepClone()
+
+		public void SetFieldValue(int index, LsnValue value)
 		{
-			return new StructValue(_Type, Fields.Select(f=>f.Clone()).ToArray());
+			Values[index] = value;
 		}
-		
-		public LsnValue Eval(IInterpreter i) => new LsnValue(this);
-
-		public IExpression Fold() => this;
-
-		public bool IsReifyTimeConst() => true;
-
-		public void Replace(IExpression oldExpr, IExpression newExpr){}
-
-		public bool Equals(IExpression other) => false;
-
-		/*
-		public static StructValue operator + (StructValue a, StructValue b)
-		{
-
-		}
-
-		public static StructValue operator - (StructValue a, StructValue b)
-		{
-
-		}
-		*/
 	}
 }

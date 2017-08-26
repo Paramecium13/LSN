@@ -20,13 +20,13 @@ namespace LsnCore.Expressions
 
 
 		[NonSerialized]
-		private readonly RecordType _Type;
+		private readonly StructType _Type;
 		//public readonly TypeId Id;
 
 		//public override TypeId Type => Id;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-		public RecordConstructor(RecordType type, IDictionary<string, IExpression> args)
+		public RecordConstructor(StructType type, IDictionary<string, IExpression> args)
 		{
 			Type = type.Id;
 			_Type = type; Args = args;
@@ -48,7 +48,7 @@ namespace LsnCore.Expressions
 			{
 				values[j] = ArgsB[j].Eval(i);
 			}
-			return new LsnValue(new RecordValue(Type, values));
+			return new LsnValue(new StructValue(Type, values));
 		}
 
 		public override IExpression Fold()
@@ -56,7 +56,7 @@ namespace LsnCore.Expressions
 			var a = Args.Select(pair => new KeyValuePair<string, IExpression>(pair.Key, pair.Value.Fold())).ToDictionary();
 			if (a.Values.All(v => v.IsReifyTimeConst() && v is LsnValue?))
 				return new LsnValue(
-					new RecordValue(_Type, Args.Select(pair 
+					new StructValue(_Type, Args.Select(pair 
 					=> new KeyValuePair<string,LsnValue>(pair.Key,(LsnValue)pair.Value)).ToDictionary())
 					);
 			else

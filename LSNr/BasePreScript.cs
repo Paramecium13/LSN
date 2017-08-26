@@ -78,12 +78,12 @@ namespace LSNr
 		//
 		protected void Include(LsnScriptBase resource, string path)
 		{
-			foreach (var recType in resource.RecordTypes.Values)
+			foreach (var recType in resource.StructTypes.Values)
 			{
 				IncludedTypes.Add(recType);
 				recType.Id.Load(recType);
 			}
-			foreach (var stType in resource.StructTypes.Values)
+			foreach (var stType in resource.RecordTypes.Values)
 			{
 				IncludedTypes.Add(stType);
 				stType.Id.Load(stType);
@@ -254,12 +254,12 @@ namespace LSNr
 				Use(res, u);
 			}
 
-			foreach (var recType in resource.RecordTypes.Values)
+			foreach (var recType in resource.StructTypes.Values)
 			{
 				LoadedTypes.Add(recType);
 				recType.Id.Load(recType);
 			}
-			foreach (var stType in resource.StructTypes.Values)
+			foreach (var stType in resource.RecordTypes.Values)
 			{
 				LoadedTypes.Add(stType);
 				stType.Id.Load(stType);

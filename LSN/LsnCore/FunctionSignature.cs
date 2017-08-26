@@ -1,5 +1,6 @@
 ﻿using LsnCore.Expressions;
 using LsnCore.Types;
+using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,5 +64,28 @@ namespace LsnCore
 			}
 			return argsArray;
 		}
+
+		public void Serialize(BinaryDataWriter writer)
+		{
+			writer.Write(Name);
+			writer.Write(ReturnType.Name);
+			writer.Write((ushort)Parameters.Count);
+			foreach (var param in Parameters)
+				param.Serialize(writer);
+		}
+
+		public static FunctionSignature Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
+		{
+			var name = reader.ReadString();
+			var retTName = reader.ReadString();
+			var nParams = reader.ReadUInt16();
+			var parameters = new List<Parameter>(nParams);
+			for (ushort i = 0; i < nParams; i++)
+			{
+				parameters.Add(Parameter.Read(i, reader, typeContainer));
+			}
+			return new FunctionSignature(parameters, name, typeContainer.GetTypeId(retTName));
+		}
 	}
+
 }

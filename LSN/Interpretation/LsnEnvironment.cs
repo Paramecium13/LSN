@@ -26,12 +26,12 @@ namespace LsnCore
 		public IReadOnlyDictionary<string, Function> Functions { get { return _Functions; }}
 
 		[NonSerialized]
-		private Dictionary<string, LsnStructType> _StructTypes = new Dictionary<string, LsnStructType>();
-		public IReadOnlyDictionary<string, LsnStructType> StructTypes { get { return _StructTypes; } }
+		private Dictionary<string, RecordType> _StructTypes = new Dictionary<string, RecordType>();
+		public IReadOnlyDictionary<string, RecordType> StructTypes { get { return _StructTypes; } }
 
 		[NonSerialized]
-		private Dictionary<string, RecordType> _RecordTypes = new Dictionary<string, RecordType>();
-		public IReadOnlyDictionary<string, RecordType> RecordTypes { get { return _RecordTypes; }}
+		private Dictionary<string, StructType> _RecordTypes = new Dictionary<string, StructType>();
+		public IReadOnlyDictionary<string, StructType> RecordTypes { get { return _RecordTypes; }}
 
 
 		//Serialized
@@ -63,8 +63,8 @@ namespace LsnCore
 			:this()
 		{
 			foreach (var pair in script.Functions) _Functions.Add(pair.Key, pair.Value);
-			foreach (var pair in script.StructTypes) _StructTypes.Add(pair.Key, pair.Value);
-			foreach (var pair in script.RecordTypes) _RecordTypes.Add(pair.Key, pair.Value);
+			foreach (var pair in script.RecordTypes) _StructTypes.Add(pair.Key, pair.Value);
+			foreach (var pair in script.StructTypes) _RecordTypes.Add(pair.Key, pair.Value);
 			//foreach (var rs in script.Usings) LoadResource(rs + ".dat"); 
 		}
 
@@ -89,8 +89,8 @@ namespace LsnCore
 		private void Load(LsnScriptBase script, ILsnFileManager fileManager)
 		{
 			foreach (var pair in script.Functions) _Functions.Add(pair.Key, pair.Value);
-			foreach (var pair in script.StructTypes) _StructTypes.Add(pair.Key, pair.Value);
-			foreach (var pair in script.RecordTypes) _RecordTypes.Add(pair.Key, pair.Value);
+			foreach (var pair in script.RecordTypes) _StructTypes.Add(pair.Key, pair.Value);
+			foreach (var pair in script.StructTypes) _RecordTypes.Add(pair.Key, pair.Value);
 
 			foreach (var res in script.Usings)
 				if(!(Resources.Contains(res) || LoadedResources.Contains(res)))

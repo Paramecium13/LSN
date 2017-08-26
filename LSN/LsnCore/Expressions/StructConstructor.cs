@@ -18,9 +18,9 @@ namespace LsnCore.Expressions
 		public override bool IsPure => ArgsB.All(a => a.IsPure);
 
 		//ToDo: make non-serialized
-		private readonly LsnStructType _Type;
+		private readonly RecordType _Type;
 		
-		public StructConstructor(LsnStructType type, IDictionary<string,IExpression> args)
+		public StructConstructor(RecordType type, IDictionary<string,IExpression> args)
 		{
 			_Type = type; Args = args; Type = type.Id;
 			ArgsB = new IExpression[_Type.FieldCount];
@@ -41,7 +41,7 @@ namespace LsnCore.Expressions
 			{
 				values[j] = ArgsB[j].Eval(i);
 			}
-			return new LsnValue(new StructValue(values, Type));
+			return new LsnValue(new RecordValue(values, Type));
 		}
 
 		public override IExpression Fold()
@@ -49,7 +49,7 @@ namespace LsnCore.Expressions
 			var a = Args.Select(pair => new KeyValuePair<string, IExpression>(pair.Key, pair.Value.Fold())).ToDictionary();
 			if (a.Values.All(v => v.IsReifyTimeConst() && v is LsnValue?))
 				return new LsnValue(
-					new StructValue(_Type, Args.Select(pair
+					new RecordValue(_Type, Args.Select(pair
 					=> new KeyValuePair<string, LsnValue>(pair.Key, (LsnValue)pair.Value)).ToDictionary())
 					);
 			else

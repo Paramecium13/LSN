@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Syroot.BinaryData;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,7 @@ namespace LsnCore.Types
 		public HostInterfaceType(TypeId id, Dictionary<string, FunctionSignature> methods, Dictionary<string, EventDefinition> events)
 		{
 			Name = id.Name; Id = id; MethodDefinitions = methods; EventDefinitions = events;
+			id.Load(this);
 		}
 
 		public override LsnValue CreateDefaultValue() => LsnValue.Nil;
@@ -63,5 +65,43 @@ namespace LsnCore.Types
 			throw new ArgumentException($"No event named {name} exists.", "name");
 		}
 
+		public void Serialize(BinaryDataWriter writer)
+		{
+			writer.Write(Name);
+
+			writer.Write((ushort)EventDefinitions.Count);
+			foreach (var ev in EventDefinitions.Values)
+				ev.Serialize(writer);
+
+			writer.Write((ushort)MethodDefinitions.Count);
+			foreach (var mdef in MethodDefinitions.Values)
+				mdef.Serialize(writer);
+		}
+
+
+		public static HostInterfaceType Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
+		{
+			var name = reader.ReadString();
+
+			var type = typeContainer.GetTypeId(name);
+
+			var nEventDefs = reader.ReadInt32();
+			var eventDefs = new Dictionary<string, EventDefinition>(nEventDefs);
+			for (int i = 0; i < nEventDefs; i++)
+			{
+				var ev = EventDefinition.Read(reader, typeContainer);
+				eventDefs.Add(ev.Name, ev);
+			}
+
+			var nMethodDefs = reader.ReadInt32();
+			var methodDefs = new Dictionary<string, FunctionSignature>(nMethodDefs);
+			for (int i = 0; i < nMethodDefs; i++)
+			{
+				var m = FunctionSignature.Read(reader, typeContainer);
+				methodDefs.Add(m.Name, m);
+			}
+
+			return new HostInterfaceType(type, methodDefs, eventDefs);
+		}
 	}
 }

@@ -165,7 +165,7 @@ namespace LSNr
 				{
 					Console.WriteLine($"Error line {Tokens[i].LineNumber}: An abstract method may not declare a body.");
 					Valid = false;
-					return new ScriptObjectMethod(Id, returnType, parameters, Resource.Environment, isVirtual, isAbstract, name);
+					return new ScriptObjectMethod(Id, returnType, parameters, Resource.RelativePath, isVirtual, isAbstract, name);
 				}
 				/*if (i > Tokens.Count - 1)
 				{
@@ -198,7 +198,7 @@ namespace LSNr
 
 			i++; // 'i' points to the thing after ';' or the end of the body.
 
-			return new ScriptObjectMethod(Id, returnType, parameters, Resource.Environment, isVirtual, isAbstract, name);
+			return new ScriptObjectMethod(Id, returnType, parameters, Resource.RelativePath, isVirtual, isAbstract, name);
 		}
 
 		/// <summary>
@@ -275,7 +275,7 @@ namespace LSNr
 			EventListenerBodies.Add(name, tokens);
 
 			// Use def, which contains a self parameter, instead of hostDef, which doesn't.
-			return new EventListener(def, Resource.Environment);
+			return new EventListener(def, Resource.RelativePath);
 		}
 
 		protected void ParseMethods()

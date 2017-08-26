@@ -16,13 +16,13 @@ namespace LsnCore
 		/// </summary>
 		public Dictionary<string, Function> Functions { get { return _Functions; } set { _Functions = value; } }
 
-		private Dictionary<string, LsnStructType> _StructTypes = new Dictionary<string, LsnStructType>(); // TODO: Encapsulate
-		public Dictionary<string, LsnStructType> StructTypes { get { return _StructTypes; } set { _StructTypes = value; } }
-
 		private Dictionary<string, RecordType> _RecordTypes = new Dictionary<string, RecordType>(); // TODO: Encapsulate
 		public Dictionary<string, RecordType> RecordTypes { get { return _RecordTypes; } set { _RecordTypes = value; } }
 
-		public List<LsnType> Types;
+		private Dictionary<string, StructType> _StructTypes = new Dictionary<string, StructType>(); // TODO: Encapsulate
+		public Dictionary<string, StructType> StructTypes { get { return _StructTypes; } set { _StructTypes = value; } }
+
+		//public List<LsnType> Types;
 
 		private List<string> _Usings = new List<string>(); // TODO: Encapsulate
 		/// <summary>

@@ -11,10 +11,8 @@ namespace LsnCore
 {
 	public abstract class Interpreter : IInterpreter
 	{
-		/// <summary>
-		/// Should variables in compound expressions be parsed by name?
-		/// </summary>
-		public bool PassVariablesByName { get { return false; } }
+
+		public IResourceManager ResourceManager { get; set; }
 
 		public LsnValue ReturnValue { get; set; }
 
@@ -49,6 +47,23 @@ namespace LsnCore
 		public void Run(Statements.Statement[] code, LsnEnvironment environment, int stackSize, LsnValue[] parameters)
 		{
 			EnterFunctionScope(environment, stackSize);
+			for (int i = 0; i < parameters.Length; i++)
+				CurrentStackFrame[i] = parameters[i];
+
+			NextStatement = 0;
+			int currentStatement = NextStatement++;
+			int codeSize = code.Length;
+			var v = InterpretValue.Base;
+			while (currentStatement < codeSize && v != InterpretValue.Return)
+			{
+				v = code[currentStatement].Interpret(this);
+				currentStatement = NextStatement++;
+			}
+		}
+
+		public void Run(Statements.Statement[] code, string resourceFilePath, int stackSize, LsnValue[] parameters)
+		{
+			EnterFunctionScope(resourceFilePath, stackSize);
 			for (int i = 0; i < parameters.Length; i++)
 				CurrentStackFrame[i] = parameters[i];
 
@@ -101,6 +116,25 @@ namespace LsnCore
 		{
 			EnvStack.Push(CurrentEnvironment);
 			CurrentEnvironment = env;
+
+			StackFrames.Push(CurrentStackFrame);
+			int i = NearestPower(scopeSize);
+			if (StackFrameStore.ContainsKey(i))
+			{
+				if (!StackFrameStore[i].TryPop(out CurrentStackFrame))
+					CurrentStackFrame = new LsnValue[i];
+			}
+			else
+			{
+				StackFrameStore.Add(i, new ConcurrentStack<LsnValue[]>());
+				CurrentStackFrame = new LsnValue[i];
+			}
+		}
+
+		public virtual void EnterFunctionScope(string resourceFilePath, int scopeSize)
+		{
+			EnvStack.Push(CurrentEnvironment);
+			CurrentEnvironment = ResourceManager.GetResource(resourceFilePath).GetEnvironment();
 
 			StackFrames.Push(CurrentStackFrame);
 			int i = NearestPower(scopeSize);
@@ -184,7 +218,7 @@ namespace LsnCore
 
 		public ScriptObject GetUniqueScriptObject(/*string path,*/ string name)
 		{
-			throw new NotImplementedException();
+			return ResourceManager.GetUniqueScriptObject(name);
 		}
 
 

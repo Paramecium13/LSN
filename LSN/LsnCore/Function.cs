@@ -1,5 +1,6 @@
 ﻿using LsnCore.Expressions;
 using LsnCore.Types;
+using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,8 @@ namespace LsnCore
 		public IReadOnlyList<Parameter> Parameters => Signature.Parameters;
 
 
-		public int StackSize { get; set; } // Should only be set in LSNr.
+		public int StackSize { get; set; } = -1; // Should only be set in LSNr.
+											// If the value is -1, this indicates that the stack size was never set.
 
 
 		protected Function(FunctionSignature signature)
@@ -41,8 +43,8 @@ namespace LsnCore
 		public abstract bool HandlesScope { get; }
 
 
-		protected LsnEnvironment _Environment; //TODO: Give this a value!!!
-		public LsnEnvironment Environment { get { return _Environment; } protected set { _Environment = value; } }
+		protected string _ResourceFilePath; //TODO: Give this a value!!!
+		public string ResourceFilePath { get { return _ResourceFilePath; } protected set { _ResourceFilePath = value; } }
 
 
 		public virtual FunctionCall CreateCall(IList<Tuple<string,IExpression>> args, bool included = false)
@@ -85,5 +87,24 @@ namespace LsnCore
 
 		public bool Equals(Parameter other)
 			=> Name == other.Name && Type == other.Type && DefaultValue.Equals(other.DefaultValue) && Index == other.Index;
+
+		public void Serialize(BinaryDataWriter writer)
+		{
+			writer.Write(Name);
+			writer.Write(Type.Name);
+			writer.Write(DefaultValue.IsNull);
+		}
+
+
+		public static Parameter Read(ushort index, BinaryDataReader reader, ITypeIdContainer typeContainer)
+		{
+			var name = reader.ReadString();
+			var typeName = reader.ReadString();
+			var hasDefault = reader.ReadBoolean();
+			if (hasDefault)
+				throw new ApplicationException();
+			return new Parameter(name, typeContainer.GetTypeId(typeName), LsnValue.Nil, index);
+		}
+
 	}
 }

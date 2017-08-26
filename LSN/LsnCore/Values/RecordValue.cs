@@ -1,75 +1,80 @@
-﻿using LsnCore.Types;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using LsnCore.Expressions;
+using LsnCore.Types;
+using System.Linq;
 
-namespace LsnCore.Values
+namespace LsnCore
 {
 	[Serializable]
-	public class RecordValue : LsnValueB, IHasMutableFieldsValue
+	public class RecordValue : ILsnValue, IHasFieldsValue
 	{
+		private readonly LsnValue[] Fields;
+
+		public bool IsPure => true;
+
 		[NonSerialized]
 		private readonly RecordType _Type;
-		public override bool BoolValue { get { return true; } }
 
-		private readonly LsnValue[] Values;
+		private readonly TypeId Id;
+		public TypeId Type => Id;
 
-		public RecordValue(RecordType type, IDictionary<string,LsnValue> values)
+		public bool BoolValue { get{ return true; } }
+
+		public RecordValue(RecordType type, IDictionary<string, LsnValue> values)
 		{
 			_Type = type;
-			Type = type.Id;
-			// Assume 'values' has already been type checked.
-			Values = new LsnValue[_Type.FieldCount];
-			foreach (var pair in values)
+			Id = type.Id;
+			Fields = new LsnValue[_Type.FieldCount];
+			foreach(var pair in values)
 			{
-				int i = _Type.GetIndex(pair.Key);
-				Values[i] = pair.Value;
+				Fields[_Type.GetIndex(pair.Key)] = pair.Value;
 			}
 		}
 
-		
-		public RecordValue(RecordType type, LsnValue[] values, bool clone = false)
+		public RecordValue(RecordType type, LsnValue[] values)
 		{
-			_Type = type;
-			Type = type.Id;
-			if (clone)
-			{
-				int length = _Type.FieldCount;
-				Values = new LsnValue[length];
-				for(int i = 0; i < length; i++)
-					Values[i] = values[i].Clone();
-			}
-			else
-				Values = values;
+			_Type = type; Id = type.Id; Fields = values;
 		}
 
 
-		public RecordValue(TypeId id, LsnValue[] values, bool clone = false)
+		public RecordValue(LsnValue[] values, TypeId id)
 		{
-			Type = id;
-			if (clone)
-			{
-				int length = values.Length;
-				Values = new LsnValue[length];
-				for (int i = 0; i < length; i++)
-					Values[i] = values[i].Clone();
-			}
-			else
-				Values = values;
+			Id = id; Fields = values;
 		}
 		
 
-		public override ILsnValue Clone() => new RecordValue(Type, Values.Select(v=>v.Clone()).ToArray(), true);
+		public LsnValue GetFieldValue(int index) => Fields[index];
 
 
-		public LsnValue GetFieldValue(int index) => Values[index];
+		public ILsnValue Clone() => this;//new StructValue(_Type, Members);
 
-
-		public void SetFieldValue(int index, LsnValue value)
+		public ILsnValue DeepClone()
 		{
-			Values[index] = value;
+			return new RecordValue(_Type, Fields.Select(f=>f.Clone()).ToArray());
 		}
+		
+		public LsnValue Eval(IInterpreter i) => new LsnValue(this);
+
+		public IExpression Fold() => this;
+
+		public bool IsReifyTimeConst() => true;
+
+		public void Replace(IExpression oldExpr, IExpression newExpr){}
+
+		public bool Equals(IExpression other) => false;
+
+		/*
+		public static StructValue operator + (StructValue a, StructValue b)
+		{
+
+		}
+
+		public static StructValue operator - (StructValue a, StructValue b)
+		{
+
+		}
+		*/
 	}
 }

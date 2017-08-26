@@ -8,15 +8,6 @@ using Tokens;
 
 namespace LSNr
 {
-	public interface ITypeContainer
-	{
-		LsnType GetType(string name);
-		TypeId GetTypeId(string name);
-		bool TypeExists(string name);
-		bool GenericTypeExists(string name);
-		GenericType GetGenericType(string name);
-	}
-
 	public static class TypeContainerExtensions
 	{
 		/// <summary>

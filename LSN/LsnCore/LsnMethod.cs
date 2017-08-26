@@ -30,7 +30,7 @@ namespace LsnCore
 
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{
-			i.Run(Code, Environment, StackSize, args);
+			i.Run(Code, ResourceFilePath, StackSize, args);
 			i.ExitFunctionScope();
 			return i.ReturnValue;
 		}

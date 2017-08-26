@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Syroot.BinaryData;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace LsnCore.Types
 		// States
 		internal IReadOnlyDictionary<int,ScriptObjectState> _States;
 
-		private readonly int DefaultStateIndex;
+		private readonly int DefaultStateId;
 
 
 		public IReadOnlyCollection<Field> FieldsB => Fields;
@@ -49,12 +50,14 @@ namespace LsnCore.Types
 			ScriptObjectMethods = methods;
 			EventListeners = eventListeners;
 			_States = states;
-			DefaultStateIndex = defaultStateIndex;
+			DefaultStateId = defaultStateIndex;
+
+			id.Load(this);
 		}
 
 
 		public ScriptObjectState GetDefaultState()
-			=> _States[DefaultStateIndex];
+			=> _States[DefaultStateId];
 
 
 		public override LsnValue CreateDefaultValue()
@@ -100,6 +103,95 @@ namespace LsnCore.Types
 		
 		
 		public ScriptObjectState GetState(int id) => _States[id];
+
+
+
+		public void Serialize(BinaryDataWriter writer)
+		{
+			writer.Write(Name);
+			writer.Write(Unique);
+			writer.Write(HostInterface.Name);
+			writer.Write(DefaultStateId);
+
+			writer.Write((ushort)Properties.Count);
+			foreach (var prop in Properties)
+				prop.Write(writer);
+
+			writer.Write((ushort)Fields.Count);
+			foreach (var field in Fields)
+			{
+				writer.Write(field.Name);
+				writer.Write(field.Type.Name);
+			}
+
+
+			writer.Write((ushort)ScriptObjectMethods.Count);
+			foreach (var method in ScriptObjectMethods.Values)
+				method.Serialize(writer);
+
+			writer.Write((ushort)EventListeners.Count);
+			foreach (var listener in EventListeners.Values)
+				listener.Serialize(writer);
+
+			writer.Write((ushort)_States.Count);
+			foreach (var state in _States.Values)
+				state.Serialize(writer);
+			
+		}
+
+
+
+		public static ScriptObjectType Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath)
+		{
+			var name = reader.ReadString();
+			var unique = reader.ReadBoolean();
+			var hostInterfaceName = reader.ReadString();
+			var defaultStateId = reader.ReadInt32();
+
+			var type = typeContainer.GetTypeId(name);
+
+
+			var nProperties = reader.ReadUInt16();
+			var props = new List<Property>(nProperties);
+			for (int i = 0; i < nProperties; i++)
+				props.Add(Property.Read(reader, typeContainer));
+
+			var nFields = reader.ReadUInt16();
+			var fields = new List<Field>();
+			for (int i = 0; i < nFields; i++)
+			{
+				var fName = reader.ReadString();
+				var fTypeName = reader.ReadString();
+				fields.Add(new Field(i, fName, typeContainer.GetTypeId(fTypeName)));
+			}
+
+			var nMethods = reader.ReadUInt16();
+			var methods = new Dictionary<string, ScriptObjectMethod>(nMethods);
+			for (int i = 0; i < nMethods; i++)
+			{
+				var m = ScriptObjectMethod.Read(reader, typeContainer, type, resourceFilePath);
+				methods.Add(m.Name, m);
+			}
+
+			var nListeners = reader.ReadInt32();
+			var listeners = new Dictionary<string, EventListener>();
+			for (int i = 0; i < nListeners; i++)
+			{
+				var listener = EventListener.Read(reader, typeContainer, resourceFilePath);
+				listeners.Add(listener.Definition.Name, listener);
+			}
+
+			var nStates = reader.ReadUInt16();
+			var states = new Dictionary<int, ScriptObjectState>(nStates);
+			for (int i = 0; i < nStates; i++)
+			{
+				var state = ScriptObjectState.Read(reader, typeContainer, type, resourceFilePath);
+				states.Add(state.Id, state);
+			}
+
+			return new ScriptObjectType(type, typeContainer.GetTypeId(hostInterfaceName), props, fields, methods, listeners,
+				states, defaultStateId, unique);
+		}
 
 	}
 }

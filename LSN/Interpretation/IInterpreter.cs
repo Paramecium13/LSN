@@ -11,17 +11,19 @@ namespace LsnCore
 
 		void Run(Statements.Statement[] code, LsnEnvironment environment, int stackSize, LsnValue[] parameters);
 
-		void Run(Statements.Statement[] code, LsnValue[] parameters);
+		void Run(Statements.Statement[] code, string resourceFilePath, int stackSize, LsnValue[] parameters);
 
-		/// <summary>
-		/// Should CompoundExpressions pass variable names to this (rather than their values), may save time.
-		/// </summary>
-		bool PassVariablesByName { get; }
+		void Run(Statements.Statement[] code, LsnValue[] parameters);
 		
 		/// <summary>
 		/// Enters a new scope for interpreting a function. Previously defined variables are inaccessable.
 		/// </summary>
 		void EnterFunctionScope(LsnEnvironment env, int scopeSize);
+
+		/// <summary>
+		/// Enters a new scope for interpreting a function. Previously defined variables are inaccessable.
+		/// </summary>
+		void EnterFunctionScope(string resourceFilePath, int scopeSize);
 
 		/// <summary>
 		/// Exits the scope of the current function.

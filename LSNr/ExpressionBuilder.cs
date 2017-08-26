@@ -107,8 +107,8 @@ namespace LSNr
 								 //	throw new ApplicationException($"The type \'{typeName}\' could not be found. Are You missing a \'#using\' or \'#include\'?");						
 
 							LsnType type = typeId.Type;//Script.GetType(typeName);
-							var structType = type as LsnStructType;
-							var recordType = type as RecordType;
+							var structType = type as RecordType;
+							var recordType = type as StructType;
 							var listType = type as LsnListType;
 
 							if (structType == null && recordType == null && listType == null)

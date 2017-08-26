@@ -155,9 +155,9 @@ namespace LsnCore
 			return new LsnResourceThing
 			{
 				HostInterfaces = new Dictionary<string, HostInterfaceType>(),
-				RecordTypes = new Dictionary<string, RecordType>(),
+				StructTypes = new Dictionary<string, StructType>(),
 				ScriptObjectTypes = new Dictionary<string, ScriptObjectType>(),
-				Types = new List<LsnType>(),
+				//Types = new List<LsnType>(),
 				Usings = new List<string>(),
 				Functions = functions.ToDictionary((f) => f.Name)
 			};

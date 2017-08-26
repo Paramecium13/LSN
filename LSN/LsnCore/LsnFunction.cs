@@ -22,24 +22,22 @@ namespace LsnCore
 		public override bool HandlesScope { get { return true; } }
 
 
-		public LsnFunction(List<Parameter> parameters, LsnType returnType, string name,LsnEnvironment environment
-			)
+		public LsnFunction(List<Parameter> parameters, LsnType returnType, string name,string resourceFilePath)
 			:base(new FunctionSignature(parameters, name, returnType?.Id))
 		{
-			Environment = environment;
+			ResourceFilePath = resourceFilePath;
 		}
 
-		public LsnFunction(List<Parameter> parameters, TypeId returnType, string name,LsnEnvironment environment
-			)
+		public LsnFunction(List<Parameter> parameters, TypeId returnType, string name, string resourceFilePath)
 			: base(new FunctionSignature(parameters, name, returnType))
 		{
-			Environment = environment;
+			ResourceFilePath = resourceFilePath;
 		}
 
 
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{
-			i.Run(Code, Environment, StackSize, args);
+			i.Run(Code, ResourceFilePath, StackSize, args);
 			i.ExitFunctionScope();
 			return i.ReturnValue;
 		}

@@ -1,9 +1,9 @@
 ﻿#using "std\Math"
 
 
-struct Cat {Age:int, Name:string}
+record Cat {Age:int, Name:string}
 
-struct Dog {Age: int, Name:string}
+record Dog {Age: int, Name:string}
 
 fn Bark(dog : Dog)
 {
@@ -91,7 +91,7 @@ fn Sum(x:int, y:int)-> int
 	return x + y;
 }
 
-struct Circle
+record Circle
 {
 	X : double,
 	Y : double,
@@ -112,7 +112,7 @@ fn GetArea(circ:Circle)->double
 	say "Can't find π";
 }
 
-struct Point
+record Point
 {
 	X : double,
 	Y : double

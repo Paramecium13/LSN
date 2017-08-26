@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Syroot.BinaryData;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,5 +37,29 @@ namespace LsnCore.Types
 
 			return true;
 		}
+
+
+		public void Serialize(BinaryDataWriter writer)
+		{
+			writer.Write(Name);
+			writer.Write((ushort)Parameters.Count);
+			foreach (var param in Parameters)
+				param.Serialize(writer);
+			
+		}
+
+
+		public static EventDefinition Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
+		{
+			var name = reader.ReadString();
+			var nParams = reader.ReadUInt16();
+			var parameters = new Parameter[nParams];
+			for (ushort i = 0; i < nParams; i++)
+			{
+				parameters[i] = Parameter.Read(i, reader, typeContainer);
+			}
+			return new EventDefinition(name, new List<Parameter>(parameters));
+		}
+
 	}
 }

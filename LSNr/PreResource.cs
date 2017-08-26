@@ -1,8 +1,10 @@
 ﻿using LsnCore;
 using LsnCore.Types;
 using LSNr.Optimization;
+using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -16,6 +18,8 @@ namespace LSNr
 		internal const string STRN = "Στρ";
 		internal const string SUBN = "SUB";
 
+		// Relative to '\src'
+		public readonly string RelativePath;
 
 		private IScope _CurrentScope = new VariableTable(new List<Variable>());
 
@@ -23,9 +27,9 @@ namespace LSNr
 
 		//private readonly Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
 
-		private readonly Dictionary<string, LsnStructType> StructTypes = new Dictionary<string, LsnStructType>();
-
 		private readonly Dictionary<string, RecordType> RecordTypes = new Dictionary<string, RecordType>();
+
+		private readonly Dictionary<string, StructType> StructTypes = new Dictionary<string, StructType>();
 		
 
 
@@ -42,7 +46,10 @@ namespace LSNr
 		private readonly Dictionary<string, PreScriptObject> PreScriptObjects = new Dictionary<string, PreScriptObject>();
 
 
-		public PreResource(string src, string path) : base(src,path){}
+		public PreResource(string src, string path) : base(src,path)
+		{
+			RelativePath = new string(path.Skip(4).ToArray());
+		}
 
 		/// <summary>
 		/// Reifies the source...
@@ -58,7 +65,7 @@ namespace LSNr
 				pre.Parse();
 			ParseFunctions();
         }
-		
+
 
 		/// <summary>
 		/// 
@@ -78,7 +85,7 @@ namespace LSNr
 			for(int i = 0; i < Tokens.Count; i++)
 			{
 				var val = Tokens[i].Value;
-				if(val == "struct")
+				if(val == "record")
 				{
 					string name = Tokens[++i].Value; // Move on to the next token, get the name.
 					if (Tokens[++i].Value != "{") // Move on to the next token, make sure it is '{'.
@@ -89,9 +96,9 @@ namespace LSNr
 					else ++i; // Move on to the token after '{'.
 					var tokens = new List<Token>();
 					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
-					MakeStruct(name, tokens);
+					MakeRecord(name, tokens);
 				}
-				else if(val == "record")
+				else if(val == "struct")
 				{
 					string name = Tokens[++i].Value; // Move on to the next token, get the name.
 					if (Tokens[++i].Value != "{") // Move on to the next token, make sure it is '{'.
@@ -102,7 +109,7 @@ namespace LSNr
 					else ++i; // Move on to the token after '{'.
 					var tokens = new List<Token>();
 					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
-					MakeRecord(name, tokens);
+					MakeStruct(name, tokens);
 				}
 				else if (val == "hostinterface")
 				{
@@ -239,7 +246,7 @@ namespace LSNr
 						}
 						fnBody.Add(tokens[i]);
 					}
-					var fn = new LsnFunction(paramaters, returnType, name, Environment);
+					var fn = new LsnFunction(paramaters, returnType, name, RelativePath);
 					IncludeFunction(fn);
 					FunctionBodies.Add(name, fnBody);
 					MyFunctions.Add(name,fn);
@@ -358,7 +365,7 @@ namespace LSNr
 		/// <param name="typeOfType">struct or record.</param>
 		/// <param name="tokens"></param>
 		/// <returns></returns>
-		private Dictionary<string, LsnType> ParseFields(string name, string typeOfType, IReadOnlyList<Token> tokens)
+		private Tuple<string, TypeId>[] ParseFields(string name, string typeOfType, IReadOnlyList<Token> tokens)
 		{
 			if (tokens.Count < 3) // struct Circle { Radius : double}
 			{
@@ -366,7 +373,7 @@ namespace LSNr
 				Valid = false;
 				return null;
 			}
-			var fields = new Dictionary<string, LsnType>();
+			var fields = new List<Tuple<string, TypeId>>();
 			for (int i = 0; i < tokens.Count; i++)
 			{
 				string fName = tokens[i++].Value; // Get the name of the field, move on to the next token.
@@ -389,7 +396,7 @@ namespace LSNr
 					return null;
 				}
 				LsnType type = this.ParseType(tokens, i, out i);
-				fields.Add(fName, type);
+				fields.Add(new Tuple<string, TypeId>( fName, type.Id));
 				if (i + 1 < tokens.Count && tokens[i].Value == ",") // Check if the definition ends, move on to the next token
 																	  // and check that it is ','.
 				{
@@ -398,7 +405,7 @@ namespace LSNr
 				}
 				else break;
 			}
-			return fields;
+			return fields.ToArray();
 		}
 
 		/// <summary>
@@ -406,9 +413,9 @@ namespace LSNr
 		/// </summary>
 		/// <param name="name"> The name of the struct to make.</param>
 		/// <param name="tokens"> The tokens defining the struct.</param>
-		private void MakeStruct(string name, IReadOnlyList<Token> tokens)
+		private void MakeRecord(string name, IReadOnlyList<Token> tokens)
 		{
-			Dictionary<string, LsnType> fields = null;
+			Tuple<string, TypeId>[] fields = null;
 			try
 			{
 				fields = ParseFields(name, "struct", tokens);
@@ -420,9 +427,9 @@ namespace LSNr
 					Console.WriteLine(e.Message);
 			}
 			if (fields == null) return;
-			var structType = new LsnStructType(name, fields);
-            StructTypes.Add(name, structType);
-			IncludedTypes.Add(structType);
+			var recordType = new RecordType(name, fields);
+            RecordTypes.Add(name, recordType);
+			IncludedTypes.Add(recordType);
 		}
 
 		/// <summary>
@@ -430,9 +437,9 @@ namespace LSNr
 		/// </summary>
 		/// <param name="name"> The name of the record.</param>
 		/// <param name="tokens"> The tokens defining the record.</param>
-		private void MakeRecord(string name, IReadOnlyList<Token> tokens)
+		private void MakeStruct(string name, IReadOnlyList<Token> tokens)
 		{
-			Dictionary<string, LsnType> fields = null;
+			Tuple<string, TypeId>[] fields = null;
 			try
 			{
 				fields = ParseFields(name, "record", tokens);
@@ -444,19 +451,19 @@ namespace LSNr
 					Console.WriteLine(e.Message);
 			}
 			if (fields == null) return;
-			var recordType = new RecordType(name, fields);
-			RecordTypes.Add(name, recordType);
-			IncludedTypes.Add(recordType);
+			var structType = new StructType(name, fields);
+			StructTypes.Add(name, structType);
+			IncludedTypes.Add(structType);
 		}
 
 		public LsnResourceThing GetResource()
 		{
-			return new LsnResourceThing()
+			return new LsnResourceThing
 			{
 				Functions = IncludedFunctions,
 				Includes = Includes,
-				RecordTypes = RecordTypes,
 				StructTypes = StructTypes,
+				RecordTypes = RecordTypes,
 				Usings = Usings,
 				HostInterfaces = HostInterfaces,
 				ScriptObjectTypes = ScriptObjects

@@ -42,6 +42,9 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Syroot.BinaryData, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Syroot.IO.BinaryData.2.0.2\lib\net45\Syroot.BinaryData.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
@@ -143,9 +146,9 @@
     <Compile Include="LsnCore\Types\LsnBoundedType.cs" />
     <Compile Include="LsnCore\Types\LsnListType.cs" />
     <Compile Include="LsnCore\Types\LsnReferenceType.cs" />
-    <Compile Include="LsnCore\Types\LsnStructType.cs" />
-    <Compile Include="LsnCore\Types\LsnType.cs" />
     <Compile Include="LsnCore\Types\RecordType.cs" />
+    <Compile Include="LsnCore\Types\LsnType.cs" />
+    <Compile Include="LsnCore\Types\StructType.cs" />
     <Compile Include="LsnCore\Types\VectorType.cs" />
     <Compile Include="LsnCore\Values\BoundedValue.cs" />
     <Compile Include="LsnCore\Values\ICollectionValue.cs" />
@@ -153,14 +156,17 @@
     <Compile Include="LsnCore\Values\IWritableCollectionValue.cs" />
     <Compile Include="LsnCore\Values\LSN_Reference.cs" />
     <Compile Include="LsnCore\Values\LSN_Value.cs" />
-    <Compile Include="LsnCore\Values\RecordValue.cs" />
-    <Compile Include="LsnCore\Values\ScriptObject.cs" />
     <Compile Include="LsnCore\Values\StructValue.cs" />
+    <Compile Include="LsnCore\Values\ScriptObject.cs" />
+    <Compile Include="LsnCore\Values\RecordValue.cs" />
     <Compile Include="LsnCore\Values\VectorInstance.cs" />
     <Compile Include="LsnResourceThing.cs" />
     <Compile Include="LsnScript.cs" />
     <Compile Include="LsnScriptBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

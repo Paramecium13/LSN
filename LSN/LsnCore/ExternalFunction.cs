@@ -86,7 +86,7 @@ namespace LsnCore
 			}
 			else
 			{
-				Environment = function.Environment;
+				ResourceFilePath = function.ResourceFilePath;
 				External = function;
 				_IsResolved = true;
 			}

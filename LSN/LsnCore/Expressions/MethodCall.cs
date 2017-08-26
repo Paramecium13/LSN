@@ -48,7 +48,7 @@ namespace LsnCore.Expressions
 			for (int x = 0; x < Args.Length; x++)
 				args[x] = Args[x].Eval(i);
 			var fn = Method ?? args[0].Type.Type.Methods[MethodName]; //TODO:...
-			if (!fn.HandlesScope) i.EnterFunctionScope(fn.Environment, fn.StackSize);
+			if (!fn.HandlesScope) i.EnterFunctionScope(fn.ResourceFilePath, fn.StackSize);
 			var val = fn.Eval(args, i);
 			if (!fn.HandlesScope) i.ExitFunctionScope();
 			return val;
