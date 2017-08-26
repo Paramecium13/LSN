@@ -16,12 +16,12 @@ namespace LsnCore
 	public unsafe struct LsnValue : IExpression, IEquatable<LsnValue>
 	{
 		/// <summary>
-		/// 
+		/// Nil
 		/// </summary>
 		public static readonly LsnValue Nil = new LsnValue(double.NaN, null);
 
 		/// <summary>
-		/// 
+		/// Value...
 		/// </summary>
 		public readonly ILsnValue Value;
 
@@ -37,17 +37,17 @@ namespace LsnCore
 
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		private readonly double Data;
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		private readonly TypeId Id;
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		public int IntValueB => Data.ToInt32Bitwise();
 
@@ -91,6 +91,14 @@ namespace LsnCore
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public LsnValue(bool value)
+		{
+			Data = value ? 0 : 1;
+			Value = null;
+			Id = LsnType.Bool_.Id;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private LsnValue(double d, ILsnValue v)
 		{
 			Data = d;
@@ -99,31 +107,31 @@ namespace LsnCore
 		}
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
 		public LsnValue Eval(IInterpreter i) => this;
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <returns></returns>
 		public IExpression Fold() => this;
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		public LsnValue Clone() => Data == Data ? this : new LsnValue(Value.Clone());
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <returns></returns>
 		public bool IsReifyTimeConst() => true;
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="oldExpr"></param>
 		/// <param name="newExpr"></param>
@@ -269,10 +277,11 @@ namespace LsnCore
 			=> new LsnValue(Math.Pow(a.Data, b.Data));
 
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Equals(LsnValue other)
 		{
 			if (Data == Data)
-				return Data == other.Data;
+				return Math.Abs(Data - other.Data) < double.Epsilon;
 			return Value.Equals(other.Value);
 		}
 	}
