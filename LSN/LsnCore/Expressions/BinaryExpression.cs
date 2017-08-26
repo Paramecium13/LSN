@@ -10,12 +10,10 @@ namespace LsnCore.Expressions
 	[Serializable]
 	public enum BinaryOperation : byte { Sum, Difference, Product, Quotient, Modulus, Power, LessThan, LessThanOrEqual, GreaterThan,GreaterThanOrEqual,Equal,NotEqual,And,Or,Xor}
 
-	public enum BinaryOperationArgTypes : byte { Int_Int, Int_Double,Double_Double,Double_Int,String_String,String_Int,Bool_Bool}
-
-	/// <summary>
-	/// 
-	/// </summary>
 	[Serializable]
+	public enum BinaryOperationArgTypes : byte { Int_Int, Int_Double,Double_Double,Double_Int,String_String,String_Int,Bool_Bool}
+	
+	/*[Serializable]
 	public class BinaryExpression : Expression
 	{
 		private IExpression _Left;
@@ -76,10 +74,10 @@ namespace LsnCore.Expressions
 			if (e == null) return false;
 			return Operation == e.Operation && e.Left.Equals(Left) && e.Right == Right;
 		}
-	}
+	}*/
 
 	[Serializable]
-	public class BinaryExpressionB : Expression
+	public class BinaryExpression : Expression
 	{
 		private IExpression _Left;
 
@@ -100,9 +98,27 @@ namespace LsnCore.Expressions
 		public readonly BinaryOperation Operation;
 		public readonly BinaryOperationArgTypes ArgumentTypes;
 
-		public BinaryExpressionB(IExpression left,IExpression right, BinaryOperation operation, BinaryOperationArgTypes argTypes)
+		public BinaryExpression(IExpression left,IExpression right, BinaryOperation operation, BinaryOperationArgTypes argTypes)
 		{
 			_Left = left; _Right = right; Operation = operation; ArgumentTypes = argTypes;
+			switch (argTypes)
+			{
+				case BinaryOperationArgTypes.Int_Int:
+					Type = LsnType.int_.Id;
+					break;
+				case BinaryOperationArgTypes.Int_Double:
+				case BinaryOperationArgTypes.Double_Double:
+				case BinaryOperationArgTypes.Double_Int:
+					Type = LsnType.double_.Id;
+					break;
+				case BinaryOperationArgTypes.String_String:
+				case BinaryOperationArgTypes.String_Int:
+					Type = LsnType.string_.Id;
+					break;
+				case BinaryOperationArgTypes.Bool_Bool:
+					Type = LsnType.Bool_.Id;
+					break;
+			}
 		}
 
 
@@ -510,6 +526,55 @@ namespace LsnCore.Expressions
 
 		public override bool IsReifyTimeConst()
 			=> Left.IsReifyTimeConst() && Right.IsReifyTimeConst();
+
+
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+			if (_Left.Equals(oldExpr))
+				_Left = newExpr;
+			else
+				_Left.Replace(oldExpr, newExpr);
+
+			if (_Right.Equals(oldExpr))
+				_Right = newExpr;
+			else
+				_Right.Replace(oldExpr, newExpr);
+		}
+
+
+		public static BinaryOperationArgTypes GetArgTypes(TypeId left, TypeId right)
+		{
+			switch (left.Name)
+			{
+				case "int":
+					switch (right.Name)
+					{
+						case "int":		return BinaryOperationArgTypes.Int_Int;
+						case "double":	return BinaryOperationArgTypes.Int_Double;
+					}
+					break;
+				case "double":
+					switch (right.Name)
+					{
+						case "int":		return BinaryOperationArgTypes.Double_Int;
+						case "double":	return BinaryOperationArgTypes.Double_Double;
+					}
+					break;
+				case "string":
+					switch (right.Name)
+					{
+						case "string":	return BinaryOperationArgTypes.String_String;
+						case "int":		return BinaryOperationArgTypes.String_Int;
+					}
+					break;
+				case "bool":
+				default:
+					return BinaryOperationArgTypes.Bool_Bool;
+				
+			}
+
+			throw new InvalidOperationException();
+		}
 	}
 
 }

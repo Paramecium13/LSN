@@ -15,9 +15,9 @@ namespace LSNr.Optimization
 
 		public IExpression Walk(IExpression e)
 		{
-			var bin = e as BinaryExpression;
+			/*var bin = e as BinaryExpression;
 			if(bin != null)
-				return WalkBinExp(bin);
+				return WalkBinExp(bin);*/
 
 			var cva = e as CollectionValueAccessExpression;
 			if(cva != null)
@@ -81,7 +81,7 @@ namespace LSNr.Optimization
 			return e;
 		}
 
-		protected virtual IExpression WalkBinExp(BinaryExpression e)
+		/*protected virtual IExpression WalkBinExp(BinaryExpression e)
 		{
 			var v = View(e);
 			if(v != e)
@@ -91,10 +91,10 @@ namespace LSNr.Optimization
 			}
 			Walk(e.Left); Walk(e.Right);
 			return e;
-		}
+		}*/
 
 
-		protected virtual IExpression View(BinaryExpression b) { return b; }
+		//protected virtual IExpression View(BinaryExpression b) { return b; }
 
 
 		protected virtual void WalkCvaExp(CollectionValueAccessExpression c)
