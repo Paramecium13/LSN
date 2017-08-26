@@ -65,7 +65,7 @@ namespace LsnCore.Types
 		}
 
 
-		public static StructType Read(BinaryDataReader reader, ITypeContainer typeContainer)
+		public static StructType Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
 		{
 			var name = reader.ReadString();
 			var nFields = reader.ReadUInt16();

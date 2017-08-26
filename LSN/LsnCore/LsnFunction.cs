@@ -1,8 +1,11 @@
 ﻿using LsnCore.Expressions;
 using LsnCore.Statements;
 using LsnCore.Types;
+using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Linq;
 using System.Text;
 
 namespace LsnCore
@@ -40,6 +43,27 @@ namespace LsnCore
 			i.Run(Code, ResourceFilePath, StackSize, args);
 			i.ExitFunctionScope();
 			return i.ReturnValue;
+		}
+
+
+		public void Serialize(BinaryDataWriter writer)
+		{
+			Signature.Serialize(writer);
+			writer.Write(StackSize);
+			new BinaryFormatter().Serialize(writer.BaseStream, Code);
+		}
+
+		public static LsnFunction Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath)
+		{
+			var signiture = FunctionSignature.Read(reader, typeContainer);
+			var stackSize = reader.ReadInt32();
+			var code = (Statement[])new BinaryFormatter().Deserialize(reader.BaseStream);
+
+			return new LsnFunction(signiture.Parameters.ToList(), signiture.ReturnType, signiture.Name, resourceFilePath)
+			{
+				Code = code,
+				StackSize = stackSize
+			};
 		}
     }
 }

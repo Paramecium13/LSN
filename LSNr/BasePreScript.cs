@@ -130,7 +130,7 @@ namespace LSNr
 				{
 					using (var fs = new FileStream(objPath, FileMode.Open))
 					{
-						res = (LsnResourceThing)(new BinaryFormatter().Deserialize(fs));
+						res = LsnResourceThing.Read(fs,new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()));
 					}
 				}
 			}

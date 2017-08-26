@@ -25,13 +25,13 @@ namespace LsnCore
 		/// </summary>
 		public IReadOnlyDictionary<string, Function> Functions { get { return _Functions; }}
 
-		[NonSerialized]
+		/*[NonSerialized]
 		private Dictionary<string, RecordType> _StructTypes = new Dictionary<string, RecordType>();
 		public IReadOnlyDictionary<string, RecordType> StructTypes { get { return _StructTypes; } }
 
 		[NonSerialized]
 		private Dictionary<string, StructType> _RecordTypes = new Dictionary<string, StructType>();
-		public IReadOnlyDictionary<string, StructType> RecordTypes { get { return _RecordTypes; }}
+		public IReadOnlyDictionary<string, StructType> RecordTypes { get { return _RecordTypes; }}*/
 
 
 		//Serialized
@@ -59,13 +59,14 @@ namespace LsnCore
 		/// Sets up the environment for the provided script.
 		/// </summary>
 		/// <param name="script"></param>
-		public LsnEnvironment(LsnScriptBase script)
+		public LsnEnvironment(LsnScriptBase script,IResourceManager resourceManager)
 			:this()
 		{
 			foreach (var pair in script.Functions) _Functions.Add(pair.Key, pair.Value);
-			foreach (var pair in script.RecordTypes) _StructTypes.Add(pair.Key, pair.Value);
-			foreach (var pair in script.StructTypes) _RecordTypes.Add(pair.Key, pair.Value);
-			//foreach (var rs in script.Usings) LoadResource(rs + ".dat"); 
+			/*foreach (var pair in script.RecordTypes) _StructTypes.Add(pair.Key, pair.Value);
+			foreach (var pair in script.StructTypes) _RecordTypes.Add(pair.Key, pair.Value);*/
+
+			foreach (var rs in script.Usings) Load(resourceManager.GetResource(rs),resourceManager); 
 		}
 
 
@@ -75,31 +76,26 @@ namespace LsnCore
 		}
 
 
-		public void Load(ILsnFileManager fileManager)
+		public void Load(IResourceManager fileManager)
 		{
 			if (!Loaded)
 			{
 				foreach (var res in Resources)
-				Load(fileManager.LoadResourse(res),fileManager);
+				Load(fileManager.GetResource(res),fileManager);
 			}
 			else throw new InvalidOperationException("Already loaded");
 		}
 
 
-		private void Load(LsnScriptBase script, ILsnFileManager fileManager)
+		private void Load(LsnScriptBase script, IResourceManager fileManager)
 		{
 			foreach (var pair in script.Functions) _Functions.Add(pair.Key, pair.Value);
-			foreach (var pair in script.RecordTypes) _StructTypes.Add(pair.Key, pair.Value);
-			foreach (var pair in script.StructTypes) _RecordTypes.Add(pair.Key, pair.Value);
+			/*foreach (var pair in script.RecordTypes) _StructTypes.Add(pair.Key, pair.Value);
+			foreach (var pair in script.StructTypes) _RecordTypes.Add(pair.Key, pair.Value);*/
 
 			foreach (var res in script.Usings)
 				if(!(Resources.Contains(res) || LoadedResources.Contains(res)))
-					Load(fileManager.LoadResourse(res), fileManager);
-
-
-
+					Load(fileManager.GetResource(res), fileManager);
 		}
-		
-
 	}
 }

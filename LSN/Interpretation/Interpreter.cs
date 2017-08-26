@@ -134,7 +134,7 @@ namespace LsnCore
 		public virtual void EnterFunctionScope(string resourceFilePath, int scopeSize)
 		{
 			EnvStack.Push(CurrentEnvironment);
-			CurrentEnvironment = ResourceManager.GetResource(resourceFilePath).GetEnvironment();
+			CurrentEnvironment = ResourceManager.GetResource(resourceFilePath).GetEnvironment(ResourceManager);
 
 			StackFrames.Push(CurrentStackFrame);
 			int i = NearestPower(scopeSize);
