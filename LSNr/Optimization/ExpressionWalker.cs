@@ -151,9 +151,7 @@ namespace LSNr.Optimization
 
 		protected virtual IExpression WalkStructConstuctor(StructConstructor sc)
 		{
-			foreach (var exp in sc.Args.Values)
-				Walk(exp);
-			foreach (var exp in sc.ArgsB)
+			foreach (var exp in sc.Args)
 				Walk(exp);
 
 			return sc;
