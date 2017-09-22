@@ -566,25 +566,26 @@ namespace LSNr
 					newTokens.Add(CurrentTokens[i]);
 					continue;
 				}
-				LsnCore.Operator op = LsnCore.Operator.Add;
+				var op = BinaryOperation.Sum;
 				if (val == "*")
-					op = LsnCore.Operator.Multiply;
+					op = BinaryOperation.Product;
 				else if(val == "/")
-					op = LsnCore.Operator.Divide;
+					op = BinaryOperation.Quotient;
 				else if (val == "%")
-					op = LsnCore.Operator.Mod;
+					op = BinaryOperation.Modulus;
 
-				if(op != LsnCore.Operator.Add)
+				if(op != BinaryOperation.Sum)
 				{
 					IExpression left = GetExpression(CurrentTokens[i - 1]);
 					IExpression right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LsnCore.Operator, TypeId>(op, right.Type);
+					/*var key = new Tuple<LsnCore.Operator, TypeId>(op, right.Type);
 
 					if (!left.Type.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
-					var opr = left.Type.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
+					var opr = left.Type.Type.Operators[key];*/
+					var argType = BinaryExpression.GetArgTypes(left.Type, right.Type);
+					IExpression expr = new BinaryExpression(left, right, op, argType); //new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
 					var nt = new Token(name, -1, TokenType.Substitution);
@@ -608,13 +609,14 @@ namespace LSNr
 				{
 					var left = GetExpression(CurrentTokens[i - 1]);
 					var right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LsnCore.Operator, TypeId>(LsnCore.Operator.Power, right.Type);
+					/*var key = new Tuple<LsnCore.Operator, TypeId>(LsnCore.Operator.Power, right.Type);
 
 					if (!left.Type.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
 							$"The operator ^ is not defined for type {left.Type.Name} and {right.Type.Name}.");
-					var opr = left.Type.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, LsnCore.Operator.Power);
+					var opr = left.Type.Type.Operators[key];*/
+					var argTypes = BinaryExpression.GetArgTypes(left.Type, right.Type);
+					IExpression expr = new BinaryExpression(left, right, BinaryOperation.Power, argTypes); //new BinaryExpression(left, right, opr.Item1, opr.Item2, LsnCore.Operator.Power);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
 					var nt = new Token(name, -1, TokenType.Substitution);
@@ -634,21 +636,22 @@ namespace LSNr
 			for (int i = 0; i < CurrentTokens.Count; i++)
 			{
 				var val = CurrentTokens[i].Value;
-				LsnCore.Operator op = LsnCore.Operator.Multiply;
-				if (val == "+") op = LsnCore.Operator.Add;
-				else if (val == "-") op = LsnCore.Operator.Subtract;
+				var op = BinaryOperation.Product;
+				if (val == "+") op = BinaryOperation.Sum;
+				else if (val == "-") op = BinaryOperation.Difference;
 
-				if(op != LsnCore.Operator.Multiply)
+				if(op != BinaryOperation.Product)
 				{
 					var left = GetExpression(CurrentTokens[i - 1]);
 					var right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<LsnCore.Operator, TypeId>(op, right.Type);
+					/*var key = new Tuple<LsnCore.Operator, TypeId>(op, right.Type);
 
 					if (!left.Type.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
-					var opr = left.Type.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
+					var opr = left.Type.Type.Operators[key];*/
+					var argTypes = BinaryExpression.GetArgTypes(left.Type, right.Type);
+					IExpression expr = new BinaryExpression(left, right, op, argTypes);//new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
 					var name = SUB + SubCount++;
 					newTokens.RemoveAt(newTokens.Count - 1);
 					var nt = new Token(name, -1, TokenType.Substitution);
@@ -669,38 +672,42 @@ namespace LSNr
 			{
 				var val = CurrentTokens[i].Value;
 				if (val.Length > 2) continue;
-				var op = Operator.Multiply;
+				var op = BinaryOperation.Product;
 				switch (val)
 				{
 					case "<":
-						op = Operator.LessThan;
+						op = BinaryOperation.LessThan;
 						break;
 					case ">":
-						op = Operator.GreaterThan;
+						op = BinaryOperation.GreaterThan;
 						break;
 					case "==":
-						op = Operator.Equals;
+						op = BinaryOperation.Equal;
+						break;
+					case "!=":
+						op = BinaryOperation.NotEqual;
 						break;
 					case ">=":
-						op = Operator.GTE;
+						op = BinaryOperation.GreaterThanOrEqual;
 						break;
 					case "<=":
-						op = Operator.LTE;
+						op = BinaryOperation.LessThanOrEqual;
 						break;
 				}
 
-				if (op != Operator.Multiply)
+				if (op != BinaryOperation.Product)
 				{
 					var left = GetExpression(CurrentTokens[i - 1]);
 					var right = GetExpression(CurrentTokens[i + 1]);
-					var key = new Tuple<Operator, TypeId>(op,right.Type);
+					/*var key = new Tuple<Operator, TypeId>(op,right.Type);
 
 
 					if (!left.Type.Type.Operators.ContainsKey(key))
 						throw new ApplicationException(
 							$"The operator {val} is not defined for type {left.Type.Name} and {right.Type.Name}.");
-					var opr = left.Type.Type.Operators[key];
-					IExpression expr = new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
+					var opr = left.Type.Type.Operators[key];*/
+					var argTypes = BinaryExpression.GetArgTypes(left.Type, right.Type);
+					IExpression expr = new BinaryExpression(left, right, op, argTypes);//new BinaryExpression(left, right, opr.Item1, opr.Item2, op);
 					var name = SUB + SubCount++;
 					if(newTokens.Count > 0) newTokens.RemoveAt(newTokens.Count - 1);
 					var nt = new Token(name, -1, TokenType.Substitution);
