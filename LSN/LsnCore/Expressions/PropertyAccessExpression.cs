@@ -25,6 +25,11 @@ namespace LsnCore.Expressions
 			ScriptObject = scrObj; Index = index; _Type = type;
 		}
 
+		public PropertyAccessExpression(IExpression scrObj, int index)
+		{
+			ScriptObject = scrObj; Index = index;
+		}
+
 		public bool Equals(IExpression other)
 		{
 			var o = other as PropertyAccessExpression;

@@ -31,6 +31,11 @@ namespace LsnCore.Expressions
 			Collection = collection; Index = index; Type = type;
 		}
 
+		public CollectionValueAccessExpression(IExpression collection, IExpression index)
+		{
+			Collection = collection; Index = index;
+		}
+
 		public override bool Equals(IExpression other)
 		{
 			var e = other as CollectionValueAccessExpression;
@@ -40,7 +45,7 @@ namespace LsnCore.Expressions
 
 		public override LsnValue Eval(IInterpreter i)
 		{
-			throw new NotImplementedException();
+			return (Collection.Eval(i).Value as ICollectionValue).GetValue(Index.Eval(i).IntValue);
 		}
 
 		public override IExpression Fold()

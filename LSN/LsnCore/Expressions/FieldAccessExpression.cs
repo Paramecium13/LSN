@@ -31,10 +31,15 @@ namespace LsnCore.Expressions
 			Type = type;
 		}
 
-
-		public  FieldAccessExpression(IExpression fieldOwner, Field field)
+		public FieldAccessExpression(IExpression fieldOwner, Field field)
 		{
 			Value = fieldOwner; Index = field.Index; Type = field.Type;
+		}
+
+		public FieldAccessExpression(IExpression value, int index)
+		{
+			Value = value;
+			Index = index;
 		}
 
 

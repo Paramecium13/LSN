@@ -38,12 +38,16 @@ namespace LsnCore
 			_Type = type; Id = type.Id; Fields = values;
 		}
 
-
 		public RecordValue(LsnValue[] values, TypeId id)
 		{
 			Id = id; Fields = values;
 		}
-		
+
+		public RecordValue(LsnValue[] values)
+		{
+			Fields = values;
+		}
+
 
 		public LsnValue GetFieldValue(int index) => Fields[index];
 
@@ -52,7 +56,7 @@ namespace LsnCore
 
 		public ILsnValue DeepClone()
 		{
-			return new RecordValue(_Type, Fields.Select(f=>f.Clone()).ToArray());
+			return new RecordValue(Fields.Select(f=>f.Clone()).ToArray());
 		}
 		
 		public LsnValue Eval(IInterpreter i) => new LsnValue(this);

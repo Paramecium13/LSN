@@ -28,16 +28,4 @@ namespace LsnCore.Statements
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 	}
-
-	[Serializable]
-	public sealed class CallChoicesStatement : Statement
-	{
-		public override InterpretValue Interpret(IInterpreter i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void Replace(IExpression oldExpr, IExpression newExpr){}
-	}
-
 }

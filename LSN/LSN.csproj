@@ -92,7 +92,6 @@
     <Compile Include="LsnCore\Expressions\FunctionCall.cs" />
     <Compile Include="LsnCore\Expressions\GetExpression.cs" />
     <Compile Include="LsnCore\Expressions\IExpression.cs" />
-    <Compile Include="LsnCore\Expressions\OrExpression.cs" />
     <Compile Include="LsnCore\Expressions\UniqueScriptObjectAccessExpression.cs" />
     <Compile Include="LsnCore\Expressions\VariableExpression.cs" />
     <Compile Include="LsnCore\ExternalFunction.cs" />
@@ -134,7 +133,6 @@
     <Compile Include="LsnCore\Expressions\MethodCall.cs" />
     <Compile Include="LsnCore\Statements\AssignmentStatement.cs" />
     <Compile Include="LsnCore\Statements\GiveStatement.cs" />
-    <Compile Include="LsnCore\Statements\ReassignmentStatement.cs" />
     <Compile Include="LsnCore\Statements\ReturnStatement.cs" />
     <Compile Include="LsnCore\Statements\SayStatement.cs" />
     <Compile Include="LsnCore\Statements\SimpleStatements.cs" />
@@ -164,6 +162,7 @@
     <Compile Include="LsnScript.cs" />
     <Compile Include="LsnScriptBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResourceSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

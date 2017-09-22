@@ -18,9 +18,9 @@ namespace LsnCore.Statements
 	{
 		private IExpression Id;
 
-		public GiveItemStatement(IExpression id, IExpression a, IExpression receiver)
+		public GiveItemStatement(IExpression id, IExpression amount, IExpression receiver)
 		{
-			Id = id; Amount = a; Receiver = receiver;
+			Id = id; Amount = amount; Receiver = receiver;
 		}
 
 		public override InterpretValue Interpret(IInterpreter i)
@@ -40,9 +40,9 @@ namespace LsnCore.Statements
 	[Serializable]
 	public class GiveGoldStatement : GiveStatement
 	{
-		public GiveGoldStatement(IExpression a, IExpression receiver)
+		public GiveGoldStatement(IExpression amount, IExpression receiver)
 		{
-			Amount = a; Receiver = receiver;
+			Amount = amount; Receiver = receiver;
 		}
 
 		public override InterpretValue Interpret(IInterpreter i)

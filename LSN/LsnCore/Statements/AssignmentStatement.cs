@@ -7,12 +7,9 @@ namespace LsnCore.Statements
 	public class AssignmentStatement : Statement
 	{
 		public IExpression Value;
-		//public string VariableName;
 		public int Index;
-		//public LSN_Type Type;
-		//public bool Mutable;
 
-		
+		// ToDo: Create a ProtoAssignmentStatement class in LSNr. Make it take a variable object, in case the variable's value changes during optimization.
 		public AssignmentStatement(/*string name*/int index, IExpression value)
 		{
 			//VariableName = name;
@@ -20,10 +17,8 @@ namespace LsnCore.Statements
 			Value = value;
 		}
 
-		
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			//i.AddVariable(VariableName,Value.Eval(i));
 			i.SetVariable(Index, Value.Eval(i));
 			return InterpretValue.Base;
 		}

@@ -15,9 +15,9 @@ namespace LSNr.Optimization
 
 		public IExpression Walk(IExpression e)
 		{
-			var bin = e as BinaryExpression;
+			/*var bin = e as BinaryExpression;
 			if(bin != null)
-				return WalkBinExp(bin);
+				return WalkBinExp(bin);*/
 
 			var cva = e as CollectionValueAccessExpression;
 			if(cva != null)
@@ -53,11 +53,7 @@ namespace LSNr.Optimization
 				WalkMethodCall(mc);
 				return e;
 			}
-
-			var or = e as OrExpression;
-			if (or != null)
-				return WalkOrExp(or);
-
+			
 			var rc = e as RecordConstructor;
 			if(rc != null)
 			{
@@ -81,7 +77,7 @@ namespace LSNr.Optimization
 			return e;
 		}
 
-		protected virtual IExpression WalkBinExp(BinaryExpression e)
+		/*protected virtual IExpression WalkBinExp(BinaryExpression e)
 		{
 			var v = View(e);
 			if(v != e)
@@ -91,10 +87,10 @@ namespace LSNr.Optimization
 			}
 			Walk(e.Left); Walk(e.Right);
 			return e;
-		}
+		}*/
 
 
-		protected virtual IExpression View(BinaryExpression b) { return b; }
+		//protected virtual IExpression View(BinaryExpression b) { return b; }
 
 
 		protected virtual void WalkCvaExp(CollectionValueAccessExpression c)
@@ -132,15 +128,7 @@ namespace LSNr.Optimization
 				m.Args[i] = Walk(m.Args[i]);
 		}
 
-
-		protected virtual IExpression WalkOrExp(OrExpression expr)
-		{
-			expr.Left = Walk(expr.Left);
-			expr.Right = Walk(expr.Right);
-			return expr;
-		}
-
-
+		
 		protected virtual IExpression WalkRecordConstructor(RecordConstructor rc)
 		{
 			foreach (var exp in rc.Args.Values)
@@ -151,9 +139,7 @@ namespace LSNr.Optimization
 
 		protected virtual IExpression WalkStructConstuctor(StructConstructor sc)
 		{
-			foreach (var exp in sc.Args.Values)
-				Walk(exp);
-			foreach (var exp in sc.ArgsB)
+			foreach (var exp in sc.Args)
 				Walk(exp);
 
 			return sc;

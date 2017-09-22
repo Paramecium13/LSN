@@ -27,10 +27,10 @@ namespace LSNr
 		public IReadOnlyList<IExpression> SubsequentValues => _SubsequentValues;
 
 
-		private readonly List<ReassignmentStatement> _Reassignments = new List<ReassignmentStatement>();
+		private readonly List<AssignmentStatement> _Reassignments = new List<AssignmentStatement>();
 
 
-		public IReadOnlyList<ReassignmentStatement> Reassignments => _Reassignments;
+		public IReadOnlyList<AssignmentStatement> Reassignments => _Reassignments;
 
 
 		public bool Reassigned => _Reassignments.Count != 0;
@@ -103,7 +103,7 @@ namespace LSNr
 		}
 
 
-		public void AddReasignment(ReassignmentStatement reassign)
+		public void AddReasignment(AssignmentStatement reassign)
 		{
 			_Reassignments.Add(reassign);
 			_SubsequentValues.Add(reassign.Value);

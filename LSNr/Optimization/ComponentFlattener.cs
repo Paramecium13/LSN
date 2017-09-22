@@ -170,10 +170,8 @@ namespace LSNr.Optimization
 			var index = (ChoiceCount++).ToString();
 			string endLabel = "ChoiceEnd" + index;
 
-
 			var choices = new Tuple<IList<Component>, string>[c.Choices.Count];
 
-			int chCount = 0;
 			for (int i = 0; i < c.Choices.Count; i++)
 			{
 				var ch = c.Choices[i];

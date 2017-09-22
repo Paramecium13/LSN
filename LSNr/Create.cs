@@ -130,32 +130,32 @@ namespace LSNr
 					{
 						for(i = i+1; i < head.Count -1; i++)
 							exprTokens.Add(head[i]);
-						post = new ReassignmentStatement(script.CurrentScope.GetVariable(varName).Index, Express(exprTokens, script));
+						post = new AssignmentStatement(script.CurrentScope.GetVariable(varName).Index, Express(exprTokens, script));
 					}
 					else if(head[i].Value == "++")
 					{
-						throw new NotImplementedException();
+						throw new NotImplementedException(); // ToDo: Implement
 					}
 					else if (head[i].Value == "--")
 					{
-						throw new NotImplementedException();
+						throw new NotImplementedException(); // ToDo: Implement
 					}
 				}
 				else if (v == "--")
 				{
 					if (head[++i].Value != varName)
 						throw new ApplicationException("...");
-					throw new NotImplementedException();
+					throw new NotImplementedException(); // ToDo: Implement
 				}
 				else if(v == "++")
 				{
 					if (head[++i].Value != varName)
 						throw new ApplicationException("...");
-					throw new NotImplementedException();
+					throw new NotImplementedException(); // ToDo: Implement
 				}
 
 				
-				Parser p = new Parser(body, script);
+				var p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
 				script.CurrentScope = script.CurrentScope.Pop(components);

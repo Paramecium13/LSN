@@ -42,7 +42,7 @@ namespace LsnCore.Values
 				// Subscribe to events.
 				foreach (var evName in (host.Type.Type as HostInterfaceType).EventDefinitions.Keys)
 					if((CurrentState?.HasEventListener(evName)?? false ) || ScObjType.HasEventListener(evName))
-						host.SubscribeToEvent(evName, this);				
+						host.SubscribeToEvent(evName, this);
 				
 			}
 			else if (ScObjType.HostInterface != null)

@@ -30,38 +30,35 @@ namespace LsnCore.Values
 		}
 
 		
-		public StructValue(StructType type, LsnValue[] values, bool clone = false)
+		public StructValue(StructType type, LsnValue[] values)
 		{
 			_Type = type;
 			Type = type.Id;
-			if (clone)
-			{
-				int length = _Type.FieldCount;
-				Values = new LsnValue[length];
-				for(int i = 0; i < length; i++)
-					Values[i] = values[i].Clone();
-			}
-			else
-				Values = values;
+			int length = _Type.FieldCount;
+			Values = new LsnValue[length];
+			for(int i = 0; i < length; i++)
+				Values[i] = values[i].Clone();
 		}
 
-
-		public StructValue(TypeId id, LsnValue[] values, bool clone = false)
+		public StructValue(TypeId id, LsnValue[] values)
 		{
 			Type = id;
-			if (clone)
-			{
-				int length = values.Length;
-				Values = new LsnValue[length];
-				for (int i = 0; i < length; i++)
-					Values[i] = values[i].Clone();
-			}
-			else
-				Values = values;
+			int length = values.Length;
+			Values = new LsnValue[length];
+			for (int i = 0; i < length; i++)
+				Values[i] = values[i].Clone();
 		}
-		
 
-		public override ILsnValue Clone() => new StructValue(Type, Values.Select(v=>v.Clone()).ToArray(), true);
+		public StructValue(LsnValue[] values)
+		{
+			int length = values.Length;
+			Values = new LsnValue[length];
+			for (int i = 0; i < length; i++)
+				Values[i] = values[i].Clone();
+		}
+
+
+		public override ILsnValue Clone() => new StructValue(Type, Values.Select(v=>v.Clone()).ToArray());
 
 
 		public LsnValue GetFieldValue(int index) => Values[index];

@@ -17,7 +17,12 @@ namespace LsnCore.Expressions
 		{
 			Index = index; Type = type;
 		}
-		
+
+		public VariableExpression(int index)
+		{
+			Index = index;
+		}
+
 
 		public override LsnValue Eval(IInterpreter i)
 			=> i.GetVariable(Index);

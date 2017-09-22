@@ -82,7 +82,7 @@ namespace LSNr
 		/// <param name="tokens"></param>
 		/// <param name="script"></param>
 		/// <returns></returns>
-		private static AssignmentStatement Assignment(List<Token> tokens, IPreScript script)
+		private static Statement Assignment(List<Token> tokens, IPreScript script)
 		{
 			bool mut = tokens.Any(t => t.Value/*.ToLower()*/ == "mut");
 			bool mutable = script.Mutable || mut;
@@ -107,7 +107,7 @@ namespace LSNr
 			var sy = script.CheckSymbol(tokens[0].Value);
 			IExpression expr = Express(tokens.Skip(2).ToList(), script);
 			switch (sy)
-			{			
+			{
 				case SymbolType.Variable:
 					Variable v = script.CurrentScope.GetVariable(tokens[0].Value);
 					if (!v.Mutable)
@@ -123,10 +123,10 @@ namespace LSNr
 						script.Valid = false;
 						return null;
 					}
-					var reassign = new ReassignmentStatement(v.Index, expr);
-					v.AddReasignment(reassign);
-					return reassign;
-				case SymbolType.Field:
+					var assign = new AssignmentStatement(v.Index, expr);
+					v.AddReasignment(assign);
+					return assign;
+				case SymbolType.Field: // This is inside a script object...
 					return new FieldAssignmentStatement(new VariableExpression(0,(script as PreScriptObjectFunction).Parent.Id),
 						(script as PreScriptObjectFunction).Parent.GetField(tokens[0].Value).Index,
 						expr);

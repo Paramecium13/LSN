@@ -8,16 +8,9 @@ using System.Threading.Tasks;
 
 namespace LsnCore
 {
+	//public delegate LsnValue BinOp(LsnValue left, LsnValue right);
 
-	/// <summary>
-	/// A binary operator delegate.
-	/// </summary>
-	/// <param name="left"></param>
-	/// <param name="right"></param>
-	/// <returns></returns>
-	public delegate LsnValue BinOp(LsnValue left, LsnValue right);
-
-	public enum Operator { Add, Subtract, Multiply, Divide, Mod, Power, LessThan, GreaterThan, Equals, NotEquals, LTE, GTE}
+	//public enum Operator { Add, Subtract, Multiply, Divide, Mod, Power, LessThan, GreaterThan, Equals, NotEquals, LTE, GTE}
 
 	[Serializable]
 	public abstract class LsnType
@@ -30,10 +23,10 @@ namespace LsnCore
 
 		static LsnType()
 		{
-			SetUpOperators(); SetUpMethods();
+			/*SetUpOperators();*/ SetUpMethods();
         }
 
-		private static void SetUpOperators()
+		/*private static void SetUpOperators()
 		{
 			// int 'op' int -> int
 			int_._Operators.Add(new Tuple<Operator, TypeId>(Operator.Add, int_.Id),
@@ -187,7 +180,7 @@ namespace LsnCore
 				new Tuple<BinOp, TypeId>((a, b) =>
 				LsnBoolValue.GetBoolValue(((StringValue)a.Value).Value != ((StringValue)b.Value).Value), Bool_.Id));
 			// ToDo: Add >, <, >=, and <=.
-		}
+		}*/
 
 		private static void SetUpMethods()
 		{
@@ -304,24 +297,18 @@ namespace LsnCore
 				_Id = value;
 			}
 		}
-
-		/// <summary>
-		/// Operators...
-		/// </summary>
-		private readonly Dictionary<Tuple<Operator, TypeId>, Tuple<BinOp, TypeId>> _Operators
-			= new Dictionary<Tuple<Operator, TypeId>, Tuple<BinOp, TypeId>>();
-
-		/// <summary>
-		/// Operators...
-		/// </summary>
-		public IReadOnlyDictionary<Tuple<Operator, TypeId>, Tuple<BinOp, TypeId>> Operators
-			{ get { return _Operators; } }
+		
+		/*private readonly Dictionary<Tuple<Operator, TypeId>, Tuple<BinOp, TypeId>> _Operators
+			= new Dictionary<Tuple<Operator, TypeId>, Tuple<BinOp, TypeId>>();*/
+			
+		/*public IReadOnlyDictionary<Tuple<Operator, TypeId>, Tuple<BinOp, TypeId>> Operators
+			{ get { return _Operators; } }*/
 
 		public bool IsName(string name) => Name == name || Aliases.Contains(name);
 
 		public bool Subsumes(LsnType type)
 		{
-			return this.Equals(type) || SubsumesList.Contains(type);
+			return Equals(type) || SubsumesList.Contains(type);
 		}
 
 		public abstract LsnValue CreateDefaultValue();

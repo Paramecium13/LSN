@@ -48,7 +48,7 @@ namespace LsnCore.Expressions
 			{
 				values[j] = ArgsB[j].Eval(i);
 			}
-			return new LsnValue(new StructValue(Type, values));
+			return new LsnValue(new RecordValue(values));//....
 		}
 
 		public override IExpression Fold()
