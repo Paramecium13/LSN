@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Types;
 using LsnCore.Values;
+using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
@@ -50,6 +51,13 @@ namespace LsnCore.Expressions
 				ScriptObject = newExpr;
 			else
 				ScriptObject.Replace(oldExpr, newExpr);
+		}
+
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)ExpressionCode.PropertyAccess);
+			writer.Write((ushort)Index);
+			ScriptObject.Serialize(writer, resourceSerializer);
 		}
 	}
 }

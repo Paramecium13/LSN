@@ -284,7 +284,7 @@ namespace LSNr
 			{
 				if (preScObjFn == null)
 					throw new ApplicationException("Cannot use 'host' outside a script object method or event listener.");
-				return new HostInterfaceAccessExpression(new VariableExpression(0, preScObjFn.Parent.Id), preScObjFn.Parent.HostType.Id);
+				return new HostInterfaceAccessExpression(preScObjFn.Parent.HostType.Id);
 			}
 
 			
@@ -387,10 +387,12 @@ namespace LSNr
 		}
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="tokens"> The tokens, without the function name and containing parenthesis</param>
 		/// <param name="fn"></param>
+		/// <param name="script">todo: describe script parameter on CreateFunctionCall</param>
+		/// <param name="substitutions">todo: describe substitutions parameter on CreateFunctionCall</param>
 		/// <returns></returns>
 		public static FunctionCall CreateFunctionCall(List<Token> tokens, Function fn, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions = null)
 		{
@@ -401,7 +403,7 @@ namespace LSNr
 		public static IExpression CreateMethodCall(List<Token> tokens, Method method, IExpression obj, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions = null)
 		{
 			var ls = CreateParamList(tokens, method.Parameters.Count, script,substitutions);
-			return method.CreateMethodCall(ls,obj,script.TypeIsIncluded(obj.Type));
+			return method.CreateMethodCall(ls,obj);
 		}
 		
 	}

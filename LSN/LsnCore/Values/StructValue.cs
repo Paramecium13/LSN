@@ -77,5 +77,10 @@ namespace LsnCore.Values
 			for (int i = 0; i < Values.Length; i++)
 				Values[i].Serialize(writer);
 		}
+
+		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			throw new InvalidOperationException();
+		}
 	}
 }

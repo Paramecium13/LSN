@@ -51,7 +51,7 @@ namespace LsnCore.Types
 				//return new MethodCall(this, parameters); Can't do this, would result in this method being serialized along with it's call.
 		}
 
-		public override IExpression CreateMethodCall(IList<Tuple<string, IExpression>> args, IExpression expression, bool included = false)
+		public override IExpression CreateMethodCall(IList<Tuple<string, IExpression>> args, IExpression expression)
 		{
 			var argsArray = new IExpression[Parameters.Count];
 			argsArray[0] = expression;

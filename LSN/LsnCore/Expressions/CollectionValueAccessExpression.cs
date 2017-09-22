@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
@@ -80,6 +81,13 @@ namespace LsnCore.Expressions
 		{
 			if (Collection.Equals(oldExpr)) Collection = newExpr;
 			if (Index.Equals( oldExpr)) Index = newExpr;
+		}
+
+		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)ExpressionCode.CollectionValueAccess);
+			Collection.Serialize(writer, resourceSerializer);
+			Index.Serialize(writer, resourceSerializer);
 		}
 	}
 }

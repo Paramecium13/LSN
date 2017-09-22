@@ -51,7 +51,7 @@ namespace LsnCore
 		{
 			var argsArray = Signature.CreateArgsArray(args);
 
-			return new FunctionCall(this, argsArray, included);
+			return new FunctionCall(this, argsArray);
 		}
 
 		public abstract LsnValue Eval(LsnValue[] args, IInterpreter i);

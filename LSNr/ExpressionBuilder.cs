@@ -163,7 +163,7 @@ namespace LSNr
 							if (preScrFn == null)
 								throw new ApplicationException("...");
 							name = SUB + SubCount++;
-							Substitutions.Add(new Token(name, -1, TokenType.Substitution), new HostInterfaceAccessExpression(new VariableExpression(0, preScrFn.Parent.Id), preScrFn.Parent.HostType.Id));
+							Substitutions.Add(new Token(name, -1, TokenType.Substitution), new HostInterfaceAccessExpression(preScrFn.Parent.HostType.Id));
 							CurrentTokens.Add(new Token(name, -1, TokenType.Substitution));
 						}
 						else
@@ -334,8 +334,7 @@ namespace LSNr
 						{
 							if (!(i + 3 < CurrentTokens.Count && CurrentTokens[i + 2].Value == "(" && CurrentTokens[i + 3].Value == ")"))
 								throw new ApplicationException($"Error line {CurrentTokens[i + 1].LineNumber}: Improperly formated method call.");
-							memberExpression = method.CreateMethodCall
-								  (new List<Tuple<string, IExpression>>(), leftExpr, true/*Script.MethodIsIncluded(name)*/);
+							memberExpression = method.CreateMethodCall(new List<Tuple<string, IExpression>>(), leftExpr);
 							nextIndex = i + 4; //Skip the name and the parenthesis. It now points to the thing after the closing ')'.
 						}
 						else

@@ -41,7 +41,7 @@ namespace LsnCore
 		/// <param name="expression"> The object the method is called on</param>
 		/// <param name="included"></param>
 		/// <returns></returns>
-		public virtual IExpression CreateMethodCall(IList<Tuple<string, IExpression>> args, IExpression expression, bool included = false)
+		public virtual IExpression CreateMethodCall(IList<Tuple<string, IExpression>> args, IExpression expression)
 		{
 			// This requires that the call use the named parameters. Do something like if (args.Any(a=>a.Item1=="")){...}
 			// to check if it uses parameters by position, rather than name...
@@ -53,7 +53,7 @@ namespace LsnCore
 				if (param.Name != "self")
 					argsArray[param.Index] = dict.ContainsKey(param.Name) ? dict[param.Name] : param.DefaultValue;
 			}
-			return included ? new MethodCall(this, argsArray) : new MethodCall(Name, ReturnType, argsArray);
+			return  new MethodCall(this, argsArray);
 		}
 
 	}

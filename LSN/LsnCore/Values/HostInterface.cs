@@ -77,5 +77,10 @@ namespace LsnCore.Values
 		{
 			throw new InvalidOperationException();
 		}
+
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			throw new InvalidOperationException();
+		}
 	}
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
@@ -23,5 +24,6 @@ namespace LsnCore.Expressions
 		public abstract LsnValue Eval(IInterpreter i);
 		public virtual void Replace(IExpression oldExpr, IExpression newExpr) { }
 		public virtual bool Equals(IExpression other) => this == other;
+		public abstract void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer);
 	}
 }

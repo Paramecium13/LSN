@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Types;
 using LsnCore.Values;
+using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
@@ -16,25 +17,23 @@ namespace LsnCore.Expressions
 		private readonly TypeId _Type;
 		public TypeId Type => _Type;
 
-		private readonly IExpression _ScriptObject;
-
-
-		public HostInterfaceAccessExpression(IExpression scrObj, TypeId type)
+		public HostInterfaceAccessExpression(TypeId type)
 		{
-			_ScriptObject = scrObj; _Type = type;
+			_Type = type;
 		}
 
+		public HostInterfaceAccessExpression(){}
 
 		public bool Equals(IExpression other)
 		{
 			var o = other as HostInterfaceAccessExpression;
 			if (o == null) return false;
-			return _ScriptObject.Equals(o._ScriptObject);
+			return true;
 		}
 
 		public LsnValue Eval(IInterpreter i)
 		{
-			return (_ScriptObject.Eval(i).Value as ScriptObject).GetHost();
+			return (i.GetVariable(0).Value as ScriptObject).GetHost();
 		}
 
 		public IExpression Fold() => this;
@@ -43,5 +42,10 @@ namespace LsnCore.Expressions
 
 		public void Replace(IExpression oldExpr, IExpression newExpr) {}// _ScriptObject should be a variable access expression, accessing the 'self' parameter of
 																		// a script object method.
+
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)ExpressionCode.HostInterfaceAccess);
+		}
 	}
 }

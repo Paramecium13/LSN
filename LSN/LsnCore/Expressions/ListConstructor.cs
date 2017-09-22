@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
@@ -16,7 +17,7 @@ namespace LsnCore.Expressions
 		private readonly TypeId _Type;
 		public TypeId Type => _Type;
 
-		private readonly TypeId GenericTypeId; //ToDo: Use
+		private readonly TypeId GenericTypeId;
 
 		public ListConstructor(TypeId genericTypeId)
 		{
@@ -49,5 +50,10 @@ namespace LsnCore.Expressions
 		public void Replace(IExpression oldExpr, IExpression newExpr)
 		{}
 
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)ExpressionCode.ListConstructor);
+			writer.Write(GenericTypeId.Name);
+		}
 	}
 }

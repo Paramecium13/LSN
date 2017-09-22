@@ -1,5 +1,6 @@
 ﻿using LsnCore.Types;
 using LsnCore.Values;
+using Syroot.BinaryData;
 using System;
 
 namespace LsnCore.Expressions
@@ -17,5 +18,7 @@ namespace LsnCore.Expressions
 		/// </summary>
 		/// <returns></returns>
 		bool IsPure { get; }
+
+		void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer);
 	}
 }

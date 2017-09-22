@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
@@ -67,7 +68,14 @@ namespace LsnCore.Expressions
 		{
 			var e = other as FieldAccessExpression;
 			if (e == null) return false;
-			return Value.Equals(e.Value);
+			return Index == e.Index && Value.Equals(e.Value);
+		}
+
+		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)ExpressionCode.FieldAccess);
+			writer.Write((ushort)Index);
+			Value.Serialize(writer, resourceSerializer);
 		}
 	}
 }

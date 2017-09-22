@@ -12,7 +12,6 @@ namespace LsnCore.Values
 	[Serializable]
 	public class VectorInstance : LsnValueB, ICollectionValue
 	{
-
 		public readonly int Size;
 
 		private readonly LsnValue[] Values;
@@ -51,7 +50,7 @@ namespace LsnCore.Values
 		public LsnValue Length() => new LsnValue(Values.Length);
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <returns></returns>
 		public LsnList ToLsnList()
@@ -76,6 +75,12 @@ namespace LsnCore.Values
 			writer.Write((ushort)Values.Length);
 			for (int i = 0; i < Values.Length; i++)
 				Values[i].Serialize(writer);
+		}
+
+		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)ExpressionCode.TabledConstant);
+			writer.Write(resourceSerializer.TableConstant(this));
 		}
 	}
 }

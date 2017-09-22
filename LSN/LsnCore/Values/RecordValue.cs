@@ -79,6 +79,12 @@ namespace LsnCore
 				Fields[i].Serialize(writer);
 		}
 
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)ExpressionCode.TabledConstant);
+			writer.Write(resourceSerializer.TableConstant(this));
+		}
+
 		/*
 		public static StructValue operator + (StructValue a, StructValue b)
 		{

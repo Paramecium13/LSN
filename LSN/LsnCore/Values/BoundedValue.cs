@@ -116,7 +116,14 @@ namespace LsnCore
 
 		public void Serialize(BinaryDataWriter writer)
 		{
-			throw new NotImplementedException();
+			writer.Write((byte)ConstantCode.String);
+			writer.Write(Value);
+		}
+
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)ExpressionCode.TabledConstant);
+			writer.Write(resourceSerializer.TableConstant(this));
 		}
 	}
 	/*

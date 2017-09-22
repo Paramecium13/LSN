@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
@@ -38,5 +39,10 @@ namespace LsnCore.Expressions
 		public bool IsReifyTimeConst() => false;
 
 		public void Replace(IExpression oldExpr, IExpression newExpr){}
+
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

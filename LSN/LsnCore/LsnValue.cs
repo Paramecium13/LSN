@@ -164,11 +164,24 @@ namespace LsnCore
 				writer.Write(Data);
 			}
 			else Value.Serialize(writer);
+		}
 
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			if (Value == null)
+			{
+				writer.Write((byte)ExpressionCode.DoubleValueConstant);
+				writer.Write(Data);
+			}
+			else
+			{
+				writer.Write((byte)ExpressionCode.TabledConstant);
+				writer.Write(resourceSerializer.TableConstant(Value));
+			}
 		}
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -296,6 +309,7 @@ namespace LsnCore
 				return Math.Abs(Data - other.Data) < double.Epsilon;
 			return Value.Equals(other.Value);
 		}
+
 	}
 }
 #pragma warning restore RECS0088 // Comparing equal expression for equality is usually useless

@@ -156,8 +156,9 @@ namespace LsnCore.Values
 				Fields[i].Serialize(writer);
 		}
 
-
-
-
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			throw new InvalidOperationException();
+		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
@@ -17,9 +18,10 @@ namespace LsnCore.Expressions
 		public readonly IExpression[] Args;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-		public FunctionCall(Function fn, IExpression[] args, bool include = false)
+		public FunctionCall(Function fn, IExpression[] args)// This is possible because when a resource file is loaded, function stubs are created for
+															// all its functions before any code is read. Thus when the reader reads the code, it has
+															// a function object for every function that the code could call.
 		{
-			if (include) Fn = fn;
 			FnName = fn.Name;
 			Args = args;
 			Type = fn.ReturnType;
@@ -50,7 +52,7 @@ namespace LsnCore.Expressions
 		public override IExpression Fold()
 		{
 			var dict = Args.Select(a => a.Fold()).ToArray();
-			if (Fn != null) return new FunctionCall(Fn, dict, true);
+			if (Fn != null) return new FunctionCall(Fn, dict);
 			return new FunctionCall(FnName,dict);
 		}
 
@@ -67,6 +69,15 @@ namespace LsnCore.Expressions
 			var e = other as FunctionCall;
 			if (e == null) return false;
 			return e.Args.SequenceEqual(Args);
+		}
+
+		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)ExpressionCode.FunctionCall);
+			writer.Write(FnName);
+			writer.Write((byte)Args.Length);
+			for (int i = 0; i < Args.Length; i++)
+				Args[i].Serialize(writer, resourceSerializer);
 		}
 	}
 }

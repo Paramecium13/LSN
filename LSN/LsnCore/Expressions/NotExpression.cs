@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Types;
+using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
@@ -57,6 +58,12 @@ namespace LsnCore.Expressions
 				Value = newExpr;
 			else
 				Value.Replace(oldExpr, newExpr);
+		}
+
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)ExpressionCode.NotExpression);
+			Value.Serialize(writer, resourceSerializer);
 		}
 	}
 }

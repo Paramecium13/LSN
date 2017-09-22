@@ -58,7 +58,7 @@ namespace LsnCore
 		List
 	}
 
-	class ResourceSerializer
+	public class ResourceSerializer
 	{
 		private readonly List<ILsnValue> ConstantTable = new List<ILsnValue>();
 
