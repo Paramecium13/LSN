@@ -1,5 +1,4 @@
 ﻿using LsnCore.Types;
-using LsnCore.Values;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,58 +10,47 @@ namespace LsnCore.Expressions
 	[Serializable]
 	public class RecordConstructor : Expression
 	{
-		public readonly IDictionary<string, IExpression> Args; //ToDo: Remove
+		public readonly IExpression[] Args;
 
-		public readonly IExpression[] ArgsB;
+		public override bool IsPure => Args.All(a => a.IsPure);
 
+		//ToDo: make non-serialized
+		private readonly RecordType _Type;
 
-		public override bool IsPure => ArgsB.All(a => a.IsPure);
-
-
-		[NonSerialized]
-		private readonly StructType _Type;
-		//public readonly TypeId Id;
-
-		//public override TypeId Type => Id;
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-		public RecordConstructor(StructType type, IDictionary<string, IExpression> args)
+		public RecordConstructor(RecordType type, IDictionary<string,IExpression> args)
 		{
-			Type = type.Id;
-			_Type = type; Args = args;
-			ArgsB = new IExpression[_Type.FieldCount];
+			Args = new IExpression[type.FieldCount];
 			int i = -1;
 			foreach (var pair in args)
 			{
 				i = type.GetIndex(pair.Key);
-				ArgsB[i] = pair.Value;
+				Args[i] = pair.Value;
 			}
 		}
 
+		public RecordConstructor(TypeId type, IEnumerable<IExpression> args)
+        {
+			Type = type;
+			Args = args.ToArray();
+        }
 
 		public override LsnValue Eval(IInterpreter i)
+		//=> new StructValue(_Type, ArgsB.Select(e => e.Eval(i)).ToArray());
 		{
-			int length = ArgsB.Length;
-			LsnValue[] values = new LsnValue[length];
-			for (int j = 0; j < length; j++)
+			var length = Args.Length;
+			var values = new LsnValue[length];
+			for(int j = 0; j < length; j++)
 			{
-				values[j] = ArgsB[j].Eval(i);
+				values[j] = Args[j].Eval(i);
 			}
-			return new LsnValue(new RecordValue(values));//....
+			return new LsnValue(new RecordValue(values, Type));
 		}
 
 		public override IExpression Fold()
-		{//d = Args.Select(pair => new KeyValuePair<string, ILsnValue>(pair.Key, pair.Value as ILsnValue)).ToDictionary()
-			var a = Args.Select(pair => new KeyValuePair<string, IExpression>(pair.Key, pair.Value.Fold())).ToDictionary();
-			if (a.Values.All(v => v.IsReifyTimeConst() && v is LsnValue?))
-				return new LsnValue(
-					new StructValue(_Type, Args.Select(pair 
-					=> new KeyValuePair<string,LsnValue>(pair.Key,(LsnValue)pair.Value)).ToDictionary())
-					);
-			else
-				return new RecordConstructor(_Type, a);
-		}
-
+		{
+			var args = Args.Select(a => a.Fold()).ToArray();
+			return new RecordConstructor(Type, args);
+		} // Do not return a struct because structs are mutable and should not be serialized.
 
 		public override bool IsReifyTimeConst() => false;
 

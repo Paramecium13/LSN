@@ -107,11 +107,11 @@ namespace LSNr
 								 //	throw new ApplicationException($"The type \'{typeName}\' could not be found. Are You missing a \'#using\' or \'#include\'?");						
 
 							LsnType type = typeId.Type;//Script.GetType(typeName);
-							var structType = type as RecordType;
-							var recordType = type as StructType;
+							var recordType = type as RecordType;
+							var structType = type as StructType;
 							var listType = type as LsnListType;
 
-							if (structType == null && recordType == null && listType == null)
+							if (recordType == null && structType == null && listType == null)
 								throw new ApplicationException($"Cannot use \'new\' with type \'{typeId.Name}\'.");
 							if (j + 2 >= InitialTokens.Count)
 								throw new ApplicationException("No parenthesis.");
@@ -130,10 +130,10 @@ namespace LSNr
 									paramTokens.Add(t);
 								} while (/*lCount != rCount*/pCount != 0);
 								var parameters = Create.CreateParamList(paramTokens, -1, Script, Substitutions.Where(s => paramTokens.Contains(s.Key)).ToDictionary());
-								if (structType != null)
-									expr = new StructConstructor(structType, parameters.ToDictionary());
-								else // recordType != null
+								if (recordType != null)
 									expr = new RecordConstructor(recordType, parameters.ToDictionary());
+								else // recordType != null
+									expr = new StructConstructor(structType, parameters.ToDictionary());
 							}
 							else
 							{

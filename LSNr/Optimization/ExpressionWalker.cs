@@ -54,14 +54,14 @@ namespace LSNr.Optimization
 				return e;
 			}
 			
-			var rc = e as RecordConstructor;
+			var rc = e as StructConstructor;
 			if(rc != null)
 			{
 
 				return e;
 			}
 
-			var sc = e as StructConstructor;
+			var sc = e as RecordConstructor;
 			if(sc != null)
 			{
 
@@ -129,7 +129,7 @@ namespace LSNr.Optimization
 		}
 
 		
-		protected virtual IExpression WalkRecordConstructor(RecordConstructor rc)
+		protected virtual IExpression WalkRecordConstructor(StructConstructor rc)
 		{
 			foreach (var exp in rc.Args.Values)
 				Walk(exp);
@@ -137,7 +137,7 @@ namespace LSNr.Optimization
 		}
 
 
-		protected virtual IExpression WalkStructConstuctor(StructConstructor sc)
+		protected virtual IExpression WalkStructConstuctor(RecordConstructor sc)
 		{
 			foreach (var exp in sc.Args)
 				Walk(exp);

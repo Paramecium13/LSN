@@ -84,9 +84,9 @@
     <Compile Include="LsnCore\Expressions\ListConstructor.cs" />
     <Compile Include="LsnCore\Expressions\NotExpression.cs" />
     <Compile Include="LsnCore\Expressions\PropertyAccessExpression.cs" />
-    <Compile Include="LsnCore\Expressions\RecordConstructor.cs" />
-    <Compile Include="LsnCore\Expressions\ScriptObjectMethodCall.cs" />
     <Compile Include="LsnCore\Expressions\StructConstructor.cs" />
+    <Compile Include="LsnCore\Expressions\ScriptObjectMethodCall.cs" />
+    <Compile Include="LsnCore\Expressions\RecordConstructor.cs" />
     <Compile Include="LsnCore\Expressions\Expression.cs" />
     <Compile Include="LsnCore\Expressions\FieldAccessExpression.cs" />
     <Compile Include="LsnCore\Expressions\FunctionCall.cs" />
