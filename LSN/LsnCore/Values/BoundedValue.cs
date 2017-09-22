@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using LsnCore.Expressions;
 using LsnCore.Types;
+using Syroot.BinaryData;
 
 namespace LsnCore
 {
@@ -111,6 +112,11 @@ namespace LsnCore
 			var e = other as IBoundValue<string>;
 			if (e == null) return false;
 			return e.Value == Value;
+		}
+
+		public void Serialize(BinaryDataWriter writer)
+		{
+			throw new NotImplementedException();
 		}
 	}
 	/*

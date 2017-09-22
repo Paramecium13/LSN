@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Types;
 using System.Runtime.CompilerServices;
+using Syroot.BinaryData;
 
 namespace LsnCore
 {
@@ -153,6 +154,17 @@ namespace LsnCore
 				return (Math.Abs(data - Data) < double.Epsilon || (data != data && Data != Data)) && val.Value == Value;
 			}
 			return false;
+		}
+
+		internal void Serialize(BinaryDataWriter writer)
+		{
+			if (Value == null)
+			{
+				writer.Write((byte)ConstantCode.DoubleOrInt);
+				writer.Write(Data);
+			}
+			else Value.Serialize(writer);
+
 		}
 
 		/// <summary>

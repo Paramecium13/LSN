@@ -1,4 +1,5 @@
 ﻿using LsnCore.Expressions;
+using Syroot.BinaryData;
 
 namespace LsnCore
 {
@@ -8,5 +9,6 @@ namespace LsnCore
 
 		ILsnValue Clone();
 		//int GetSize();
+		void Serialize(BinaryDataWriter writer);
 	}
 }

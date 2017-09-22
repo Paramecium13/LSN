@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Syroot.BinaryData;
 
 namespace LsnCore.Values
 {
@@ -67,6 +68,14 @@ namespace LsnCore.Values
 		public void SetFieldValue(int index, LsnValue value)
 		{
 			Values[index] = value;
+		}
+
+		public override void Serialize(BinaryDataWriter writer)
+		{
+			writer.Write((byte)ConstantCode.Struct);
+			writer.Write((ushort)Values.Length);
+			for (int i = 0; i < Values.Length; i++)
+				Values[i].Serialize(writer);
 		}
 	}
 }

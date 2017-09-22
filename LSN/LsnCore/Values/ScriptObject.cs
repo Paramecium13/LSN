@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Expressions;
 using LsnCore.Types;
+using Syroot.BinaryData;
 
 namespace LsnCore.Values
 {
@@ -143,8 +144,19 @@ namespace LsnCore.Values
 					Host.SubscribeToEvent(subscription, this);
 		}
 
-
 		// Serialization?
+		public void Serialize(BinaryDataWriter writer)
+		{
+			writer.Write((byte)0xFF);
+			writer.Write(Type.Name);
+			writer.Write(CurrentStateIndex);
+			for (int i = 0; i < Properties.Length; i++)
+				Properties[i].Serialize(writer);
+			for (int i = 0; i < Fields.Length; i++)
+				Fields[i].Serialize(writer);
+		}
+
+
 
 
 	}

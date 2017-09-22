@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Expressions;
 using LsnCore.Types;
+using Syroot.BinaryData;
 
 namespace LsnCore.Values
 {
@@ -72,5 +73,9 @@ namespace LsnCore.Values
 			throw new NotImplementedException();
 		}
 
+		public void Serialize(BinaryDataWriter writer)
+		{
+			throw new InvalidOperationException();
+		}
 	}
 }

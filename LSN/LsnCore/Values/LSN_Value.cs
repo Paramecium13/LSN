@@ -3,6 +3,7 @@ using LsnCore.Values;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Syroot.BinaryData;
 
 namespace LsnCore
 {
@@ -29,6 +30,6 @@ namespace LsnCore
 		}
 
 		public override bool IsReifyTimeConst() => true;
-
+		public abstract void Serialize(BinaryDataWriter writer);
 	}
 }

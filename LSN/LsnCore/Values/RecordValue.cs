@@ -4,6 +4,7 @@ using System.Text;
 using LsnCore.Expressions;
 using LsnCore.Types;
 using System.Linq;
+using Syroot.BinaryData;
 
 namespace LsnCore
 {
@@ -68,6 +69,15 @@ namespace LsnCore
 		public void Replace(IExpression oldExpr, IExpression newExpr){}
 
 		public bool Equals(IExpression other) => false;
+
+
+		public void Serialize(BinaryDataWriter writer)
+		{
+			writer.Write((byte)ConstantCode.Record);
+			writer.Write((ushort)Fields.Length);
+			for (int i = 0; i < Fields.Length; i++)
+				Fields[i].Serialize(writer);
+		}
 
 		/*
 		public static StructValue operator + (StructValue a, StructValue b)

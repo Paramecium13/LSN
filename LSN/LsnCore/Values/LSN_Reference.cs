@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Syroot.BinaryData;
 
 namespace LsnCore
 {
@@ -21,5 +22,9 @@ namespace LsnCore
 
 		public override ILsnValue Clone() => this;
 
+		public override void Serialize(BinaryDataWriter writer)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

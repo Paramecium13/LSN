@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using LsnCore.Types;
+using Syroot.BinaryData;
 
 namespace LsnCore.Values
 {
@@ -67,5 +68,14 @@ namespace LsnCore.Values
 
 
 		public int GetLength() => Size;
+
+		public override void Serialize(BinaryDataWriter writer)
+		{
+			writer.Write((byte)ConstantCode.Vector);
+			writer.Write(GenericId.Name);
+			writer.Write((ushort)Values.Length);
+			for (int i = 0; i < Values.Length; i++)
+				Values[i].Serialize(writer);
+		}
 	}
 }

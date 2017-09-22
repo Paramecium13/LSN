@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LsnCore.Types;
+using Syroot.BinaryData;
 
 namespace LsnCore.Values
 {
@@ -95,6 +96,15 @@ namespace LsnCore.Values
 		public void SetValue(int index, LsnValue value)
 		{
 			Values[index] = value;
+		}
+
+		public override void Serialize(BinaryDataWriter writer)
+		{
+			writer.Write((byte)ConstantCode.List);
+			writer.Write(Type.Name);
+			writer.Write((ushort)Values.Count);
+			for (int i = 0; i < Values.Count; i++)
+				Values[i].Serialize(writer);
 		}
 	}
 }
