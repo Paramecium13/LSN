@@ -101,6 +101,7 @@
     <Compile Include="LsnCore\GlobalVariableValue.cs" />
     <Compile Include="LsnCore\GlobalVariableValueWatched.cs" />
     <Compile Include="LsnCore\LsnFunction.cs" />
+    <Compile Include="LsnCore\Serialization\ResourceDeserializer.cs" />
     <Compile Include="LsnCore\Statements\ChangeGlobalVariableStatement.cs" />
     <Compile Include="LsnCore\Statements\CollectionValueReassignmentStatement.cs" />
     <Compile Include="LsnCore\Statements\DisplayChoicesStatement.cs" />
@@ -162,7 +163,7 @@
     <Compile Include="LsnScript.cs" />
     <Compile Include="LsnScriptBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ResourceSerializer.cs" />
+    <Compile Include="LsnCore\Serialization\ResourceSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

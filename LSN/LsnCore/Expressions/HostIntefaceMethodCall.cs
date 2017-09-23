@@ -10,7 +10,7 @@ using Syroot.BinaryData;
 namespace LsnCore.Expressions
 {
 	[Serializable]
-	public sealed class HostIntefaceMethodCall : IExpression
+	public sealed class HostInterfaceMethodCall : IExpression
 	{
 		public bool IsPure => false;
 
@@ -24,16 +24,17 @@ namespace LsnCore.Expressions
 		private IExpression[] Arguments;
 
 
-		public HostIntefaceMethodCall(FunctionSignature def, IExpression hostInterface, IExpression[] args)
+		public HostInterfaceMethodCall(FunctionSignature def, IExpression hostInterface, IExpression[] args)
 		{
 			_Type = def.ReturnType; Name = def.Name; HostInterface = hostInterface; Arguments = args;
 		}
 
-
-		public bool Equals(IExpression other)
+		public HostInterfaceMethodCall(string name, IExpression hostInterface, IExpression[] args)
 		{
-			return this == other; // Replace w/ more in depth comparison? 
+			Name = name; HostInterface = hostInterface; Arguments = args;
 		}
+
+		public bool Equals(IExpression other) => this == other;
 
 		public LsnValue Eval(IInterpreter i)
 		{
@@ -56,7 +57,7 @@ namespace LsnCore.Expressions
 			if (HostInterface == oldExpr)
 				HostInterface = newExpr;
 			for (int i = 0; i < Arguments.Length; i++)
-				if (Arguments[i] == oldExpr) Arguments[i] = newExpr; 
+				if (Arguments[i] == oldExpr) Arguments[i] = newExpr;
 		}
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)

@@ -30,10 +30,15 @@ namespace LsnCore.Expressions
 		}
 
 		public RecordConstructor(TypeId type, IEnumerable<IExpression> args)
-        {
+		{
 			Type = type;
 			Args = args.ToArray();
-        }
+		}
+
+		public RecordConstructor(IEnumerable<IExpression> args)
+		{
+			Args = args.ToArray();
+		}
 
 		public override LsnValue Eval(IInterpreter i)
 		//=> new StructValue(_Type, ArgsB.Select(e => e.Eval(i)).ToArray());

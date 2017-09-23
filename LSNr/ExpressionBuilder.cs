@@ -400,7 +400,7 @@ namespace LSNr
 								args = methodDef.CreateArgsArray(
 									Create.CreateParamList(fnTokens, methodDef.Parameters.Count, Script, Substitutions.Where(p => fnTokens.Contains(p.Key)).ToDictionary()));
 							}
-							memberExpression = new HostIntefaceMethodCall(methodDef, leftExpr, args);
+							memberExpression = new HostInterfaceMethodCall(methodDef, leftExpr, args);
 						}
 						else
 							throw new ApplicationException($"Error line {CurrentTokens[i].LineNumber}: The HostInterface type '{type.Name}' does not have a method '{memberName}'.");

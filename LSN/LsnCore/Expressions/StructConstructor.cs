@@ -40,6 +40,10 @@ namespace LsnCore.Expressions
 			}
 		}
 
+		public StructConstructor(IEnumerable<IExpression> args)
+		{
+			ArgsB = args.ToArray();
+		}
 
 		public override LsnValue Eval(IInterpreter i)
 		{
@@ -54,14 +58,15 @@ namespace LsnCore.Expressions
 
 		public override IExpression Fold()
 		{//d = Args.Select(pair => new KeyValuePair<string, ILsnValue>(pair.Key, pair.Value as ILsnValue)).ToDictionary()
-			var a = Args.Select(pair => new KeyValuePair<string, IExpression>(pair.Key, pair.Value.Fold())).ToDictionary();
+			/*var a = Args.Select(pair => new KeyValuePair<string, IExpression>(pair.Key, pair.Value.Fold())).ToDictionary();
 			if (a.Values.All(v => v.IsReifyTimeConst() && v is LsnValue?))
 				return new LsnValue(
 					new StructValue(_Type, Args.Select(pair 
 					=> new KeyValuePair<string,LsnValue>(pair.Key,(LsnValue)pair.Value)).ToDictionary())
 					);
 			else
-				return new StructConstructor(_Type, a);
+				return new StructConstructor(_Type, a);*/
+			return this;
 		}
 
 
