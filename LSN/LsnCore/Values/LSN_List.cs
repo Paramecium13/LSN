@@ -26,7 +26,7 @@ namespace LsnCore.Values
 		public LsnValue this[int index] { get { return Values[index]; } set { Values[index] = value; } }
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="type"></param>
 		public LsnList(LsnListType type)
@@ -36,7 +36,7 @@ namespace LsnCore.Values
 		}
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="type"></param>
 		/// <param name="values"></param>
@@ -46,7 +46,7 @@ namespace LsnCore.Values
 			//_Type = type;
 			Values = values.ToList();
 		}
-		
+
 		public LsnList(TypeId type)
 		{
 			Type = type;
@@ -58,7 +58,12 @@ namespace LsnCore.Values
 			Values = values.ToList();
 		}
 
-		internal void Add(LsnValue value)
+		/// <summary>
+		/// Add an item to this List.
+		/// WARNING: Calling this method directly does not check the type of the supplied value.
+		/// </summary>
+		/// <param name="value"></param>
+		public void Add(LsnValue value)
 		{
 			Values.Add(value);
 		}
@@ -70,26 +75,27 @@ namespace LsnCore.Values
 		public LsnValue Length() => new LsnValue(Values.Count);
 
 		/// <summary>
-		/// 
+		/// Performs a fake/shallow clone, b/c Lists are logically passed by reference and mutable.
 		/// </summary>
 		/// <returns></returns>
 		public override ILsnValue Clone() => this;
 
 		/// <summary>
-		/// 
+		/// Get the value at the specified index.
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
 		public LsnValue GetValue(int index) => this[index];
 
 		/// <summary>
-		/// 
+		/// Get the length of the list.
 		/// </summary>
 		/// <returns></returns>
 		public int GetLength() => Values.Count;
 
 		/// <summary>
-		/// 
+		/// Set the value at the specified index. If index is >= Length, bad things will happen.
+		/// WARNING: Calling this method directly does not check the type of the supplied value.
 		/// </summary>
 		/// <param name="index"></param>
 		/// <param name="value"></param>

@@ -32,19 +32,17 @@ namespace LsnCore.Values
 		public LsnValue this [int index] { get { return Values[index].Clone(); } }
 
 		public VectorInstance(VectorType type, LsnValue[] values)
+			:this(type.Id,type.GenericId,values) {}
+
+		public VectorInstance(TypeId type, TypeId genericType, LsnValue[] values)
 		{
-			//_Type = type;
-			Type = type.Id;
-			GenericId = type.GenericType.Id;
-			Size = values.Length;
-			Values = values;
+			Type = type; GenericId = genericType; Values = values; Size = values.Length;
 		}
 
 		public override ILsnValue Clone() => this;
 
-
 		/// <summary>
-		/// Get the length of this list.
+		/// Get the length of this vector.
 		/// </summary>
 		/// <returns></returns>
 		public LsnValue Length() => new LsnValue(Values.Length);
@@ -61,17 +59,15 @@ namespace LsnCore.Values
 				as LsnListType, vals);
 		}
 
-
 		public LsnValue GetValue(int index)
 			=> Values[index];
-
 
 		public int GetLength() => Size;
 
 		public override void Serialize(BinaryDataWriter writer)
 		{
 			writer.Write((byte)ConstantCode.Vector);
-			writer.Write(GenericId.Name);
+			writer.Write(Type.Name);
 			writer.Write((ushort)Values.Length);
 			for (int i = 0; i < Values.Length; i++)
 				Values[i].Serialize(writer);
