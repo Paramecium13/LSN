@@ -1,4 +1,5 @@
 ﻿using LsnCore.Expressions;
+using LsnCore.Statements;
 using LsnCore.Types;
 using Syroot.BinaryData;
 using System;
@@ -31,10 +32,94 @@ namespace LsnCore.Serialization
 			return type.Methods[methodName];
 		}
 
+		private Statement ReadStatement(BinaryDataReader reader)
+		{
+			switch ((StatementCode)reader.ReadByte())
+			{
+				case StatementCode.Return:
+					return new ReturnStatement(null);
+				case StatementCode.ReturnValue:
+					return new ReturnStatement(ReadExpression(reader));
+				case StatementCode.Jump:
+					return new JumpStatement
+					{
+						Target = reader.ReadInt32()
+					};
+				case StatementCode.ConditionalJump:
+					{
+						var t = reader.ReadInt32();
+						var cnd = ReadExpression(reader);
+						return new ConditionalJumpStatement(cnd)
+						{
+							Target = t
+						};
+					}
+				case StatementCode.EvaluateExpression:
+					return new ExpressionStatement(ReadExpression(reader));
+				case StatementCode.AssignVariable:
+					{
+						var index = reader.ReadInt32();
+						var val = ReadExpression(reader);
+						return new AssignmentStatement(index, val);
+					}
+				case StatementCode.AssignField:
+					{
+						var index = reader.ReadInt32();
+						var target = ReadExpression(reader);
+						var val = ReadExpression(reader);
+						return new FieldAssignmentStatement(target, index, val);
+					}
+				case StatementCode.AssignValueInCollection:
+					{
+						var target = ReadExpression(reader);
+						var index = ReadExpression(reader);
+						var val = ReadExpression(reader);
+						return new CollectionValueAssignmentStatement(target, index, val);
+					}
+				case StatementCode.SetState:
+					return new SetStateStatement(reader.ReadInt32());
+				case StatementCode.RegisterChoice:
+					{
+						var target = reader.ReadInt32();
+						var cnd = ReadExpression(reader);
+						var txt = ReadExpression(reader);
+						return new RegisterChoiceStatement(cnd, txt)
+						{
+							Target = target
+						};
+					}
+				case StatementCode.DisplayChoices:
+					return new DisplayChoicesStatement();
+				case StatementCode.Say:
+					{
+						var msg = ReadExpression(reader);
+						var grph = ReadExpression(reader);
+						var title = ReadExpression(reader);
+						return new SayStatement(msg, grph, title);
+					}
+				case StatementCode.GoTo:
+					throw new NotImplementedException();
+				case StatementCode.GiveItem:
+					{
+						var amount = ReadExpression(reader);
+						var id = ReadExpression(reader);
+						var rcvr = ReadExpression(reader);
+						return new GiveItemStatement(id, amount, rcvr);
+					}
+				case StatementCode.GiveGold:
+					{
+						var amount = ReadExpression(reader);
+						var rcvr = ReadExpression(reader);
+						return new GiveGoldStatement(amount, rcvr);
+					}
+				default:
+					throw new ApplicationException();
+			}
+		}
+
 		private IExpression ReadExpression(BinaryDataReader reader)
 		{
-			var exprType = (ExpressionCode)reader.ReadByte();
-			switch (exprType)
+			switch ((ExpressionCode)reader.ReadByte())
 			{
 				case ExpressionCode.DoubleValueConstant:
 					return new LsnValue(reader.ReadDouble());
