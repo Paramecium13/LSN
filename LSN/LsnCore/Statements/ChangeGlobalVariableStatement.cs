@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
@@ -28,6 +29,11 @@ namespace LsnCore.Statements
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if (Value == oldExpr) Value = newExpr;
+		}
+
+		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

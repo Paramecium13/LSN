@@ -2,6 +2,7 @@
 using System.Linq;
 using LsnCore.Expressions;
 using System;
+using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
@@ -35,6 +36,14 @@ namespace LsnCore.Statements
 			if (Receiver.Equals(oldExpr)) Receiver = newExpr;
 			if (Id.Equals(oldExpr)) Id = newExpr;
 		}
+
+		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)StatementCode.GiveItem);
+			Amount.Serialize(writer, resourceSerializer);
+			Id.Serialize(writer, resourceSerializer);
+			Receiver.Serialize(writer, resourceSerializer);
+		}
 	}
 	
 	[Serializable]
@@ -55,6 +64,13 @@ namespace LsnCore.Statements
 		{
 			if (Amount.Equals(oldExpr)) Amount = newExpr;
 			if (Receiver.Equals(oldExpr)) Receiver = newExpr;
+		}
+
+		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)StatementCode.GiveGold);
+			Amount.Serialize(writer, resourceSerializer);
+			Receiver.Serialize(writer, resourceSerializer);
 		}
 	}
 }

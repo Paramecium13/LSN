@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Expressions;
+using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
@@ -17,8 +18,6 @@ namespace LsnCore.Statements
 	{
 		public int Target { get; set; } = -1;
 
-
-
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.NextStatement = Target;
@@ -26,6 +25,12 @@ namespace LsnCore.Statements
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
+
+		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)StatementCode.Jump);
+			writer.Write(Target);
+		}
 	}
 
 	[Serializable]
@@ -48,7 +53,17 @@ namespace LsnCore.Statements
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
-			throw new NotImplementedException();
+			if (Condition.Equals(oldExpr))
+				Condition = newExpr;
+			else
+				Condition.Replace(oldExpr, newExpr);
+		}
+
+		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)StatementCode.ConditionalJump);
+			writer.Write(Target);
+			Condition.Serialize(writer, resourceSerializer);
 		}
 	}
 

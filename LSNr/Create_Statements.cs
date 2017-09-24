@@ -159,7 +159,7 @@ namespace LSNr
 			{
 				if (collection.Type != right.Type)
 					throw new ApplicationException("Type error...");
-				return new CollectionValueReassignmentStatement(collection.Collection, collection.Index, right);
+				return new CollectionValueAssignmentStatement(collection.Collection, collection.Index, right);
 			}
 			throw new ApplicationException("...");
 		}
@@ -173,7 +173,7 @@ namespace LSNr
 		/// <returns></returns>
 		private static SayStatement Say(List<Token> tokens, IPreScript script)
 		{
-			IExpression message, graphic = null, title = null;
+			IExpression message, graphic = LsnValue.Nil, title = LsnValue.Nil;
 			if(tokens.HasToken("with") || tokens.HasToken("withgraphic"))
 			{
 				int withIndex = tokens.IndexOf("with");
@@ -278,7 +278,7 @@ namespace LSNr
 			{
 				Id = Express(idTokens, script);
 			}
-			return new GiveItemStatement(Id, Amount,receiver);
+			return new GiveItemStatement(Id, Amount, receiver);
 		}
 
 		private static GiveGoldStatement GiveGold(List<Token> tokens, IPreScript script)

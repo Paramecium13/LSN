@@ -1,5 +1,6 @@
 ﻿using System;
 using LsnCore.Expressions;
+using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
@@ -26,6 +27,13 @@ namespace LsnCore.Statements
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if (Value.Equals(oldExpr)) Value = newExpr;
+		}
+
+		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)StatementCode.AssignVariable);
+			writer.Write((ushort)Index);
+			Value.Serialize(writer, resourceSerializer);
 		}
 	}
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Expressions;
+using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
@@ -16,6 +17,11 @@ namespace LsnCore.Statements
 		public override InterpretValue Interpret(IInterpreter i) => InterpretValue.Break;
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
+
+		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			throw new InvalidOperationException();
+		}
 	}
 
 	/// <summary>
@@ -27,5 +33,10 @@ namespace LsnCore.Statements
 		public override InterpretValue Interpret(IInterpreter i) => InterpretValue.Next;
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
+
+		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			throw new InvalidOperationException();
+		}
 	}
 }

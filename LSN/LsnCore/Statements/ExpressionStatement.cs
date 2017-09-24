@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Expressions;
+using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
@@ -12,12 +13,10 @@ namespace LsnCore.Statements
 	{
 		private IExpression Expression; // I may have to expose this for optimization.
 
-
 		public ExpressionStatement(IExpression expression)
 		{
 			Expression = expression;
 		}
-
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
@@ -31,6 +30,12 @@ namespace LsnCore.Statements
 				Expression = newExpr;
 			else
 				Expression.Replace(oldExpr, newExpr);
+		}
+
+		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)StatementCode.EvaluateExpression);
+			Expression.Serialize(writer, resourceSerializer);
 		}
 	}
 }

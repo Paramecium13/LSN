@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
@@ -37,6 +38,14 @@ namespace LsnCore.Statements
 			if (_Graphic.Equals( oldExpr)) _Graphic = newExpr;
 			if (_Title.Equals (oldExpr)) _Title = newExpr;
 
+		}
+
+		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)StatementCode.Say);
+			Message.Serialize(writer, resourceSerializer);
+			Graphic.Serialize(writer, resourceSerializer);
+			Title.Serialize(writer, resourceSerializer);
 		}
 	}
 }

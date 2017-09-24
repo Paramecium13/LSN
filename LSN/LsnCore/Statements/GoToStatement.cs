@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
@@ -14,7 +15,7 @@ namespace LsnCore.Statements
 	public class GoToStatement : Statement
 	{
 
-		private enum Form { Map, MapLabel, MapXY, MapPos, /*Label,*/ XY, Pos}
+		internal enum Form:byte { Map, MapLabel, MapXY, /*Label,*/ XY, Pos, MapPos}
 
 		private IExpression Map;
 
@@ -31,7 +32,7 @@ namespace LsnCore.Statements
 		private readonly Form MyForm;
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="ex0"></param>
 		/// <param name="ex1"></param>
@@ -67,8 +68,8 @@ namespace LsnCore.Statements
 
 				if (ex1.Type.Type == LsnType.int_) // It's of the form '(actor) goto <map> <x> <y>;'
 				{
-					if (ex2 == null) throw new ArgumentNullException();
-					if (ex2.Type.Type != LsnType.int_) throw new ArgumentException();
+					if (ex2 == null || (ex2.Type.Type != LsnType.int_))
+						throw new ArgumentNullException();
 					X = ex1;
 					Y = ex2;
 					MyForm = Form.MapXY;
@@ -95,7 +96,6 @@ namespace LsnCore.Statements
 
 			throw new ArgumentException();
 		}
-
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
@@ -126,6 +126,11 @@ namespace LsnCore.Statements
 			if (Position.Equals(oldExpr)) Position = newExpr;
 			if (X.Equals(oldExpr)) X = newExpr;
 			if (Y.Equals(oldExpr)) Y = newExpr;
+		}
+
+		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

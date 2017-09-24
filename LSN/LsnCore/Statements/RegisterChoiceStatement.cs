@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Expressions;
+using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
@@ -30,7 +31,23 @@ namespace LsnCore.Statements
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
-			throw new NotImplementedException();
+			if (Condition.Equals(oldExpr))
+				Condition = newExpr;
+			else if (ChoiceText.Equals(oldExpr))
+				ChoiceText = newExpr;
+			else
+			{
+				Condition.Replace(oldExpr, newExpr);
+				ChoiceText.Replace(oldExpr, newExpr);
+			}
+		}
+
+		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((byte)StatementCode.RegisterChoice);
+			writer.Write(Target);
+			Condition.Serialize(writer, resourceSerializer);
+			ChoiceText.Serialize(writer, resourceSerializer);
 		}
 	}
 }
