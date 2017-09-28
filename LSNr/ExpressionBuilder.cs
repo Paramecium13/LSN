@@ -414,7 +414,7 @@ namespace LSNr
 							if (!(i + 3 < CurrentTokens.Count && CurrentTokens[i + 2].Value == "(" && CurrentTokens[i + 3].Value == ")"))
 								throw new ApplicationException($"Error line {CurrentTokens[i + 1].LineNumber}: Improperly formated method call.");
 							memberExpression = method.CreateMethodCall
-								  (new List<Tuple<string, IExpression>>(), leftExpr, true/*Script.MethodIsIncluded(name)*/);
+								  (new List<Tuple<string, IExpression>>(), leftExpr);
 							nextIndex = i + 4; //Skip the name and the parenthesis. It now points to the thing after the closing ')'.
 						}
 						else

@@ -16,14 +16,16 @@ namespace LsnCore
 		TypeId GetTypeId(string name);
 	}
 
-
 	public class TypeIdContainer : ITypeIdContainer
 	{
 		private readonly IDictionary<string, TypeId> TypeIds;
+		private readonly IReadOnlyDictionary<string, GenericType> Generics;
 
 		public TypeIdContainer(TypeId[] typeNames)
 		{
-			TypeIds = typeNames.ToDictionary(i => i.Name);/*
+			TypeIds = typeNames.ToDictionary(i => i.Name);
+			Generics = LsnType.GetBaseGenerics().ToDictionary(g => g.Name);
+			/*
 			TypeIds.Add(LsnType.Bool_.Id.Name,LsnType.Bool_.Id);
 			TypeIds.Add(LsnType.double_.Id.Name, LsnType.double_.Id);
 			TypeIds.Add(LsnType.int_.Id.Name, LsnType.int_.Id);
@@ -33,7 +35,17 @@ namespace LsnCore
 		public TypeId GetTypeId(string name)
 		{
 			if (name.Contains('`'))
-				return new TypeId(name); // ToDo: use generic types...
+			//	return new TypeId(name); // ToDo: use generic types...
+			{
+				var names = name.Split('`');
+				var genericTypeName = names[0];
+				var generics = names.Skip(1).Select(GetTypeId).ToList();
+				if (!Generics.ContainsKey(genericTypeName))
+					throw new ApplicationException();
+				var generic = Generics[genericTypeName];
+				var type = generic.GetType(generics);
+				return type.Id;
+			}
 			return TypeIds[name];
 		}
 	}
@@ -67,13 +79,15 @@ namespace LsnCore
 			return Environment;
 		}
 
-
 		public void Serialize(Stream stream)
 		{
-			using (var writer = new BinaryDataWriter(stream))
+			using (var writer = new BinaryDataWriter(stream, new UTF8Encoding(false),true))
 			{
+				// Header
 				writer.Write(0x5f3759df); // Signature.
 
+				writer.Write((byte)1);
+				writer.Write((ulong)0);
 
 				writer.Write((ushort)Includes.Count);
 				foreach (var inc in Includes)
@@ -85,40 +99,102 @@ namespace LsnCore
 				writer.Write((ushort)TypeIds.Length);
 				foreach (var id in TypeIds)
 					writer.Write(id.Name);
+				// End Header
+				var resourceSerializer = new ResourceSerializer(TypeIds);
 
-				writer.Write((ushort)StructTypes.Count);
-				foreach (var type in StructTypes.Values)
-					type.Serialize(writer);
+				var typesPart1 = WriteTypesPart1(resourceSerializer);
+				var typesPart2 = WriteTypesPart2(resourceSerializer);
 
-				writer.Write((ushort)RecordTypes.Count);
-				foreach (var t in RecordTypes.Values)
-					t.Serialize(writer);
+				var functions = WriteFunctions(resourceSerializer);
 
-				writer.Write((ushort)HostInterfaces.Count);
-				foreach (var type in HostInterfaces.Values)
-					type.Serialize(writer);
-
-				writer.Write((ushort)ScriptObjectTypes.Count);
-				foreach (var type in ScriptObjectTypes.Values)
-					type.Serialize(writer);
-
-				var fns = Functions.Values.Where(fn => fn is LsnFunction).ToList();
-				writer.Write((ushort)fns.Count);
-				foreach (var fn in fns.Cast<LsnFunction>())
-					fn.Serialize(writer);
-
+				resourceSerializer.WriteConstantTable(writer);
+				writer.Write(typesPart1);
+				writer.Write(typesPart2);
+				writer.Write(functions);
 			}
 		}
 
+		private byte[] WriteTypesPart1(ResourceSerializer resourceSerializer)
+		{
+			using (var stream = new MemoryStream())
+			{
+				using (var writer = new BinaryDataWriter(stream, new UTF8Encoding(false), true))
+				{
+					writer.Write((ushort)StructTypes.Count);
+					foreach (var type in StructTypes.Values)
+						type.Serialize(writer);
 
-		public static LsnResourceThing Read(Stream stream, string filePath)
+					writer.Write((ushort)RecordTypes.Count);
+					foreach (var t in RecordTypes.Values)
+						t.Serialize(writer);
+
+					writer.Write((ushort)HostInterfaces.Count);
+					foreach (var type in HostInterfaces.Values)
+						type.Serialize(writer);
+				}
+				var p = (int)stream.Position;
+				stream.Position = 0;
+				var buff = new byte[p];
+				stream.Read(buff, 0, p);
+				return buff;
+			}
+		}
+
+		private byte[] WriteTypesPart2(ResourceSerializer resourceSerializer)
+		{
+			using (var stream = new MemoryStream())
+			{
+				using (var writer = new BinaryDataWriter(stream, new UTF8Encoding(false), true))
+				{
+					writer.Write((ushort)ScriptObjectTypes.Count);
+					foreach (var type in ScriptObjectTypes.Values)
+						type.Serialize(writer, resourceSerializer);
+				}
+				var p = (int)stream.Position;
+				stream.Position = 0;
+				var buff = new byte[p];
+				stream.Read(buff, 0, p);
+				return buff;
+			}
+		}
+
+		private byte[] WriteFunctions(ResourceSerializer resourceSerializer)
+		{
+			using (var stream = new MemoryStream())
+			{
+				using (var writer = new BinaryDataWriter(stream, new UTF8Encoding(false), true))
+				{
+					var fns = Functions.Values.Where(fn => fn is LsnFunction).ToList();
+					writer.Write((ushort)fns.Count);
+					foreach (var fn in fns.Cast<LsnFunction>())
+						fn.Serialize(writer, resourceSerializer);
+				}
+				var p = (int)stream.Position;
+				stream.Position = 0;
+				var buff = new byte[p];
+				stream.Read(buff, 0, p);
+				return buff;
+			}
+		}
+
+		public static LsnResourceThing Read(Stream stream, string filePath, Func<string, LsnResourceThing> resourceLoader)
 		{
 			LsnResourceThing res;
-			using (var reader = new BinaryDataReader(stream))
+			var resourceDeserializer = new Serialization.ResourceDeserializer();
+			using (var reader = new BinaryDataReader(stream, new UTF8Encoding(false),true))
 			{
+				// Header
 				var sig = reader.ReadInt32();
 				if (sig != 0x5f3759df)
 					throw new ApplicationException(); // Change byte order...
+
+				var version = reader.ReadByte();
+				if (version != 1)
+					throw new ApplicationException();
+
+				var features = reader.ReadUInt64();
+				if (features != 0)
+					throw new ApplicationException();
 
 				var nIncludes = reader.ReadUInt16();
 				var includes = new List<string>(nIncludes);
@@ -129,6 +205,16 @@ namespace LsnCore
 				var usings = new List<string>(nUsings);
 				for (int i = 0; i < nUsings; i++)
 					usings.Add(reader.ReadString());
+
+				foreach (var u in usings)
+				{
+					var r = resourceLoader(u);
+					resourceDeserializer.LoadFunctions(r.Functions.Values);
+					resourceDeserializer.LoadTypes(r.HostInterfaces.Values);
+					resourceDeserializer.LoadTypes(r.RecordTypes.Values);
+					resourceDeserializer.LoadTypes(r.ScriptObjectTypes.Values);
+					resourceDeserializer.LoadTypes(r.StructTypes.Values);
+				}
 
 				var nTypes = reader.ReadUInt16();
 				var typeNames = new string[nTypes];
@@ -142,7 +228,11 @@ namespace LsnCore
 					Usings = usings
 				};
 				var typeIdContainer = new TypeIdContainer(typeIds);
+				// End Header
 
+				resourceDeserializer.ReadConstantTable(reader); // Constant Table
+
+				// Types Part 1
 				var nStructTypes = reader.ReadUInt16();
 				var structTypes = new Dictionary<string, StructType>(nStructTypes);
 				for (int i = 0; i < nStructTypes; i++)
@@ -169,26 +259,30 @@ namespace LsnCore
 					hostInterfaces.Add(h.Name, h);
 				}
 				res.HostInterfaces = hostInterfaces;
+				// End Types Part 1
 
+				// Types Part 2
 				var nScriptObjectTypes = reader.ReadUInt16();
 				var scriptObjectTypes = new Dictionary<string, ScriptObjectType>();
 				for (int i = 0; i < nScriptObjectTypes; i++)
 				{
-					var s = ScriptObjectType.Read(reader, typeIdContainer, filePath);
+					var s = ScriptObjectType.Read(reader, typeIdContainer, filePath, resourceDeserializer);
 					scriptObjectTypes.Add(s.Name, s);
 				}
 				res.ScriptObjectTypes = scriptObjectTypes;
+				// End Types Part 2
 
+				// Functions
 				var nFunctions = reader.ReadUInt16();
 				var functions = new Dictionary<string, Function>(nFunctions);
 				for (int i = 0; i < nFunctions; i++)
 				{
-					var fn = LsnFunction.Read(reader, typeIdContainer, filePath);
+					var fn = LsnFunction.Read(reader, typeIdContainer, filePath, resourceDeserializer);
 					functions.Add(fn.Name, fn);
 				}
 				res.Functions = functions;
-
 			}
+			resourceDeserializer.ResolveCodeBlocks();
 			return res;
 		}
 

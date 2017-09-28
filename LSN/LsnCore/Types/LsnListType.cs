@@ -87,6 +87,7 @@ namespace LsnCore
 
 		internal LsnListType(TypeId type)
 		{
+			Id = new TypeId("List`" + type.Name);
 			GenericType = type.Type;
 			GenericId = type;
 			// Set up methods
@@ -96,20 +97,20 @@ namespace LsnCore
 					((LsnList)args[0].Value).Add(args[1]);
 					return LsnValue.Nil;
 				}, "Add",
-				new List<Parameter>() { new Parameter("self",this, LsnValue.Nil, 0), new Parameter("value",type, LsnValue.Nil, 1)}
+				new List<Parameter> { new Parameter("self",this, LsnValue.Nil, 0), new Parameter("value",type, LsnValue.Nil, 1)}
 			));
 			_Methods.Add("Length", new BoundedMethod(this, int_, (args) => ((LsnList)args[0].Value).Length(), "Length"));
 			//var vtype = VectorGeneric.Instance.GetType(new List<TypeId> { GenericId }) as VectorType;
 			//_Methods.Add("ToVector", new BoundedMethod(this, vtype, (args) => new LsnValue(new VectorInstance(vtype, ((LsnList)args[0].Value).GetValues())), "ToVector"));
+			Id.Load(this);
 		}
 
 		public override LsnValue CreateDefaultValue()
 			=> new LsnValue(new LsnList(this));
-
 	}
 
 	/// <summary>
-	/// 
+	/// ...
 	/// </summary>
 	[Serializable]
 	public class LsnListGeneric : GenericType

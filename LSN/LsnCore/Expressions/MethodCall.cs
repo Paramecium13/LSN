@@ -18,7 +18,7 @@ namespace LsnCore.Expressions
 		public readonly Method Method;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-		public MethodCall(Method m, /*IExpression value,*/ IExpression[] args)
+		public MethodCall(Method m, IExpression[] args)
 		{
 			Args = args ?? new IExpression[1];
 			Method = m;
@@ -48,11 +48,13 @@ namespace LsnCore.Expressions
 
 		public override bool IsReifyTimeConst() => false;
 
-
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.MethodCall);
-			writer.Write(Method.TypeId.Name);
+			var typeName = Method.TypeId?.Name;
+			if (string.IsNullOrEmpty(typeName))
+				typeName = Method.Parameters[0].Type.Name;
+			writer.Write(typeName);
 			writer.Write(Method.Name);
 			writer.Write((byte)Args.Length);
 			for (int i = 0; i < Args.Length; i++)

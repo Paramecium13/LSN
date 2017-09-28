@@ -1,4 +1,5 @@
-﻿using Syroot.BinaryData;
+﻿using LsnCore.Serialization;
+using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -106,7 +107,7 @@ namespace LsnCore.Types
 
 
 
-		public void Serialize(BinaryDataWriter writer)
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(Name);
 			writer.Write(Unique);
@@ -127,21 +128,21 @@ namespace LsnCore.Types
 
 			writer.Write((ushort)ScriptObjectMethods.Count);
 			foreach (var method in ScriptObjectMethods.Values)
-				method.Serialize(writer);
+				method.Serialize(writer, resourceSerializer);
 
 			writer.Write((ushort)EventListeners.Count);
 			foreach (var listener in EventListeners.Values)
-				listener.Serialize(writer);
+				listener.Serialize(writer, resourceSerializer);
 
 			writer.Write((ushort)_States.Count);
 			foreach (var state in _States.Values)
-				state.Serialize(writer);
+				state.Serialize(writer, resourceSerializer);
 			
 		}
 
 
 
-		public static ScriptObjectType Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath)
+		public static ScriptObjectType Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
 			var name = reader.ReadString();
 			var unique = reader.ReadBoolean();
@@ -169,7 +170,7 @@ namespace LsnCore.Types
 			var methods = new Dictionary<string, ScriptObjectMethod>(nMethods);
 			for (int i = 0; i < nMethods; i++)
 			{
-				var m = ScriptObjectMethod.Read(reader, typeContainer, type, resourceFilePath);
+				var m = ScriptObjectMethod.Read(reader, typeContainer, type, resourceFilePath, resourceDeserializer);
 				methods.Add(m.Name, m);
 			}
 
@@ -177,7 +178,7 @@ namespace LsnCore.Types
 			var listeners = new Dictionary<string, EventListener>();
 			for (int i = 0; i < nListeners; i++)
 			{
-				var listener = EventListener.Read(reader, typeContainer, resourceFilePath);
+				var listener = EventListener.Read(reader, typeContainer, resourceFilePath, resourceDeserializer);
 				listeners.Add(listener.Definition.Name, listener);
 			}
 
@@ -185,7 +186,7 @@ namespace LsnCore.Types
 			var states = new Dictionary<int, ScriptObjectState>(nStates);
 			for (int i = 0; i < nStates; i++)
 			{
-				var state = ScriptObjectState.Read(reader, typeContainer, type, resourceFilePath);
+				var state = ScriptObjectState.Read(reader, typeContainer, type, resourceFilePath, resourceDeserializer);
 				states.Add(state.Id, state);
 			}
 

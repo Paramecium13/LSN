@@ -92,7 +92,7 @@ namespace LsnCore
 		{
 			writer.Write(Name);
 			writer.Write(Type.Name);
-			writer.Write(DefaultValue.IsNull);
+			writer.Write(!DefaultValue.IsNull);
 		}
 
 

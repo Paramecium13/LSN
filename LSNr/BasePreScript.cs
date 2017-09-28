@@ -114,8 +114,22 @@ namespace LSNr
 		//
 		public abstract SymbolType CheckSymbol(string name);
 
+		private static readonly Func<string,LsnResourceThing> ResourceLoader =
+			(path)	=>
+			{
+				if (path.StartsWith(@"Lsn Core\", StringComparison.Ordinal))
+					return ResourceManager.GetStandardLibraryResource(new string(path.Skip(9).ToArray()));
+				if (path.StartsWith(@"std\", StringComparison.Ordinal))
+					return ResourceManager.GetStandardLibraryResource(new string(path.Skip(4).ToArray()));
+				var objPath = Program.GetObjectPath(path);
+				using (var stream = File.OpenRead(objPath))
+				{
+					return LsnResourceThing.Read(stream, new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()), ResourceLoader);
+				}
+			};
+
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="path">The path to the file.</param>
 		/// <returns></returns>
@@ -130,7 +144,7 @@ namespace LSNr
 				{
 					using (var fs = new FileStream(objPath, FileMode.Open))
 					{
-						res = LsnResourceThing.Read(fs,new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()));
+						res = LsnResourceThing.Read(fs,new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()),ResourceLoader);
 					}
 				}
 			}
@@ -161,7 +175,7 @@ namespace LSNr
 						using (var fs = new FileStream(objPath, FileMode.Open))
 						{
 							var bf = new BinaryFormatter();
-							res = LsnResourceThing.Read(fs, new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()));
+							res = LsnResourceThing.Read(fs, new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()), ResourceLoader);
 						}
 						LsnResourceThing x = null;
 						foreach (var include in res.Includes)
@@ -426,12 +440,9 @@ namespace LSNr
 		protected readonly Dictionary<string, HostInterfaceType> MyHostInterfaces = new Dictionary<string, HostInterfaceType>();
 		protected readonly Dictionary<string, ScriptObjectType> ScriptObjects = new Dictionary<string, ScriptObjectType>();
 
-
 		protected readonly IList<GenericType> IncludedGenerics = new List<GenericType>();
 
-
 		protected readonly IList<GenericType> LoadedGenerics = LsnType.GetBaseGenerics();
-
 
 		public virtual bool TypeExists(string name)
 			=> IncludedTypes.Any(t => t.Name == name) || LoadedTypes.Any(t => t.Name == name);

@@ -30,7 +30,6 @@ namespace LsnCore
 
 		public LsnResourceThing GetResource(string path)
 		{
-
 			if (path.StartsWith(@"Lsn Core\", StringComparison.Ordinal))
 				path = new string(path.Skip(9).ToArray());
 			else if (path.StartsWith(@"std\", StringComparison.Ordinal))

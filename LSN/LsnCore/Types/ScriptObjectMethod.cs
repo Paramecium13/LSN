@@ -1,4 +1,5 @@
 ﻿using LsnCore.Expressions;
+using LsnCore.Serialization;
 using LsnCore.Statements;
 using Syroot.BinaryData;
 using System;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 namespace LsnCore.Types
 {
 	[Serializable]
-	public class ScriptObjectMethod : Method
+	public class ScriptObjectMethod : Method, ICodeBlock
 	{
 		public override bool HandlesScope => false;
 
@@ -21,7 +22,7 @@ namespace LsnCore.Types
 		public readonly bool IsAbstract;
 
 
-		internal Statement[] Code; // Assigned in LSNr.
+		public Statement[] Code { get; set; } // Assigned in LSNr.
 
 
 
@@ -74,7 +75,7 @@ namespace LsnCore.Types
 
 		//enum Flags : byte { none = 0, IsVirtual = 1, IsAbstract = 2 }
 
-		public void Serialize(BinaryDataWriter writer)
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			Signature.Serialize(writer);
 			byte b = 0;
@@ -85,31 +86,37 @@ namespace LsnCore.Types
 			writer.Write(b);
 			if(!IsAbstract)
 			{
-				writer.Write(StackSize);
-				new BinaryFormatter().Serialize(writer.BaseStream, Code);
+				writer.Write((ushort)StackSize);
+				var offset = writer.ReserveOffset();
+
+				writer.Write((ushort)Code.Length);
+				for (int i = 0; i < Code.Length; i++)
+					Code[i].Serialize(writer, resourceSerializer);
+
+				offset.Satisfy((int)writer.Position - (int)offset.Position -4);
 			}
 		}
 
-
-		public static ScriptObjectMethod Read(BinaryDataReader reader, ITypeIdContainer typeContainer, TypeId type, string resourceFilePath)
+		public static ScriptObjectMethod Read(BinaryDataReader reader, ITypeIdContainer typeContainer, TypeId type, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
 			var signature = FunctionSignature.Read(reader, typeContainer);
 			var b = reader.ReadByte();
 			var isVirtual = b > 0;
 			var isAbstract = b == 2;
-			Statement[] code = null;
-			int stackSize = -1;
+			var stackSize = -1;
+			var method = new ScriptObjectMethod(type, signature.ReturnType, signature.Parameters.ToList(), resourceFilePath, isVirtual, isAbstract, signature.Name)
+			{
+				StackSize = stackSize
+			};
+
 			if (!isAbstract)
 			{
-				stackSize = reader.ReadInt32();
-				code = (Statement[])new BinaryFormatter().Deserialize(reader.BaseStream);
+				stackSize = reader.ReadUInt16();
+				var codeSize = reader.ReadInt32();
+				resourceDeserializer.RegisterCodeBlock(method, reader.ReadBytes(codeSize));
 			}
 
-			return new ScriptObjectMethod(type, signature.ReturnType, signature.Parameters.ToList(), resourceFilePath, isVirtual, isAbstract, signature.Name)
-			{
-				StackSize = stackSize,
-				Code = code
-			};
+			return method;
 		}
 
 	}

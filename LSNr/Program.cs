@@ -124,7 +124,7 @@ namespace LSNr
 				return ERROR_IN_SOURCE;
 			}
 			res = rs.GetResource();
-			using (var fs = new FileStream(destination, FileMode.Create))
+			using (var fs = File.Create(destination))
 			{
 				res.Serialize(fs);
 			}

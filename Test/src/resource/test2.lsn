@@ -56,7 +56,7 @@ ScriptObject StandardDoor < IStandardActivator
 		on Activate(actor : IActor)
 		{
 			// Open the door.
-			actor goto DestMap` DestX` DestY;
+			//actor goto DestMap` DestX` DestY;
 			OpenCount = OpenCount + 1;
 			return;
 		}    

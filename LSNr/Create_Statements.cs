@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace LSNr
 {
 	/// <summary>
-	/// 
+	/// ...
 	/// </summary>
 	internal static partial class Create
 	{

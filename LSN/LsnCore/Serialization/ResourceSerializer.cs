@@ -1,4 +1,5 @@
-﻿using Syroot.BinaryData;
+﻿using LsnCore.Types;
+using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -62,6 +63,13 @@ namespace LsnCore
 	{
 		private readonly List<ILsnValue> ConstantTable = new List<ILsnValue>();
 
+		private readonly TypeId[] TypeIds;
+
+		public ResourceSerializer(TypeId[] typeIds)
+		{
+			TypeIds = typeIds;
+		}
+
 		internal ushort TableConstant(ILsnValue value)
 		{
 			if(ConstantTable.Contains(value))
@@ -70,14 +78,11 @@ namespace LsnCore
 			return (ushort)(ConstantTable.Count - 1);
 		}
 
-		internal void Serialize(Stream stream)
+		internal void WriteConstantTable(BinaryDataWriter writer)
 		{
-			using (var writer = new BinaryDataWriter(stream))
-			{
-				writer.Write((ushort)ConstantTable.Count);
-				for (int i = 0; i < ConstantTable.Count; i++)
-					ConstantTable[i].Serialize(writer);
-			}
+			writer.Write((ushort)ConstantTable.Count);
+			for (int i = 0; i < ConstantTable.Count; i++)
+				ConstantTable[i].Serialize(writer);
 		}
 	}
 }

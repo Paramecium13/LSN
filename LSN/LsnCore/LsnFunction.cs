@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Linq;
 using System.Text;
+using LsnCore.Serialization;
 
 namespace LsnCore
 {
@@ -14,16 +15,14 @@ namespace LsnCore
 	/// A function written in LSN.
 	/// </summary>
 	[Serializable]
-	public class LsnFunction : Function
+	public class LsnFunction : Function, ICodeBlock
 	{
 		/// <summary>
 		/// This should only be set from within LSNr, where function bodies are parsed.
 		/// </summary>
-		public Statement[] Code;
-		
+		public Statement[] Code { get; set; }
 
 		public override bool HandlesScope { get { return true; } }
-
 
 		public LsnFunction(List<Parameter> parameters, LsnType returnType, string name,string resourceFilePath)
 			:base(new FunctionSignature(parameters, name, returnType?.Id))
@@ -46,24 +45,29 @@ namespace LsnCore
 		}
 
 
-		public void Serialize(BinaryDataWriter writer)
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			Signature.Serialize(writer);
-			writer.Write(StackSize);
-			new BinaryFormatter().Serialize(writer.BaseStream, Code);
+			writer.Write((ushort)StackSize);
+			var offset = writer.ReserveOffset();
+			writer.Write((ushort)Code.Length);
+			for (int i = 0; i < Code.Length; i++)
+				Code[i].Serialize(writer, resourceSerializer);
+			offset.Satisfy((int)writer.Position - (int)offset.Position -4);
 		}
 
-		public static LsnFunction Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath)
+		public static LsnFunction Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
 			var signiture = FunctionSignature.Read(reader, typeContainer);
-			var stackSize = reader.ReadInt32();
-			var code = (Statement[])new BinaryFormatter().Deserialize(reader.BaseStream);
+			var stackSize = reader.ReadUInt16();
+			var codeSize = reader.ReadInt32();
 
-			return new LsnFunction(signiture.Parameters.ToList(), signiture.ReturnType, signiture.Name, resourceFilePath)
+			var fn = new LsnFunction(signiture.Parameters.ToList(), signiture.ReturnType, signiture.Name, resourceFilePath)
 			{
-				Code = code,
 				StackSize = stackSize
 			};
+			resourceDeserializer.RegisterFunction(fn,reader.ReadBytes(codeSize));
+			return fn;
 		}
     }
 }

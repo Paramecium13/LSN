@@ -1,4 +1,5 @@
 ﻿using LsnCore.Expressions;
+using LsnCore.Serialization;
 using LsnCore.Values;
 using Syroot.BinaryData;
 using System;
@@ -44,19 +45,20 @@ namespace LsnCore.Types
 		public EventListener GetEventListener(string name) => EventListeners[name];
 
 
-		public void Serialize(BinaryDataWriter writer)
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
-			writer.Write(Id);
+			writer.Write((int)Id);
+
 			writer.Write((ushort)ScriptObjectMethods.Count);
 			foreach (var method in ScriptObjectMethods.Values)
-				method.Serialize(writer);
+				method.Serialize(writer, resourceSerializer);
 
 			writer.Write((ushort)EventListeners.Count);
 			foreach (var listener in EventListeners.Values)
-				listener.Serialize(writer);
+				listener.Serialize(writer, resourceSerializer);
 		}
 
-		public static ScriptObjectState Read(BinaryDataReader reader, ITypeIdContainer typeContainer, TypeId type, string resourceFilePath)
+		public static ScriptObjectState Read(BinaryDataReader reader, ITypeIdContainer typeContainer, TypeId type, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
 			var id = reader.ReadInt32();
 
@@ -64,7 +66,7 @@ namespace LsnCore.Types
 			var methods = new Dictionary<string, ScriptObjectMethod>(nMethods);
 			for (int i = 0; i < nMethods; i++)
 			{
-				var method = ScriptObjectMethod.Read(reader, typeContainer, type, resourceFilePath);
+				var method = ScriptObjectMethod.Read(reader, typeContainer, type, resourceFilePath, resourceDeserializer);
 				methods.Add(method.Name, method);
 			}
 
@@ -72,7 +74,7 @@ namespace LsnCore.Types
 			var listeners = new Dictionary<string, EventListener>();
 			for (int i = 0; i < nListeners; i++)
 			{
-				var listener = EventListener.Read(reader, typeContainer, resourceFilePath);
+				var listener = EventListener.Read(reader, typeContainer, resourceFilePath, resourceDeserializer);
 				listeners.Add(listener.Definition.Name, listener);
 			}
 

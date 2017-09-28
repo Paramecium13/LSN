@@ -7,7 +7,6 @@ using LsnCore.Types;
 
 namespace LsnCore
 {
-	[Serializable]
 	public abstract class Method : Function
 	{
 		/// <summary>
@@ -20,7 +19,6 @@ namespace LsnCore
 		{
 			TypeId = type.Id;
 		}
-
 
 		protected Method(LsnType type, TypeId returnType, string name, IList<Parameter> parameters)
 			: base(new FunctionSignature(parameters, name, returnType))
@@ -39,7 +37,6 @@ namespace LsnCore
 		/// </summary>
 		/// <param name="args"></param>
 		/// <param name="expression"> The object the method is called on</param>
-		/// <param name="included"></param>
 		/// <returns></returns>
 		public virtual IExpression CreateMethodCall(IList<Tuple<string, IExpression>> args, IExpression expression)
 		{
@@ -53,7 +50,7 @@ namespace LsnCore
 				if (param.Name != "self")
 					argsArray[param.Index] = dict.ContainsKey(param.Name) ? dict[param.Name] : param.DefaultValue;
 			}
-			return  new MethodCall(this, argsArray);
+			return new MethodCall(this, argsArray);
 		}
 
 	}
