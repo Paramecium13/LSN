@@ -6,7 +6,7 @@ LSN is a reified language; the reifier, LSNr, generates .NET objects from .lsn s
 LSN is meant to be used for higher level mechanics of a game, such as specific dialog, story interactions, quests, etc. It could also be used for parts of a combat system. It is not supposed to handle lower level mechanics such as graphics, audio, user input, saving, etc. 
 
 ## Features
-LSN is procedural and somewhat object oriented. All values, (strings, integers, doubles, etc.) are objects and will have methods. Users will be able to create custom types, structs, which contain read only fields, and records, which contain mutable fields and are passed by value. All values in LSN are passed by value (structs are technically kind of passed by reference because it doesn't make a difference). I am still working on reference type variables.
+LSN is procedural and somewhat object oriented. All values, (strings, integers, doubles, etc.) are objects and will have methods. Users are able to create custom types, records, which contain read only fields, and structs, which contain mutable fields and are passed by value. All values in LSN are passed by value (records are technically kind of passed by reference because it doesn't make a difference). 
 
 ### Types
 LSN is a strongly typed language and comes with several built in types and allows the creation of new types. All types will have methods (I plan to add a *ToString* method for all of them) and some have operators. LSN currently does not support creating new methods or operators for user defined types, though I may add this. I have not put much thought into polymorphism, inheritance, and type conversions but I would like LSN to support them in some manner.
@@ -26,12 +26,12 @@ Currently, none of the collections are fully functional. The syntax for initiali
 
 ***List<T>*** : A mutable collection of variable length that is passed by reference. Like *Vector<T>*, all of its contents must be of the same type. It currently has the methods *Length* and *Add(value : T)*. *List<int>* and *List<double>* also have the methods *Sum()* and *Mean()*.
 
-#### Structs
-Structs are user defined types that consist of named and typed members. They are immutable and effectively passed by reference, though they appear to be passed by value. Currently, there is no syntax for initializing values of a struct type.
 #### Records
-Records are user defined types that, like structs, consist of named and typed members. They differ from structs in that they are mutable and passed by value. This means that when a record is passed to a function or method as an argument, the function recieves a new record with the same values. The function can make changes to that record but those changes are not made on the record that was passed to the function.
+Records are user defined types that consist of named and typed members. They are immutable and effectively passed by reference, though they appear to be passed by value. Currently, there is no syntax for initializing values of a struct type.
+#### Structs
+Structs are user defined types that, like records, consist of named and typed members. They differ from records in that they are mutable and passed by value. This means that when a struct is passed to a function or method as an argument, the function recieves a new struct with the same values. The function can make changes to that struct but those changes are not made on the struct that was passed to the function.
 ### Statements
-LSN will have many different statements, though currently only a few are implemented.
+LSN will have many different statements, though currently not all of them are implemented.
 
 #### General statements
 The interpretation of these statements is implemented by the abstract Interpreter class.
@@ -45,6 +45,7 @@ The interpretation of these statements must be implemented by the game specific 
 
 * Give item/gold
 * GOTO: Change the location of the player, or an other character on the current map or a different map.
+* Say: Display a message on the screen.
 
 ### Control Structures
 Control the execution of their contents, which can be statements and/or other control structures.
