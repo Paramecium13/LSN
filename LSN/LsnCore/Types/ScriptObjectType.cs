@@ -32,11 +32,9 @@ namespace LsnCore.Types
 		// States
 		internal IReadOnlyDictionary<int,ScriptObjectState> _States;
 
-		private readonly int DefaultStateId;
-
+		public readonly int DefaultStateId;
 
 		public IReadOnlyCollection<Field> FieldsB => Fields;
-
 
 		public ScriptObjectType(TypeId id, TypeId host, IList<Property> properties, IReadOnlyList<Field> fields,
 			IReadOnlyDictionary<string,ScriptObjectMethod> methods, IReadOnlyDictionary<string,EventListener> eventListeners,
@@ -56,10 +54,8 @@ namespace LsnCore.Types
 			id.Load(this);
 		}
 
-
 		public ScriptObjectState GetDefaultState()
 			=> _States[DefaultStateId];
-
 
 		public override LsnValue CreateDefaultValue()
 			=> LsnValue.Nil;

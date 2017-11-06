@@ -22,7 +22,7 @@ namespace LsnCore.Serialization
 
 		private readonly Dictionary<string, LsnType> Types = new Dictionary<string, LsnType>();
 
-		private readonly Dictionary<string, GenericType> GenericTypes = new Dictionary<string, GenericType>();
+		private readonly Dictionary<string, GenericType> GenericTypes = LsnType.GetBaseGenerics().ToDictionary(g => g.Name);
 
 		public ResourceDeserializer()
 		{
@@ -90,13 +90,13 @@ namespace LsnCore.Serialization
 					return new ExpressionStatement(ReadExpression(reader));
 				case StatementCode.AssignVariable:
 					{
-						var index = reader.ReadInt32();
+						var index = reader.ReadUInt16();
 						var val = ReadExpression(reader);
 						return new AssignmentStatement(index, val);
 					}
 				case StatementCode.AssignField:
 					{
-						var index = reader.ReadInt32();
+						var index = reader.ReadUInt16();
 						var target = ReadExpression(reader);
 						var val = ReadExpression(reader);
 						return new FieldAssignmentStatement(target, index, val);
@@ -151,7 +151,8 @@ namespace LsnCore.Serialization
 
 		private IExpression ReadExpression(BinaryDataReader reader)
 		{
-			switch ((ExpressionCode)reader.ReadByte())
+			var code = (ExpressionCode)reader.ReadByte();
+			switch (code)
 			{
 				case ExpressionCode.DoubleValueConstant:
 					return new LsnValue(reader.ReadDouble());
@@ -354,7 +355,8 @@ namespace LsnCore.Serialization
 		internal void LoadTypes(IEnumerable<LsnType> types)
 		{
 			foreach (var type in types)
-				Types.Add(type.Name, type);
+				if(!Types.ContainsKey(type.Name))
+					Types.Add(type.Name, type);
 		}
 	}
 }

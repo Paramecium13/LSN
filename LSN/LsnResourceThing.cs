@@ -241,6 +241,7 @@ namespace LsnCore
 					structTypes.Add(structType.Name, structType);
 				}
 				res.StructTypes = structTypes;
+				resourceDeserializer.LoadTypes(structTypes.Values);
 
 				var nRecordTypes = reader.ReadUInt16();
 				var recordTypes = new Dictionary<string, RecordType>(nRecordTypes);
@@ -250,6 +251,7 @@ namespace LsnCore
 					recordTypes.Add(rType.Name, rType);
 				}
 				res.RecordTypes = recordTypes;
+				resourceDeserializer.LoadTypes(recordTypes.Values);
 
 				var nHostInterfaces = reader.ReadUInt16();
 				var hostInterfaces = new Dictionary<string, HostInterfaceType>(nHostInterfaces);
@@ -259,6 +261,7 @@ namespace LsnCore
 					hostInterfaces.Add(h.Name, h);
 				}
 				res.HostInterfaces = hostInterfaces;
+				resourceDeserializer.LoadTypes(hostInterfaces.Values);
 				// End Types Part 1
 
 				// Types Part 2
@@ -270,6 +273,7 @@ namespace LsnCore
 					scriptObjectTypes.Add(s.Name, s);
 				}
 				res.ScriptObjectTypes = scriptObjectTypes;
+				resourceDeserializer.LoadTypes(scriptObjectTypes.Values);
 				// End Types Part 2
 
 				// Functions

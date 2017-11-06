@@ -59,18 +59,20 @@ namespace LSNr
 			{
 				src = s.ReadToEnd();
 			}
-			string destination = GetObjectPath(args[0]);
-			
+			var destination = GetObjectPath(args[0]);
+
 			// The argument that specifies the destination, or null if not present
-			string dest = args.Where(a => Regex.IsMatch(a, @"^\s*destination\s*=.+$", RegexOptions.IgnoreCase))
-				.FirstOrDefault();
+			var dest = args.FirstOrDefault(a => Regex.IsMatch(a, @"^\s*destination\s*=.+$", RegexOptions.IgnoreCase));
+
 			if (dest != null)
-				destination = dest;//Regex.Match(dest, @"^\s*destination\s*=\s*(.+)\s*$", RegexOptions.IgnoreCase).Captures[0].ToString();
+			{
+				destination = Regex.Match(dest, @"^\s*destination\s*=\s*(.+)\s*$", RegexOptions.IgnoreCase).Groups[1].Value;
+			}
 
 			// The argument that specifies
-			string t = args.Where(a => Regex.IsMatch(a,@"^\s*type\s*=\s*(\w+)\s*$",RegexOptions.IgnoreCase)).FirstOrDefault();
+			var t = args.FirstOrDefault(a => Regex.IsMatch(a,@"^\s*type\s*=\s*(\w+)\s*$",RegexOptions.IgnoreCase));
 
-			if(Path.IsPathRooted(args[0])) throw new ApplicationException("Needs relative path...");
+			if (Path.IsPathRooted(args[0])) throw new ApplicationException("Needs relative path...");
 
 			if (t != null)
 			{ // The type of file is defined.

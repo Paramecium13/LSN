@@ -29,7 +29,8 @@ namespace LsnCore.Values
 		public ScriptObject(LsnValue[] properties, LsnValue[] fields, ScriptObjectType type, int currentState, IHostInterface host = null)
 		{
 			Properties = properties; Fields = fields; Type = type.Id; ScObjType = type; CurrentStateIndex = currentState;
-			CurrentState = ScObjType.GetState(CurrentStateIndex);
+			if(type._States.Count > 0)
+				CurrentState = ScObjType.GetState(CurrentStateIndex);
 			if (host != null)
 			{
 				// Check types
@@ -44,7 +45,6 @@ namespace LsnCore.Values
 				foreach (var evName in (host.Type.Type as HostInterfaceType).EventDefinitions.Keys)
 					if((CurrentState?.HasEventListener(evName)?? false ) || ScObjType.HasEventListener(evName))
 						host.SubscribeToEvent(evName, this);
-				
 			}
 			else if (ScObjType.HostInterface != null)
 				throw new ArgumentException("This type of ScriptObject cannot survive without a host.", "host");
@@ -94,7 +94,7 @@ namespace LsnCore.Values
 				var method = ScObjType.GetMethod(methodName);
 				if (method.IsVirtual)
 				{
-					if (CurrentState.HasMethod(methodName))
+					if (CurrentState?.HasMethod(methodName) ?? false)
 						return CurrentState.GetMethod(methodName);
 					if (!method.IsAbstract)
 						return method;
@@ -115,11 +115,10 @@ namespace LsnCore.Values
 
 		public EventListener GetEventListener(string name)
 		{
-			if (CurrentState.HasEventListener(name))
+			if (CurrentState?.HasEventListener(name) ?? false)
 				return CurrentState.GetEventListener(name);
-			else if(ScObjType.HasEventListener(name))
+			if (ScObjType.HasEventListener(name))
 				return ScObjType.GetEventListener(name);
-			
 			throw new ArgumentException("", nameof(name));
 		}
 
@@ -137,7 +136,7 @@ namespace LsnCore.Values
 
 			CurrentStateIndex = index;
 			CurrentState = nextState;
-			
+
 			// Subscribe to new state's event subscriptions (if valid). Run new state Start method.
 			if (Host != null)
 				foreach (var subscription in newSubscriptions)

@@ -24,9 +24,7 @@ namespace LsnCore
 
 		public abstract ScriptObject GetUniqueScriptObject(string name);
 
-
 		protected abstract LsnResourceThing GetResourceFile(string path);
-
 
 		public LsnResourceThing GetResource(string path)
 		{

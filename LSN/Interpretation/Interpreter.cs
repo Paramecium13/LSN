@@ -11,25 +11,17 @@ namespace LsnCore
 {
 	public abstract class Interpreter : IInterpreter
 	{
-
 		public IResourceManager ResourceManager { get; set; }
 
 		public LsnValue ReturnValue { get; set; }
 
-
 		//protected List<ILsnValue> LsnObjects = new List<ILsnValue>();
-
 
 		private readonly Dictionary<int, ConcurrentStack<LsnValue[]>> StackFrameStore = new Dictionary<int, ConcurrentStack<LsnValue[]>>();
 
-
 		private LsnValue[] CurrentStackFrame;
 
-
 		private readonly Stack<LsnValue[]> StackFrames = new Stack<LsnValue[]>();
-
-
-
 
 		// Where the current environment is pushed when a new function scope is entered.
 		private readonly Stack<LsnEnvironment> EnvStack = new Stack<LsnEnvironment>();
@@ -37,12 +29,10 @@ namespace LsnCore
 		// The current environment.
 		private LsnEnvironment CurrentEnvironment;
 
-
 		public int NextStatement { get; set; }
 
-
 		private readonly List<Tuple<string, int>> _Choices = new List<Tuple<string, int>>();
-		protected IReadOnlyList<Tuple<string, int>> Choices => _Choices; 
+		protected IReadOnlyList<Tuple<string, int>> Choices => _Choices;
 
 		public void Run(Statements.Statement[] code, LsnEnvironment environment, int stackSize, LsnValue[] parameters)
 		{
@@ -133,10 +123,18 @@ namespace LsnCore
 
 		public virtual void EnterFunctionScope(string resourceFilePath, int scopeSize)
 		{
-			EnvStack.Push(CurrentEnvironment);
-			CurrentEnvironment = ResourceManager.GetResource(resourceFilePath).GetEnvironment(ResourceManager);
-
-			StackFrames.Push(CurrentStackFrame);
+			if(CurrentEnvironment != null)
+				EnvStack.Push(CurrentEnvironment);
+			try
+			{
+				CurrentEnvironment = ResourceManager.GetResource(resourceFilePath).GetEnvironment(ResourceManager);
+			}
+			catch (Exception e)
+			{
+				throw new ApplicationException("ResourceManager exception",e);
+			}
+			if(CurrentStackFrame != null)
+				StackFrames.Push(CurrentStackFrame);
 			int i = NearestPower(scopeSize);
 			if (StackFrameStore.ContainsKey(i))
 			{
