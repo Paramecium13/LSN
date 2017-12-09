@@ -40,35 +40,18 @@ namespace LSNr
 		protected LsnEnvironment _Environment;
 		internal LsnEnvironment Environment => _Environment;
 
-		protected readonly string Path;
+		public string Path { get; private set; }
 
 		protected BasePreScript(string src, string path)
 		{
 			Source = src;
-			/*IncludeFunction(LsnMath.ACos);
-			IncludeFunction(LsnMath.ASin);
-			IncludeFunction(LsnMath.ATan);
-			IncludeFunction(LsnMath.Cos);
-			IncludeFunction(LsnMath.Cosh);
-			IncludeFunction(LsnMath.ErrorFunction);
-			IncludeFunction(LsnMath.Gamma);
-			IncludeFunction(LsnMath.Log);
-			IncludeFunction(LsnMath.Log10);
-			IncludeFunction(LsnMath.Sin);
-			IncludeFunction(LsnMath.Sinh);
-			IncludeFunction(LsnMath.Tan);
-			IncludeFunction(LsnMath.Tanh);
-			
-			IncludeFunction(LsnMath.Sqrt);
-			IncludeFunction(LsnMath.Hypot);*/
-			//ToDo: Make it use, rather than include, math functions.
-
+			Path = path;
 			foreach (var t in LoadedTypes)
 				t.Id.Load(t);// Load/bind it's type ids...
 		}
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		protected void Tokenize()
 		{
@@ -332,7 +315,8 @@ namespace LSNr
 		{
 			if (IncludedFunctions.ContainsKey(name)) return IncludedFunctions[name];
 			if (LoadedExternallyDefinedFunctions.ContainsKey(name)) return AddExternalFunction(LoadedExternallyDefinedFunctions[name]);
-			else throw new ApplicationException($"Function \"{name}\" not found. Are you missing an include or using?");
+
+			throw new LsnrFunctionNotFoundException(Path, name);
 		}
 
 		/// <summary>
@@ -396,7 +380,6 @@ namespace LSNr
 
 		#region Types
 
-
 		protected void LoadType(LsnType type)
 		{
 			if (type != null && type.Id.Type == null)
@@ -405,7 +388,7 @@ namespace LSNr
 				// Methods...
 				foreach (var func in type.Methods.Values)
 					LoadFunctionParamAndReturnTypes(func);
-				
+
 				var fType = type as IHasFieldsType;
 				var hType = type as HostInterfaceType;
 				if (fType != null)
@@ -421,11 +404,10 @@ namespace LSNr
 						LoadFunctionParamAndReturnTypes(method);
 					foreach(var ev in hType.EventDefinitions.Values)
 						foreach (var param in ev.Parameters)
-							LoadType(GetType(param.Type.Name));					
+							LoadType(GetType(param.Type.Name));
 				}
 			}
 		}
-
 
 		/// <summary>
 		/// The types that will be included by the output.
@@ -447,7 +429,6 @@ namespace LSNr
 		public virtual bool TypeExists(string name)
 			=> IncludedTypes.Any(t => t.Name == name) || LoadedTypes.Any(t => t.Name == name);
 
-
 		public virtual LsnType GetType(string name)
 		{
 			if (name.Contains('`'))
@@ -458,13 +439,14 @@ namespace LSNr
 					var generic = GetGenericType(names[0]);
 					return generic.GetType(names.Skip(1).Select(n => GetType(n)).Select(t => t.Id).ToList());
 				}
-				else throw new ApplicationException();
+
+				throw new LsnrTypeNotFoundException(Path, name);
 			}
 			var type = IncludedTypes.FirstOrDefault(t => t.Name == name);
 			if (type != null) return type;
 			type = LoadedTypes.FirstOrDefault(t => t.Name == name);
-			/*if (type == null)
-				throw new ApplicationException();*/
+			if (type == null)
+				throw new LsnrTypeNotFoundException(Path, name);
 			return type;
 		}
 
@@ -473,7 +455,6 @@ namespace LSNr
 
 		public virtual bool GenericTypeExists(string name)
 			=> IncludedGenerics.Any(t => t.Name == name) || LoadedGenerics.Any(t => t.Name == name);
-
 
 		public virtual GenericType GetGenericType(string name)
 		{
@@ -485,16 +466,13 @@ namespace LSNr
 
 		public virtual TypeId GetTypeId(string name) => GetType(name).Id;
 
-
 		public bool TypeIsIncluded(TypeId type)
 			=> IncludedTypes.Contains(type.Type);
-
 
 		/*public virtual void AddType(LsnType type)
 		{
 			IncludedTypes.Add(type);
 		}*/
-
 		#endregion
 	}
 }

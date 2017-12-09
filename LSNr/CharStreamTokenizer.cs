@@ -39,7 +39,7 @@ namespace LSNr
 			//Statement stuff
 			"item","weapon","armor","armour","actor","video","image","soundeffect","backgroundmusic",
 			"screen","moveroute","animation","picture","with","as","down","left","right","up","graphic",
-			
+
 			//both
 			"hp","level","exp","mp","g",//"name",
 
@@ -153,7 +153,6 @@ namespace LSNr
 			else if (State < TokenizerState.StringBase)
 				SymReadChar(c);
 			else StrReadChar(c);
-			
 		}
 
 		protected void BaseReadChar(char c)

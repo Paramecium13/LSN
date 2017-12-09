@@ -19,7 +19,7 @@ namespace LSNr
 
 		private IScope _CurrentScope = new VariableTable(new List<Variable>());
 
-		public IScope CurrentScope { get { return _CurrentScope; } set { _CurrentScope = value; } } 
+		public IScope CurrentScope { get { return _CurrentScope; } set { _CurrentScope = value; } }
 
 		public bool Mutable => Resource.Mutable;
 
@@ -39,6 +39,7 @@ namespace LSNr
 
 		public bool TypeExists(string name) => Resource.TypeExists(name);
 
+		public string Path => Resource.Path;
 
 		public SymbolType CheckSymbol(string name)
 		{

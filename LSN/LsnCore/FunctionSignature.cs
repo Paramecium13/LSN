@@ -45,7 +45,7 @@ namespace LsnCore
 
 				for (int i = 0; i < args.Count; i++)
 				{
-					if (!string.IsNullOrEmpty( args[i].Item1 ))
+					if (!string.IsNullOrEmpty(args[i].Item1))
 						dict.Add(args[i].Item1, args[i].Item2);
 					else dict.Add(Parameters[i].Name, args[i].Item2);
 				}
@@ -64,6 +64,35 @@ namespace LsnCore
 			}
 			return argsArray;
 		}
+
+		/*public IExpression[] CreateArgsArrayForMethod(IList<Tuple<string, IExpression>> args)
+		{
+			var argsArray = new IExpression[Parameters.Count];
+
+			if (args.Count > 0 && args.Any(a => !string.IsNullOrEmpty(a.Item1)))
+			{
+				var dict = new Dictionary<string, IExpression>(args.Count);//args.ToDictionary(t => t.Item1, t => t.Item2);
+
+				for (int i = 0; i < args.Count; i++)
+				{
+					if (!string.IsNullOrEmpty(args[i].Item1))
+						dict.Add(args[i].Item1, args[i].Item2);
+					else dict.Add(Parameters[i].Name, args[i].Item2);
+				}
+
+				foreach (var param in Parameters.Where(p => p.Index != 0))
+					argsArray[param.Index] = dict.ContainsKey(param.Name) ? dict[param.Name] : param.DefaultValue;
+			}
+			else
+			{
+				for (int i = 1; i < args.Count; i++)
+					argsArray[i] = args[i - 1].Item2;
+
+				for (int i = args.Count - 1; i < Parameters.Count; i++)
+					argsArray[i] = Parameters[i].DefaultValue;
+			}
+			return argsArray;
+		}*/
 
 		public void Serialize(BinaryDataWriter writer)
 		{

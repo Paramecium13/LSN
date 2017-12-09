@@ -81,6 +81,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasePreScript.cs" />
+    <Compile Include="Logging.cs" />
+    <Compile Include="LsnrException.cs" />
+    <Compile Include="LsnrParsingException.cs" />
+    <Compile Include="LsnrTypeNotFoundException.cs" />
     <Compile Include="Optimization\ComponentFlattener.cs" />
     <Compile Include="PreStatement.cs" />
     <Compile Include="ScriptObjects\BasePreScriptObject.cs" />

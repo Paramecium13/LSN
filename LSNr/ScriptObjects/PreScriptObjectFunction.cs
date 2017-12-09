@@ -12,7 +12,6 @@ namespace LSNr
 	{
 		internal readonly BasePreScriptObject Parent;
 
-
 		internal PreScriptObjectFunction(BasePreScriptObject parent)
 		{
 			Parent = parent;
@@ -22,10 +21,11 @@ namespace LSNr
 
 		public IScope CurrentScope { get { return _CurrentScope; } set { _CurrentScope = value; } }
 
-
-
 		public bool Mutable => Parent.Mutable;
 		public bool Valid { get { return Parent.Valid; } set { Parent.Valid = value; } }
+
+		public string Path => Parent.Path;
+
 		public bool FunctionExists(string name) => Parent.FunctionExists(name);
 		public bool FunctionIsIncluded(string name) => Parent.FunctionIsIncluded(name);
 		public bool GenericTypeExists(string name) => Parent.GenericTypeExists(name);

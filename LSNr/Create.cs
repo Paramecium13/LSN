@@ -84,16 +84,17 @@ namespace LSNr
 			{
 				script.CurrentScope = script.CurrentScope.CreateChild();
 				if (head.Count < 10)
-					throw new ApplicationException("Incorrect for loop head thing [incorrectness inferred by too few tokens].");
+					throw new LsnrParsingException(head[0], "Incorrectly formatted for loop.", script.Path);
 				if (head.Select(t => t.Value).Count(vl => vl == "`") != 2)
-					throw new ApplicationException("Incorrectly formatted for loop...");
+					throw new LsnrParsingException(head[0], "Incorrectly formatted for loop.", script.Path);
 
-				if (head[1].Value != "(") throw new ApplicationException("A for loop must use parenthesis...");//[e.g \'for   (   i = 0` i < cat`i++   )   \']");
+				if (head[1].Value != "(")
+					throw new LsnrParsingException(head[1], "Incorrectly formatted for loop. (A for loop must use parenthesis)", script.Path);
 
 				string varName = head[2].Value; // Check if it exists, type, mutable...
 
 
-				if (head[3].Value != "=") throw new ApplicationException("...");
+				if (head[3].Value != "=") throw new LsnrParsingException(head[3], "Incorrectly formatted for loop.", script.Path);
 
 				var exprTokens = new List<Token>();
 				int i = 4;
@@ -144,28 +145,27 @@ namespace LSNr
 				else if (v == "--")
 				{
 					if (head[++i].Value != varName)
-						throw new ApplicationException("...");
+						throw new LsnrParsingException(head[i], "Incorrectly formatted for loop.", script.Path);
 					throw new NotImplementedException(); // ToDo: Implement
 				}
 				else if(v == "++")
 				{
 					if (head[++i].Value != varName)
-						throw new ApplicationException("...");
+						throw new LsnrParsingException(head[i], "Incorrectly formatted for loop.", script.Path);
 					throw new NotImplementedException(); // ToDo: Implement
 				}
 
-				
 				var p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
 				script.CurrentScope = script.CurrentScope.Pop(components);
-				
+
 				return new ForLoop(vr.Index, val, con, components, post);
 			}
 			if(n > 1 && head.Last().Value == "->")
 			{
 				// It's a choice (inside a choice block).
-				Parser p = new Parser(body, script);
+				var p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
 				//var endOfStr = head.IndexOf("->");
@@ -175,7 +175,6 @@ namespace LSNr
             }
 			return null;
 		}
-		
 
 		private static IExpression Express(IEnumerable<Token> tokens, IPreScript script/*, IExpressionContainer container*/)
 			=> Express(tokens.ToList(), script);
@@ -187,6 +186,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="list"> The list of tokens.</param>
 		/// <param name="script"> The script.</param>
+		/// <param name="substitutions">todo: describe substitutions parameter on Express</param>
 		/// <returns></returns>
 		public static IExpression Express(List<Token> list, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions = null)
 		{
@@ -205,7 +205,6 @@ namespace LSNr
 					__variables[0].AddUser(expr as IExpressionContainer);
 					__variables.Clear();
 				}
-					
 				return expr;
 			}
 			if(substitutions == null)
@@ -244,12 +243,7 @@ namespace LSNr
 					var preScr = preScrFn.Parent;
 					expr = new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
 					return expr;
-				default:
-					break;
-			}
-			if (script.CurrentScope.VariableExists(val))
-			{
-				
+
 			}
 			if (token != null)
 			{
@@ -267,7 +261,7 @@ namespace LSNr
 						break;
 				}
 			}
-			
+
 			if (val == "true")
 				return LsnBoolValue.GetBoolValue(true);
 			if (val == "false")
@@ -277,21 +271,18 @@ namespace LSNr
 			if (val == "this")
 			{
 				if (preScObjFn == null)
-					throw new ApplicationException("Cannot use 'this' outside a script object method or event listener.");
+					throw new LsnrParsingException(token, "Cannot use 'this' outside a script object method or event listener.", script.Path);
 				return new VariableExpression(0, preScObjFn.Parent.Id);
 			}
 			if (val == "host")
 			{
 				if (preScObjFn == null)
-					throw new ApplicationException("Cannot use 'host' outside a script object method or event listener.");
+					throw new LsnrParsingException(token, "Cannot use 'host' outside a script object method or event listener.", script.Path);
 				return new HostInterfaceAccessExpression(preScObjFn.Parent.HostType.Id);
 			}
 
-			
-
-			throw new ApplicationException(); //return null;
+			throw new LsnrParsingException(token, $"Cannot parse token '{token.Value}' as an expression.", script.Path);
 		}
-
 
 		private static Expression CreateGet(List<Token> tokens, IPreScript script)
 		{
@@ -300,6 +291,12 @@ namespace LSNr
 
 		public static IList<Tuple<string,IExpression>> CreateParamList(List<Token> tokens, int paramCount, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions)
 		{
+			/*if(tokens[0].Value == "(")
+			{
+				if (tokens[tokens.Count - 1].Value == ")")
+					tokens = tokens.Skip(1).Take(tokens.Count - 2).ToList();
+				else tokens = tokens.Skip(1).ToList();
+			}*/
 			var ls = new List<Tuple<string, IExpression>>();
 			var parameterTokens = new List<List<Token>> { new List<Token>() };
 			int paramIndex = 0;
@@ -315,7 +312,7 @@ namespace LSNr
 				if(tokens[0].Value != "(")
 				{
 					start = 0;
-					++end;
+					//++end; This would make it go out of bounds.
 				}
 
 				for (int i = start; i < end; i++)
@@ -405,6 +402,5 @@ namespace LSNr
 			var ls = CreateParamList(tokens, method.Parameters.Count, script,substitutions);
 			return method.CreateMethodCall(ls,obj);
 		}
-		
 	}
 }

@@ -17,6 +17,8 @@ namespace LSNr
 		public abstract bool Mutable { get; }
 		public abstract bool Valid { get; set; }
 
+		public string Path => Resource.Path;
+
 		// The Id of the ScriptObject this is for.
 		internal readonly TypeId Id;
 		protected readonly IReadOnlyList<Token> Tokens;
@@ -51,8 +53,6 @@ namespace LSNr
 			Tokens = tokens; Id = id; Resource = resource; HostName = hostName;
 		}
 
-
-
 		public abstract bool IsMethodSignatureValid(FunctionSignature signature);
 
 		internal bool HostEventExists(string name) => HostType?.HasEventDefinition(name) ?? false;
@@ -61,8 +61,7 @@ namespace LSNr
 		internal bool HostMethodExists(string name) => HostType?.HasMethod(name) ?? false; //ToDo: Use...
 		internal FunctionSignature GetHostMethodSignature(string name) => HostType?.GetMethodDefinition(name); //ToDo: Use...
 
-
-		private List<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
+		private List<Parameter> ParseParameters(IReadOnlyList<Token> tokens, bool isEvent)
 		{
 			var paramaters = new List<Parameter>();
 			ushort index = 0;
@@ -70,18 +69,18 @@ namespace LSNr
 			{
 				string name = tokens[i].Value;
 				if (tokens[++i].Value != ":")
-					throw new ApplicationException($"Error: Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.");
+					throw new LsnrParsingException(tokens[i], $"Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.", Path);
 				var type = this.ParseTypeId(tokens, ++i, out i);
 				LsnValue defaultValue = LsnValue.Nil;
 				if (i < tokens.Count && tokens[i].Value == "=")
 				{
-					Valid = false;
-					Console.Write($"Error line {tokens[i].LineNumber}: Cannot have default values for host interface methods or events.");
-					i++;
+					if (isEvent)
+						throw new LsnrParsingException(tokens[i], "Cannot have default values for event listeners", Path);
+					throw new NotImplementedException();
 				}
 				paramaters.Add(new Parameter(name, type, defaultValue, index++));
 				if (i < tokens.Count && tokens[i].Value != ",")
-					throw new ApplicationException($"Error: expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.");
+					throw new LsnrParsingException(tokens[i], $"Expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.", Path);
 			}
 			return paramaters;
 		}
@@ -89,15 +88,15 @@ namespace LSNr
 		protected ScriptObjectMethod PreParseMethod(ref int i) // 'i' points to the thing after 'fn'.
 		{
 			var val = Tokens[i].Value;
-			bool isAbstract = false;
-			bool isVirtual = false;
+			var isAbstract = false;
+			var isVirtual = false;
 			if (val == "abstract")
 			{
 				isAbstract = true;
 				isVirtual = true;
 				i++;
 			}
-			else if(val == "virtual")
+			else if (val == "virtual")
 			{
 				isVirtual = true;
 				i++;
@@ -106,14 +105,13 @@ namespace LSNr
 			var name = Tokens[i].Value;
 			i++;
 			if (Tokens[i].Value != "(")
-				throw new ApplicationException("...");
+				throw new LsnrParsingException(Tokens[i], $"Error parsing method {name}: expected '(', received '{Tokens[i].Value}.", Path);
 
 			var paramTokens = new List<Token>();
 			while (Tokens[++i].Value != ")") // This starts with the token after '('.
 				paramTokens.Add(Tokens[i]);
 
-
-			var preParameters = ParseParameters(paramTokens);
+			var preParameters = ParseParameters(paramTokens, false);
 
 			var parameters = new List<Parameter> { new Parameter("self", Id, LsnValue.Nil, 0) };
 			parameters.AddRange(preParameters.Select(p => new Parameter(p.Name, p.Type, p.DefaultValue, (ushort)(p.Index + 1))));
@@ -121,11 +119,7 @@ namespace LSNr
 			TypeId returnType = null;
 			i++; // 'i' Points to the thing after the closing parenthesis.
 			if (i > Tokens.Count - 1)
-			{
-				Valid = false;
-				Console.WriteLine($"Error line {Tokens[Tokens.Count - 1].LineNumber}: Expected ';', '->', or '{{'");
-				throw new ApplicationException();
-			}
+				throw new LsnrParsingException(Tokens[i - 1], $"Error parsing method {name}: expected ';', '->', or '{{'", Path);
 
 			if (Tokens[i].Value == "->")
 			{
@@ -133,69 +127,48 @@ namespace LSNr
 				if (Tokens[i].Value == "(")
 				{
 					if (Tokens[++i].Value != ")")
-					{
-						Valid = false;
-						Console.WriteLine($"Error line {Tokens[i].LineNumber}: Expected ')'");
-						throw new ApplicationException();
-					} // 'i' points to ')'.
+						throw new LsnrParsingException(Tokens[i], $"Error parsing method {name}: expected ')'.", Path);
+					// 'i' points to ')'.
 					i++; // 'i' points to the thing after ')'.
 				}
 				else
 				{
+					var j = i;
 					returnType = this.ParseTypeId(Tokens, i, out i); // 'i' points to the thing after the return type.
 					if (i < 0)
-					{
-						i = Tokens.Count;
-						throw new ApplicationException("Critical error parsing return type...");
-					}
+						throw new LsnrParsingException(Tokens[j], $"Failed to parse return type for method {name}.", Path);
 				}
 			}
 
 			if (Tokens[i].Value == ";")
 			{
 				if (!isAbstract)
-				{
-					Valid = false;
-					Console.WriteLine($"Error line {Tokens[i].LineNumber}: A non abstract method must declare a body.");
-				}
+					throw new LsnrParsingException(Tokens[i], "A non abstract method must declare a body.", Path);
 			}
 			else if (Tokens[i].Value == "{")
 			{
-				if(isAbstract)
-				{
-					Console.WriteLine($"Error line {Tokens[i].LineNumber}: An abstract method may not declare a body.");
-					Valid = false;
-					return new ScriptObjectMethod(Id, returnType, parameters, Resource.RelativePath, isVirtual, isAbstract, name);
-				}
+				if (isAbstract)
+					throw new LsnrParsingException(Tokens[i], "An abstract method may not declare a body.", Path);
 				/*if (i > Tokens.Count - 1)
 				{
 					Console.WriteLine($"Error line {Tokens[i].LineNumber}: Unexpected end of file.");
 					Valid = false;
 					return new ScriptObjectMethod(Id, returnType, parameters, Resource.Environment, isVirtual, isAbstract, name);
 				}*/
-
 				var tokens = new List<Token>();
 				int openCount = 1;
 				while (openCount > 0)
 				{
 					i++;
-					
 					var v = Tokens[i].Value;
-					if (v == "{")
-						openCount++;					
-					else if (v == "}")
-						openCount--;
-
+					if (v == "{") openCount++;
+					else if (v == "}") openCount--;
 					if (openCount > 0) tokens.Add(Tokens[i]);
 				}
 				MethodBodies.Add(name, tokens);
 			}
 			else
-			{
-				var x = isAbstract ? ", ';'," : "";
-				Console.WriteLine($"Error line {Tokens[i].LineNumber}: Unexpected token '{Tokens[i].Value}'. Expected '->'{x} or '{{'. ");
-			}
-
+				throw LsnrParsingException.UnexpectedToken(Tokens[i], isAbstract ? "-> or ;" : "-> or {", Path);
 			i++; // 'i' points to the thing after ';' or the end of the body.
 
 			return new ScriptObjectMethod(Id, returnType, parameters, Resource.RelativePath, isVirtual, isAbstract, name);
@@ -209,19 +182,12 @@ namespace LSNr
 		protected EventListener PreParseEventListener(ref int i)
 		{
 			var name = Tokens[i].Value;
-			if(!HostEventExists(name))
-			{
-				Console.WriteLine($"Error line {Tokens[i].LineNumber}: The HostInterface '{HostType.Name}' does not define an event '{name}'.");
-				throw new ApplicationException("...");
-			}
-
 			i++; // 'i' should point to '('.
-			if(Tokens[i].Value != "(")
-			{
-				Valid = false;
-				Console.WriteLine($"Error line {Tokens[i].LineNumber}: Expected '('. Received '{Tokens[i].Value}'.");
-				throw new ApplicationException();
-			}
+			if (!HostEventExists(name))
+				throw new LsnrParsingException(Tokens[i], $"The HostInterface '{HostType.Name}' does not define an event '{name}'.", Path);
+
+			if (Tokens[i].Value != "(")
+				throw new LsnrParsingException(Tokens[i], $"Error parsing event listener {name}; expected '('. Received '{Tokens[i].Value}'.", Path);
 
 			var paramTokens = new List<Token>();
 			while (Tokens[++i].Value != ")") // This starts with the token after '('.
@@ -229,34 +195,21 @@ namespace LSNr
 
 			//var parameters = ParseParameters(paramTokens);
 
-
-			var preParameters = ParseParameters(paramTokens);
+			var preParameters = ParseParameters(paramTokens, true);
 
 			var parameters = new List<Parameter> { new Parameter("self", Id, LsnValue.Nil, 0) };
 			parameters.AddRange(preParameters.Select(p => new Parameter(p.Name, p.Type, p.DefaultValue, (ushort)(p.Index + 1))));
 
 			i++;// 'i' Points to the thing after the closing parenthesis.
-			if (i > Tokens.Count - 1)
-			{
-				Valid = false;
-				Console.WriteLine($"Error line {Tokens[Tokens.Count - 1].LineNumber}: Expected '{{'");
-				throw new ApplicationException();
-			}
-
-			if (Tokens[i].Value != "{")
-			{
-				throw new ApplicationException("...");
-			}
+			if (i > Tokens.Count - 1 || Tokens[i].Value != "{")
+				throw new LsnrParsingException(Tokens[i - 1], $"Error parsing event listener {name}; expected token '{{'", Path);
 
 			var def = new EventDefinition(name, parameters);
 			var preDef = new EventDefinition(name, preParameters);
 
 			var hostDef = GetHostEventDefinition(name);
 			if (!hostDef.Equivalent(preDef))
-			{
-				Console.WriteLine($"Error line {Tokens[i].Value}: the event '{name}' does not match the event definition in the HostInterface '{HostType.Name}'.");
-				throw new ApplicationException("");
-			}
+				throw new LsnrParsingException(Tokens[i], $"The event '{name}' does not match the event definition in the HostInterface '{HostType.Name}'.", Path);
 
 			var tokens = new List<Token>();
 			int openCount = 1;
@@ -283,16 +236,33 @@ namespace LSNr
 			foreach (var pair in MethodBodies)
 			{
 				var method = Methods[pair.Key];
-				var pre = new PreScriptObjectFunction(this);
-				foreach (var param in method.Parameters)
-					pre.CurrentScope.CreateVariable(param);
-				var parser = new Parser(pair.Value, pre);
-				parser.Parse();
-				pre.CurrentScope.Pop(parser.Components);
+				try
+				{
+					var pre = new PreScriptObjectFunction(this);
+					foreach (var param in method.Parameters)
+						pre.CurrentScope.CreateVariable(param);
+					var parser = new Parser(pair.Value, pre);
+					parser.Parse();
+					pre.CurrentScope.Pop(parser.Components);
 
-				var components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
-				method.Code = new ComponentFlattener().Flatten(components);
-				method.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
+					var components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
+					method.Code = new ComponentFlattener().Flatten(components);
+					method.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
+				}
+				catch (LsnrException e)
+				{
+					Valid = false;
+					var st = this as PreState;
+					var x = st != null ? $"state {st.StateName} of " : "";
+					Logging.Log($"method '{method.Name}' in {x}script object {this.Id.Name}", e);
+				}
+				catch (Exception e)
+				{
+					Valid = false;
+					var st = this as PreState;
+					var x = st != null ? $"state {st.StateName} of " : "";
+					Logging.Log($"method '{method.Name}' in {x}script object {this.Id.Name}", e, Path);
+				}
 			}
 		}
 
@@ -301,21 +271,37 @@ namespace LSNr
 			foreach (var pair in EventListenerBodies)
 			{
 				var eventListener = EventListeners[pair.Key];
-				var pre = new PreScriptObjectFunction(this);
-				
-				foreach (var param in eventListener.Definition.Parameters)
-					pre.CurrentScope.CreateVariable(param);
-				var parser = new Parser(pair.Value, pre);
-				parser.Parse();
-				pre.CurrentScope.Pop(parser.Components);
-				eventListener.Code = new ComponentFlattener().Flatten(Parser.Consolidate(parser.Components).Where(c => c != null).ToList());
-				eventListener.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
+				try
+				{
+					var pre = new PreScriptObjectFunction(this);
+
+					foreach (var param in eventListener.Definition.Parameters)
+						pre.CurrentScope.CreateVariable(param);
+					var parser = new Parser(pair.Value, pre);
+					parser.Parse();
+					pre.CurrentScope.Pop(parser.Components);
+					eventListener.Code = new ComponentFlattener().Flatten(Parser.Consolidate(parser.Components).Where(c => c != null).ToList());
+					eventListener.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
+				}
+				catch (LsnrException e)
+				{
+					Valid = false;
+					var st = this as PreState;
+					var x = st != null ? $"state {st.StateName} of " : "";
+					Logging.Log($"event listener '{eventListener.Definition.Name}' in {x}script object {this.Id.Name}", e);
+				}
+				catch (Exception e)
+				{
+					Valid = false;
+					var st = this as PreState;
+					var x = st != null ? $"state {st.StateName} of " : "";
+					Logging.Log($"event listener '{eventListener.Definition.Name}' in {x}script object {this.Id.Name}", e, Path);
+				}
 			}
 		}
 
-		public bool TypeIsIncluded(TypeId type)
-		{
-			return Resource.TypeIsIncluded(type);
-		}
+		public bool TypeIsIncluded(TypeId type) => Resource.TypeIsIncluded(type);
+
+		public abstract FunctionSignature GetMethodSignature(string name);
 	}
 }

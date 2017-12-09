@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace LSNr
 {
-	class Program
+	static class Program
 	{
 		private const int NO_FILE = -1;
 		private const int FILE_NOT_FOUND = -2;
@@ -25,9 +25,7 @@ namespace LSNr
 
 		private static Config _Config;
 
-
 		internal static Config Config => _Config;
-
 
 		static int Main(string[] args)
 		{
@@ -43,7 +41,6 @@ namespace LSNr
 			}
 			else
 				_Config = new Config();
-			
 
 			if(args[0].ToLower() == "build")
 			{
@@ -72,7 +69,13 @@ namespace LSNr
 			// The argument that specifies
 			var t = args.FirstOrDefault(a => Regex.IsMatch(a,@"^\s*type\s*=\s*(\w+)\s*$",RegexOptions.IgnoreCase));
 
-			if (Path.IsPathRooted(args[0])) throw new ApplicationException("Needs relative path...");
+			if (Path.IsPathRooted(args[0]))
+			{
+				Console.ForegroundColor = ConsoleColor.Red;
+				Console.WriteLine("Error: The file to reify must be passed as a relative path.");
+				Console.ResetColor();
+				return -5;
+			}
 
 			if (t != null)
 			{ // The type of file is defined.
@@ -92,8 +95,6 @@ namespace LSNr
 			return MakeScript(Path.GetFileNameWithoutExtension(args[0]),src,destination,args);
 		}
 
-		
-		
 		private static int MakeScript(string path, string src, string destination, string[] args)
 		{
 			var sc = new PreScript(src,path);
@@ -112,8 +113,6 @@ namespace LSNr
 			return 0;
 		}
 
-
-
 		internal static int MakeResource(string path, string src, string destination, out LsnResourceThing res, string[] args)
 		{
 			var rs = new PreResource(src,path);
@@ -122,7 +121,6 @@ namespace LSNr
 			{
 				res = null;
 				Console.WriteLine("Invalid source.");
-				// Write error messages, if not already done. (Errors should be printed during reification)
 				return ERROR_IN_SOURCE;
 			}
 			res = rs.GetResource();
@@ -132,7 +130,6 @@ namespace LSNr
 			}
 			return 0;
 		}
-
 
 		private static int SetUp()
 		{
@@ -160,7 +157,7 @@ namespace LSNr
 			Directory.CreateDirectory(@"obj\quest");
 			return 0;
 		}
-		
+
 		private static int Build(string[] args)
 		{
 			if(args.Length > 1 && args[1].ToLower() == "all")
@@ -173,7 +170,6 @@ namespace LSNr
 			}
 			return 0;
 		}
-
 
 		public static string GetObjectPath(string rawPath)
 		{
@@ -195,15 +191,13 @@ namespace LSNr
 				}
 				return Path.Combine("obj",rawPath);
 			}
-				
+
 			return Path.Combine("obj", rawPath + Config.ObjectFileExtension);
 		}
-
 
 		public static string GetSourcePath(string rawPath)
 		{
 			return Path.Combine("src", rawPath + ".lsn");
 		}
-
 	}
 }

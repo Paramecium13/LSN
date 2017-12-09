@@ -26,29 +26,33 @@ namespace LSNr
 		{
 			var v = tokens[0].Value.ToLower();
 			int n = tokens.Count;
-			if (v == "give")	return Give(tokens, script);
-			if (v == "let")		return Assignment(tokens, script);
+			if (v == "give")
+				return Give(tokens, script);
+			if (v == "let")
+				return Assignment(tokens, script);
 			if (n > 1 && tokens[1].Value == "=")
 								return Reassignment(tokens, script);
 			if (v == "break")	return new BreakStatement();
 			if (v == "next")	return new NextStatement();
 			if (v == "return")	return new ReturnStatement(n > 1 ? Express(tokens.Skip(1), script) : null);
-			if (v == "say")		return Say(tokens.Skip(1).ToList(),script);
-			if (v == "goto")	return GotoStatement(tokens,script);
+			if (v == "say")
+				return Say(tokens.Skip(1).ToList(),script);
+			if (v == "goto")
+				return GotoStatement(tokens,script);
 			if (v == "setstate")
 			{
 				if (tokens.Count != 2)
-					throw new ApplicationException(); // Wrong number of tokens.
+					throw new LsnrParsingException(tokens[0],"Improperly formated setstate statement. Correct format is: 'setstate statename;'.",script.Path);
 
 				var stateName = tokens[1].Value;
 				var preScObjFn = script as PreScriptObjectFunction;
 				if (preScObjFn == null)
-					throw new ApplicationException(); // Cannot use SetState here.
+					throw new LsnrParsingException(tokens[0],"Cannot use a setstate statement outside of a script object.",script.Path); // Cannot use SetState here.
 
 				var preScObj = preScObjFn.Parent;
 
 				if (!preScObj.StateExists(stateName))
-					throw new ApplicationException(); // State does not exist.
+					throw new LsnrParsingException(tokens[1],$"The state '{stateName}' does not exist.",script.Path); // State does not exist.
 				return new SetStateStatement(preScObj.GetStateIndex(stateName));
 			}
 
@@ -59,7 +63,23 @@ namespace LSNr
 			{
 				var leftTokens = tokens.TakeWhile(t => t.Value != "=").ToList();
 				var rightTokens = tokens.Skip(leftTokens.Count + 1).ToList();
-				return AdvancedReassignment(Express(leftTokens, script), Express(rightTokens, script));
+				var left = Express(leftTokens, script);
+				var right = Express(rightTokens, script);
+				var field = left as FieldAccessExpression;
+				var collection = left as CollectionValueAccessExpression;
+				if (field != null)
+				{
+					if (field.Type != right.Type)
+						throw LsnrParsingException.TypeMismatch(tokens[leftTokens.Count], left.Type.Name, right.Type.Name, script.Path);
+					return new FieldAssignmentStatement(field.Value, field.Index, right);
+				}
+				if (collection != null)
+				{
+					if (collection.Type != right.Type)
+						throw LsnrParsingException.TypeMismatch(tokens[leftTokens.Count], left.Type.Name, right.Type.Name, script.Path);
+					return new CollectionValueAssignmentStatement(collection.Collection, collection.Index, right);
+				}
+				throw new LsnrParsingException(tokens[leftTokens.Count], "Improper assignment.", script.Path);
 			}
 			// Assignment of a field or an element in a collection. May have multiple levels, e.g. 'a.b[i-1].x = 42;'
 			// Parse both sides of the '=' as expressions. The left side should be either a field access expression or a
@@ -67,13 +87,12 @@ namespace LSNr
 			// the field index. ... If it is a collection value access expression, take the 'Value' expression and the 'Index' expression.
 
 			// Expression statement:
-			// When all else fails, parse the whole thing as an expression. 
+			// When all else fails, parse the whole thing as an expression.
 			return new ExpressionStatement(Express(tokens, script));
 			// The top level expression should be a function call, method call, ScriptObjectMethodCall, or HostInterfaceMethodCall.
 			// If it isn't, complain.
 
-			
-			throw new ApplicationException(v);
+			throw new LsnrParsingException(tokens[0], "Could not parse statement.", script.Path);
 		}
 
 		/// <summary>
@@ -90,6 +109,21 @@ namespace LSNr
 			string name = tokens[nameindex].Value;
 			IExpression value = Express(tokens.Skip(nameindex + 2).ToList(), script);
 			//LsnType type = value.Type.Type;
+			var symType = script.CheckSymbol(name);
+			switch (symType)
+			{
+				case SymbolType.UniqueScriptObject:
+				case SymbolType.Variable:
+				case SymbolType.GlobalVariable:
+				case SymbolType.Field:
+				case SymbolType.Property:
+				case SymbolType.ScriptObjectMethod:
+				case SymbolType.HostInterfaceMethod:
+				case SymbolType.Function:
+					throw new LsnrParsingException(tokens[nameindex],$"Cannot name a new variable '{name}'. That name is already used for a {symType.ToString()}.",script.Path);
+				case SymbolType.Undefined:
+					break;
+			}
 			var variable = script.CurrentScope.CreateVariable(name, mutable, value);
 			var st = new AssignmentStatement(variable.Index, value);
 			variable.Assignment = st;
@@ -105,23 +139,25 @@ namespace LSNr
 		private static Statement Reassignment(List<Token> tokens, IPreScript script)
 		{
 			var sy = script.CheckSymbol(tokens[0].Value);
-			IExpression expr = Express(tokens.Skip(2).ToList(), script);
+			var expr = Express(tokens.Skip(2).ToList(), script);
 			switch (sy)
 			{
 				case SymbolType.Variable:
-					Variable v = script.CurrentScope.GetVariable(tokens[0].Value);
+					var v = script.CurrentScope.GetVariable(tokens[0].Value);
 					if (!v.Mutable)
 					{
 						// The variable is immutable.
-						Console.WriteLine($"The variable {tokens[0].Value} is immutable.");
+						/*Console.WriteLine($"The variable {tokens[0].Value} is immutable.");
 						script.Valid = false;
-						return null;
+						return null;*/
+						throw new LsnrParsingException(tokens[0], $"The variable {tokens[0].Value} is immutable.", script.Path);
 					}
 					if (!v.Type.Subsumes(expr.Type.Type))
 					{
-						Console.WriteLine($"Cannot assign a value of type {expr.Type.Name} to a variable ({v.Name}) of type {v.Type.Name}.");
+						/*Console.WriteLine($"Cannot assign a value of type '{expr.Type.Name}' to  variable '{v.Name}' of type '{v.Type.Name}'.");
 						script.Valid = false;
-						return null;
+						return null;*/
+						throw new LsnrParsingException(tokens[0], $"Cannot assign a value of type '{expr.Type.Name}' to  variable '{v.Name}' of type '{v.Type.Name}'.", script.Path);
 					}
 					var assign = new AssignmentStatement(v.Index, expr);
 					v.AddReasignment(assign);
@@ -133,40 +169,19 @@ namespace LSNr
 				case SymbolType.GlobalVariable:
 					throw new NotImplementedException("");
 				case SymbolType.Property:
-					throw new ApplicationException($"Error Line {tokens[0].LineNumber}: Attempt to modify property \"{tokens[0].Value}\"; properties are immutable.");
+					throw new LsnrParsingException(tokens[0], $"Attempt to modify property \"{tokens[0].Value}\"; properties are immutable.", script.Path);
 				case SymbolType.Undefined:
-					throw new ApplicationException($"Error Line {tokens[0].LineNumber}: The symbol \"{tokens[0].Value}\" is undefined.");
+					throw new LsnrParsingException(tokens[0], $"The symbol \"{tokens[0].Value}\" is undefined.", script.Path);
 				case SymbolType.ScriptObjectMethod:
 				case SymbolType.HostInterfaceMethod:
 				case SymbolType.Function:
 				default:
-					throw new ApplicationException($"Error Line {tokens[0].LineNumber}: Cannot use a method or function as a variable.");
+					throw new LsnrParsingException(tokens[0], "Cannot use a method or function as a variable.", script.Path);
 			}
 		}
-
-
-		private static Statement AdvancedReassignment(IExpression left, IExpression right)
-		{
-			var field = left as FieldAccessExpression;
-			var collection = left as CollectionValueAccessExpression;
-			if(field != null)
-			{
-				if (field.Type != right.Type)
-					throw new ApplicationException("Type error...");
-				return new FieldAssignmentStatement(field.Value, field.Index, right);
-			}
-			if(collection != null)
-			{
-				if (collection.Type != right.Type)
-					throw new ApplicationException("Type error...");
-				return new CollectionValueAssignmentStatement(collection.Collection, collection.Index, right);
-			}
-			throw new ApplicationException("...");
-		}
-
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="tokens"> The tokens of the statement; without the 'say' and ';' tokens.</param>
 		/// <param name="script"></param>
@@ -340,7 +355,7 @@ namespace LSNr
 						break;
 					}
 				default:
-					throw new ApplicationException();
+					throw new LsnrParsingException(tokens.First(t=>t.Value.ToLower() == "goto"), "Improperly formated goto statement (considered harmful).", script.Path);
 			}
 			return new GoToStatement(expr0, expr1, expr2, actor);
 		}

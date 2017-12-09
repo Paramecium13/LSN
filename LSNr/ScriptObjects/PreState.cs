@@ -11,7 +11,6 @@ namespace LSNr
 {
 	public sealed class PreState : BasePreScriptObject
 	{
-
 		private readonly PreScriptObject Parent;
 		private readonly string _StateName;
 		private readonly int _Index;
@@ -53,7 +52,6 @@ namespace LSNr
 
 		public override TypeId GetTypeId(string name) => Parent.GetTypeId(name);
 
-
 		internal override Property GetProperty(string val) => Parent.GetProperty(val);
 
 		internal override int GetPropertyIndex(string val) => Parent.GetPropertyIndex(val);
@@ -65,7 +63,6 @@ namespace LSNr
 
 		internal override int GetStateIndex(string name) => Parent.GetStateIndex(name);
 
-
 		public override SymbolType CheckSymbol(string name)
 		{
 			if (Methods.ContainsKey(name))
@@ -73,40 +70,52 @@ namespace LSNr
 			return Parent.CheckSymbol(name);
 		}
 
-
-
 		internal ScriptObjectState PreParse()
 		{
 			int i = 0;
 			while (i < Tokens.Count)
 			{
-				var val = Tokens[i].Value;
-				switch (val)
+				try
 				{
-					case "fn":
-						i++;
-						var fn = PreParseMethod(ref i);
-						Methods.Add(fn.Name, fn);
-						break;
-					case "on":
-						i++;
-						var ev = PreParseEventListener(ref i);
-						EventListeners.Add(ev.Definition.Name, ev);
-						break;
-					default:
-						i++;
-						break;
+					switch (Tokens[i].Value)
+					{
+						case "fn":
+							i++;
+							var fn = PreParseMethod(ref i);
+							Methods.Add(fn.Name, fn);
+							break;
+						case "on":
+							i++;
+							var ev = PreParseEventListener(ref i);
+							EventListeners.Add(ev.Definition.Name, ev);
+							break;
+						default:
+							i++;
+							break;
+					}
+				}
+				catch (LsnrException e)
+				{
+					Logging.Log($"state '{StateName}' of script object '{Parent.Name}'.", e);
+					Valid = false;
+				}
+				catch (Exception e)
+				{
+					Logging.Log($"state '{StateName}' of script object '{Parent.Name}'.", e, Path);
+					Valid = false;
 				}
 			}
 			return new ScriptObjectState(_Index, Methods, EventListeners);
 		}
 
-
-		internal void Parse()
+		internal bool Parse()
 		{
 			ParseMethods();
 			ParseEventListeners();
+			return Valid;
 		}
 
+		public override FunctionSignature GetMethodSignature(string name)
+			=> Methods.ContainsKey(name) ? Methods[name].Signature : Parent.GetMethodSignature(name);
 	}
 }

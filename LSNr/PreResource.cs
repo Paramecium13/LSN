@@ -30,13 +30,10 @@ namespace LSNr
 		private readonly Dictionary<string, RecordType> RecordTypes = new Dictionary<string, RecordType>();
 
 		private readonly Dictionary<string, StructType> StructTypes = new Dictionary<string, StructType>();
-		
-
 
 		private readonly Dictionary<string, LsnFunction> MyFunctions = new Dictionary<string, LsnFunction>();
 
 		private readonly Dictionary<string, List<Token>> FunctionBodies = new Dictionary<string, List<Token>>();
-
 
 		//private readonly List<GenericType> GenericTypes = LsnType.GetBaseGenerics();
 
@@ -56,24 +53,54 @@ namespace LSNr
 		/// </summary>
 		public void Reify()
 		{
-			ProcessDirectives();
-			Tokenize();
+			try
+			{
+				ProcessDirectives();
+			}
+			catch (Exception)
+			{
+				//TODO: Logging
+				throw;
+			}
+
+			try
+			{
+				Tokenize();
+			}
+			catch (Exception)
+			{
+				//TODO: Logging
+				throw;
+			}
+
 			PreParseFunctions(PreParseTypes());
 			ParseHostInterfaces();
 			PreParseScriptObjects();
-			foreach (var pre in PreScriptObjects.Values)
-				pre.Parse();
-			ParseFunctions();
-        }
 
+			foreach (var pre in PreScriptObjects.Values)
+			{
+				try
+				{
+					Valid &= pre.Parse();
+				}
+				catch (LsnrException e)
+				{
+					Logging.Log("script object", pre.Id.Name, e);
+					Valid = false;
+				}
+				catch (Exception e)
+				{
+					Logging.Log("script object", pre.Id.Name, e, Path);
+					Valid = false;
+				}
+			}
+			ParseFunctions();
+		}
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		public void ProcessDirectives() { Text = ProcessDirectives(Source); }
-
-		
-		
 
 		/// <summary>
 		/// Go through the source, parsing structs and records.
@@ -88,6 +115,7 @@ namespace LSNr
 				if(val == "record")
 				{
 					string name = Tokens[++i].Value; // Move on to the next token, get the name.
+					//TODO : validate name.
 					if (Tokens[++i].Value != "{") // Move on to the next token, make sure it is '{'.
 					{
 						Console.WriteLine($"Error in parsing struct {name}: invalid token: {Tokens[i]}, expected {{.");
@@ -101,6 +129,7 @@ namespace LSNr
 				else if(val == "struct")
 				{
 					string name = Tokens[++i].Value; // Move on to the next token, get the name.
+					//TODO : validate name.
 					if (Tokens[++i].Value != "{") // Move on to the next token, make sure it is '{'.
 					{
 						Console.WriteLine($"Error in parsing record {name}: invalid token: {Tokens[i]}, expected {{.");
@@ -114,6 +143,7 @@ namespace LSNr
 				else if (val == "hostinterface")
 				{
 					string name = Tokens[++i].Value; // Move on to the next token, get the name.
+					//TODO : validate name.
 					if (Tokens[++i].Value != "{") // Move on to the next token, make sure it is '{'.
 					{
 						Console.WriteLine($"Error in parsing HostInterface {name}: invalid token: {Tokens[i]}, expected {{.");
@@ -133,6 +163,7 @@ namespace LSNr
 						i++;
 					}
 					string name = Tokens[++i].Value; // Move on to the next token, get the name.
+					//TODO : validate name.
 					string hostName = null;
 					i++;// Move on to the next token...
 					if (Tokens[i].Value == "<")
@@ -143,7 +174,7 @@ namespace LSNr
 					}
 
 					if (Tokens[i].Value != "{")
-						throw new ApplicationException("");
+						throw LsnrParsingException.UnexpectedToken(Tokens[i],"{",Path);
 
 					var tokens = new List<Token>();
 					int openCount = 1;
@@ -175,136 +206,175 @@ namespace LSNr
 		//		* Put the resulting List<Component> in the LSN_Function of the same name stored in Functions.
 		private List<Token> PreParseFunctions(IReadOnlyList<Token> tokens)
 		{
+			string name = "";
 			var otherTokens = new List<Token>();
 			for (int i = 0; i < tokens.Count; i++)
 			{
 				if (tokens[i].Value == "fn")
 				{
-					string name = tokens[++i].Value;
-					if(tokens[++i].Value != "(")
+					try
 					{
-						Console.WriteLine($"Error in parsing function {name} expected token '(', received '{tokens[i].Value}'.");
-						Valid = false; continue;
+						Token fnToken = tokens[i];
+						name = tokens[++i].Value;
+						//TODO : validate name.
+						if (tokens[++i].Value != "(")
+							throw LsnrParsingException.UnexpectedToken(tokens[i], "(", Path);
+						var paramTokens = new List<Token>();
+						while (tokens[++i].Value != ")") // This starts with the token after '('.
+							paramTokens.Add(tokens[i]);
+						List<Parameter> paramaters = ParseParameters(paramTokens);
+						// At this point, the current token (i.e. tokens[i].Value) is ')'.
+						TypeId returnType = null;
+						if (tokens[++i].Value == "->")
+						{
+							if (tokens[++i].Value == "(")
+							{ // The current token is the token after '->'.
+								if (tokens[++i].Value != ")")
+									throw LsnrParsingException.UnexpectedToken(tokens[i], ")", Path);
+							}
+							else
+							{ // The current token is the token after '->'.
+								try
+								{
+									returnType = this.ParseTypeId(tokens, i, out i);
+								}
+								catch (Exception e)
+								{
+									throw new LsnrParsingException(fnToken, "error parsing return type.", e,Path);
+								}
+								if (i < 0) throw new LsnrParsingException(fnToken, "error parsing return type.", Path);
+							}
+						}
+						if (tokens[i].Value != "{")
+							throw LsnrParsingException.UnexpectedToken(tokens[i], "}", Path);
+
+						var fnBody = new List<Token>();
+						int openCount = 1;
+						int closeCount = 0;
+						string v = null;
+						while (true)
+						{
+							v = tokens[++i].Value;
+							if (v == "{") openCount++;
+							else if (v == "}")
+							{
+								closeCount++;
+								if (closeCount == openCount) break;
+							}
+							fnBody.Add(tokens[i]);
+						}
+						var fn = new LsnFunction(paramaters, returnType, name, RelativePath);
+						IncludeFunction(fn);
+						FunctionBodies.Add(name, fnBody);
+						MyFunctions.Add(name, fn);
 					}
-					var paramTokens = new List<Token>();
-					while (tokens[++i].Value != ")") // This starts with the token after '('.
-						paramTokens.Add(tokens[i]);
-					List<Parameter> paramaters = null;
-					//try
-					//{
-						paramaters = ParseParameters(paramTokens);
-					/*}
+					catch (LsnrException e)
+					{
+						Logging.Log("function", name, e);
+						Valid = false;
+						continue;
+					}
 					catch (Exception e)
 					{
-						Console.WriteLine($"Error in parsing parameters of function {name}");
-						Console.WriteLine("\t" + e.Message);
-						Valid = false; continue;
-					}*/
-					// At this point, the current token (i.e. tokens[i].Value) is ')'.
-					TypeId returnType = null;
-					if (tokens[++i].Value == "->")
-					{
-						if(tokens[++i].Value == "(")
-						{ // The current token is the token after '->'.
-							if(tokens[++i].Value != ")")
-							{
-								Console.WriteLine($"Error in parsing function {name} expected token '(', received '{tokens[i].Value}'.");
-								Valid = false; continue;
-							}
-						}
-						else
-						{ // The current token is the token after '->'.
-							try
-							{
-								returnType = this.ParseTypeId(tokens, i, out i);
-							}
-							catch (Exception e)
-							{
-								Console.WriteLine($"Error in parsing return type of function {name}.");
-								Console.WriteLine("\t" + e.Message);
-								Valid = false; continue;
-							}
-						}
+						Logging.Log("function", name, e, Path);
+						Valid = false;
+						continue;
 					}
-					if(tokens[i].Value != "{")
-					{
-						Console.WriteLine($"Error in parsing function {name} expected token '{{', received '{tokens[i].Value}'.");
-						Valid = false; continue;
-					}
-					var fnBody = new List<Token>();
-					int openCount = 1;
-					int closeCount = 0;
-					string v = null;
-					while (true)
-					{
-						v = tokens[++i].Value;
-						if(v == "{") openCount++;
-						else if (v == "}")
-						{
-							closeCount++;
-							if (closeCount == openCount) break;
-						}
-						fnBody.Add(tokens[i]);
-					}
-					var fn = new LsnFunction(paramaters, returnType, name, RelativePath);
-					IncludeFunction(fn);
-					FunctionBodies.Add(name, fnBody);
-					MyFunctions.Add(name,fn);
 				}
 				else otherTokens.Add(tokens[i]);
-				
 			}
 			return otherTokens;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
 		private void ParseFunctions()
 		{
 			foreach(var pair in MyFunctions)
 			{
-				var preFn = new PreFunction(this);
-				foreach (var param in pair.Value.Parameters)
-					preFn.CurrentScope.CreateVariable(param);
-				var parser = new Parser(FunctionBodies[pair.Key], preFn);
-				parser.Parse();
-				preFn.CurrentScope.Pop(parser.Components);
-				pair.Value.Code = new ComponentFlattener().Flatten(Parser.Consolidate(parser.Components).Where(c => c != null).ToList());
-				pair.Value.StackSize = (preFn.CurrentScope as VariableTable)?.MaxSize?? -1;		
+				try
+				{
+					var preFn = new PreFunction(this);
+					foreach (var param in pair.Value.Parameters)
+						preFn.CurrentScope.CreateVariable(param);
+					var parser = new Parser(FunctionBodies[pair.Key], preFn);
+					parser.Parse();
+					preFn.CurrentScope.Pop(parser.Components);
+					if (preFn.Valid)
+					{
+						pair.Value.Code = new ComponentFlattener().Flatten(Parser.Consolidate(parser.Components).Where(c => c != null).ToList());
+						pair.Value.StackSize = (preFn.CurrentScope as VariableTable)?.MaxSize ?? -1;
+					}
+					else
+						Valid = false;
+				}
+				catch (LsnrException e)
+				{
+					Logging.Log("function", pair.Key, e);
+					Valid = false;
+				}
+				catch (Exception e)
+				{
+					Logging.Log("function", pair.Key, e, Path);
+				}
 			}
 		}
-		
 
 		private void ParseHostInterfaces()
 		{
 			foreach(var pre in PreHostInterfaces.Values)
 			{
-				var host = pre.Parse();
-				HostInterfaces.Add(host.Name, host);
-				MyHostInterfaces.Add(host.Name, host);
+				try
+				{
+					var host = pre.Parse();
+					if (pre.Valid)
+					{
+						HostInterfaces.Add(host.Name, host);
+						MyHostInterfaces.Add(host.Name, host);
+					}
+					else Valid = false;
+				}
+				catch (LsnrException e)
+				{
+					Logging.Log("host interface", pre.HostInterfaceId.Name, e);
+					Valid = false;
+				}
+				catch (Exception e)
+				{
+					Logging.Log("host interface", pre.HostInterfaceId.Name, e, Path);
+					Valid = false;
+				}
 			}
 		}
-
 
 		private void PreParseScriptObjects()
 		{
 			foreach (var pre in PreScriptObjects.Values)
 			{
-				if(pre.HostName != null)
+				try
 				{
-					if (!TypeExists(pre.HostName))
-						throw new ApplicationException("...");
-					pre.HostType = HostInterfaces[pre.HostName];
+					if (pre.HostName != null)
+					{
+						if (!TypeExists(pre.HostName))
+							throw new LsnrTypeNotFoundException(Path, pre.HostName);
+						pre.HostType = HostInterfaces[pre.HostName];
+					}
+					var sc = pre.PreParse();
+					ScriptObjects.Add(sc.Name, sc);
 				}
-				var sc = pre.PreParse();
-				ScriptObjects.Add(sc.Name, sc);
+				catch (LsnrException e)
+				{
+					Logging.Log("script object", pre.Id.Name, e);
+					Valid = false;
+				}
+				catch (Exception e)
+				{
+					Logging.Log($"script object '{pre.Id.Name}'",e,Path);
+					Valid = false;
+				}
 			}
 		}
-		
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="tokens"></param>
 		/// <returns></returns>
@@ -315,8 +385,8 @@ namespace LSNr
 			for(int i = 0; i < tokens.Count; i++)
 			{
 				string name = tokens[i].Value;
-				if(tokens[++i].Value != ":")
-					throw new ApplicationException($"Error: Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.");
+				if (tokens[++i].Value != ":")
+					throw new LsnrParsingException(tokens[i], $"Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.", Path);
                 TypeId type = this.ParseTypeId(tokens, ++i, out i);
 				LsnValue defaultValue = LsnValue.Nil;
 				if (i < tokens.Count && tokens[i].Value == "=")
@@ -324,7 +394,7 @@ namespace LSNr
 					if (tokens[++i].Type == TokenType.String)
 					{
 						if (type != LsnType.string_.Id)
-							throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type string to a parameter of type {type.Name}");
+							throw new LsnrParsingException(tokens[i],$"Error in parsing parameter {name}: cannot assign a default value of type string to a parameter of type {type.Name}",Path);
 						defaultValue = new LsnValue (new StringValue(tokens[i].Value));
 						if (i + 1 < tokens.Count) i++;
 					}
@@ -337,7 +407,7 @@ namespace LSNr
 								defaultValue = new LsnValue(tokens[i].IntValue );
 							}
 							else
-								throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type int to a parameter of type {type.Name}");
+								throw new LsnrParsingException(tokens[i],$"Error in parsing parameter {name}: cannot assign a default value of type int to a parameter of type {type.Name}",Path);
 						}
 						else defaultValue = new LsnValue(tokens[i].IntValue);
 						if (i + 1 < tokens.Count) i++;
@@ -345,57 +415,43 @@ namespace LSNr
 					else if (tokens[i].Type == TokenType.Float)
 					{
 						if (type != LsnType.double_.Id)
-							throw new ApplicationException($"Error in parsing parameter {name}: cannot assign a default value of type double to a parameter of type {type.Name}");
+							throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type double to a parameter of type {type.Name}", Path);
 						defaultValue = new LsnValue(tokens[i].DoubleValue);
 						if(i + 1 < tokens.Count) i++;
 					}
 					// Bools and other stuff...
-					else throw new ApplicationException($"Error in parsing default value for parameter {name}.");
+					else throw new LsnrParsingException(tokens[i], $"Error in parsing default value for parameter {name}.", Path);
 				}
 				paramaters.Add(new Parameter(name, type, defaultValue, index++));
 				if (i < tokens.Count && tokens[i].Value != ",")
-					throw new ApplicationException($"Error: expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.");
+					throw new LsnrParsingException(tokens[i], $"expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.", Path);
 			}
 			return paramaters;
 		}
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="typeOfType">struct or record.</param>
 		/// <param name="tokens"></param>
 		/// <returns></returns>
-		private Tuple<string, TypeId>[] ParseFields(string name, string typeOfType, IReadOnlyList<Token> tokens)
+		private Tuple<string, TypeId>[] ParseFields(IReadOnlyList<Token> tokens)
 		{
 			if (tokens.Count < 3) // struct Circle { Radius : double}
 			{
-				Console.WriteLine($"Error, invalid {typeOfType} {name}.");
-				Valid = false;
-				return null;
+				throw new LsnrParsingException(tokens[0], "too few tokens.", Path);
 			}
 			var fields = new List<Tuple<string, TypeId>>();
 			for (int i = 0; i < tokens.Count; i++)
 			{
 				string fName = tokens[i++].Value; // Get the name of the field, move on to the next token.
-				if (i >= tokens.Count) // Make sure the definition does not end.
-				{
-					Valid = false;
-					Console.WriteLine($"Error in {typeOfType} {name}: unexpected end of declaration, expected \':\'.");
-					return null;
-				}
+				if (i >= tokens.Count) // Make sure the definition does not end..
+					throw new LsnrParsingException(tokens[i - 1], "unexpected end of declaration, expected ':'.", Path);
 				if (tokens[i++].Value != ":") // Make sure the next token is ':', move on to the next token.
-				{
-					Valid = false;
-					Console.WriteLine($"Error in {typeOfType} {name}: unexpected token {tokens[i - 1].Value}, expected \':\'");
-					return null;
-				}
+					throw LsnrParsingException.UnexpectedToken(tokens[i - 1], ":", Path);
 				if (i >= tokens.Count) // Make sure the definition does not end.
-				{
-					Valid = false;
-					Console.WriteLine($"Error in {typeOfType} {name}: unexpected end of declaration, expected type.");
-					return null;
-				}
+					throw new LsnrParsingException(tokens[i - 1], "unexpected end of declaration, expected type.", Path);
 				LsnType type = this.ParseType(tokens, i, out i);
 				fields.Add(new Tuple<string, TypeId>( fName, type.Id));
 				if (i + 1 < tokens.Count && tokens[i].Value == ",") // Check if the definition ends, move on to the next token
@@ -419,13 +475,17 @@ namespace LSNr
 			Tuple<string, TypeId>[] fields = null;
 			try
 			{
-				fields = ParseFields(name, "struct", tokens);
+				fields = ParseFields(tokens);
             }
+			catch (LsnrException e)
+			{
+				Logging.Log("record", name, e);
+				Valid = false;
+			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"Error in parsing struct {name}.");
-				if (true/*Show exeption info*/)
-					Console.WriteLine(e.Message);
+				Logging.Log("record", name, e, Path);
+				Valid = false;
 			}
 			if (fields == null) return;
 			var recordType = new RecordType(name, fields);
@@ -443,13 +503,17 @@ namespace LSNr
 			Tuple<string, TypeId>[] fields = null;
 			try
 			{
-				fields = ParseFields(name, "record", tokens);
+				fields = ParseFields(tokens);
+			}
+			catch (LsnrException e)
+			{
+				Logging.Log("struct", name, e);
+				Valid = false;
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"Error in parsing struct {name}.");
-				if (true/*ShowExeptionInfo*/)
-					Console.WriteLine(e.Message);
+				Logging.Log("struct", name, e, Path);
+				Valid = false;
 			}
 			if (fields == null) return;
 			var structType = new StructType(name, fields);
@@ -477,9 +541,7 @@ namespace LSNr
 			};
 		}
 
-
 		public override bool TypeExists(string name) => PreScriptObjects.ContainsKey(name) || PreHostInterfaces.ContainsKey(name) || base.TypeExists(name);
-
 
 		public override TypeId GetTypeId(string name)
 		{
@@ -504,6 +566,5 @@ namespace LSNr
 
 		public override bool UniqueScriptObjectTypeExists(string name)
 			=> base.UniqueScriptObjectTypeExists(name) || PreScriptObjects.Any(p => p.Key == name && p.Value.IsUnique);
-		
 	}
 }
