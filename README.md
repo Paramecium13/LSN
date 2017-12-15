@@ -27,7 +27,7 @@ Currently, none of the collections are fully functional. The syntax for initiali
 ***List<T>*** : A mutable collection of variable length that is passed by reference. Like *Vector<T>*, all of its contents must be of the same type. It currently has the methods *Length* and *Add(value : T)*. *List<int>* and *List<double>* also have the methods *Sum()* and *Mean()*.
 
 #### Records
-Records are user defined types that consist of named and typed members. They are immutable and effectively passed by reference, though they appear to be passed by value. Currently, there is no syntax for initializing values of a struct type.
+Records are user defined types that consist of named and typed members. They are immutable and effectively passed by reference, though they appear to be passed by value.
 #### Structs
 Structs are user defined types that, like records, consist of named and typed members. They differ from records in that they are mutable and passed by value. This means that when a struct is passed to a function or method as an argument, the function recieves a new struct with the same values. The function can make changes to that struct but those changes are not made on the struct that was passed to the function.
 ### Statements
