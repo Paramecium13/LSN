@@ -8,7 +8,6 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
-	[Serializable]
 	public sealed class RegisterChoiceStatement : Statement, IHasTargetStatement
 	{
 		internal IExpression Condition;

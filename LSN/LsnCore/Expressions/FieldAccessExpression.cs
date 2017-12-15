@@ -9,8 +9,7 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-	[Serializable]
-	public class FieldAccessExpression : Expression
+	public sealed class FieldAccessExpression : Expression
 	{
 		public IExpression Value;
 		internal readonly int Index;

@@ -11,10 +11,8 @@ namespace LsnCore.Statements
 	/// <summary>
 	/// Change the location of an actor/the party.
 	/// </summary>
-	[Serializable]
-	public class GoToStatement : Statement
+	public sealed class GoToStatement : Statement
 	{
-
 		internal enum Form:byte { Map, MapLabel, MapXY, /*Label,*/ XY, Pos, MapPos}
 
 		private IExpression Map;

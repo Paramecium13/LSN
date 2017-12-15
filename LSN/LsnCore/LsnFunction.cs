@@ -14,7 +14,6 @@ namespace LsnCore
 	/// <summary>
 	/// A function written in LSN.
 	/// </summary>
-	[Serializable]
 	public class LsnFunction : Function, ICodeBlock
 	{
 		/// <summary>
@@ -36,14 +35,12 @@ namespace LsnCore
 			ResourceFilePath = resourceFilePath;
 		}
 
-
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{
 			i.Run(Code, ResourceFilePath, StackSize, args);
 			i.ExitFunctionScope();
 			return i.ReturnValue;
 		}
-
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{

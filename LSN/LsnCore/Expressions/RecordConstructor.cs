@@ -1,23 +1,16 @@
 ﻿using LsnCore.Types;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-	[Serializable]
-	public class RecordConstructor : Expression
+	public sealed class RecordConstructor : Expression
 	{
 		public readonly IExpression[] Args;
 
 		public override bool IsPure => Args.All(a => a.IsPure);
-
-		//ToDo: make non-serialized
-		private readonly RecordType _Type;
-
+		
 		public RecordConstructor(RecordType type, IDictionary<string,IExpression> args)
 		{
 			Args = new IExpression[type.FieldCount];
@@ -49,14 +42,14 @@ namespace LsnCore.Expressions
 			{
 				values[j] = Args[j].Eval(i);
 			}
-			return new LsnValue(new RecordValue(values, Type));
+			return new LsnValue(new RecordValue(values));
 		}
 
 		public override IExpression Fold()
 		{
 			var args = Args.Select(a => a.Fold()).ToArray();
 			return new RecordConstructor(Type, args);
-		} // Do not return a struct because structs are mutable and should not be serialized.
+		}
 
 		public override bool IsReifyTimeConst() => false;
 

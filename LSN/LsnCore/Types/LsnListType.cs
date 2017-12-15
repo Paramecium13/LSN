@@ -10,10 +10,8 @@ namespace LsnCore
 	/// <summary>
 	/// The type of a generic LSN_List.
 	/// </summary>
-	[Serializable]
 	public class LsnListType : LsnReferenceType, ICollectionType
 	{
-
 		static LsnListType()
 		{
 			// Set up methods

@@ -9,7 +9,6 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-	[Serializable]
 	public sealed class ListConstructor : IExpression
 	{
 		public bool IsPure => false;

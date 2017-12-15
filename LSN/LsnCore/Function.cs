@@ -12,24 +12,18 @@ namespace LsnCore
 	/// <summary>
 	/// A function.
 	/// </summary>
-	[Serializable]
 	public abstract class Function
 	{
 		public readonly FunctionSignature Signature;
 
-
 		public string Name => Signature.Name;
-
 
 		public TypeId ReturnType => Signature.ReturnType;
 
-
 		public IReadOnlyList<Parameter> Parameters => Signature.Parameters;
-
 
 		public int StackSize { get; set; } = -1; // Should only be set in LSNr.
 											// If the value is -1, this indicates that the stack size was never set.
-
 
 		protected Function(FunctionSignature signature)
 		{
@@ -42,10 +36,8 @@ namespace LsnCore
 		/// </summary>
 		public abstract bool HandlesScope { get; }
 
-
 		protected string _ResourceFilePath; //TODO: Give this a value!!!
 		public string ResourceFilePath { get { return _ResourceFilePath; } protected set { _ResourceFilePath = value; } }
-
 
 		public virtual FunctionCall CreateCall(IList<Tuple<string,IExpression>> args, bool included = false)
 		{
@@ -55,7 +47,6 @@ namespace LsnCore
 		}
 
 		public abstract LsnValue Eval(LsnValue[] args, IInterpreter i);
-
 	}
 
 	/// <summary>

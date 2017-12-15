@@ -8,7 +8,6 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
-	[Serializable]
 	public sealed class ExpressionStatement : Statement
 	{
 		private IExpression Expression; // I may have to expose this for optimization.

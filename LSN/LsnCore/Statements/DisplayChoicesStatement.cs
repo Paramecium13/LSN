@@ -8,7 +8,6 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
-	[Serializable]
 	public sealed class DisplayChoicesStatement : Statement
 	{
 		public override InterpretValue Interpret(IInterpreter i)

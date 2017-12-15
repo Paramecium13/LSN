@@ -9,54 +9,42 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-	[Serializable]
-	public class StructConstructor : Expression
+	public sealed class StructConstructor : Expression
 	{
-		public readonly IDictionary<string, IExpression> Args; //ToDo: Remove
+		public readonly IExpression[] Args;
 
-		public readonly IExpression[] ArgsB;
-
-
-		public override bool IsPure => ArgsB.All(a => a.IsPure);
-
-
-		[NonSerialized]
-		private readonly StructType _Type;
-		//public readonly TypeId Id;
-
-		//public override TypeId Type => Id;
+		public override bool IsPure => Args.All(a => a.IsPure);
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public StructConstructor(StructType type, IDictionary<string, IExpression> args)
 		{
 			Type = type.Id;
-			_Type = type; Args = args;
-			ArgsB = new IExpression[_Type.FieldCount];
+			Args = new IExpression[type.FieldCount];
 			int i = -1;
 			foreach (var pair in args)
 			{
 				i = type.GetIndex(pair.Key);
-				ArgsB[i] = pair.Value;
+				Args[i] = pair.Value;
 			}
 		}
 
 		public StructConstructor(IEnumerable<IExpression> args)
 		{
-			ArgsB = args.ToArray();
+			Args = args.ToArray();
 		}
 
 		public override LsnValue Eval(IInterpreter i)
 		{
-			int length = ArgsB.Length;
+			int length = Args.Length;
 			LsnValue[] values = new LsnValue[length];
 			for (int j = 0; j < length; j++)
 			{
-				values[j] = ArgsB[j].Eval(i);
+				values[j] = Args[j].Eval(i);
 			}
 			return new LsnValue(new StructValue(values));//....
 		}
 
-		public override IExpression Fold()
+		public override IExpression Fold() //ToDo: Implement (but do not return a struct value).
 		{//d = Args.Select(pair => new KeyValuePair<string, ILsnValue>(pair.Key, pair.Value as ILsnValue)).ToDictionary()
 			/*var a = Args.Select(pair => new KeyValuePair<string, IExpression>(pair.Key, pair.Value.Fold())).ToDictionary();
 			if (a.Values.All(v => v.IsReifyTimeConst() && v is LsnValue?))
@@ -69,15 +57,14 @@ namespace LsnCore.Expressions
 			return this;
 		}
 
-
 		public override bool IsReifyTimeConst() => false;
 
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.StructConstructor);
-			writer.Write((ushort)ArgsB.Length);
-			for (int i = 0; i < ArgsB.Length; i++)
-				ArgsB[i].Serialize(writer, resourceSerializer);
+			writer.Write((ushort)Args.Length);
+			for (int i = 0; i < Args.Length; i++)
+				Args[i].Serialize(writer, resourceSerializer);
 		}
 	}
 }

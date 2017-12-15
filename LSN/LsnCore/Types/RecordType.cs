@@ -44,15 +44,7 @@ namespace LsnCore.Types
 		}
 
 		public override LsnValue CreateDefaultValue()
-		{
-			var dict = new Dictionary<string, LsnValue>();
-			foreach(var pair in Fields)
-			{
-				dict.Add(pair.Key, pair.Value.CreateDefaultValue());
-			}
-			return new LsnValue(new RecordValue(this, dict));
-		}
-
+			=> new LsnValue(new RecordValue(FieldsB.OrderBy(f => f.Index).Select(f => f.Type.Type.CreateDefaultValue()).ToArray(), Id));
 
 		public int GetIndex(string name)
 		{
@@ -66,7 +58,6 @@ namespace LsnCore.Types
 				throw new ApplicationException($"The struct type {Name} does not have a field named {name}.");
 			}
 		}
-
 
 		public TypeId GetFieldType(int index) => _FieldsB[index].Type;
 

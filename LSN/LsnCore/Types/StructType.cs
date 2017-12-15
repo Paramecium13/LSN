@@ -38,7 +38,7 @@ namespace LsnCore.Types
 		}
 
 		public override LsnValue CreateDefaultValue()
-			=> new LsnValue(new StructValue(this, FieldsB.Select(f => f.Type.Type.CreateDefaultValue()).ToArray()));
+			=> new LsnValue(new StructValue(Id, FieldsB.Select(f => f.Type.Type.CreateDefaultValue()).ToArray()));
 
 		public int GetIndex(string name)
 		{

@@ -295,15 +295,9 @@ namespace LSNr
 		protected readonly Dictionary<string, Function> IncludedFunctions = new Dictionary<string, Function>();
 
 		/// <summary>
-		/// The external functions that to be linked at runtime.
-		/// </summary>
-		protected readonly Dictionary<string, Function> ExternalFunctions = new Dictionary<string, Function>();
-
-		/// <summary>
 		/// 
 		/// </summary>
 		private readonly Dictionary<string, Function> LoadedExternallyDefinedFunctions = new Dictionary<string, Function>();
-
 
 		public bool FunctionExists(string name)
 			=> IncludedFunctions.ContainsKey(name) || LoadedExternallyDefinedFunctions.ContainsKey(name);
@@ -314,23 +308,9 @@ namespace LSNr
 		public Function GetFunction(string name)
 		{
 			if (IncludedFunctions.ContainsKey(name)) return IncludedFunctions[name];
-			if (LoadedExternallyDefinedFunctions.ContainsKey(name)) return AddExternalFunction(LoadedExternallyDefinedFunctions[name]);
+			if (LoadedExternallyDefinedFunctions.ContainsKey(name)) return LoadedExternallyDefinedFunctions[name];
 
 			throw new LsnrFunctionNotFoundException(Path, name);
-		}
-
-		/// <summary>
-		/// Adds a function defined in another file.
-		/// </summary>
-		/// <param name="fn"> The fully created and functional externally defined function.</param>
-		/// <returns></returns>
-		private ExternalFunction AddExternalFunction(Function fn)
-		{
-			var exFn = new ExternalFunction(fn.Name, fn.Parameters.Select(p => new Parameter(p.Name, p.Type, p.DefaultValue, p.Index)).ToList(),
-				fn.StackSize,fn.ReturnType);
-			ExternalFunctions.Add(fn.Name, exFn);
-			IncludedFunctions.Add(fn.Name, exFn);
-			return exFn;
 		}
 
 		/// <summary>

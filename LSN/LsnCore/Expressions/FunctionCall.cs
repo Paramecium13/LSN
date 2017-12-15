@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-	[Serializable]
-	public class FunctionCall : Expression
+	public sealed class FunctionCall : Expression
 	{
 		public Function Fn;
 

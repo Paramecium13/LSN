@@ -8,10 +8,8 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
-	[Serializable]
 	public class SayStatement : Statement
 	{
-
 		private IExpression _Message;
 		public IExpression Message { get { return _Message; } set { _Message = value; } }
 

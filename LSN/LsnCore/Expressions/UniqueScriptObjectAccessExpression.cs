@@ -8,7 +8,6 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-	[Serializable]
 	public sealed class UniqueScriptObjectAccessExpression : Expression
 	{
 		private readonly string Name;

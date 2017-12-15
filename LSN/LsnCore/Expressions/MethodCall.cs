@@ -1,15 +1,8 @@
-﻿using LsnCore.Expressions;
-using LsnCore.Types;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Syroot.BinaryData;
+﻿using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-	[Serializable]
-	public class MethodCall : Expression
+	public sealed class MethodCall : Expression
 	{
 		public IExpression[] Args;
 

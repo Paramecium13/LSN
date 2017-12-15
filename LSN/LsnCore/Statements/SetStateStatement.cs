@@ -9,7 +9,6 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
-	[Serializable]
 	public sealed class SetStateStatement : Statement
 	{
 		private readonly int State;

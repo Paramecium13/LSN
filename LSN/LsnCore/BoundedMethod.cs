@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using LsnCore.Expressions;
 
 namespace LsnCore
 {
-	[Serializable]
 	public class BoundedMethod : Method
 	{
 		public override bool HandlesScope => false;

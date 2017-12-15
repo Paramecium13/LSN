@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +11,6 @@ namespace LsnCore
 	/// <summary>
 	/// A method written in LSN
 	/// </summary>
-	[Serializable]
 	public class LsnMethod : Method
 	{
 		public Statement[] Code;
@@ -35,4 +34,4 @@ namespace LsnCore
 			return i.ReturnValue;
 		}
 	}
-}
+}*/

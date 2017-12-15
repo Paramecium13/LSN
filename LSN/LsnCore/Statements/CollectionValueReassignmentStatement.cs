@@ -10,7 +10,6 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
-	[Serializable]
 	public sealed class CollectionValueAssignmentStatement : Statement
 	{
 		private IExpression Collection;

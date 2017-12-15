@@ -8,37 +8,17 @@ using Syroot.BinaryData;
 
 namespace LsnCore
 {
-	[Serializable]
 	public class RecordValue : ILsnValue, IHasFieldsValue
 	{
 		private readonly LsnValue[] Fields;
 
 		public bool IsPure => true;
 
-		[NonSerialized]
-		private readonly RecordType _Type;
-
 		private readonly TypeId Id;
 		public TypeId Type => Id;
 
 		public bool BoolValue { get{ return true; } }
-
-		public RecordValue(RecordType type, IDictionary<string, LsnValue> values)
-		{
-			_Type = type;
-			Id = type.Id;
-			Fields = new LsnValue[_Type.FieldCount];
-			foreach(var pair in values)
-			{
-				Fields[_Type.GetIndex(pair.Key)] = pair.Value;
-			}
-		}
-
-		public RecordValue(RecordType type, LsnValue[] values)
-		{
-			_Type = type; Id = type.Id; Fields = values;
-		}
-
+		
 		public RecordValue(LsnValue[] values, TypeId id)
 		{
 			Id = id; Fields = values;
@@ -49,11 +29,9 @@ namespace LsnCore
 			Fields = values;
 		}
 
-
 		public LsnValue GetFieldValue(int index) => Fields[index];
 
-
-		public ILsnValue Clone() => this;//new StructValue(_Type, Members);
+		public ILsnValue Clone() => this;
 
 		public ILsnValue DeepClone()
 		{
@@ -84,17 +62,5 @@ namespace LsnCore
 			writer.Write((byte)ExpressionCode.TabledConstant);
 			writer.Write(resourceSerializer.TableConstant(this));
 		}
-
-		/*
-		public static StructValue operator + (StructValue a, StructValue b)
-		{
-
-		}
-
-		public static StructValue operator - (StructValue a, StructValue b)
-		{
-
-		}
-		*/
 	}
 }

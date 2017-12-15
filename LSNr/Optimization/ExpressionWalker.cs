@@ -131,7 +131,7 @@ namespace LSNr.Optimization
 		
 		protected virtual IExpression WalkRecordConstructor(StructConstructor rc)
 		{
-			foreach (var exp in rc.Args.Values)
+			foreach (var exp in rc.Args)
 				Walk(exp);
 			return rc;
 		}

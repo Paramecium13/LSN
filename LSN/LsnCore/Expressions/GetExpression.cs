@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Expressions
 {
-	[Serializable]
 	public abstract class GetExpression : Expression
 	{
 		

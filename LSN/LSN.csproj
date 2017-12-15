@@ -94,7 +94,6 @@
     <Compile Include="LsnCore\Expressions\IExpression.cs" />
     <Compile Include="LsnCore\Expressions\UniqueScriptObjectAccessExpression.cs" />
     <Compile Include="LsnCore\Expressions\VariableExpression.cs" />
-    <Compile Include="LsnCore\ExternalFunction.cs" />
     <Compile Include="LsnCore\Function.cs" />
     <Compile Include="LsnCore\FunctionSignature.cs" />
     <Compile Include="LsnCore\GlobalVariableDef.cs" />

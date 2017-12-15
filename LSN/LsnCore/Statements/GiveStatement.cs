@@ -13,7 +13,7 @@ namespace LsnCore.Statements
 		protected IExpression Receiver;
 	}
 
-	public class GiveItemStatement : GiveStatement
+	public sealed class GiveItemStatement : GiveStatement
 	{
 		private IExpression Id;
 
@@ -44,7 +44,7 @@ namespace LsnCore.Statements
 		}
 	}
 
-	public class GiveGoldStatement : GiveStatement
+	public sealed class GiveGoldStatement : GiveStatement
 	{
 		public GiveGoldStatement(IExpression amount, IExpression receiver)
 		{

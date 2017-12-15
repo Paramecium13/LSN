@@ -13,7 +13,6 @@ namespace LsnCore.Statements
 		int Target { get; set; }
 	}
 
-	[Serializable]
 	public sealed class JumpStatement : Statement, IHasTargetStatement
 	{
 		public int Target { get; set; } = -1;

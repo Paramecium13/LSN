@@ -8,7 +8,6 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-	[Serializable]
 	public abstract class Expression : IExpression
 	{
 		private TypeId _Type;

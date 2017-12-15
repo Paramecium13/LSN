@@ -1,14 +1,9 @@
 ﻿using LsnCore.Types;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-
-	[Serializable]
-	public class VariableExpression : Expression
+	public sealed class VariableExpression : Expression
 	{
 		public int Index;
 
@@ -24,11 +19,9 @@ namespace LsnCore.Expressions
 			Index = index;
 		}
 
-
 		public override LsnValue Eval(IInterpreter i)
 			=> i.GetVariable(Index);
 		
-
 		public override IExpression Fold() => this;
 
 		public override bool IsReifyTimeConst() => false;

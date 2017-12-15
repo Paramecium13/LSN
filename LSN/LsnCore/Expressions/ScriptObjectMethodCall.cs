@@ -9,7 +9,6 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-	[Serializable]
 	public class ScriptObjectVirtualMethodCall : Expression
 	{
 		private readonly IExpression[] Parameters;

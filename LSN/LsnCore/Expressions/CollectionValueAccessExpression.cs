@@ -12,8 +12,7 @@ namespace LsnCore.Expressions
 	/// <summary>
 	/// Access a value in a collection.
 	/// </summary>
-	[Serializable]
-	public class CollectionValueAccessExpression : Expression
+	public sealed class CollectionValueAccessExpression : Expression
 	{
 		public IExpression Collection;
 		public IExpression Index;

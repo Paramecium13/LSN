@@ -9,7 +9,6 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-	[Serializable]
 	public sealed class HostInterfaceMethodCall : IExpression
 	{
 		public bool IsPure => false;

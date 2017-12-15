@@ -5,26 +5,18 @@ using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LsnCore.Types
 {
-	[Serializable]
 	public class ScriptObjectMethod : Method, ICodeBlock
 	{
 		public override bool HandlesScope => false;
 
 		public readonly bool IsVirtual;
 
-
 		public readonly bool IsAbstract;
 
-
 		public Statement[] Code { get; set; } // Assigned in LSNr.
-
-
 
 		public ScriptObjectMethod(TypeId type, TypeId returnType, IList<Parameter> parameters, string resourceFilePath,
 			bool isVirtual, bool isAbstract, string name)
@@ -37,7 +29,6 @@ namespace LsnCore.Types
 			IsAbstract = isAbstract;
 			if (IsAbstract && !IsVirtual) throw new ArgumentException();
 		}
-
 
 		public Expression CreateScriptObjectMethodCall(IExpression[] parameters)
 		{
@@ -71,8 +62,7 @@ namespace LsnCore.Types
 			i.ExitFunctionScope();
 			return i.ReturnValue;
 		}
-
-
+		
 		//enum Flags : byte { none = 0, IsVirtual = 1, IsAbstract = 2 }
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
