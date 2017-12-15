@@ -6,15 +6,13 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
-	[Serializable]
 	public abstract class GiveStatement : Statement
 	{
 		protected IExpression Amount;
 
 		protected IExpression Receiver;
-		
 	}
-	[Serializable]
+
 	public class GiveItemStatement : GiveStatement
 	{
 		private IExpression Id;
@@ -45,8 +43,7 @@ namespace LsnCore.Statements
 			Receiver.Serialize(writer, resourceSerializer);
 		}
 	}
-	
-	[Serializable]
+
 	public class GiveGoldStatement : GiveStatement
 	{
 		public GiveGoldStatement(IExpression amount, IExpression receiver)

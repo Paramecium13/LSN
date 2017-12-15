@@ -34,27 +34,7 @@ namespace LsnCore.ControlStructures
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			//i.AddVariable(VarName, VarValue.Eval(i)); // ToDo: remove AddVariable(...)
-			//TODO: assign variable?
-			while(Condition.Eval(i).BoolValue)
-			{
-				var val = Interpret(Body, i);
-				switch (val)
-				{
-					case InterpretValue.Base:
-						break;
-					case InterpretValue.Next:
-						break;
-					case InterpretValue.Break:
-						return InterpretValue.Base;
-					case InterpretValue.Return:
-						return InterpretValue.Return;
-					default:
-						break;
-				}
-				Post.Interpret(i);
-			}
-			return InterpretValue.Base;
+			throw new InvalidOperationException();
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)

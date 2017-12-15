@@ -72,7 +72,7 @@ namespace LsnCore
 		public bool IsPure => true;
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="val"></param>
 		public StringValue(string val)
@@ -100,7 +100,8 @@ namespace LsnCore
 		public LsnValue Eval(IInterpreter i) => new LsnValue(this);
 		public IExpression Fold() => this;
 		public bool IsReifyTimeConst() => true;
-		public string TranslateUniversal() => Value.ToString();
+
+		public override string ToString() => Value;
 
 		public static explicit operator string(StringValue v) => v.Value;
 		public static explicit operator StringValue(string s) => new StringValue(s);

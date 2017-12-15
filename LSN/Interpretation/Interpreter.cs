@@ -17,7 +17,7 @@ namespace LsnCore
 
 		//protected List<ILsnValue> LsnObjects = new List<ILsnValue>();
 
-		private readonly Dictionary<int, ConcurrentStack<LsnValue[]>> StackFrameStore = new Dictionary<int, ConcurrentStack<LsnValue[]>>();
+		private readonly static ConcurrentDictionary<int, ConcurrentStack<LsnValue[]>> StackFrameStore = new ConcurrentDictionary<int, ConcurrentStack<LsnValue[]>>();
 
 		private LsnValue[] CurrentStackFrame;
 
@@ -30,25 +30,16 @@ namespace LsnCore
 		private LsnEnvironment CurrentEnvironment;
 
 		public int NextStatement { get; set; }
+		private static Stack<int> NextStatementStack = new Stack<int>();
 
 		private readonly List<Tuple<string, int>> _Choices = new List<Tuple<string, int>>();
 		protected IReadOnlyList<Tuple<string, int>> Choices => _Choices;
 
-		public void Run(Statements.Statement[] code, LsnEnvironment environment, int stackSize, LsnValue[] parameters)
+		protected Interpreter()
 		{
-			EnterFunctionScope(environment, stackSize);
-			for (int i = 0; i < parameters.Length; i++)
-				CurrentStackFrame[i] = parameters[i];
-
-			NextStatement = 0;
-			int currentStatement = NextStatement++;
-			int codeSize = code.Length;
-			var v = InterpretValue.Base;
-			while (currentStatement < codeSize && v != InterpretValue.Return)
-			{
-				v = code[currentStatement].Interpret(this);
-				currentStatement = NextStatement++;
-			}
+			EnvStack.Push(null);
+			NextStatementStack.Push(-4);
+			StackFrames.Push(new LsnValue[0]);
 		}
 
 		public void Run(Statements.Statement[] code, string resourceFilePath, int stackSize, LsnValue[] parameters)
@@ -58,8 +49,8 @@ namespace LsnCore
 				CurrentStackFrame[i] = parameters[i];
 
 			NextStatement = 0;
-			int currentStatement = NextStatement++;
-			int codeSize = code.Length;
+			var currentStatement = NextStatement++;
+			var codeSize = code.Length;
 			var v = InterpretValue.Base;
 			while (currentStatement < codeSize && v != InterpretValue.Return)
 			{
@@ -68,43 +59,15 @@ namespace LsnCore
 			}
 		}
 
-		public void Run(Statements.Statement[] code, LsnValue[] parameters)
-		{
-			for (int i = 0; i < parameters.Length; i++)
-				CurrentStackFrame[i] = parameters[i];
-
-			NextStatement = 0;
-			int currentStatement = NextStatement++;
-			int codeSize = code.Length;
-			var v = InterpretValue.Base;
-			while (currentStatement < codeSize && v != InterpretValue.Return)
-			{
-				v = code[currentStatement].Interpret(this);
-				currentStatement = NextStatement++;
-			}
-		}
-
-		/// <summary>
-		/// Run the script.
-		/// </summary>
-		/// <param name="script"></param>
-		public virtual void Run(LsnScript script)
-		{
-			for (int i = 0; i < script.Components.Length; i++)
-			{
-				var c = script.Components[i];
-				c.Interpret(this);
-			}
-		}
-
-		/// <summary>
+		/*/// <summary>
 		/// Enters a new scope for interpreting a function. Previously defined variables are inaccessable.
 		/// </summary>
 		/// <param name="env">todo: describe env parameter on EnterFunctionScope</param>
 		/// <param name="scopeSize">todo: describe scopeSize parameter on EnterFunctionScope</param>
 		public virtual void EnterFunctionScope(LsnEnvironment env, int scopeSize)
 		{
-			EnvStack.Push(CurrentEnvironment);
+			if(CurrentEnvironment != null)
+				EnvStack.Push(CurrentEnvironment);
 			CurrentEnvironment = env;
 
 			StackFrames.Push(CurrentStackFrame);
@@ -119,10 +82,11 @@ namespace LsnCore
 				StackFrameStore.Add(i, new ConcurrentStack<LsnValue[]>());
 				CurrentStackFrame = new LsnValue[i];
 			}
-		}
+		}*/
 
 		public virtual void EnterFunctionScope(string resourceFilePath, int scopeSize)
 		{
+			NextStatementStack.Push(NextStatement);
 			if(CurrentEnvironment != null)
 				EnvStack.Push(CurrentEnvironment);
 			try
@@ -131,36 +95,25 @@ namespace LsnCore
 			}
 			catch (Exception e)
 			{
-				throw new ApplicationException("ResourceManager exception",e);
+				throw new ApplicationException("ResourceManager exception", e);
 			}
 			if(CurrentStackFrame != null)
 				StackFrames.Push(CurrentStackFrame);
-			int i = NearestPower(scopeSize);
-			if (StackFrameStore.ContainsKey(i))
-			{
-				if (!StackFrameStore[i].TryPop(out CurrentStackFrame))
-					CurrentStackFrame = new LsnValue[i];
-			}
-			else
-			{
-				StackFrameStore.Add(i, new ConcurrentStack<LsnValue[]>());
-				CurrentStackFrame = new LsnValue[i];
-			}
+			CurrentStackFrame = RequestStack(scopeSize);
 		}
 
-		private void RequestStack(int scopeSize)
+		private static LsnValue[] RequestStack(int scopeSize)
 		{
-			int i = NearestPower(scopeSize);
+			LsnValue[] x = null;
+			var i = NearestPower(scopeSize);
 			if (StackFrameStore.ContainsKey(i))
 			{
-				if (!StackFrameStore[i].TryPop(out CurrentStackFrame))
-					CurrentStackFrame = new LsnValue[i];
+				if (!StackFrameStore[i].TryPop(out x))
+					return new LsnValue[i];
+				return x;
 			}
-			else
-			{
-				StackFrameStore.Add(i, new ConcurrentStack<LsnValue[]>());
-				CurrentStackFrame = new LsnValue[i];
-			}
+			StackFrameStore.TryAdd(i, new ConcurrentStack<LsnValue[]>());
+			return new LsnValue[i];
 		}
 
 		/// <summary>
@@ -171,6 +124,7 @@ namespace LsnCore
 			RecycleStack(CurrentStackFrame);
 			CurrentStackFrame = StackFrames.Pop();
 			CurrentEnvironment = EnvStack.Pop();
+			NextStatement = NextStatementStack.Pop();
 		}
 
 		/// <summary>
@@ -181,18 +135,26 @@ namespace LsnCore
 		public virtual Function GetFunction(string name)
 			=> CurrentEnvironment.Functions[name];
 
-
+		/// <summary>
+		/// Get the variable at the provided index.
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
 		public LsnValue GetVariable(int index)
 			=> CurrentStackFrame[index];
 
-
+		/// <summary>
+		/// Set the value of the variable at the provided index.
+		/// </summary>
+		/// <param name="index"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
 		public void SetVariable(int index, LsnValue value)
 		{
 			CurrentStackFrame[index] = value;
 		}
 
-
-		private void RecycleStack(LsnValue[] stack)
+		private static void RecycleStack(LsnValue[] stack)
 		{
 			Task.Run(() =>
 			{
@@ -202,36 +164,34 @@ namespace LsnCore
 					StackFrameStore[stack.Length].Push(stack);
 				else
 				{
-					StackFrameStore.Add(stack.Length, new ConcurrentStack<LsnValue[]>());
+					StackFrameStore.TryAdd(stack.Length, new ConcurrentStack<LsnValue[]>());
 					StackFrameStore[stack.Length].Push(stack);
 				}
 			});
 		}
 
-
 		private static int NearestPower(int i)
 			=> 1 << (int)Math.Ceiling(Math.Log(i, 2));
 
-
-
-		public ScriptObject GetUniqueScriptObject(/*string path,*/ string name)
+		/// <summary>
+		/// Get the unique script object.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public ScriptObject GetUniqueScriptObject(string name)
 		{
 			return ResourceManager.GetUniqueScriptObject(name);
 		}
 
-
-		protected abstract GlobalVariableValue GetGlobalVariableValue(string globalVarName/*, string fileName*/);
-
+		//protected abstract GlobalVariableValue GetGlobalVariableValue(string globalVarName/*, string fileName*/);
 
 		//public LsnValue GetGlobalVariable(string globalVarName/*, string fileName*/)
 		//	=> GetGlobalVariableValue(globalVarName/*, filename*/).Value;
-
 
 		//public void SetGlobalVariable(LsnValue value, string globalVarName/*, string fileName*/)
 		//{
 		//	GetGlobalVariableValue(globalVarName/*, fileName*/).Value = value;
 		//}
-
 
 		//public virtual void WatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange)
 		//{
@@ -243,90 +203,51 @@ namespace LsnCore
 		//	(GetGlobalVariableValue(globalVarName/*, fileName*/) as GlobalVariableValueWatched).OnValueChanged -= onChange;
 		//}
 
+		/// <summary>
+		/// ...
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="amount"></param>
+		/// <param name="target"></param>
+		public abstract void GiveItemTo(LsnValue id, int amount, LsnValue target);
+
+		/// <summary>
+		/// ...
+		/// </summary>
+		/// <param name="amount"></param>
+		/// <param name="target"></param>
+		public abstract void GiveGoldTo(int amount, LsnValue target);
+
+		/// <summary>
+		/// Display a message to the player with an optional title and graphic.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="graphic"> The id of the graphic to display, null if no graphic should be displayed.</param>
+		/// <param name="title">The title to display, null if no title should be displayed.</param>
+		public abstract void Say(string message, LsnValue graphic, string title);
+
+		/// <summary>
+		/// Register a choice for the player and the index of the instruction to jump to if the player selects that choice.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="target"></param>
 		public void RegisterChoice(string text, int target)
 		{
 			_Choices.Add(new Tuple<string, int>(text, target));
 		}
 
+		/// <summary>
+		/// Clear the registered choices.
+		/// </summary>
 		public void ClearChoices()
 		{
 			_Choices.Clear();
 		}
 
-		/*
-		#region unsafe
-		// Test for using unmanaged stuff...
-		public unsafe virtual void AddVariable(int id, IntValue val, object dummyParam)
-		{
-			int v = val.Value;
-			int* ptr = &v;
-			IntPtr x = Marshal.AllocHGlobal(4);
-			int* ptr2 = (int*)x.ToPointer();
-			*ptr2 = v;
-		}
-
 		/// <summary>
-		/// 
+		/// Display the registered choices to the player and return the index of the instruction to jump to.
 		/// </summary>
-		/// <param name="type">The LSN type that will be stored.</param>
-		/// <param name="number">The number of elements in the array.</param>
-		/// <param name="id"  >An identifier, for other parts of the script to access this array.</param>
-		public unsafe virtual void AllocArray(LSN_Type type, int number, int id)
-		{
-			var size = Marshal.SizeOf(type.CreateDefaultValue());
-			var ptr = Marshal.AllocHGlobal(size * number + sizeof(int));
-			Arrays[id] = ptr;
-			*((int*)ptr.ToPointer()) = size;
-		}
-
-		public unsafe virtual void AssignArray(ILSN_Value[] collection, int id)
-		{
-			var count = collection.Length;
-			var tmpPtr = (int*)(Arrays[id].ToPointer());
-			var size = *(tmpPtr);
-			var ptr = new IntPtr(tmpPtr + sizeof(int));
-			for (int i = 0; i < count; i++)
-			{
-				Marshal.StructureToPtr(collection[i], ptr, false);
-				ptr += size;
-			}
-		}
-
-		public unsafe virtual ILSN_Value GetArrayValue(int id, int index)
-		{
-			var tmpPtr = (int*)(Arrays[id].ToPointer());
-			var size = *(tmpPtr);
-			var ptr = new IntPtr(tmpPtr + sizeof(int));
-			ILSN_Value x = null;
-			Marshal.PtrToStructure(ptr + index * size, x);
-			return x;
-		}
-
-		public unsafe virtual void SetArrayValue(int id, int index, ILSN_Value value)
-		{
-			var tmpPtr = (int*)(Arrays[id].ToPointer());
-			var size = *(tmpPtr);
-			var ptr = new IntPtr(tmpPtr + sizeof(int));
-			Marshal.StructureToPtr(value, ptr + index * size, true);
-		}
-
-		public unsafe virtual void DeallocArray(int id)
-		{
-			Marshal.FreeHGlobal(Arrays[id]);
-		}
-
-		#endregion*/
-
-		public abstract void GiveItemTo(LsnValue id, int amount, LsnValue target);
-		public abstract void GiveArmorTo(LsnValue id, int amount, LsnValue target);
-		public abstract void GiveWeaponTo(LsnValue id, int amount, LsnValue target);
-		public abstract void GiveGoldTo(int amount, LsnValue target);
-
-		//public abstract IActor GetActor(LsnValue id);
-
-		public abstract void Say(string message, LsnValue graphic, string title);
-		public abstract int Choice(List<string> choices);
+		/// <returns></returns>
 		public abstract int DisplayChoices();
-
 	}
 }

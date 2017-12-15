@@ -9,23 +9,51 @@ using System.Threading.Tasks;
 
 namespace LsnCore
 {
+	/// <summary>
+	/// Loads lsn resources and unique script objects.
+	/// </summary>
 	public interface IResourceManager
 	{
+		/// <summary>
+		/// Get the unique script object that has the provided name, typically from the current save file...
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		ScriptObject GetUniqueScriptObject(string name);
 
-		ScriptObject GetUniqueScriptObject(/*string path,*/ string name);
-
+		/// <summary>
+		/// Get the lsn resource that has the provided path. It may be a 'special' resource,
+		/// such as a standard library component, where the path does not map to a file
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		LsnResourceThing GetResource(string path);
-
 	}
 
 	public abstract class ResourceManager : IResourceManager
 	{
 		private LsnResourceThing LsnMath;
 
+		/// <summary>
+		/// Get the unique script object that has the provided name, typically from the current save file...
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
 		public abstract ScriptObject GetUniqueScriptObject(string name);
 
-		protected abstract LsnResourceThing GetResourceFile(string path);
+		/// <summary>
+		/// Get a resource that is not part of the standard library.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		protected abstract LsnResourceThing GetResourceFromFile(string path);
 
+		/// <summary>
+		/// Get the lsn resource that has the provided path. It may be a 'special' resource,
+		/// such as a standard library component, where the path does not map to a file
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		public LsnResourceThing GetResource(string path)
 		{
 			if (path.StartsWith(@"Lsn Core\", StringComparison.Ordinal))
@@ -33,7 +61,7 @@ namespace LsnCore
 			else if (path.StartsWith(@"std\", StringComparison.Ordinal))
 				path = new string(path.Skip(4).ToArray());
 			else
-				return GetResourceFile(path);
+				return GetResourceFromFile(path);
 
 			switch (path)
 			{
@@ -49,7 +77,11 @@ namespace LsnCore
 			}
 		}
 
-
+		/// <summary>
+		/// Get a resurce from the standard library.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		public static LsnResourceThing GetStandardLibraryResource(string path)
 		{
 			switch (path)
@@ -64,7 +96,10 @@ namespace LsnCore
 			}
 		}
 
-
+		/// <summary>
+		/// Load the standard library math functions.
+		/// </summary>
+		/// <returns></returns>
 		public static LsnResourceThing LoadMath()
 		{
 			var functions = new List<Function>
@@ -160,18 +195,28 @@ namespace LsnCore
 			};
 		}
 
-
-
-
+		/// <summary>
+		/// The golden ratio
+		/// </summary>
 		public readonly static double φ = (1 + Math.Sqrt(5)) / 2;
 
 		public readonly static double γ = 0.57721566490153286060651209008240243104215933593992;
 
 		public readonly static double Sqrt2Pi = Math.Sqrt(2 * Math.PI);
 
+		/// <summary>
+		/// The square root of 2
+		/// </summary>
+		public readonly static double Sqrt2 = Math.Sqrt(2);
+
 		private static readonly double[] p = { 676.5203681218851, -1259.1392167224028, 771.32342877765313,
 			-176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7 };
 
+		/// <summary>
+		/// The error function.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <returns></returns>
 		public static double Erf(double x)
 		{
 			var t = 1 / (1 + 0.5 * Math.Abs(x));
@@ -190,7 +235,15 @@ namespace LsnCore
 		}
 
 		/// <summary>
-		/// 
+		/// For a random variable in the standard normal distribution, y, this returns the probability that y greater than x.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <returns></returns>
+		public static double Q_Function(double x)
+			=> 0.5 * (1 - Erf(x / Sqrt2));
+
+		/// <summary>
+		/// The gamma function
 		/// </summary>
 		/// <param name="x"></param>
 		/// <returns></returns>

@@ -23,9 +23,10 @@ namespace LsnCore.ControlStructures
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			var choices = Choices.Where(c => c.Check(i)).ToList();
+			throw new InvalidOperationException();
+			/*var choices = Choices.Where(c => c.Check(i)).ToList();
 			int index = i.Choice(choices.Select(c => c.Title.Eval(i).ToString()).ToList());
-			return choices[index].Interpret(i);
+			return choices[index].Interpret(i);*/
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)

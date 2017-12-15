@@ -300,7 +300,7 @@ namespace LSNr
 		{
 			IExpression Amount;
 			IExpression receiver = LsnValue.Nil;
-			
+
 			int indexOfKeywordGold = tokens.Select(t => t.Value).ToList().IndexOf("gold");
 			if(tokens.Any(t => t.Value == "to"))
 			{

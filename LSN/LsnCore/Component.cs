@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace LsnCore
 {
-
 	/// <summary>
 	/// The value returned by Component.Interpret(IInterpreter).
 	/// </summary>
@@ -18,14 +17,6 @@ namespace LsnCore
 		/// </summary>
 		Base,
 		/// <summary>
-		/// Move on to the next iteration of the (innermost) loop, similar to the C# 'continue' keyword.
-		/// </summary>
-		Next,
-		/// <summary>
-		/// Exit the innermost loop; same as the C# 'break' keyword
-		/// </summary>
-		Break,
-		/// <summary>
 		/// Return from the current function. If a value is to be returned, it will have already been assigned to the IInterpreter's
 		/// return value property.
 		/// </summary>
@@ -35,7 +26,6 @@ namespace LsnCore
 	/// <summary>
 	/// The basis LSN class, children include control structures and statements.
 	/// </summary>
-	[Serializable]
 	public abstract class Component : IExpressionContainer
 	{
 		/// <summary>
@@ -44,7 +34,6 @@ namespace LsnCore
 		/// <param name="i"></param>
 		/// <returns></returns>
 		public abstract InterpretValue Interpret(IInterpreter i);
-
 
 		public abstract void Replace(IExpression oldExpr, IExpression newExpr);
 	}

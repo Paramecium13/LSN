@@ -14,7 +14,10 @@ namespace LsnCore.Statements
 	//[Serializable]
 	public class BreakStatement : Statement
 	{
-		public override InterpretValue Interpret(IInterpreter i) => InterpretValue.Break;
+		public override InterpretValue Interpret(IInterpreter i)
+		{
+			throw new InvalidOperationException();
+		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 
@@ -30,7 +33,10 @@ namespace LsnCore.Statements
 	//[Serializable]
 	public class NextStatement : Statement
 	{
-		public override InterpretValue Interpret(IInterpreter i) => InterpretValue.Next;
+		public override InterpretValue Interpret(IInterpreter i)
+		{
+			throw new InvalidOperationException();
+		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 
