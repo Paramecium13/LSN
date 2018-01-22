@@ -104,7 +104,6 @@
     <Compile Include="Parser.cs" />
     <Compile Include="PreFunction.cs" />
     <Compile Include="ScriptObjects\PreHostInterface.cs" />
-    <Compile Include="Preprocessor.cs" />
     <Compile Include="PreResource.cs" />
     <Compile Include="PreScript.cs" />
     <Compile Include="ScriptObjects\PreScriptObject.cs" />

@@ -137,9 +137,12 @@ namespace LSNr
             if (File.Exists(file)) return CONFIG_EXISTS;
 			var config = new Config();
 
-			using (var f = File.Create(file)) using (var writer = new StreamWriter(f))
+			using (var f = File.Create(file))
 			{
-				writer.Write(/*COMMENTS + END_OF_COMMENTS + */JsonConvert.SerializeObject(config, Formatting.Indented));
+				using (var writer = new StreamWriter(f))
+				{
+					writer.Write(/*COMMENTS + END_OF_COMMENTS + */JsonConvert.SerializeObject(config, Formatting.Indented));
+				}
 			}
 			Directory.CreateDirectory("src");
 			Directory.CreateDirectory("obj");

@@ -15,7 +15,10 @@ namespace LSNr
 		public readonly string Name;
 		public readonly LsnType Type;
 		public readonly int Index;
-		private IExpression AccessExpression;
+		private IExpression _AccessExpression;
+
+		public IExpression AccessExpression
+			=> _AccessExpression;
 
 		public IExpression InitialValue { get; private set; }
 
@@ -46,9 +49,9 @@ namespace LSNr
 			InitialValue = init;
 			var e = init.Fold();
 			if (e.IsReifyTimeConst())
-				AccessExpression = e;
+				_AccessExpression = e;
 			else
-				AccessExpression = new VariableExpression(Index, Type.Id);
+				_AccessExpression = new VariableExpression(Index, Type.Id);
 		}
 
 		public Variable(string name, bool m, IExpression init, int index)
@@ -61,11 +64,11 @@ namespace LSNr
 			var e = init.Fold();
 			if (e.IsReifyTimeConst() && !m)
 			{
-				AccessExpression = e;
+				_AccessExpression = e;
 				Index = -1; // This is a constant.
 			}
 			else
-				AccessExpression = new VariableExpression(Index, Type.Id);
+				_AccessExpression = new VariableExpression(Index, Type.Id);
 		}
 
 		/// <summary>
@@ -78,7 +81,7 @@ namespace LSNr
 			Type = param.Type.Type;
 			Mutable = false;
 			Index = param.Index;
-			AccessExpression = new VariableExpression(Index, param.Type);
+			_AccessExpression = new VariableExpression(Index, param.Type);
 		}
 
 		/// <summary>
@@ -101,8 +104,6 @@ namespace LSNr
 			_SubsequentValues.Add(reassign.Value);
 		}
 
-		public IExpression GetAccessExpression()
-			=> AccessExpression;
 
 		/// <summary>
 		/// Replace all usages of this variable with a new expression.
@@ -111,8 +112,8 @@ namespace LSNr
 		public void Replace(IExpression newExpr)
 		{
 			foreach (var user in _Users)
-				user.Replace(AccessExpression, newExpr);
-			AccessExpression = newExpr;
+				user.Replace(_AccessExpression, newExpr);
+			_AccessExpression = newExpr;
 		}
 
 		/// <summary>
@@ -122,7 +123,7 @@ namespace LSNr
 		public void ChangeIndex(int newIndex)
 		{
 			if (newIndex == Index) return;
-			var v = AccessExpression as VariableExpression;
+			var v = _AccessExpression as VariableExpression;
 			if (v != null) v.Index = newIndex;
 		}
 	}

@@ -37,8 +37,8 @@ namespace LSNr
 
 		protected readonly List<string> Includes = new List<string>();
 
-		protected LsnEnvironment _Environment;
-		internal LsnEnvironment Environment => _Environment;
+		//protected LsnEnvironment _Environment;
+		//internal LsnEnvironment Environment => _Environment;
 
 		public string Path { get; private set; }
 
@@ -116,11 +116,11 @@ namespace LSNr
 		/// </summary>
 		/// <param name="path">The path to the file.</param>
 		/// <returns></returns>
-		protected LsnResourceThing Load(string path)
+		protected static LsnResourceThing Load(string path)
 		{
 			LsnResourceThing res = null;
-			string objPath = Program.GetObjectPath(path);
-			string srcPath = Program.GetSourcePath(path);
+			var objPath = Program.GetObjectPath(path);
+			var srcPath = Program.GetSourcePath(path);
 			if (ObjectFileUpToDate(path,out res))
 			{
 				if (res == null)
@@ -131,11 +131,8 @@ namespace LSNr
 					}
 				}
 			}
-			else
-			{
-				if (Program.MakeResource(path, File.ReadAllText(srcPath), objPath, out res, new string[0]) != 0)
-					throw new ApplicationException();
-			}
+			else if (Program.MakeResource(path, File.ReadAllText(srcPath), objPath, out res, new string[0]) != 0)
+				throw new ApplicationException();
 			return res;
 		}
 
@@ -157,7 +154,6 @@ namespace LSNr
 					{ // The object file is up to date.
 						using (var fs = new FileStream(objPath, FileMode.Open))
 						{
-							var bf = new BinaryFormatter();
 							res = LsnResourceThing.Read(fs, new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()), ResourceLoader);
 						}
 						LsnResourceThing x = null;
@@ -206,7 +202,7 @@ namespace LSNr
 					usePaths.Add(path);
 				}
 			}
-			_Environment = new LsnEnvironment(usePaths);
+			//_Environment = new LsnEnvironment(usePaths);
 
 			if (Regex.IsMatch(source, "#include", RegexOptions.IgnoreCase))
 			{
@@ -314,24 +310,13 @@ namespace LSNr
 		}
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="fn"></param>
 		protected void IncludeFunction(Function fn)
 		{
 			IncludedFunctions.Add(fn.Name, fn);
 		}
-
-		/// <summary>
-		/// Load a function. If it is used, include it...
-		/// </summary>
-		/// <param name="fn"></param>
-		protected void LazyIncludeFunction(Function fn)
-		{
-			throw new NotImplementedException();
-		}
-
-
 		#endregion
 
 		protected void LoadFunctionParamAndReturnTypes(Function func)

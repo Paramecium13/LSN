@@ -6,10 +6,8 @@ using System.Text;
 
 namespace LsnCore
 {
-	[Serializable]
 	public class VectorType : LsnType, ICollectionType
 	{
-
 		static VectorType()
 		{
 			var vectorInt = VectorGeneric.Instance.GetType(new List<TypeId>() { int_.Id }) as VectorType;
@@ -62,16 +60,16 @@ namespace LsnCore
 			));
 		}
 
-		[NonSerialized]
-		private LsnType _Generic;
 		public LsnType GenericType => GenericId.Type;
 
+		/// <summary>
+		/// The type id of the generic type parameter (e.g. int or string).
+		/// </summary>
 		public readonly TypeId GenericId;
 
 		public LsnType IndexType => int_;
 
 		public LsnType ContentsType => GenericType;
-
 
 		internal VectorType(TypeId type, string name)
 		{
@@ -88,7 +86,7 @@ namespace LsnCore
 				new BoundedMethod(this,
 					LsnListGeneric.Instance.GetType(new List<TypeId>() { type }),
 					(args) => new LsnValue(((VectorInstance)args[0].Value).ToLsnList())
-				, "ToList")	
+				, "ToList")
 			);*/
 		}
 
@@ -98,7 +96,6 @@ namespace LsnCore
 		/// <returns></returns>
 		public override LsnValue CreateDefaultValue()
 			=> new LsnValue(new VectorInstance(this, new LsnValue[0]));
-
 	}
 
 	public class VectorGeneric : GenericType
@@ -111,7 +108,7 @@ namespace LsnCore
 
 		protected override LsnType CreateType(List<TypeId> types)
 		{
-			if (types == null) throw new ArgumentNullException("types");
+			if (types == null) throw new ArgumentNullException(nameof(types));
 			if (types.Count != 1) throw new ArgumentException("Vector types must have exactly one generic parameter.");
 			return new VectorType(types[0],GetGenericName(types));
 		}

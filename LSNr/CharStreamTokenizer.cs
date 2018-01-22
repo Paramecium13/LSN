@@ -11,21 +11,19 @@ namespace LSNr
 {
 	public class CharStreamTokenizer
 	{
-
-		private readonly static char[] OtherOperators = new char[] {
+		private readonly static char[] OtherOperators = {
 			'^','~','∈','∊','∋','∍','⊂','⊃'
 		};
 
-		private readonly static char[] Symbols = new char[] {
+		private readonly static char[] Symbols = {
 			'+','-','*','/','%',/*'^'*/'>','<','~','!',/*':',*/'?','@','$','=','|','&'
 		};
 
-		private readonly static char[] SyntaxSymbols = new char[] {
+		private readonly static char[] SyntaxSymbols = {
 			'(',')','{','}','[',']',',',';',':','`'
 		};
 
-		private static readonly string[] Keywords = new string[]
-		{
+		private static readonly string[] Keywords = {
 			//Core Language stuff
 			"if", "else","elsif","let","mut","unless","struct","fn","for","match",
 			"foreach","return","new","choose","turn","quest","virtual","stage","state",
@@ -56,17 +54,17 @@ namespace LSNr
 
 		protected enum TokenizerState
 		{
-			Begin,
 			Base,
 			Word,
 			Number,
 			Decimal,
-			CommentSingleLine,
-			CommentMultiLine,
+			CommentSingleline,
+			CommentMultiline,
 			/// <summary>
 			/// When a * is seen in a multiline comment.
 			/// </summary>
 			CommentMultiLineStar,
+
 			/// <summary>
 			/// The first symbol state.
 			/// </summary>
@@ -76,6 +74,10 @@ namespace LSNr
 			SymbolAnd,
 			SymbolOr,
 			SymbolAsterisk,
+			
+			/// <summary>
+			/// Midpoint
+			/// </summary>
 			SymbolLess,
 			SymbolGreater,
 			SybolAt,
@@ -85,6 +87,7 @@ namespace LSNr
 			/// The last symbol state.
 			/// </summary>
 			SymbolMinus,
+
 			StringBase,
 			StringEsc,
 			StringU0,
@@ -142,22 +145,27 @@ namespace LSNr
 			return Tokens;
 		}
 
-
 		protected void ReadChar(char c)
 		{
 			if (c == '\n') LineNumber++;
-			if (State < TokenizerState.CommentSingleLine)
+			if (State < TokenizerState.CommentSingleline)
 				BaseReadChar(c);
 			else if (State < TokenizerState.SymbolPlus)
 				CommentReadChar(c);
+			else if (State < TokenizerState.SymbolLess)
+				Symbols1ReadChar(c);
 			else if (State < TokenizerState.StringBase)
-				SymReadChar(c);
+				Symbols2ReadChar(c);
 			else StrReadChar(c);
 		}
 
+		/// <summary>
+		/// Read a character when the current token is relatively simple...
+		/// </summary>
+		/// <param name="c"></param>
 		protected void BaseReadChar(char c)
 		{
-			if(char.IsWhiteSpace(c))
+			if (char.IsWhiteSpace(c))
 			{
 				Pop();
 				return;
@@ -184,7 +192,7 @@ namespace LSNr
 				Pop();
 				return;
 			}
-			if(c == '"')
+			if (c == '"')
 			{
 				Pop();
 				State = TokenizerState.StringBase;
@@ -193,28 +201,8 @@ namespace LSNr
 			}
 			switch (State)
 			{
-				case TokenizerState.Begin:
-					if (char.IsDigit(c))
-					{
-						Push(c);
-						State = TokenizerState.Number;
-						TokenType = TokenizerTokenType.Int;
-					}
-					else if (c == '.')
-					{
-						Push('.');
-						TokenType = TokenizerTokenType.SyntaxSymbol;
-						Pop();
-					}
-					else
-					{
-						Push(c);
-						State = TokenizerState.Word;
-						TokenType = TokenizerTokenType.Word;
-					}
-					break;
 				case TokenizerState.Base:
-					if(char.IsDigit(c))
+					if (char.IsDigit(c))
 					{
 						Push(c);
 						State = TokenizerState.Number;
@@ -273,8 +261,6 @@ namespace LSNr
 					else
 						throw new ApplicationException();
 					break;
-				default:
-					break;
 			}
 		}
 
@@ -323,14 +309,14 @@ namespace LSNr
 					State = TokenizerState.SymbolAnd;
 					break;
 				case '@':
-					State = TokenizerState.SybolAt;
+					State = TokenizerState.SybolAt; //Is this even used?
 					break;
 				default:
 					break;
 			}
 		}
 
-		protected void SymReadChar(char c)
+		protected void Symbols1ReadChar(char c)
 		{
 			if (c == '"')
 			{
@@ -362,7 +348,7 @@ namespace LSNr
 					}
 					break;
 				case TokenizerState.SymbolEquals:
-					if(c == '=')
+					if (c == '=')
 					{
 						Push('=');
 						TokenType = TokenizerTokenType.Operator;
@@ -390,8 +376,42 @@ namespace LSNr
 					}
 					break;
 				case TokenizerState.SymbolAnd:
+					if (c == '&')
+					{
+						Push('&');
+						TokenType = TokenizerTokenType.Operator;
+						Pop();
+						break;
+					}
+					if (c == '=')
+					{
+						Push('=');
+						TokenType = TokenizerTokenType.Assignment;
+						Pop();
+						break;
+					}
+					TokenType = TokenizerTokenType.Operator;
+					Pop();
+					BaseReadChar(c);
 					break;
 				case TokenizerState.SymbolOr:
+					if (c == '|')
+					{
+						Push('|');
+						TokenType = TokenizerTokenType.Operator;
+						Pop();
+						break;
+					}
+					if (c == '=')
+					{
+						Push('=');
+						TokenType = TokenizerTokenType.Assignment;
+						Pop();
+						break;
+					}
+					TokenType = TokenizerTokenType.Operator;
+					Pop();
+					BaseReadChar(c);
 					break;
 				case TokenizerState.SymbolAsterisk:
 					if (c == '=')
@@ -407,6 +427,13 @@ namespace LSNr
 						BaseReadChar(c);
 					}
 					break;
+			}
+		}
+
+		protected void Symbols2ReadChar(char c)
+		{
+			switch (State)
+			{
 				case TokenizerState.SymbolLess:
 					TokenType = TokenizerTokenType.Operator;
 					if (c == '=')
@@ -433,7 +460,7 @@ namespace LSNr
 					}
 					break;
 				case TokenizerState.SybolAt:
-					if(c=='\"')
+					if (c == '\"')
 					{
 						throw new NotImplementedException();
 					}
@@ -447,12 +474,12 @@ namespace LSNr
 							Pop();
 							break;
 						case '/':
-							State = TokenizerState.CommentSingleLine;
+							State = TokenizerState.CommentSingleline;
 							TokenType = TokenizerTokenType.Unknown;
 							StrB.Clear();
 							break;
 						case '*':
-							State = TokenizerState.CommentMultiLine;
+							State = TokenizerState.CommentMultiline;
 							TokenType = TokenizerTokenType.Unknown;
 							StrB.Clear();
 							break;
@@ -462,13 +489,13 @@ namespace LSNr
 							BaseReadChar(c);
 							break;
 					}
-
 					break;
 				case TokenizerState.SymbolExclamation:
 					TokenType = TokenizerTokenType.Operator;
 					if (c == '=')
 					{
 						Push('=');
+						TokenType = TokenizerTokenType.Assignment;
 						Pop();
 					}
 					else Pop();
@@ -492,7 +519,7 @@ namespace LSNr
 						TokenType = TokenizerTokenType.SyntaxSymbol;
 						Pop();
 					}
-					else if(CanBeNegativeSign && char.IsDigit(c))
+					else if (CanBeNegativeSign && char.IsDigit(c))
 					{
 						Push(c);
 						State = TokenizerState.Number;
@@ -504,8 +531,6 @@ namespace LSNr
 						Pop();
 						BaseReadChar(c);
 					}
-					break;
-				default:
 					break;
 			}
 		}
@@ -605,11 +630,11 @@ namespace LSNr
 		{
 			switch (State)
 			{
-				case TokenizerState.CommentSingleLine:
+				case TokenizerState.CommentSingleline:
 					if (c == '\n')
 						State = TokenizerState.Base;
 					break;
-				case TokenizerState.CommentMultiLine:
+				case TokenizerState.CommentMultiline:
 					if (c == '*')/**/
 						State = TokenizerState.CommentMultiLineStar;
 					break;
@@ -617,18 +642,25 @@ namespace LSNr
 					if (c == '/')
 						State = TokenizerState.Base;
 					else
-						State = TokenizerState.CommentMultiLine;
+						State = TokenizerState.CommentMultiline;
 					break;
 				default:
 					throw new ApplicationException();
 			}
 		}
 
+		/// <summary>
+		/// Add the character to the token being parsed.
+		/// </summary>
+		/// <param name="c"></param>
 		protected void Push(char c)
 		{
 			StrB.Append(c);
 		}
 
+		/// <summary>
+		/// Emit the current token.
+		/// </summary>
 		protected void Pop()
 		{
 			var str = StrB.ToString();

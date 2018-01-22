@@ -87,7 +87,7 @@ namespace LSNr
 		{
 			var v = GetVariable(name);
 			v.AddUser(container);
-			return v.GetAccessExpression();
+			return v.AccessExpression;
 		}
 
 

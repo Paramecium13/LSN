@@ -41,7 +41,7 @@ namespace LSNr
 			Console.ForegroundColor = ErrorColor;
 			Console.WriteLine($"Unspecified error in file '{filePath}'.");
 			Console.WriteLine("This may have been caused by a previously logged error.");
-			//Console.WriteLine("\t" + e.Message.Replace("\n", "\n\t"));
+			Console.WriteLine("\t" + e.Message.Replace("\n", "\n\t"));
 			Console.ResetColor();
 			Console.WriteLine();
 		}
@@ -51,7 +51,7 @@ namespace LSNr
 			Console.ForegroundColor = ErrorColor;
 			Console.WriteLine($"Unspecified error parsing {context} in file '{filePath}'.");
 			Console.WriteLine("This may have been caused by a previously logged error.");
-			//Console.WriteLine("\t" + e.Message.Replace("\n", "\n\t"));
+			Console.WriteLine("\t" + e.Message.Replace("\n", "\n\t"));
 			Console.ResetColor();
 			Console.WriteLine();
 		}
@@ -61,7 +61,7 @@ namespace LSNr
 			Console.ForegroundColor = ErrorColor;
 			Console.WriteLine($"Unspecified error parsing {constructType} '{constructName}' in file '{filePath}'.");
 			Console.WriteLine("This may have been caused by a previously logged error.");
-			//Console.WriteLine("\t" + e.Message.Replace("\n", "\n\t"));
+			Console.WriteLine("\t" + e.Message.Replace("\n", "\n\t"));
 			Console.ResetColor();
 			Console.WriteLine();
 		}

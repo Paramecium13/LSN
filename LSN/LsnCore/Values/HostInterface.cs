@@ -23,12 +23,9 @@ namespace LsnCore.Values
 
 		public TypeId Type => _Type;
 
-
 		protected readonly Dictionary<string, Func<LsnValue[], LsnValue>> Methods = new Dictionary<string, Func<LsnValue[], LsnValue>>();
 
 		// Events
-
-
 		public bool Equals(IExpression other) => other == this;
 		public ILsnValue Clone() => this;
 		public LsnValue Eval(IInterpreter i) => new LsnValue(this);

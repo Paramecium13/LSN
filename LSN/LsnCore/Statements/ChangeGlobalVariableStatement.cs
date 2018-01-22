@@ -23,7 +23,6 @@ namespace LsnCore.Statements
 		{
 			//i.SetGlobalVariable(Value.Eval(i), GlobalVarName);
 			throw new NotImplementedException();
-			return InterpretValue.Base;
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)

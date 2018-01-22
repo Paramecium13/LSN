@@ -42,7 +42,7 @@ namespace LSNr
 			if (v == "setstate")
 			{
 				if (tokens.Count != 2)
-					throw new LsnrParsingException(tokens[0],"Improperly formated setstate statement. Correct format is: 'setstate statename;'.",script.Path);
+					throw new LsnrParsingException(tokens[0],"Improperly formatted setstate statement. Correct format is: 'setstate statename;'.",script.Path);
 
 				var stateName = tokens[1].Value;
 				var preScObjFn = script as PreScriptObjectFunction;
@@ -163,9 +163,9 @@ namespace LSNr
 					v.AddReasignment(assign);
 					return assign;
 				case SymbolType.Field: // This is inside a script object...
-					return new FieldAssignmentStatement(new VariableExpression(0,(script as PreScriptObjectFunction).Parent.Id),
-						(script as PreScriptObjectFunction).Parent.GetField(tokens[0].Value).Index,
-						expr);
+					var preScObjFn = script as PreScriptObjectFunction;
+					return new FieldAssignmentStatement(new VariableExpression(0, preScObjFn.Parent.Id),
+						preScObjFn.Parent.GetField(tokens[0].Value).Index,expr);
 				case SymbolType.GlobalVariable:
 					throw new NotImplementedException("");
 				case SymbolType.Property:
@@ -355,7 +355,7 @@ namespace LSNr
 						break;
 					}
 				default:
-					throw new LsnrParsingException(tokens.First(t=>t.Value.ToLower() == "goto"), "Improperly formated goto statement (considered harmful).", script.Path);
+					throw new LsnrParsingException(tokens.First(t=>t.Value.ToLower() == "goto"), "Improperly formatted goto statement (considered harmful).", script.Path);
 			}
 			return new GoToStatement(expr0, expr1, expr2, actor);
 		}

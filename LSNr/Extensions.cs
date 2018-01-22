@@ -30,11 +30,11 @@ namespace LSNr
 		/// <param name="value"> The value to look for. If ignore case is true, this should be all lowercase.</param>
 		/// <param name="ignoreCase"> Should case be ignored. Default is true.</param>
 		/// <returns></returns>
-		public static int IndexOf(this List<Token> self, string value, bool ignoreCase = true)
+		public static int IndexOf(this IList<Token> self, string value, bool ignoreCase = true)
 		{
-			if(ignoreCase)
+			if (ignoreCase)
 			{
-				for(int i = 0; i < self.Count; i++)
+				for (int i = 0; i < self.Count; i++)
 				{
 					if (self[i].Value.ToLower() == value) return i;
 				}
@@ -43,6 +43,25 @@ namespace LSNr
 			for (int i = 0; i < self.Count; i++)
 			{
 				if (self[i].Value == value) return i;
+			}
+			return -1;
+		}
+
+		/// <summary>
+		/// Gets the index of the first token with the provided value, returns -1 if it cannot be found.
+		/// </summary>
+		/// <param name="self"></param>
+		/// <param name="value"> The value to look for. If ignore case is true, this should be all lowercase.</param>
+		/// <param name="ignoreCase"> Should case be ignored. Default is true.</param>
+		/// <returns></returns>
+		public static int IndexOf(this IEnumerable<Token> self, string value, bool ignoreCase = true)
+		{
+			int i = 0;
+			foreach (var token in self)
+			{
+				if (ignoreCase ? token.Value.ToLower() == value : token.Value == value)
+					return i;
+				i++;
 			}
 			return -1;
 		}

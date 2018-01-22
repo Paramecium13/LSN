@@ -217,13 +217,14 @@ namespace LSNr
 			var val = token.Value;
 			var symType = script.CheckSymbol(val);
 			IExpression expr;
+			var preScrFn = script as PreScriptObjectFunction;
 			switch (symType)
 			{
 				case SymbolType.Variable:
 					var v = script.CurrentScope.GetVariable(val);
 					if (!v.Mutable && (v.InitialValue?.IsReifyTimeConst() ?? false))
 						return v.InitialValue.Fold();
-					expr = v.GetAccessExpression();//new VariableExpression(v.Name, v.Type);
+					expr = v.AccessExpression;//new VariableExpression(v.Name, v.Type);
 					if (container != null)
 						v.AddUser(container);
 					else
@@ -234,16 +235,10 @@ namespace LSNr
 				case SymbolType.GlobalVariable:
 					throw new NotImplementedException();
 				case SymbolType.Field:
-					{
-						var preScrObjFn = script as PreScriptObjectFunction;
-						return new FieldAccessExpression(new VariableExpression(0, preScrObjFn.Parent.Id), preScrObjFn.Parent.GetField(val));
-					}
+					return new FieldAccessExpression(new VariableExpression(0, preScrFn.Parent.Id), preScrFn.Parent.GetField(val));
 				case SymbolType.Property:
-					var preScrFn = script as PreScriptObjectFunction;
 					var preScr = preScrFn.Parent;
-					expr = new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
-					return expr;
-
+					return new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
 			}
 			if (token != null)
 			{
@@ -257,8 +252,6 @@ namespace LSNr
 						return new LsnValue(new StringValue(token.Value));
 					case TokenType.Substitution:
 						throw new ApplicationException();
-					default:
-						break;
 				}
 			}
 

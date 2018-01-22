@@ -58,8 +58,10 @@ namespace LSNr
 		internal bool HostEventExists(string name) => HostType?.HasEventDefinition(name) ?? false;
 		internal EventDefinition GetHostEventDefinition(string name) => HostType?.GetEventDefinition(name);
 
-		internal bool HostMethodExists(string name) => HostType?.HasMethod(name) ?? false; //ToDo: Use...
+		internal bool HostMethodExists(string name) => HostType?.HasMethod(name) ?? false;
 		internal FunctionSignature GetHostMethodSignature(string name) => HostType?.GetMethodDefinition(name); //ToDo: Use...
+
+		internal bool MethodExists(string name) => Methods.ContainsKey(name);
 
 		private List<Parameter> ParseParameters(IReadOnlyList<Token> tokens, bool isEvent)
 		{

@@ -57,10 +57,10 @@ namespace LSNr
 
 		public override SymbolType CheckSymbol(string name)
 		{
-			if (Methods.ContainsKey(name)) return SymbolType.ScriptObjectMethod;
+			if (MethodExists(name)) return SymbolType.ScriptObjectMethod;
 			if (Fields.Any(f => f.Name == name)) return SymbolType.Field;
 			if (Properties.Any(p => p.Name == name)) return SymbolType.Property;
-			if (HostType != null && HostType.HasMethod(name)) return SymbolType.HostInterfaceMethod;
+			if (HostMethodExists(name)) return SymbolType.HostInterfaceMethod;
 			if (name == Name && IsUnique) return SymbolType.UniqueScriptObject;
 
 			return Resource.CheckSymbol(name);
@@ -72,9 +72,7 @@ namespace LSNr
 			return Resource.GetTypeId(name);
 		}
 
-		internal bool MethodExists(string name) => Methods.ContainsKey(name); //ToDo: Use...
-
-		internal ScriptObjectMethod GetMethod(string name) => Methods[name]; //ToDo: Use...
+		//internal ScriptObjectMethod GetMethod(string name) => Methods[name]; //ToDo: Use...
 
 		internal override int GetPropertyIndex(string name)
 		{
@@ -97,9 +95,8 @@ namespace LSNr
 		/// <param name="signature"></param>
 		/// <returns></returns>
 		public override bool IsMethodSignatureValid(FunctionSignature signature) =>
-			CheckSymbol(signature.Name) == SymbolType.Undefined && !Methods.ContainsKey(signature.Name); // No method exists with this name.
+			CheckSymbol(signature.Name) == SymbolType.Undefined && !MethodExists(signature.Name); // No method exists with this name.
 
-		// ToDo: Make this return a ScriptObjectType
 		internal ScriptObjectType PreParse()
 		{
 			bool defaultStateDefined = false;

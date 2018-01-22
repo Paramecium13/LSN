@@ -9,7 +9,6 @@ namespace LsnCore.Values
 	/// <summary>
 	/// A readonly collection passed by value.
 	/// </summary>
-	[Serializable]
 	public class VectorInstance : LsnValueB, ICollectionValue
 	{
 		public readonly int Size;
@@ -20,8 +19,9 @@ namespace LsnCore.Values
 
 		//private VectorType _Type;
 
-		//public ICollectionType CollectionType => _Type;
-
+		/// <summary>
+		/// The type of its contents
+		/// </summary>
 		public readonly TypeId GenericId;
 
 		/// <summary>

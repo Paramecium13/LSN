@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace LSNr
 {
 	[System.Serializable]
-	abstract class LsnrException : Exception
+	public abstract class LsnrException : Exception
 	{
 		/// <summary>
 		/// The LSN source file responsible for this exception.
@@ -32,6 +32,7 @@ namespace LSNr
 		  System.Runtime.Serialization.StreamingContext context) : base(info, context){}
 	}
 
+	[Serializable]
 	class LsnrConstructException : LsnrException
 	{
 		public override string Message => base.Message + "\n\t" + InnerException.Message.Replace("\n", "\n\t");
