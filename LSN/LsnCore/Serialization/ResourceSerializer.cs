@@ -6,27 +6,33 @@ namespace LsnCore
 {
 	internal enum StatementCode:ushort
 	{
-		AssignVariable,
+		AssignVariable = 0,			// Assignment
 		AssignField,
 		AssignValueInCollection,
 
-		Jump,
+		Jump = 16,					// Flow Control
 		ConditionalJump,
+		SetTarget,
+		JumpToTarget,
 
-		Return,
+		Return = 32,				// Functions and stuff
 		ReturnValue,
 
-		EvaluateExpression,
-		SetState,
+		EvaluateExpression = 48,	// ?
 
-		RegisterChoice = 128,
+		SetState = 64,				// Script objects, etc.
+
+		Say = 128,					// Game stuff
+		RegisterChoice,
 		DisplayChoices,
-		Say,
 		GoTo,
 		GiveItem,
 		GiveGold,
 		Save,
-		Load
+		Load,
+
+		Extension1 = 256,
+		Extension2
 	}
 
 	internal enum ExpressionCode:byte
