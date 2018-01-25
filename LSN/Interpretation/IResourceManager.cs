@@ -28,6 +28,10 @@ namespace LsnCore
 		/// <param name="path"></param>
 		/// <returns></returns>
 		LsnResourceThing GetResource(string path);
+
+		LsnValue[] LoadValues(string id);
+
+		void SaveValues(LsnValue[] values, string id);
 	}
 
 	public abstract class ResourceManager : IResourceManager
@@ -257,5 +261,8 @@ namespace LsnCore
 			var t = x + 8 - 0.5;
 			return Sqrt2Pi * Math.Pow(t, x + 0.5) * Math.Exp(-t) * y;
 		}
+
+		public abstract LsnValue[] LoadValues(string id);
+		public abstract void SaveValues(LsnValue[] values, string id);
 	}
 }

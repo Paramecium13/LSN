@@ -66,7 +66,7 @@ namespace LsnCore.Serialization
 
 		private Statement ReadStatement(BinaryDataReader reader)
 		{
-			switch ((StatementCode)reader.ReadByte())
+			switch ((StatementCode)reader.ReadUInt16())
 			{
 				case StatementCode.Return:
 					return new ReturnStatement(null);
@@ -143,6 +143,20 @@ namespace LsnCore.Serialization
 						var amount = ReadExpression(reader);
 						var rcvr = ReadExpression(reader);
 						return new GiveGoldStatement(amount, rcvr);
+					}
+				case StatementCode.Save:
+					{
+						var n = reader.ReadUInt16();
+						var vars = reader.ReadUInt16s(n);
+						var id = reader.ReadString();
+						return new SaveStatement(vars, id);
+					}
+				case StatementCode.Load:
+					{
+						var n = reader.ReadUInt16();
+						var vars = reader.ReadUInt16s(n);
+						var id = reader.ReadString();
+						return new LoadStatement(vars, id);
 					}
 				default:
 					throw new ApplicationException();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Syroot.BinaryData;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,10 @@ namespace LsnCore
 {
 	public static class ExtensionMethods
 	{
+		internal static void Write(this BinaryDataWriter self, StatementCode code)
+		{
+			self.Write((ushort)code);
+		}
 
 		public static List<T> Substitute<T>(this List<T> IEnum, T toReplace, T replacement)
 			where T : IEquatable<T>

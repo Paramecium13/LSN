@@ -40,7 +40,7 @@ namespace LsnCore.Statements
 
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
-			writer.Write((byte)StatementCode.Say);
+			writer.Write(StatementCode.Say);
 			Message.Serialize(writer, resourceSerializer);
 			Graphic.Serialize(writer, resourceSerializer);
 			Title.Serialize(writer, resourceSerializer);

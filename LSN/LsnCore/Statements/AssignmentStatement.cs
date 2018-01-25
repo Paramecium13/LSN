@@ -30,7 +30,7 @@ namespace LsnCore.Statements
 
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
-			writer.Write((byte)StatementCode.AssignVariable);
+			writer.Write(StatementCode.AssignVariable);
 			writer.Write((ushort)Index);
 			Value.Serialize(writer, resourceSerializer);
 		}

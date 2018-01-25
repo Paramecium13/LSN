@@ -43,7 +43,7 @@ namespace LsnCore.Statements
 
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
-			writer.Write((byte)StatementCode.RegisterChoice);
+			writer.Write(StatementCode.RegisterChoice);
 			writer.Write(Target);
 			Condition.Serialize(writer, resourceSerializer);
 			ChoiceText.Serialize(writer, resourceSerializer);

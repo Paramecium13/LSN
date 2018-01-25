@@ -1,31 +1,32 @@
 ﻿using LsnCore.Types;
 using Syroot.BinaryData;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LsnCore
 {
-	internal enum StatementCode:byte
+	internal enum StatementCode:ushort
 	{
-		Return,
-		ReturnValue,
-		Jump,
-		ConditionalJump,
-		EvaluateExpression,
 		AssignVariable,
 		AssignField,
 		AssignValueInCollection,
+
+		Jump,
+		ConditionalJump,
+
+		Return,
+		ReturnValue,
+
+		EvaluateExpression,
 		SetState,
-		RegisterChoice,
+
+		RegisterChoice = 128,
 		DisplayChoices,
 		Say,
 		GoTo,
 		GiveItem,
-		GiveGold
+		GiveGold,
+		Save,
+		Load
 	}
 
 	internal enum ExpressionCode:byte

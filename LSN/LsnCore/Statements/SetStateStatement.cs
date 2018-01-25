@@ -29,7 +29,7 @@ namespace LsnCore.Statements
 
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
-			writer.Write((byte)StatementCode.SetState);
+			writer.Write(StatementCode.SetState);
 			writer.Write(State);
 		}
 	}

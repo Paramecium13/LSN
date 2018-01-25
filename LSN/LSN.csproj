@@ -109,6 +109,7 @@
     <Compile Include="LsnCore\Statements\GoToStatement.cs" />
     <Compile Include="LsnCore\Statements\JumpStatements.cs" />
     <Compile Include="LsnCore\Statements\RegisterChoiceStatement.cs" />
+    <Compile Include="LsnCore\Statements\SaveStatement.cs" />
     <Compile Include="LsnCore\Statements\SetStateStatement.cs" />
     <Compile Include="LsnCore\Types\EventDefinition.cs" />
     <Compile Include="LsnCore\Types\EventListener.cs" />

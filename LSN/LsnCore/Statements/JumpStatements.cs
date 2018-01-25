@@ -27,7 +27,7 @@ namespace LsnCore.Statements
 
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
-			writer.Write((byte)StatementCode.Jump);
+			writer.Write(StatementCode.Jump);
 			writer.Write(Target);
 		}
 	}
@@ -60,7 +60,7 @@ namespace LsnCore.Statements
 
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
-			writer.Write((byte)StatementCode.ConditionalJump);
+			writer.Write(StatementCode.ConditionalJump);
 			writer.Write(Target);
 			Condition.Serialize(writer, resourceSerializer);
 		}

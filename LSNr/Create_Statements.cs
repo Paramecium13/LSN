@@ -359,6 +359,5 @@ namespace LSNr
 			}
 			return new GoToStatement(expr0, expr1, expr2, actor);
 		}
-
 	}
 }

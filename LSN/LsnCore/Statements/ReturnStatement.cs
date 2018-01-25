@@ -41,10 +41,10 @@ namespace LsnCore.Statements
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			if(Value == null)
-				writer.Write((byte)StatementCode.Return);
+				writer.Write(StatementCode.Return);
 			else
 			{
-				writer.Write((byte)StatementCode.ReturnValue);
+				writer.Write(StatementCode.ReturnValue);
 				Value.Serialize(writer, resourceSerializer);
 			}
 		}

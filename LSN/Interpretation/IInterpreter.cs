@@ -63,6 +63,10 @@ namespace LsnCore
 		/// <returns></returns>
 		ScriptObject GetUniqueScriptObject(string name);
 
+		void SaveVariables(ushort[] indexes, string saveId);
+
+		void LoadVariables(ushort[] indexes, string saveId);
+
 		/// <summary>
 		/// ...
 		/// </summary>

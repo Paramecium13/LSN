@@ -249,5 +249,20 @@ namespace LsnCore
 		/// </summary>
 		/// <returns></returns>
 		public abstract int DisplayChoices();
+
+		public void SaveVariables(ushort[] indexes, string saveId)
+		{
+			var values = new LsnValue[indexes.Length];
+			for(int i = 0; i < indexes.Length; i++)
+				values[i] = CurrentStackFrame[indexes[i]];
+			ResourceManager.SaveValues(values, saveId);
+		}
+
+		public void LoadVariables(ushort[] indexes, string saveId)
+		{
+			var values = ResourceManager.LoadValues(saveId);
+			for (int i = 0; i < indexes.Length; i++)
+				CurrentStackFrame[indexes[i]] = values[i];
+		}
 	}
 }

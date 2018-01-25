@@ -45,7 +45,7 @@ namespace LsnCore.Statements
 
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
-			writer.Write((byte)StatementCode.AssignValueInCollection);
+			writer.Write(StatementCode.AssignValueInCollection);
 			Collection.Serialize(writer, resourceSerializer);
 			Index.Serialize(writer, resourceSerializer);
 			Value.Serialize(writer, resourceSerializer);
