@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
 using LSNr.Optimization;
-using Tokens;
+
 
 namespace LSNr
 {
-	public abstract class BasePreScriptObject : IPreScript
+	public abstract class BasePreScriptClass : IPreScript
 	{
 
 		public abstract IScope CurrentScope { get; set; }
@@ -27,7 +27,7 @@ namespace LSNr
 		internal readonly string HostName;
 		internal HostInterfaceType HostType;
 
-		protected readonly Dictionary<string, ScriptObjectMethod> Methods = new Dictionary<string, ScriptObjectMethod>();
+		protected readonly Dictionary<string, ScriptClassMethod> Methods = new Dictionary<string, ScriptClassMethod>();
 		protected readonly Dictionary<string, IReadOnlyList<Token>> MethodBodies = new Dictionary<string, IReadOnlyList<Token>>();
 		protected readonly Dictionary<string, EventListener> EventListeners = new Dictionary<string, EventListener>();
 		protected readonly Dictionary<string, IReadOnlyList<Token>> EventListenerBodies = new Dictionary<string, IReadOnlyList<Token>>();
@@ -48,7 +48,7 @@ namespace LSNr
 		internal abstract bool StateExists(string name);
 		internal abstract int GetStateIndex(string name);
 
-		protected BasePreScriptObject(IReadOnlyList<Token> tokens, TypeId id, PreResource resource, string hostName)
+		protected BasePreScriptClass(IReadOnlyList<Token> tokens, TypeId id, PreResource resource, string hostName)
 		{
 			Tokens = tokens; Id = id; Resource = resource; HostName = hostName;
 		}
@@ -87,7 +87,7 @@ namespace LSNr
 			return paramaters;
 		}
 
-		protected ScriptObjectMethod PreParseMethod(ref int i) // 'i' points to the thing after 'fn'.
+		protected ScriptClassMethod PreParseMethod(ref int i) // 'i' points to the thing after 'fn'.
 		{
 			var val = Tokens[i].Value;
 			var isAbstract = false;
@@ -173,7 +173,7 @@ namespace LSNr
 				throw LsnrParsingException.UnexpectedToken(Tokens[i], isAbstract ? "-> or ;" : "-> or {", Path);
 			i++; // 'i' points to the thing after ';' or the end of the body.
 
-			return new ScriptObjectMethod(Id, returnType, parameters, Resource.RelativePath, isVirtual, isAbstract, name);
+			return new ScriptClassMethod(Id, returnType, parameters, Resource.RelativePath, isVirtual, isAbstract, name);
 		}
 
 		/// <summary>
@@ -238,9 +238,9 @@ namespace LSNr
 			foreach (var pair in MethodBodies)
 			{
 				var method = Methods[pair.Key];
-				try
-				{
-					var pre = new PreScriptObjectFunction(this);
+				//try
+				//{
+					var pre = new PreScriptClassFunction(this);
 					foreach (var param in method.Parameters)
 						pre.CurrentScope.CreateVariable(param);
 					var parser = new Parser(pair.Value, pre);
@@ -250,21 +250,21 @@ namespace LSNr
 					var components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
 					method.Code = new ComponentFlattener().Flatten(components);
 					method.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
-				}
+				/*}
 				catch (LsnrException e)
 				{
 					Valid = false;
 					var st = this as PreState;
 					var x = st != null ? $"state {st.StateName} of " : "";
-					Logging.Log($"method '{method.Name}' in {x}script object {this.Id.Name}", e);
+					Logging.Log($"method '{method.Name}' in {x}script class {this.Id.Name}", e);
 				}
 				catch (Exception e)
 				{
 					Valid = false;
 					var st = this as PreState;
 					var x = st != null ? $"state {st.StateName} of " : "";
-					Logging.Log($"method '{method.Name}' in {x}script object {this.Id.Name}", e, Path);
-				}
+					Logging.Log($"method '{method.Name}' in {x}script class {this.Id.Name}", e, Path);
+				}*/
 			}
 		}
 
@@ -275,7 +275,7 @@ namespace LSNr
 				var eventListener = EventListeners[pair.Key];
 				try
 				{
-					var pre = new PreScriptObjectFunction(this);
+					var pre = new PreScriptClassFunction(this);
 
 					foreach (var param in eventListener.Definition.Parameters)
 						pre.CurrentScope.CreateVariable(param);

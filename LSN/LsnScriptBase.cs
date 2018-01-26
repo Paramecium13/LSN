@@ -35,8 +35,8 @@ namespace LsnCore
 
 		public List<string> Includes { get { return _Includes; } set { _Includes = value; } }
 
-		private IReadOnlyDictionary<string, ScriptObjectType> _ScriptObjectTypes;
-		public IReadOnlyDictionary<string, ScriptObjectType> ScriptObjectTypes
+		private IReadOnlyDictionary<string, ScriptClass> _ScriptObjectTypes;
+		public IReadOnlyDictionary<string, ScriptClass> ScriptObjectTypes
 		{
 			get { return _ScriptObjectTypes; }
 			set { _ScriptObjectTypes = value; }

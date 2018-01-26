@@ -31,8 +31,8 @@ namespace LsnCore
 		private Dictionary<string, StructType> _RecordTypes = new Dictionary<string, StructType>();
 		public IReadOnlyDictionary<string, StructType> RecordTypes { get { return _RecordTypes; }}*/
 
-		private Dictionary<string, ScriptObjectType> _ScriptObjectTypes = new Dictionary<string, ScriptObjectType>();
-		public IReadOnlyDictionary<string, ScriptObjectType> ScriptObjectTypes => _ScriptObjectTypes;
+		private Dictionary<string, ScriptClass> _ScriptObjectTypes = new Dictionary<string, ScriptClass>();
+		public IReadOnlyDictionary<string, ScriptClass> ScriptObjectTypes => _ScriptObjectTypes;
 
 		private readonly IReadOnlyList<string> Resources;
 

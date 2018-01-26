@@ -1,13 +1,9 @@
 ﻿using LsnCore;
-using Tokens;
-using LsnCore.ControlStructures;
 using LsnCore.Expressions;
 using LsnCore.Statements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LSNr
 {
@@ -44,11 +40,11 @@ namespace LSNr
 				if (tokens.Count != 2)
 					throw new LsnrParsingException(tokens[0],"Improperly formatted setstate statement. Correct format is: 'setstate statename;'.",script.Path);
 
-				var stateName = tokens[1].Value;
-				var preScObjFn = script as PreScriptObjectFunction;
+				var preScObjFn = script as PreScriptClassFunction;
 				if (preScObjFn == null)
 					throw new LsnrParsingException(tokens[0],"Cannot use a setstate statement outside of a script object.",script.Path); // Cannot use SetState here.
 
+				var stateName = tokens[1].Value;
 				var preScObj = preScObjFn.Parent;
 
 				if (!preScObj.StateExists(stateName))
@@ -117,7 +113,7 @@ namespace LSNr
 				case SymbolType.GlobalVariable:
 				case SymbolType.Field:
 				case SymbolType.Property:
-				case SymbolType.ScriptObjectMethod:
+				case SymbolType.ScriptClassMethod:
 				case SymbolType.HostInterfaceMethod:
 				case SymbolType.Function:
 					throw new LsnrParsingException(tokens[nameindex],$"Cannot name a new variable '{name}'. That name is already used for a {symType.ToString()}.",script.Path);
@@ -163,7 +159,7 @@ namespace LSNr
 					v.AddReasignment(assign);
 					return assign;
 				case SymbolType.Field: // This is inside a script object...
-					var preScObjFn = script as PreScriptObjectFunction;
+					var preScObjFn = script as PreScriptClassFunction;
 					return new FieldAssignmentStatement(new VariableExpression(0, preScObjFn.Parent.Id),
 						preScObjFn.Parent.GetField(tokens[0].Value).Index,expr);
 				case SymbolType.GlobalVariable:
@@ -172,7 +168,7 @@ namespace LSNr
 					throw new LsnrParsingException(tokens[0], $"Attempt to modify property \"{tokens[0].Value}\"; properties are immutable.", script.Path);
 				case SymbolType.Undefined:
 					throw new LsnrParsingException(tokens[0], $"The symbol \"{tokens[0].Value}\" is undefined.", script.Path);
-				case SymbolType.ScriptObjectMethod:
+				case SymbolType.ScriptClassMethod:
 				case SymbolType.HostInterfaceMethod:
 				case SymbolType.Function:
 				default:

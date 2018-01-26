@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Tokens;
+
 
 namespace LSNr
 {
@@ -40,7 +40,7 @@ namespace LSNr
 		//private readonly Dictionary<string, IReadOnlyList<IToken>> HostInterfaceBodies = new Dictionary<string, IReadOnlyList<IToken>>();
 		private readonly Dictionary<string, PreHostInterface> PreHostInterfaces = new Dictionary<string, PreHostInterface>();
 
-		private readonly Dictionary<string, PreScriptObject> PreScriptObjects = new Dictionary<string, PreScriptObject>();
+		private readonly Dictionary<string, PreScriptClass> PreScriptClasses = new Dictionary<string, PreScriptClass>();
 
 
 		public PreResource(string src, string path) : base(src,path)
@@ -53,15 +53,15 @@ namespace LSNr
 		/// </summary>
 		public void Reify()
 		{
-			try
-			{
+			/*try
+			{*/
 				ProcessDirectives();
-			}
+			/*}
 			catch (Exception)
 			{
 				//TODO: Logging
 				throw;
-			}
+			}*/
 
 			try
 			{
@@ -77,7 +77,7 @@ namespace LSNr
 			ParseHostInterfaces();
 			PreParseScriptObjects();
 
-			foreach (var pre in PreScriptObjects.Values)
+			foreach (var pre in PreScriptClasses.Values)
 			{
 				try
 				{
@@ -154,21 +154,39 @@ namespace LSNr
 					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
 					PreHostInterfaces.Add(name, new PreHostInterface(name, this, tokens));
 				}
-				else if (val == "unique" || val == "scriptobject")
+				else if (val == "unique" || val == "scriptclass" || (val == "script" && Tokens[i+1].Value == "class"))
 				{
-					bool unique = false;
-					if(val == "unique")
+					var unique = false;
+					if (val == "unique")
 					{
 						unique = true;
-						i++;
+						i++; // 'i' points to "script" or "scriptclass"
 					}
-					string name = Tokens[++i].Value; // Move on to the next token, get the name.
-					//TODO : validate name.
+
+					if (Tokens[i].Value.StartsWith("script", StringComparison.Ordinal))
+					{
+						if (Tokens[i].Value == "scriptclass")
+						{
+							i++; // 'i' points to the name.
+						}
+						else if (Tokens[i].Value == "script")
+						{
+							i++; // 'i' points to "class".
+							if (Tokens[i].Value != "class")
+								throw LsnrParsingException.UnexpectedToken(Tokens[i], "class", Path);
+							i++; // 'i' points to the name.
+						}
+						else throw LsnrParsingException.UnexpectedToken(Tokens[i], "scriptclass or script class", Path);
+					}
+					else throw LsnrParsingException.UnexpectedToken(Tokens[i], "scriptclass or script class", Path);
+
+					var name = Tokens[i].Value; // Move on to the next token, get the name.
+												  //TODO : validate name.
 					string hostName = null;
 					i++;// Move on to the next token...
 					if (Tokens[i].Value == "<")
 					{
-						i++;
+						i++; // 'i' points to host name.
 						hostName = Tokens[i].Value;
 						i++;
 					}
@@ -190,8 +208,8 @@ namespace LSNr
 
 						if (openCount > 0) tokens.Add(Tokens[i]);
 					}
-					var sc = new PreScriptObject(name, this, hostName, unique, tokens);
-					PreScriptObjects.Add(name, sc);
+					var sc = new PreScriptClass(name, this, hostName, unique, tokens);
+					PreScriptClasses.Add(name, sc);
 				}
 				else otherTokens.Add(Tokens[i]);
 			}
@@ -347,7 +365,7 @@ namespace LSNr
 
 		private void PreParseScriptObjects()
 		{
-			foreach (var pre in PreScriptObjects.Values)
+			foreach (var pre in PreScriptClasses.Values)
 			{
 				try
 				{
@@ -541,12 +559,12 @@ namespace LSNr
 			};
 		}
 
-		public override bool TypeExists(string name) => PreScriptObjects.ContainsKey(name) || PreHostInterfaces.ContainsKey(name) || base.TypeExists(name);
+		public override bool TypeExists(string name) => PreScriptClasses.ContainsKey(name) || PreHostInterfaces.ContainsKey(name) || base.TypeExists(name);
 
 		public override TypeId GetTypeId(string name)
 		{
-			if (PreScriptObjects.ContainsKey(name))
-				return PreScriptObjects[name].Id;
+			if (PreScriptClasses.ContainsKey(name))
+				return PreScriptClasses[name].Id;
 			if (PreHostInterfaces.ContainsKey(name))
 				return PreHostInterfaces[name].HostInterfaceId;
 			return base.GetTypeId(name);
@@ -565,6 +583,6 @@ namespace LSNr
 		}
 
 		public override bool UniqueScriptObjectTypeExists(string name)
-			=> base.UniqueScriptObjectTypeExists(name) || PreScriptObjects.Any(p => p.Key == name && p.Value.IsUnique);
+			=> base.UniqueScriptObjectTypeExists(name) || PreScriptClasses.Any(p => p.Key == name && p.Value.IsUnique);
 	}
 }

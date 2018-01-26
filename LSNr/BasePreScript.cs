@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
-using Tokens;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
@@ -385,7 +384,7 @@ namespace LSNr
 		protected readonly IList<LsnType> LoadedTypes = LsnType.GetBaseTypes();
 		protected readonly Dictionary<string, HostInterfaceType> HostInterfaces = new Dictionary<string, HostInterfaceType>();
 		protected readonly Dictionary<string, HostInterfaceType> MyHostInterfaces = new Dictionary<string, HostInterfaceType>();
-		protected readonly Dictionary<string, ScriptObjectType> ScriptObjects = new Dictionary<string, ScriptObjectType>();
+		protected readonly Dictionary<string, ScriptClass> ScriptObjects = new Dictionary<string, ScriptClass>();
 
 		protected readonly IList<GenericType> IncludedGenerics = new List<GenericType>();
 
@@ -416,7 +415,7 @@ namespace LSNr
 		}
 
 		public virtual bool UniqueScriptObjectTypeExists(string name)
-			=> LoadedTypes.Union(IncludedTypes).Any((t) => t.Name == name && ((t as ScriptObjectType)?.Unique ?? false));
+			=> LoadedTypes.Union(IncludedTypes).Any((t) => t.Name == name && ((t as ScriptClass)?.Unique ?? false));
 
 		public virtual bool GenericTypeExists(string name)
 			=> IncludedGenerics.Any(t => t.Name == name) || LoadedGenerics.Any(t => t.Name == name);

@@ -57,7 +57,7 @@ fn FnTestA()-> int
 
 
 
-unique ScriptObject TestA
+unique ScriptClass TestA
 {
 	mut Value : int;
 	
@@ -98,7 +98,6 @@ unique ScriptObject TestA
 		}
 		
 	}
-	
 	
 	
 }

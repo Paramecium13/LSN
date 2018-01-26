@@ -9,24 +9,20 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Values
 {
-	[Serializable]
 	public sealed class ScriptObject : ILsnValue, IHasMutableFieldsValue
 	{
-
 		private readonly LsnValue[] Properties;
 
 		private readonly LsnValue[] Fields;
 
-
-		private readonly ScriptObjectType ScObjType;
+		private readonly ScriptClass ScObjType;
 
 		private readonly IHostInterface Host;
 
-
 		private int CurrentStateIndex;
-		private ScriptObjectState CurrentState;
+		private ScriptClassState CurrentState;
 
-		public ScriptObject(LsnValue[] properties, LsnValue[] fields, ScriptObjectType type, int currentState, IHostInterface host = null)
+		public ScriptObject(LsnValue[] properties, LsnValue[] fields, ScriptClass type, int currentState, IHostInterface host = null)
 		{
 			Properties = properties; Fields = fields; Type = type.Id; ScObjType = type; CurrentStateIndex = currentState;
 			if(type._States.Count > 0)
@@ -48,9 +44,7 @@ namespace LsnCore.Values
 			}
 			else if (ScObjType.HostInterface != null)
 				throw new ArgumentException("This type of ScriptObject cannot survive without a host.", "host");
-			
 		}
-
 
 		public bool BoolValue => true;
 		public bool IsPure => false;
@@ -62,22 +56,18 @@ namespace LsnCore.Values
 		public bool IsReifyTimeConst() => false;
 		public void Replace(IExpression oldExpr, IExpression newExpr){}
 
-
 		public LsnValue GetFieldValue(int index)
 			=> Fields[index];
-
 
 		public void SetFieldValue(int index, LsnValue value)
 		{
 			Fields[index] = value;
 		}
 
-
 		internal LsnValue GetPropertyValue(int index)
 			=> Properties[index];
-		
 
-		internal ScriptObjectMethod GetMethod(string methodName)
+		internal ScriptClassMethod GetMethod(string methodName)
 		{
 			//Is the method virtual?
 			//	Does the current state override it?
@@ -105,7 +95,6 @@ namespace LsnCore.Values
 			throw new ArgumentException($"The ScriptObject type \"{ScObjType.Name}\" does not have a method named \"{methodName}\".",nameof(methodName));
 		}
 
-
 		public LsnValue ExecuteHostInterfaceMethod(string name, LsnValue[] values)
 		{
 			return Host.CallMethod(name, values);
@@ -121,7 +110,6 @@ namespace LsnCore.Values
 				return ScObjType.GetEventListener(name);
 			throw new ArgumentException("", nameof(name));
 		}
-
 
 		internal void SetState(int index)
 		{

@@ -266,10 +266,10 @@ namespace LsnCore
 
 				// Types Part 2
 				var nScriptObjectTypes = reader.ReadUInt16();
-				var scriptObjectTypes = new Dictionary<string, ScriptObjectType>();
+				var scriptObjectTypes = new Dictionary<string, ScriptClass>();
 				for (int i = 0; i < nScriptObjectTypes; i++)
 				{
-					var s = ScriptObjectType.Read(reader, typeIdContainer, filePath, resourceDeserializer);
+					var s = ScriptClass.Read(reader, typeIdContainer, filePath, resourceDeserializer);
 					scriptObjectTypes.Add(s.Name, s);
 				}
 				res.ScriptObjectTypes = scriptObjectTypes;

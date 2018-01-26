@@ -87,7 +87,7 @@
     <Compile Include="LsnrTypeNotFoundException.cs" />
     <Compile Include="Optimization\ComponentFlattener.cs" />
     <Compile Include="PreStatement.cs" />
-    <Compile Include="ScriptObjects\BasePreScriptObject.cs" />
+    <Compile Include="ScriptObjects\BasePreScriptClass.cs" />
     <Compile Include="CharStreamTokenizer.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Create.cs" />
@@ -106,8 +106,8 @@
     <Compile Include="ScriptObjects\PreHostInterface.cs" />
     <Compile Include="PreResource.cs" />
     <Compile Include="PreScript.cs" />
-    <Compile Include="ScriptObjects\PreScriptObject.cs" />
-    <Compile Include="ScriptObjects\PreScriptObjectFunction.cs" />
+    <Compile Include="ScriptObjects\PreScriptClass.cs" />
+    <Compile Include="ScriptObjects\PreScriptClassFunction.cs" />
     <Compile Include="ScriptObjects\PreState.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

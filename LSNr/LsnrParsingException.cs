@@ -9,7 +9,7 @@ namespace LSNr
 	[Serializable]
 	class LsnrParsingException : LsnrException
 	{
-		public Tokens.Token Token { get; private set; }
+		public Token Token { get; private set; }
 
 		public int LineNumber => Token.LineNumber;
 
@@ -25,20 +25,20 @@ namespace LSNr
 		protected LsnrParsingException(string message, string file) : base(message, file){}
 		protected LsnrParsingException(string message, Exception inner, string file) : base(message, inner, file){}*/
 
-		internal LsnrParsingException(Tokens.Token token, string message, string file) : base(message, file)
+		internal LsnrParsingException(Token token, string message, string file) : base(message, file)
 		{
 			Token = token;
 		}
 
-		internal LsnrParsingException(Tokens.Token token, string message, Exception inner, string file) : base(message, inner, file)
+		internal LsnrParsingException(Token token, string message, Exception inner, string file) : base(message, inner, file)
 		{
 			Token = token;
 		}
 
-		internal static LsnrParsingException UnexpectedToken(Tokens.Token givenToken, string expectedToken, string file)
+		internal static LsnrParsingException UnexpectedToken(Token givenToken, string expectedToken, string file)
 			=> new LsnrParsingException(givenToken, $"Expected \'{expectedToken}\', received {givenToken.Value}", file);
 
-		internal static LsnrParsingException TypeMismatch(Tokens.Token token, string expectedType, string providedType, string file)
+		internal static LsnrParsingException TypeMismatch(Token token, string expectedType, string providedType, string file)
 			=> new LsnrParsingException(token, $"Expected an expression of type '{expectedType}', received an expression of type '{providedType}'.", file);
 	}
 }

@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Types
 {
-	[Serializable]
-	public sealed class ScriptObjectType : LsnType, IHasFieldsType
+	public sealed class ScriptClass : LsnType, IHasFieldsType
 	{
 		public readonly bool Unique;
 
@@ -21,31 +20,31 @@ namespace LsnCore.Types
 		private readonly IList<Property> Properties;
 
 		// Fields
-		private readonly IReadOnlyList<Field> Fields;
+		private readonly IReadOnlyList<Field> _Fields;
 
 		// Methods
-		internal IReadOnlyDictionary<string,ScriptObjectMethod> ScriptObjectMethods;
+		internal IReadOnlyDictionary<string,ScriptClassMethod> ScriptObjectMethods;
 
 		// Events
 		internal IReadOnlyDictionary<string, EventListener> EventListeners;
-		
+
 		// States
-		internal IReadOnlyDictionary<int,ScriptObjectState> _States;
+		internal IReadOnlyDictionary<int,ScriptClassState> _States;
 
 		public readonly int DefaultStateId;
 
-		public IReadOnlyCollection<Field> FieldsB => Fields;
+		public IReadOnlyCollection<Field> FieldsB => _Fields;
 
-		public ScriptObjectType(TypeId id, TypeId host, IList<Property> properties, IReadOnlyList<Field> fields,
-			IReadOnlyDictionary<string,ScriptObjectMethod> methods, IReadOnlyDictionary<string,EventListener> eventListeners,
-			IReadOnlyDictionary<int,ScriptObjectState> states, int defaultStateIndex, bool unique)
+		public ScriptClass(TypeId id, TypeId host, IList<Property> properties, IReadOnlyList<Field> fields,
+			IReadOnlyDictionary<string,ScriptClassMethod> methods, IReadOnlyDictionary<string,EventListener> eventListeners,
+			IReadOnlyDictionary<int,ScriptClassState> states, int defaultStateIndex, bool unique)
 		{
 			Name = id.Name;
 			Id = id;
 			HostInterface = host;
 			Unique = unique;
 			Properties = properties;
-			Fields = fields;
+			_Fields = fields;
 			ScriptObjectMethods = methods;
 			EventListeners = eventListeners;
 			_States = states;
@@ -54,7 +53,7 @@ namespace LsnCore.Types
 			id.Load(this);
 		}
 
-		public ScriptObjectState GetDefaultState()
+		public ScriptClassState GetDefaultState()
 			=> _States[DefaultStateId];
 
 		public override LsnValue CreateDefaultValue()
@@ -63,8 +62,8 @@ namespace LsnCore.Types
 
 		int IHasFieldsType.GetIndex(string name)
 		{
-			if (Fields.Any(f => f.Name == name))
-				return Fields.First(f => f.Name == name).Index;
+			if (_Fields.Any(f => f.Name == name))
+				return _Fields.First(f => f.Name == name).Index;
 			else throw new ApplicationException($"The ScriptObject type {Name} does not have a field named {name}.");
 		}
 
@@ -85,7 +84,7 @@ namespace LsnCore.Types
 			=> ScriptObjectMethods.ContainsKey(name);
 
 
-		public ScriptObjectMethod GetMethod(string name)
+		public ScriptClassMethod GetMethod(string name)
 		{
 			if (ScriptObjectMethods.ContainsKey(name))
 				return ScriptObjectMethods[name];
@@ -99,7 +98,7 @@ namespace LsnCore.Types
 		public EventListener GetEventListener(string name) => EventListeners[name];
 		
 		
-		public ScriptObjectState GetState(int id) => _States[id];
+		public ScriptClassState GetState(int id) => _States[id];
 
 
 
@@ -114,8 +113,8 @@ namespace LsnCore.Types
 			foreach (var prop in Properties)
 				prop.Write(writer);
 
-			writer.Write((ushort)Fields.Count);
-			foreach (var field in Fields)
+			writer.Write((ushort)_Fields.Count);
+			foreach (var field in _Fields)
 			{
 				writer.Write(field.Name);
 				writer.Write(field.Type.Name);
@@ -138,7 +137,7 @@ namespace LsnCore.Types
 
 
 
-		public static ScriptObjectType Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath, ResourceDeserializer resourceDeserializer)
+		public static ScriptClass Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
 			var name = reader.ReadString();
 			var unique = reader.ReadBoolean();
@@ -163,10 +162,10 @@ namespace LsnCore.Types
 			}
 
 			var nMethods = reader.ReadUInt16();
-			var methods = new Dictionary<string, ScriptObjectMethod>(nMethods);
+			var methods = new Dictionary<string, ScriptClassMethod>(nMethods);
 			for (int i = 0; i < nMethods; i++)
 			{
-				var m = ScriptObjectMethod.Read(reader, typeContainer, type, resourceFilePath, resourceDeserializer);
+				var m = ScriptClassMethod.Read(reader, typeContainer, type, resourceFilePath, resourceDeserializer);
 				methods.Add(m.Name, m);
 			}
 
@@ -179,14 +178,14 @@ namespace LsnCore.Types
 			}
 
 			var nStates = reader.ReadUInt16();
-			var states = new Dictionary<int, ScriptObjectState>(nStates);
+			var states = new Dictionary<int, ScriptClassState>(nStates);
 			for (int i = 0; i < nStates; i++)
 			{
-				var state = ScriptObjectState.Read(reader, typeContainer, type, resourceFilePath, resourceDeserializer);
+				var state = ScriptClassState.Read(reader, typeContainer, type, resourceFilePath, resourceDeserializer);
 				states.Add(state.Id, state);
 			}
 
-			return new ScriptObjectType(type, typeContainer.GetTypeId(hostInterfaceName), props, fields, methods, listeners,
+			return new ScriptClass(type, typeContainer.GetTypeId(hostInterfaceName), props, fields, methods, listeners,
 				states, defaultStateId, unique);
 		}
 

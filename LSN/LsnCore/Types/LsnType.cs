@@ -297,10 +297,10 @@ namespace LsnCore
 				_Id = value;
 			}
 		}
-		
+
 		/*private readonly Dictionary<Tuple<Operator, TypeId>, Tuple<BinOp, TypeId>> _Operators
 			= new Dictionary<Tuple<Operator, TypeId>, Tuple<BinOp, TypeId>>();*/
-			
+
 		/*public IReadOnlyDictionary<Tuple<Operator, TypeId>, Tuple<BinOp, TypeId>> Operators
 			{ get { return _Operators; } }*/
 

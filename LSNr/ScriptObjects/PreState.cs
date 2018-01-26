@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
-using Tokens;
+
 
 namespace LSNr
 {
-	public sealed class PreState : BasePreScriptObject
+	public sealed class PreState : BasePreScriptClass
 	{
-		private readonly PreScriptObject Parent;
+		private readonly PreScriptClass Parent;
 		private readonly string _StateName;
 		private readonly int _Index;
 
@@ -29,7 +29,7 @@ namespace LSNr
 			set { Resource.Valid = value; }
 		}
 
-		public PreState(PreScriptObject parent, string name, int index,PreResource resource, IReadOnlyList<Token> tokens)
+		public PreState(PreScriptClass parent, string name, int index,PreResource resource, IReadOnlyList<Token> tokens)
 			:base(tokens,parent.Id,resource,parent.HostName)
 		{
 			Parent = parent; _StateName = name; _Index = index;
@@ -66,11 +66,11 @@ namespace LSNr
 		public override SymbolType CheckSymbol(string name)
 		{
 			if (Methods.ContainsKey(name))
-				return SymbolType.ScriptObjectMethod; // It's a method local to this state.
+				return SymbolType.ScriptClassMethod; // It's a method local to this state.
 			return Parent.CheckSymbol(name);
 		}
 
-		internal ScriptObjectState PreParse()
+		internal ScriptClassState PreParse()
 		{
 			int i = 0;
 			while (i < Tokens.Count)
@@ -105,7 +105,7 @@ namespace LSNr
 					Valid = false;
 				}
 			}
-			return new ScriptObjectState(_Index, Methods, EventListeners);
+			return new ScriptClassState(_Index, Methods, EventListeners);
 		}
 
 		internal bool Parse()

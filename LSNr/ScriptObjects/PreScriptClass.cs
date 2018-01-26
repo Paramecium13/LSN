@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
-using Tokens;
+
 
 namespace LSNr
 {
@@ -13,7 +13,7 @@ namespace LSNr
 	// 2. Parse HostInterfaces.
 	// 3. Parse ScriptObjects.
 
-	public sealed class PreScriptObject : BasePreScriptObject
+	public sealed class PreScriptClass : BasePreScriptClass
 	{
 		internal readonly string Name;
 
@@ -37,7 +37,7 @@ namespace LSNr
 			set{ Resource.Valid = value; }
 		}
 
-		public PreScriptObject(string name, PreResource resource, string hostName, bool isUnique, IReadOnlyList<Token> tokens)
+		public PreScriptClass(string name, PreResource resource, string hostName, bool isUnique, IReadOnlyList<Token> tokens)
 			:base(tokens, new TypeId(name),resource,hostName)
 		{
 			Name = name; IsUnique = isUnique;
@@ -57,7 +57,7 @@ namespace LSNr
 
 		public override SymbolType CheckSymbol(string name)
 		{
-			if (MethodExists(name)) return SymbolType.ScriptObjectMethod;
+			if (MethodExists(name)) return SymbolType.ScriptClassMethod;
 			if (Fields.Any(f => f.Name == name)) return SymbolType.Field;
 			if (Properties.Any(p => p.Name == name)) return SymbolType.Property;
 			if (HostMethodExists(name)) return SymbolType.HostInterfaceMethod;
@@ -97,13 +97,13 @@ namespace LSNr
 		public override bool IsMethodSignatureValid(FunctionSignature signature) =>
 			CheckSymbol(signature.Name) == SymbolType.Undefined && !MethodExists(signature.Name); // No method exists with this name.
 
-		internal ScriptObjectType PreParse()
+		internal ScriptClass PreParse()
 		{
-			bool defaultStateDefined = false;
-			bool isDefaultState = false;
-			int previousStateIndex = -1;
+			var defaultStateDefined = false;
+			var isDefaultState = false;
+			var previousStateIndex = -1;
 
-			int i = 0;
+			var i = 0;
 			while (i < Tokens.Count)
 			{
 				try
@@ -151,7 +151,7 @@ namespace LSNr
 									throw LsnrParsingException.UnexpectedToken(Tokens[i], "'{{', ':', or '='", Path);
 
 								var tokens = new List<Token>();
-								int openCount = 1;
+								var openCount = 1;
 								while (openCount > 0)
 								{
 									i++;
@@ -178,7 +178,6 @@ namespace LSNr
 							{
 								i++;
 								string metadata = null;
-								LsnValue defaultVal = LsnValue.Nil;
 								if (Tokens[i].Value == "<")
 								{
 									i++;
@@ -188,7 +187,7 @@ namespace LSNr
 										throw LsnrParsingException.UnexpectedToken(Tokens[i], "'>'", Path);
 									i++;
 								}
-								string name = Tokens[i].Value;
+								var name = Tokens[i].Value;
 								i++;
 								if (Tokens[i].Value != ":")
 									throw LsnrParsingException.UnexpectedToken(Tokens[i], "':'", Path);
@@ -196,19 +195,19 @@ namespace LSNr
 								var typeId = this.ParseTypeId(Tokens, i, out i);
 								if (Tokens[i].Value == "=")
 								{
-									throw new NotImplementedException();
+									throw new LsnrParsingException(Tokens[i], "Properties cannot have default values.", Path);
 								}
-								else if (Tokens[i].Value == ";")
+								if (Tokens[i].Value == ";")
 									i++;
 								else
 									throw LsnrParsingException.UnexpectedToken(Tokens[i], "';'", Path);
-								Properties.Add(new Property(name, typeId, defaultVal, metadata));
+								Properties.Add(new Property(name, typeId, metadata));
 							}
 							break;
 						case "mut":
 							{
 								i++;
-								string name = Tokens[i].Value;
+								var name = Tokens[i].Value;
 								if (CheckSymbol(name) != SymbolType.Undefined || Properties.Any(p => p.Name == name) || Fields.Any(f => f.Name == name))
 									throw new LsnrParsingException(Tokens[i], $"The identifier '{name}' is already used for something else.", Path);
 								i++;
@@ -257,9 +256,9 @@ namespace LSNr
 
 			// PreParse states
 			var states = PreStates.Select(p => p.PreParse()).ToDictionary((s) => s.Id);
-			var scObjType = new ScriptObjectType(Id, HostType?.Id, Properties, Fields, Methods, EventListeners, states, DefaultStateIndex, IsUnique);
-			Id.Load(scObjType);
-			return scObjType;
+			var scClass = new ScriptClass(Id, HostType?.Id, Properties, Fields, Methods, EventListeners, states, DefaultStateIndex, IsUnique);
+			Id.Load(scClass);
+			return scClass;
 		}
 
 		internal bool Parse()

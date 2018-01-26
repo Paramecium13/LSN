@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Tokens;
 
 namespace LSNr
 {
@@ -25,31 +22,32 @@ namespace LSNr
 
 		private static readonly string[] Keywords = {
 			//Core Language stuff
-			"if", "else","elsif","let","mut","unless","struct","fn","for","match",
-			"foreach","return","new","choose","turn","quest","virtual","stage","state",
-			"record","repeat","is",
+			"if", "else","elsif","let","mut","struct","fn","for","match","foreach","return",
+			"new","choose","virtual","state","record","is","to",
+			//"turn","quest","stage","repeat","unless",
 
 			//Statement headers
-			"give","rotate","publish",/*"add","remove",*/"callcommonevent","cce","recover",
-			"goto","open","fadein","fadeout","tint","flash","shake","play","show","end","exit",
-			"wait","start","stop","change","say","turn",//move
+			"give","goto","wait","say",
+			//"exit","start","stop","change","fadein","fadeout","tint","flash","shake",
+			//"play","show","end","rotate","publish",
 
 			//Statement stuff
-			"item","weapon","armor","armour","actor","video","image","soundeffect","backgroundmusic",
-			"screen","moveroute","animation","picture","with","as","down","left","right","up","graphic",
+			"item","gold","with","as","graphic",
+			//"soundeffect","backgroundmusic","video","image","down","left","right","up","screen",
+			//"moveroute","animation","picture",
 
 			//both
-			"hp","level","exp","mp","g",//"name",
+			//"hp","level","exp","mp","g",
 
 			//Get expression stuff
-			"get","mapid","playtime","savecount","battlecount","number","of","keyitem","timer",
-			"input","at",
+			//"get","number","of","at",
 
 			//Things
 			//"my","common","all"
-			//"int","double","num","complex","bool","string",
-			"watched","rule","when","scriptobject","attachedto","attatched","to","host","hostinterface",
-			"interface","script","property","state","auto","setstate","on","event","abstract","virtual","override"
+			//"int","double","num","complex","bool","string","watched","rule","when",,"attachedto","attatched""override"
+			"script","class","scriptclass","attach","detach","host","interface","hostinterface",
+			"script","property","state","auto","setstate","on","event","abstract","virtual"
+
 		};
 
 		protected enum TokenizerState
@@ -74,7 +72,7 @@ namespace LSNr
 			SymbolAnd,
 			SymbolOr,
 			SymbolAsterisk,
-			
+
 			/// <summary>
 			/// Midpoint
 			/// </summary>
@@ -129,13 +127,11 @@ namespace LSNr
 
 		private int LineNumber = 1;
 
-
 		internal CharStreamTokenizer()
 		{
 			Tokens = new List<Token>();
 			TokenOutput = (t) => Tokens.Add(t);
 		}
-
 
 		internal IReadOnlyList<Token> Tokenize(string src)
 		{
@@ -621,8 +617,6 @@ namespace LSNr
 					UEscStrB.Clear();
 					State = TokenizerState.StringBase;
 					break;
-				default:
-					break;
 			}
 		}
 
@@ -680,9 +674,9 @@ namespace LSNr
 					throw new ApplicationException();
 				case TokenizerTokenType.Word:
 					if (Keywords.Contains(str.ToLower()))
-						token = new Token(str.ToLower(), LineNumber, global::Tokens.TokenType.Keyword);
+						token = new Token(str.ToLower(), LineNumber, LSNr.TokenType.Keyword);
 					else
-						token = new Token(str, LineNumber, global::Tokens.TokenType.Identifier);
+						token = new Token(str, LineNumber, LSNr.TokenType.Identifier);
 					break;
 				case TokenizerTokenType.Float:
 					token = new Token(LineNumber, double.Parse(str));
@@ -691,18 +685,18 @@ namespace LSNr
 					token = new Token(LineNumber, int.Parse(str));
 					break;
 				case TokenizerTokenType.String:
-					token = new Token(str, LineNumber, global::Tokens.TokenType.String);
+					token = new Token(str, LineNumber, LSNr.TokenType.String);
 					break;
 				case TokenizerTokenType.Assignment:
-					token = new Token(str, LineNumber, global::Tokens.TokenType.Assignment);
+					token = new Token(str, LineNumber, LSNr.TokenType.Assignment);
 					CanBeNegativeSign = true;
 					break;
 				case TokenizerTokenType.Operator:
-					token = new Token(str, LineNumber, global::Tokens.TokenType.Operator);
+					token = new Token(str, LineNumber, LSNr.TokenType.Operator);
 					CanBeNegativeSign = true;
 					break;
 				case TokenizerTokenType.SyntaxSymbol:
-					token = new Token(str, LineNumber, global::Tokens.TokenType.SyntaxSymbol);
+					token = new Token(str, LineNumber, LSNr.TokenType.SyntaxSymbol);
 					CanBeNegativeSign = true;
 					break;
 				default:

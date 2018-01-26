@@ -192,7 +192,7 @@ namespace LsnCore
 			{
 				HostInterfaces = new Dictionary<string, HostInterfaceType>(),
 				StructTypes = new Dictionary<string, StructType>(),
-				ScriptObjectTypes = new Dictionary<string, ScriptObjectType>(),
+				ScriptObjectTypes = new Dictionary<string, ScriptClass>(),
 				//Types = new List<LsnType>(),
 				Usings = new List<string>(),
 				Functions = functions.ToDictionary((f) => f.Name)

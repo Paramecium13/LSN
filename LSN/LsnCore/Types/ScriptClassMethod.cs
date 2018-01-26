@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace LsnCore.Types
 {
-	public class ScriptObjectMethod : Method, ICodeBlock
+	public class ScriptClassMethod : Method, ICodeBlock
 	{
 		public override bool HandlesScope => false;
 
@@ -18,7 +18,7 @@ namespace LsnCore.Types
 
 		public Statement[] Code { get; set; } // Assigned in LSNr.
 
-		public ScriptObjectMethod(TypeId type, TypeId returnType, IList<Parameter> parameters, string resourceFilePath,
+		public ScriptClassMethod(TypeId type, TypeId returnType, IList<Parameter> parameters, string resourceFilePath,
 			bool isVirtual, bool isAbstract, string name)
 			:base(type,returnType,name,parameters)
 		{
@@ -62,7 +62,7 @@ namespace LsnCore.Types
 			i.ExitFunctionScope();
 			return i.ReturnValue;
 		}
-		
+
 		//enum Flags : byte { none = 0, IsVirtual = 1, IsAbstract = 2 }
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
@@ -87,14 +87,14 @@ namespace LsnCore.Types
 			}
 		}
 
-		public static ScriptObjectMethod Read(BinaryDataReader reader, ITypeIdContainer typeContainer, TypeId type, string resourceFilePath, ResourceDeserializer resourceDeserializer)
+		internal static ScriptClassMethod Read(BinaryDataReader reader, ITypeIdContainer typeContainer, TypeId type, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
 			var signature = FunctionSignature.Read(reader, typeContainer);
 			var b = reader.ReadByte();
 			var isVirtual = b > 0;
 			var isAbstract = b == 2;
 			var stackSize = -1;
-			var method = new ScriptObjectMethod(type, signature.ReturnType, signature.Parameters.ToList(), resourceFilePath, isVirtual, isAbstract, signature.Name)
+			var method = new ScriptClassMethod(type, signature.ReturnType, signature.Parameters.ToList(), resourceFilePath, isVirtual, isAbstract, signature.Name)
 			{
 				StackSize = stackSize
 			};
@@ -108,6 +108,5 @@ namespace LsnCore.Types
 
 			return method;
 		}
-
 	}
 }

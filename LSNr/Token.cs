@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tokens
+namespace LSNr
 {
 	public enum TokenType { Ambiguous, Assignment, Float, Identifier, Integer, Keyword, Operator, String, Substitution, SyntaxSymbol}
 
@@ -51,6 +51,7 @@ namespace Tokens
 
 		public override int GetHashCode() => Value.GetHashCode();
 
+		public override string ToString() => Value;
 	}
 
 	public static class TokenExtensions

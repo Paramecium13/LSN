@@ -10,10 +10,8 @@ namespace LsnCore.Types
 	/// This type repressents a struct type, it has strongly typed members, which are LSN_Values,
 	/// that are accessed by name. It's instances are passed by value.
 	/// </summary>
-	[Serializable]
 	public class RecordType : LsnType, IHasFieldsType
 	{
-		[NonSerialized]
 		private Dictionary<string, LsnType> _Fields = new Dictionary<string, LsnType>(); // TODO: Replace with TypeId.
 		public IReadOnlyDictionary<string, LsnType> Fields => _Fields;
 
@@ -21,7 +19,6 @@ namespace LsnCore.Types
 		public IReadOnlyCollection<Field> FieldsB => _FieldsB;
 
 		public int FieldCount => _FieldsB.Length;
-
 
 		public RecordType(string name, Tuple<string, TypeId>[] fields)
 		{
@@ -72,7 +69,6 @@ namespace LsnCore.Types
 				writer.Write(field.Type.Name);
 			}
 		}
-
 
 		public static RecordType Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
 		{

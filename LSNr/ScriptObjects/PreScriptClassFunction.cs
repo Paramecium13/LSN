@@ -8,11 +8,11 @@ using LsnCore.Types;
 
 namespace LSNr
 {
-	public sealed class PreScriptObjectFunction : IPreScript
+	public sealed class PreScriptClassFunction : IPreScript
 	{
-		internal readonly BasePreScriptObject Parent;
+		internal readonly BasePreScriptClass Parent;
 
-		internal PreScriptObjectFunction(BasePreScriptObject parent)
+		internal PreScriptClassFunction(BasePreScriptClass parent)
 		{
 			Parent = parent;
 		}

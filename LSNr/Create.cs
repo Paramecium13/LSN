@@ -1,13 +1,10 @@
 ﻿using LsnCore;
-using Tokens;
 using LsnCore.ControlStructures;
 using LsnCore.Expressions;
 using LsnCore.Statements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LSNr
 {
@@ -217,7 +214,7 @@ namespace LSNr
 			var val = token.Value;
 			var symType = script.CheckSymbol(val);
 			IExpression expr;
-			var preScrFn = script as PreScriptObjectFunction;
+			var preScrFn = script as PreScriptClassFunction;
 			switch (symType)
 			{
 				case SymbolType.Variable:
@@ -260,7 +257,7 @@ namespace LSNr
 			if (val == "false")
 				return LsnBoolValue.GetBoolValue(false);
 
-			var preScObjFn = script as PreScriptObjectFunction;
+			var preScObjFn = script as PreScriptClassFunction;
 			if (val == "this")
 			{
 				if (preScObjFn == null)
@@ -284,6 +281,8 @@ namespace LSNr
 
 		public static IList<Tuple<string,IExpression>> CreateParamList(List<Token> tokens, int paramCount, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions)
 		{
+			if (tokens.Count == 0)
+				throw new ApplicationException();
 			/*if(tokens[0].Value == "(")
 			{
 				if (tokens[tokens.Count - 1].Value == ")")
