@@ -158,6 +158,8 @@ namespace LsnCore.Serialization
 						var id = reader.ReadString();
 						return new LoadStatement(vars, id);
 					}
+				case StatementCode.Detach:
+					return new DetachStatement();
 				default:
 					throw new ApplicationException();
 			}

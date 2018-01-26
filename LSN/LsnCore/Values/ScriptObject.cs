@@ -17,7 +17,7 @@ namespace LsnCore.Values
 
 		private readonly ScriptClass ScObjType;
 
-		private readonly IHostInterface Host;
+		private IHostInterface Host;
 
 		private int CurrentStateIndex;
 		private ScriptClassState CurrentState;
@@ -146,6 +146,11 @@ namespace LsnCore.Values
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			throw new InvalidOperationException();
+		}
+
+		public void Detach()
+		{
+			Host = null;
 		}
 	}
 }

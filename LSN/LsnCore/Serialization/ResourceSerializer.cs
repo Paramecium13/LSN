@@ -21,6 +21,8 @@ namespace LsnCore
 		EvaluateExpression = 48,	// ?
 
 		SetState = 64,				// Script objects, etc.
+		Detach,
+		AttachNewScriptObject,
 
 		Say = 128,					// Game stuff
 		RegisterChoice,

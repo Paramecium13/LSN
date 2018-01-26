@@ -103,6 +103,7 @@
     <Compile Include="LsnCore\Serialization\ResourceDeserializer.cs" />
     <Compile Include="LsnCore\Statements\ChangeGlobalVariableStatement.cs" />
     <Compile Include="LsnCore\Statements\CollectionValueReassignmentStatement.cs" />
+    <Compile Include="LsnCore\Statements\DetachStatement.cs" />
     <Compile Include="LsnCore\Statements\DisplayChoicesStatement.cs" />
     <Compile Include="LsnCore\Statements\ExpressionStatement.cs" />
     <Compile Include="LsnCore\Statements\FieldAssignmentStatement.cs" />
