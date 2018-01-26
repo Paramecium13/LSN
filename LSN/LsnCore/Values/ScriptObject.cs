@@ -150,6 +150,8 @@ namespace LsnCore.Values
 
 		public void Detach()
 		{
+			foreach (var name in ScObjType.EventListeners.Keys.Union(CurrentState.EventsListenedTo).Distinct())
+				Host.UnsubscribeToEvent(name, this);
 			Host = null;
 		}
 	}
