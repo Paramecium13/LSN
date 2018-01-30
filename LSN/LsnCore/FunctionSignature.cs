@@ -22,24 +22,26 @@ namespace LsnCore
 		}
 
 		public bool Equals(FunctionSignature other)
-		{
-			if (Name != other.Name)
-				return false;
-			if (ReturnType != other.ReturnType)
-				return false;
-			if (Parameters.Count != other.Parameters.Count)
-				return false;
-			for (int i = 0; i < Parameters.Count; i++)
-				if (!Parameters[i].Equals(other.Parameters[i]))
-					return false;
-			return true;
-		}
+			=> Name == other.Name && ReturnType == other.ReturnType && Parameters.Count == other.Parameters.Count &&
+			Parameters.All(p => p.Equals(other.Parameters[p.Index]));
 
 		public IExpression[] CreateArgsArray(IList<Tuple<string, IExpression>> args)
 		{
 			var argsArray = new IExpression[Parameters.Count];
 
-			if (args.Count > 0 && args.Any(a => !string.IsNullOrEmpty(a.Item1)))
+			for(int i = 0; i < Parameters.Count; i++)
+			{
+				var a = args.FirstOrDefault(arg => arg.Item1 == Parameters[i].Name);
+				if (a != null)
+					argsArray[i] = a.Item2;
+				else if (i < args.Count)
+					argsArray[i] = args[i].Item2;
+				else if (!Parameters[i].DefaultValue.IsNull)
+					argsArray[i] = Parameters[i].DefaultValue;
+				else throw new ArgumentException(nameof(args));
+			}
+
+			/*if (args.Count > 0 && args.Any(a => !string.IsNullOrEmpty(a.Item1)))
 			{
 				var dict = new Dictionary<string, IExpression>(args.Count);//args.ToDictionary(t => t.Item1, t => t.Item2);
 
@@ -49,7 +51,6 @@ namespace LsnCore
 						dict.Add(args[i].Item1, args[i].Item2);
 					else dict.Add(Parameters[i].Name, args[i].Item2);
 				}
-
 
 				foreach (var param in Parameters)
 					argsArray[param.Index] = dict.ContainsKey(param.Name) ? dict[param.Name] : param.DefaultValue;
@@ -61,7 +62,7 @@ namespace LsnCore
 
 				for (int i = args.Count; i < Parameters.Count; i++)
 					argsArray[i] = Parameters[i].DefaultValue;
-			}
+			}*/
 			return argsArray;
 		}
 

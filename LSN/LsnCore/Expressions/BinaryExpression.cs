@@ -9,33 +9,30 @@ using Syroot.BinaryData;
 namespace LsnCore.Expressions
 {
 	public enum BinaryOperation : byte { Sum, Difference, Product, Quotient, Modulus, Power, LessThan, LessThanOrEqual, GreaterThan,GreaterThanOrEqual,Equal,NotEqual,And,Or,Xor}
-	
+
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1717:OnlyFlagsEnumsShouldHavePluralNames")]
 	public enum BinaryOperationArgTypes : byte { Int_Int, Int_Double,Double_Double,Double_Int,String_String,String_Int,Bool_Bool}
-	
+
 	public sealed class BinaryExpression : Expression
 	{
-		private IExpression _Left;
-
 		/// <summary>
 		/// The left hand side of this expression.
 		/// </summary>
-		public IExpression Left { get { return _Left; } set { _Left = value; } }
-
-		private IExpression _Right;
+		public IExpression Left { get; set; }
 
 		/// <summary>
 		/// The right hand side of this expression.
 		/// </summary>
-		public IExpression Right { get { return _Right; } set { _Right = value; } }
+		public IExpression Right { get; set; }
 
-		public override bool IsPure => _Left.IsPure && _Right.IsPure;
+		public override bool IsPure => Left.IsPure && Right.IsPure;
 
 		public readonly BinaryOperation Operation;
 		public readonly BinaryOperationArgTypes ArgumentTypes;
 
 		public BinaryExpression(IExpression left,IExpression right, BinaryOperation operation, BinaryOperationArgTypes argTypes)
 		{
-			_Left = left; _Right = right; Operation = operation; ArgumentTypes = argTypes;
+			Left = left; Right = right; Operation = operation; ArgumentTypes = argTypes;
 			switch (argTypes)
 			{
 				case BinaryOperationArgTypes.Int_Int:
@@ -56,14 +53,15 @@ namespace LsnCore.Expressions
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public override LsnValue Eval(IInterpreter i)
 		{
-			var left = _Left.Eval(i);
+			var left = Left.Eval(i);
 			LsnValue right;
 			switch (ArgumentTypes)
 			{
 				case BinaryOperationArgTypes.Int_Int:
-					right = _Right.Eval(i);
+					right = Right.Eval(i);
 					switch (Operation)
 					{
 						case BinaryOperation.Sum:					return LsnValue.IntSum(left, right);
@@ -75,7 +73,7 @@ namespace LsnCore.Expressions
 						case BinaryOperation.LessThan:				return new LsnValue(left.IntValue <  right.IntValue);
 						case BinaryOperation.LessThanOrEqual:		return new LsnValue(left.IntValue <= right.IntValue);
 						case BinaryOperation.GreaterThan:			return new LsnValue(left.IntValue >  right.IntValue);
-							
+
 						case BinaryOperation.GreaterThanOrEqual:	return new LsnValue(left.IntValue >= right.IntValue);
 						case BinaryOperation.Equal:					return new LsnValue(left.IntValue == right.IntValue);
 						case BinaryOperation.NotEqual:				return new LsnValue(left.IntValue != right.IntValue);
@@ -86,7 +84,7 @@ namespace LsnCore.Expressions
 							throw new InvalidOperationException(Operation.ToString());
 					}
 				case BinaryOperationArgTypes.Int_Double:
-					right = _Right.Eval(i);
+					right = Right.Eval(i);
 					switch (Operation)
 					{
 						case BinaryOperation.Sum:					return LsnValue.DoubleSum(left, right);
@@ -98,7 +96,7 @@ namespace LsnCore.Expressions
 						case BinaryOperation.LessThan:				return new LsnValue(left.IntValue <  right.DoubleValue);
 						case BinaryOperation.LessThanOrEqual:		return new LsnValue(left.IntValue <= right.DoubleValue);
 						case BinaryOperation.GreaterThan:			return new LsnValue(left.IntValue >  right.DoubleValue);
-							
+
 						case BinaryOperation.GreaterThanOrEqual:	return new LsnValue(left.IntValue >= right.DoubleValue);
 						case BinaryOperation.Equal:					return new LsnValue((left.IntValue - right.DoubleValue) < double.Epsilon);
 						case BinaryOperation.NotEqual:				return new LsnValue((left.IntValue - right.DoubleValue) >= double.Epsilon);
@@ -106,7 +104,7 @@ namespace LsnCore.Expressions
 							throw new InvalidOperationException(Operation.ToString());
 					}
 				case BinaryOperationArgTypes.Double_Double:
-					right = _Right.Eval(i);switch (Operation)
+					right = Right.Eval(i);switch (Operation)
 					{
 						case BinaryOperation.Sum:					return LsnValue.DoubleSum(left, right);
 						case BinaryOperation.Difference:			return LsnValue.DoubleDiff(left, right);
@@ -124,7 +122,7 @@ namespace LsnCore.Expressions
 							throw new InvalidOperationException(Operation.ToString());
 					}
 				case BinaryOperationArgTypes.Double_Int:
-					right = _Right.Eval(i);
+					right = Right.Eval(i);
 					switch (Operation)
 					{
 						case BinaryOperation.Sum:					return LsnValue.DoubleSum(left, right);
@@ -136,7 +134,7 @@ namespace LsnCore.Expressions
 						case BinaryOperation.LessThan:				return new LsnValue(left.DoubleValue <  right.IntValue);
 						case BinaryOperation.LessThanOrEqual:		return new LsnValue(left.DoubleValue <= right.IntValue);
 						case BinaryOperation.GreaterThan:			return new LsnValue(left.DoubleValue >  right.IntValue);
-							
+
 						case BinaryOperation.GreaterThanOrEqual:	return new LsnValue(left.DoubleValue >= right.IntValue);
 						case BinaryOperation.Equal:					return new LsnValue((left.DoubleValue - right.IntValue) < double.Epsilon);
 						case BinaryOperation.NotEqual:				return new LsnValue((left.DoubleValue - right.IntValue) >= double.Epsilon);
@@ -144,7 +142,7 @@ namespace LsnCore.Expressions
 							throw new InvalidOperationException(Operation.ToString());
 					}
 				case BinaryOperationArgTypes.String_String:
-					right = _Right.Eval(i);
+					right = Right.Eval(i);
 					var lefts  = (left .Value as StringValue)?.Value;
 					var rights = (right.Value as StringValue)?.Value;
 					switch (Operation)
@@ -161,7 +159,7 @@ namespace LsnCore.Expressions
 							throw new InvalidOperationException();
 					}
 				case BinaryOperationArgTypes.String_Int:
-					right = _Right.Eval(i);
+					right = Right.Eval(i);
 					lefts = (left.Value as StringValue)?.Value ?? "";
 					var righti = right.IntValue;
 					switch (Operation)
@@ -173,11 +171,11 @@ namespace LsnCore.Expressions
 				case BinaryOperationArgTypes.Bool_Bool:
 					switch (Operation)
 					{
-						case BinaryOperation.Equal:			return new LsnValue(left.BoolValue == _Right.Eval(i).BoolValue);
-						case BinaryOperation.NotEqual:		return new LsnValue(left.BoolValue != _Right.Eval(i).BoolValue);
-						case BinaryOperation.And:			return new LsnValue(left.BoolValue && _Right.Eval(i).BoolValue);
-						case BinaryOperation.Or:			return new LsnValue(left.BoolValue || _Right.Eval(i).BoolValue);
-						case BinaryOperation.Xor:			return new LsnValue(left.BoolValue ^  _Right.Eval(i).BoolValue);
+						case BinaryOperation.Equal:			return new LsnValue(left.BoolValue == Right.Eval(i).BoolValue);
+						case BinaryOperation.NotEqual:		return new LsnValue(left.BoolValue != Right.Eval(i).BoolValue);
+						case BinaryOperation.And:			return new LsnValue(left.BoolValue && Right.Eval(i).BoolValue);
+						case BinaryOperation.Or:			return new LsnValue(left.BoolValue || Right.Eval(i).BoolValue);
+						case BinaryOperation.Xor:			return new LsnValue(left.BoolValue ^  Right.Eval(i).BoolValue);
 						default:
 							throw new InvalidOperationException();
 					}
@@ -186,6 +184,8 @@ namespace LsnCore.Expressions
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public override IExpression Fold()
 		{
 			Right = Right.Fold();
@@ -194,10 +194,10 @@ namespace LsnCore.Expressions
 			var rVal = typeof(LsnValue).IsAssignableFrom(Right.GetType());
 			if (lVal)
 			{
-				var left = (LsnValue)_Left;
+				var left = (LsnValue)Left;
 				if (lVal && rVal)
 				{
-					var right = (LsnValue)_Right;
+					var right = (LsnValue)Right;
 					switch (ArgumentTypes)
 					{
 						case BinaryOperationArgTypes.Int_Int:
@@ -324,16 +324,16 @@ namespace LsnCore.Expressions
 							case BinaryOperationArgTypes.Int_Int:
 							case BinaryOperationArgTypes.Int_Double:
 								if(left.IntValue == 0)
-									return _Right;
+									return Right;
 								return this;
 							case BinaryOperationArgTypes.Double_Double:
 							case BinaryOperationArgTypes.Double_Int:
 								if (left.DoubleValue < double.Epsilon)
-									return _Right;
+									return Right;
 								return this;
 							case BinaryOperationArgTypes.String_String:
-								if(string.IsNullOrEmpty((left.Value as StringValue).Value))
-									return _Right;
+								if(string.IsNullOrEmpty((left.Value as StringValue)?.Value))
+									return Right;
 								return this;
 						}
 						return this;
@@ -348,14 +348,14 @@ namespace LsnCore.Expressions
 								if (leftI == 0)
 									return new LsnValue(0);
 								if (leftI == 1)
-									return _Right;
+									return Right;
 								break;
 							case BinaryOperationArgTypes.Double_Double:
 							case BinaryOperationArgTypes.Double_Int:
 								if (Math.Abs(left.DoubleValue) < double.Epsilon)
 									return new LsnValue(0.0);
 								if (Math.Abs(left.DoubleValue - 1) < double.Epsilon)
-									return _Right;
+									return Right;
 								return this;
 						}
 						return this;
@@ -402,7 +402,7 @@ namespace LsnCore.Expressions
 						{
 							if(!left.BoolValue)
 								return new LsnValue(false);
-							return _Right;
+							return Right;
 						}
 						break;
 					case BinaryOperation.Or:
@@ -410,7 +410,7 @@ namespace LsnCore.Expressions
 						{
 							if (left.BoolValue)
 								return new LsnValue(true);
-							return _Right;
+							return Right;
 						}
 						break;
 					default:
@@ -463,15 +463,15 @@ namespace LsnCore.Expressions
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
-			if (_Left.Equals(oldExpr))
-				_Left = newExpr;
+			if (Left.Equals(oldExpr))
+				Left = newExpr;
 			else
-				_Left.Replace(oldExpr, newExpr);
+				Left.Replace(oldExpr, newExpr);
 
-			if (_Right.Equals(oldExpr))
-				_Right = newExpr;
+			if (Right.Equals(oldExpr))
+				Right = newExpr;
 			else
-				_Right.Replace(oldExpr, newExpr);
+				Right.Replace(oldExpr, newExpr);
 		}
 
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
@@ -510,11 +510,9 @@ namespace LsnCore.Expressions
 				case "bool":
 				default:
 					return BinaryOperationArgTypes.Bool_Bool;
-				
 			}
 
 			throw new InvalidOperationException();
 		}
-
 	}
 }

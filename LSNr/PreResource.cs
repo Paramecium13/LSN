@@ -114,8 +114,8 @@ namespace LSNr
 				var val = Tokens[i].Value;
 				if(val == "record")
 				{
-					string name = Tokens[++i].Value; // Move on to the next token, get the name.
-					//TODO : validate name.
+					var name = Tokens[++i].Value; // Move on to the next token, get the name.
+												  //TODO : validate name.
 					if (Tokens[++i].Value != "{") // Move on to the next token, make sure it is '{'.
 					{
 						Console.WriteLine($"Error in parsing struct {name}: invalid token: {Tokens[i]}, expected {{.");
@@ -128,8 +128,8 @@ namespace LSNr
 				}
 				else if(val == "struct")
 				{
-					string name = Tokens[++i].Value; // Move on to the next token, get the name.
-					//TODO : validate name.
+					var name = Tokens[++i].Value; // Move on to the next token, get the name.
+												  //TODO : validate name.
 					if (Tokens[++i].Value != "{") // Move on to the next token, make sure it is '{'.
 					{
 						Console.WriteLine($"Error in parsing record {name}: invalid token: {Tokens[i]}, expected {{.");
@@ -142,8 +142,8 @@ namespace LSNr
 				}
 				else if (val == "hostinterface")
 				{
-					string name = Tokens[++i].Value; // Move on to the next token, get the name.
-					//TODO : validate name.
+					var name = Tokens[++i].Value; // Move on to the next token, get the name.
+												  //TODO : validate name.
 					if (Tokens[++i].Value != "{") // Move on to the next token, make sure it is '{'.
 					{
 						Console.WriteLine($"Error in parsing HostInterface {name}: invalid token: {Tokens[i]}, expected {{.");
@@ -195,7 +195,7 @@ namespace LSNr
 						throw LsnrParsingException.UnexpectedToken(Tokens[i],"{",Path);
 
 					var tokens = new List<Token>();
-					int openCount = 1;
+					var openCount = 1;
 					while (openCount > 0)
 					{
 						i++;
@@ -232,7 +232,7 @@ namespace LSNr
 				{
 					try
 					{
-						Token fnToken = tokens[i];
+						var fnToken = tokens[i];
 						name = tokens[++i].Value;
 						//TODO : validate name.
 						if (tokens[++i].Value != "(")
@@ -240,7 +240,7 @@ namespace LSNr
 						var paramTokens = new List<Token>();
 						while (tokens[++i].Value != ")") // This starts with the token after '('.
 							paramTokens.Add(tokens[i]);
-						List<Parameter> paramaters = ParseParameters(paramTokens);
+						var paramaters = ParseParameters(paramTokens);
 						// At this point, the current token (i.e. tokens[i].Value) is ')'.
 						TypeId returnType = null;
 						if (tokens[++i].Value == "->")

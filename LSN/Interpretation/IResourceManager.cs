@@ -104,6 +104,7 @@ namespace LsnCore
 		/// Load the standard library math functions.
 		/// </summary>
 		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public static LsnResourceThing LoadMath()
 		{
 			var functions = new List<Function>

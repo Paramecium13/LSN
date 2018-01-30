@@ -44,9 +44,16 @@ namespace LsnCore
 
 		public void Run(Statements.Statement[] code, string resourceFilePath, int stackSize, LsnValue[] parameters)
 		{
+			if (code == null)
+				throw new ArgumentNullException(nameof(code));
+			if (resourceFilePath == null)
+				throw new ArgumentNullException(nameof(resourceFilePath));
+
 			EnterFunctionScope(resourceFilePath, stackSize);
-			for (int i = 0; i < parameters.Length; i++)
-				CurrentStackFrame[i] = parameters[i];
+
+			if(parameters != null)
+				for (int i = 0; i < parameters.Length; i++)
+					CurrentStackFrame[i] = parameters[i];
 
 			NextStatement = 0;
 			var currentStatement = NextStatement++;
