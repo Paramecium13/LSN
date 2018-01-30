@@ -105,7 +105,6 @@
     <Compile Include="PreFunction.cs" />
     <Compile Include="ScriptObjects\PreHostInterface.cs" />
     <Compile Include="PreResource.cs" />
-    <Compile Include="PreScript.cs" />
     <Compile Include="ScriptObjects\PreScriptClass.cs" />
     <Compile Include="ScriptObjects\PreScriptClassFunction.cs" />
     <Compile Include="ScriptObjects\PreState.cs" />
