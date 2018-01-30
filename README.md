@@ -55,15 +55,11 @@ If-elsif-else control, choice control, match control, loops...
 ### Expressions
 Calculate a value.
 
-## Types of LSN Files
-LSN source files end with the *.lsn* extension and object files end with the *.obj* extension. There are currently six (twelve if source and object files are counted separately) different types of LSN files planned. Only three, *script*, *scene* and *scriptlet*, will be able to be directly interpreted, the others will have to be included(#include) or imported(#import). Currently, the reifier can only create *script* and *resource* object files.
+## LSN Files
+LSN source files end with the *.lsn* extension and object files end with the *.obj* extension.
 
 All object files can contain a collection of included types and functions that were not defined in it.
-This is done using the #include directive. They can also tell the interpreter to load resource, quest, and globals files at runtime, with the #using directive. The reifier will also load these resources to check type and function usage.
+This is done using the #include directive. They can also tell the interpreter to load  files at runtime, with the #using directive. The reifier will also load these resources to check type and function usage.
 
-### Scripts
-Contain a sequence of statements and control structures that are executed by the interpreter.
-
-### Resources
-Contain struct and record definitions, functions, Host Interfaces, and Script Objects.
+They contain struct and record definitions, functions, Host Interfaces, and Script Classes.
 
