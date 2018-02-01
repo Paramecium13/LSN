@@ -49,8 +49,8 @@ namespace LsnCore.Expressions
 			/*var a = Args.Select(pair => new KeyValuePair<string, IExpression>(pair.Key, pair.Value.Fold())).ToDictionary();
 			if (a.Values.All(v => v.IsReifyTimeConst() && v is LsnValue?))
 				return new LsnValue(
-					new StructValue(_Type, Args.Select(pair 
-					=> new KeyValuePair<string,LsnValue>(pair.Key,(LsnValue)pair.Value)).ToDictionary())
+					new StructValue(_Type, Args.Select(pair
+						=> new KeyValuePair<string,LsnValue>(pair.Key,(LsnValue)pair.Value)).ToDictionary())
 					);
 			else
 				return new StructConstructor(_Type, a);*/
@@ -65,6 +65,16 @@ namespace LsnCore.Expressions
 			writer.Write((ushort)Args.Length);
 			for (int i = 0; i < Args.Length; i++)
 				Args[i].Serialize(writer, resourceSerializer);
+		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			foreach (var arg in Args)
+			{
+				yield return arg;
+				foreach (var expr in arg.SelectMany(e => e))
+					yield return expr;
+			}
 		}
 	}
 }

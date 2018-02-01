@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Syroot.BinaryData;
+using LsnCore.Types;
+using System.Collections;
 
 namespace LsnCore
 {
@@ -11,25 +13,23 @@ namespace LsnCore
 	/// An object representing an LSN value.
 	/// </summary>
 	[Serializable]
-	public abstract class LsnValueB : Expression, ILsnValue
+	public abstract class LsnValueB : ILsnValue
 	{
+		private TypeId _Type;
+
+		public /*virtual*/ TypeId Type { get { return _Type; } protected set { _Type = value; } }
 		public abstract bool BoolValue { get; }
 
 		public abstract ILsnValue Clone();
 
-		public override bool IsPure => true;
+		public bool IsPure => true;
 
-		public override LsnValue Eval(IInterpreter i)
+		public LsnValue Eval(IInterpreter i)
 		{
 			return new LsnValue(this);//Clone() ?
 		}
 
-		public override IExpression Fold()
-		{
-			return this;
-		}
-
-		public override bool IsReifyTimeConst() => true;
+		public bool IsReifyTimeConst() => true;
 		public abstract void Serialize(BinaryDataWriter writer);
 	}
 }

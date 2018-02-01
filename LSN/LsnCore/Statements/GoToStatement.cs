@@ -130,5 +130,43 @@ namespace LsnCore.Statements
 		{
 			throw new NotImplementedException();
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			if (Map != null && !Map.Equals(LsnValue.Nil))
+			{
+				yield return Map;
+				foreach (var expr in Map.SelectMany(e => e))
+					yield return expr;
+			}
+
+			if (X != null && !X.Equals(LsnValue.Nil))
+			{
+				yield return X;
+				foreach (var expr in X.SelectMany(e => e))
+					yield return expr;
+			}
+
+			if (Y != null && !Y.Equals(LsnValue.Nil))
+			{
+				yield return Y;
+				foreach (var expr in Y.SelectMany(e => e))
+					yield return expr;
+			}
+
+			if (Position != null && !Position.Equals(LsnValue.Nil))
+			{
+				yield return Position;
+				foreach (var expr in Position.SelectMany(e => e))
+					yield return expr;
+			}
+
+			if (Actor != null && !Actor.Equals(LsnValue.Nil))
+			{
+				yield return Actor;
+				foreach (var expr in Actor.SelectMany(e => e))
+					yield return Actor;
+			}
+		}
 	}
 }

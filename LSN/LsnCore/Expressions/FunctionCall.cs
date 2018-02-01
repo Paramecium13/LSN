@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Syroot.BinaryData;
 
@@ -42,9 +43,7 @@ namespace LsnCore.Expressions
 
 			var fn = Fn ?? i.GetFunction(FnName);
 
-			var val = fn.Eval(args, i);
-			
-			return val;
+			return fn.Eval(args, i);
 		}
 
 		public override IExpression Fold()
@@ -76,6 +75,16 @@ namespace LsnCore.Expressions
 			writer.Write((byte)Args.Length);
 			for (int i = 0; i < Args.Length; i++)
 				Args[i].Serialize(writer, resourceSerializer);
+		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			foreach (var arg in Args)
+			{
+				yield return arg;
+				foreach (var expr in arg.SelectMany(e => e))
+					yield return expr;
+			}
 		}
 	}
 }

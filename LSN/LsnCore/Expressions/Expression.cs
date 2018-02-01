@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Syroot.BinaryData;
+using System.Collections;
 
 namespace LsnCore.Expressions
 {
@@ -24,5 +25,8 @@ namespace LsnCore.Expressions
 		public virtual void Replace(IExpression oldExpr, IExpression newExpr) { }
 		public virtual bool Equals(IExpression other) => this == other;
 		public abstract void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer);
+		public abstract IEnumerator<IExpression> GetEnumerator();
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }

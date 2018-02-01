@@ -34,6 +34,11 @@ namespace LsnCore.Statements
 			writer.Write(VariableIndexes);
 			writer.Write(SaveId);
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return null;
+		}
 	}
 
 	public class LoadStatement : Statement
@@ -61,6 +66,11 @@ namespace LsnCore.Statements
 			writer.Write((ushort)VariableIndexes.Length);
 			writer.Write(VariableIndexes);
 			writer.Write(SaveId);
+		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return null;
 		}
 	}
 }

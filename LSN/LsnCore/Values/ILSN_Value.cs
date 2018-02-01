@@ -1,10 +1,12 @@
 ﻿using LsnCore.Expressions;
+using LsnCore.Types;
 using Syroot.BinaryData;
 
 namespace LsnCore
 {
-	public interface ILsnValue : IExpression
+	public interface ILsnValue
 	{
+		TypeId Type { get; }
 		bool BoolValue { get; }
 
 		ILsnValue Clone();

@@ -50,6 +50,21 @@ namespace LsnCore.Statements
 			Index.Serialize(writer, resourceSerializer);
 			Value.Serialize(writer, resourceSerializer);
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return Collection;
+			foreach (var expr in Collection.SelectMany(e => e))
+				yield return expr;
+
+			yield return Index;
+			foreach (var expr in Index.SelectMany(e => e))
+				yield return expr;
+
+			yield return Value;
+			foreach (var expr in Value.SelectMany(e => e))
+				yield return expr;
+		}
 	}
 
 	// Make const versions, where Index and/or Value are constant.

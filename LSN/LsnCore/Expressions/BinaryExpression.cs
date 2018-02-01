@@ -9,9 +9,9 @@ using Syroot.BinaryData;
 namespace LsnCore.Expressions
 {
 	public enum BinaryOperation : byte { Sum, Difference, Product, Quotient, Modulus, Power, LessThan, LessThanOrEqual, GreaterThan,GreaterThanOrEqual,Equal,NotEqual,And,Or,Xor}
-	
+
 	public enum BinaryOperationArgTypes : byte { Int_Int, Int_Double,Double_Double,Double_Int,String_String,String_Int,Bool_Bool}
-	
+
 	public sealed class BinaryExpression : Expression
 	{
 		private IExpression _Left;
@@ -510,11 +510,19 @@ namespace LsnCore.Expressions
 				case "bool":
 				default:
 					return BinaryOperationArgTypes.Bool_Bool;
-				
 			}
 
 			throw new InvalidOperationException();
 		}
 
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return _Left;
+			foreach (var expr in _Left.SelectMany(e => e))
+				yield return expr;
+			yield return _Right;
+			foreach (var expr in _Right.SelectMany(e => e))
+				yield return expr;
+		}
 	}
 }

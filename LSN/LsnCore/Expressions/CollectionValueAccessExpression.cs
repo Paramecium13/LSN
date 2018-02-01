@@ -88,5 +88,15 @@ namespace LsnCore.Expressions
 			Collection.Serialize(writer, resourceSerializer);
 			Index.Serialize(writer, resourceSerializer);
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return Collection;
+			foreach (var expr in Collection.SelectMany(e => e))
+				yield return expr;
+			yield return Index;
+			foreach (var expr in Index.SelectMany(e => e))
+				yield return expr;
+		}
 	}
 }

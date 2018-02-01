@@ -2,10 +2,11 @@
 using LsnCore.Values;
 using Syroot.BinaryData;
 using System;
+using System.Collections.Generic;
 
 namespace LsnCore.Expressions
 {
-	public interface IExpression : IExpressionContainer, IEquatable<IExpression>
+	public interface IExpression : IExpressionContainer, IEquatable<IExpression>, IEnumerable<IExpression>
 	{
 		TypeId Type { get; }
 

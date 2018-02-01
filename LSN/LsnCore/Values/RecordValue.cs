@@ -37,17 +37,6 @@ namespace LsnCore
 		{
 			return new RecordValue(Fields.Select(f=>f.Clone()).ToArray());
 		}
-		
-		public LsnValue Eval(IInterpreter i) => new LsnValue(this);
-
-		public IExpression Fold() => this;
-
-		public bool IsReifyTimeConst() => true;
-
-		public void Replace(IExpression oldExpr, IExpression newExpr){}
-
-		public bool Equals(IExpression other) => false;
-
 
 		public void Serialize(BinaryDataWriter writer)
 		{

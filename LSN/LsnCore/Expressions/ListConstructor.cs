@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Syroot.BinaryData;
+using System.Collections;
 
 namespace LsnCore.Expressions
 {
@@ -54,5 +55,12 @@ namespace LsnCore.Expressions
 			writer.Write((byte)ExpressionCode.ListConstructor);
 			writer.Write(GenericTypeId.Name);
 		}
+
+		public IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return null;
+		}
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }

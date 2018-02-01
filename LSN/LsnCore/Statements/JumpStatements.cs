@@ -16,7 +16,6 @@ namespace LsnCore.Statements
 	public sealed class JumpStatement : Statement, IHasTargetStatement
 	{
 		public int Target { get; set; } = -1;
-
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.NextStatement = Target;
@@ -30,6 +29,12 @@ namespace LsnCore.Statements
 			writer.Write(StatementCode.Jump);
 			writer.Write(Target);
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return null;
+		}
+
 	}
 
 	[Serializable]
@@ -63,6 +68,13 @@ namespace LsnCore.Statements
 			writer.Write(StatementCode.ConditionalJump);
 			writer.Write(Target);
 			Condition.Serialize(writer, resourceSerializer);
+		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return Condition;
+			foreach (var expr in Condition.SelectMany(e => e))
+				yield return expr;
 		}
 	}
 
