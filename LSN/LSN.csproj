@@ -101,6 +101,7 @@
     <Compile Include="LsnCore\GlobalVariableValueWatched.cs" />
     <Compile Include="LsnCore\LsnFunction.cs" />
     <Compile Include="LsnCore\Serialization\ResourceDeserializer.cs" />
+    <Compile Include="LsnCore\Statements\AttachStatement.cs" />
     <Compile Include="LsnCore\Statements\ChangeGlobalVariableStatement.cs" />
     <Compile Include="LsnCore\Statements\CollectionValueReassignmentStatement.cs" />
     <Compile Include="LsnCore\Statements\DetachStatement.cs" />

@@ -61,7 +61,6 @@ namespace LsnCore
 	/// <summary>
 	/// Contains functions, structs, constants, and macros/inlines.
 	/// </summary>
-	[Serializable]
 	public class LsnResourceThing : LsnScriptBase
 	{
 		private LsnEnvironment Environment = null;
@@ -102,19 +101,17 @@ namespace LsnCore
 				// End Header
 				var resourceSerializer = new ResourceSerializer(TypeIds);
 
-				var typesPart1 = WriteTypesPart1(resourceSerializer);
-				var typesPart2 = WriteTypesPart2(resourceSerializer);
+				var types = WriteTypesPart(resourceSerializer);
 
 				var functions = WriteFunctions(resourceSerializer);
 
 				resourceSerializer.WriteConstantTable(writer);
-				writer.Write(typesPart1);
-				writer.Write(typesPart2);
+				writer.Write(types);
 				writer.Write(functions);
 			}
 		}
 
-		private byte[] WriteTypesPart1(ResourceSerializer resourceSerializer)
+		private byte[] WriteTypesPart(ResourceSerializer resourceSerializer)
 		{
 			using (var stream = new MemoryStream())
 			{
@@ -131,21 +128,7 @@ namespace LsnCore
 					writer.Write((ushort)HostInterfaces.Count);
 					foreach (var type in HostInterfaces.Values)
 						type.Serialize(writer);
-				}
-				var p = (int)stream.Position;
-				stream.Position = 0;
-				var buff = new byte[p];
-				stream.Read(buff, 0, p);
-				return buff;
-			}
-		}
 
-		private byte[] WriteTypesPart2(ResourceSerializer resourceSerializer)
-		{
-			using (var stream = new MemoryStream())
-			{
-				using (var writer = new BinaryDataWriter(stream, new UTF8Encoding(false), true))
-				{
 					writer.Write((ushort)ScriptObjectTypes.Count);
 					foreach (var type in ScriptObjectTypes.Values)
 						type.Serialize(writer, resourceSerializer);

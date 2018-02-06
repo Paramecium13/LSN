@@ -282,7 +282,7 @@ namespace LsnCore.Serialization
 				{
 					using (var reader = new BinaryDataReader(stream,true))
 					{
-						ushort nStatements = reader.ReadUInt16();
+						var nStatements = reader.ReadUInt16();
 						var statements = new Statement[nStatements];
 						for (int i = 0; i < nStatements; i++)
 							statements[i] = ReadStatement(reader);

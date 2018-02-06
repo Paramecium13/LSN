@@ -1,11 +1,9 @@
 ﻿using LsnCore.Serialization;
+using LsnCore.Values;
 using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LsnCore.Types
 {
@@ -59,7 +57,6 @@ namespace LsnCore.Types
 		public override LsnValue CreateDefaultValue()
 			=> LsnValue.Nil;
 
-
 		int IHasFieldsType.GetIndex(string name)
 		{
 			if (_Fields.Any(f => f.Name == name))
@@ -69,7 +66,7 @@ namespace LsnCore.Types
 
 		public int GetFieldIndex(string name)
 			=> (this as IHasFieldsType).GetIndex(name);
-		
+
 		public int GetPropertyIndex(string name)
 		{
 			if (Properties.Any(f => f.Name == name))
@@ -83,7 +80,6 @@ namespace LsnCore.Types
 		public bool HasMethod(string name)
 			=> ScriptObjectMethods.ContainsKey(name);
 
-
 		public ScriptClassMethod GetMethod(string name)
 		{
 			if (ScriptObjectMethods.ContainsKey(name))
@@ -91,16 +87,19 @@ namespace LsnCore.Types
 			throw new ArgumentException($"The ScriptObject type \"{Name}\" does not have a method named \"{name}\".", nameof(name));
 		}
 
-
 		public bool HasEventListener(string name) => EventListeners.ContainsKey(name);
 
-
 		public EventListener GetEventListener(string name) => EventListeners[name];
-		
-		
+
 		public ScriptClassState GetState(int id) => _States[id];
 
+		internal ScriptObject Construct(LsnValue[] properties, LsnValue[] arguments, IHostInterface host = null)
+		{
+			var fields = new LsnValue[FieldsB.Count];
+			var obj = new ScriptObject(properties, fields, this, DefaultStateId, host);
 
+			return obj;
+		}
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
@@ -132,10 +131,7 @@ namespace LsnCore.Types
 			writer.Write((ushort)_States.Count);
 			foreach (var state in _States.Values)
 				state.Serialize(writer, resourceSerializer);
-			
 		}
-
-
 
 		public static ScriptClass Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
@@ -188,6 +184,5 @@ namespace LsnCore.Types
 			return new ScriptClass(type, typeContainer.GetTypeId(hostInterfaceName), props, fields, methods, listeners,
 				states, defaultStateId, unique);
 		}
-
 	}
 }
