@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,5 +47,12 @@ namespace LsnCore.Expressions
 		{
 			writer.Write((byte)ExpressionCode.HostInterfaceAccess);
 		}
+
+		public IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return null;
+		}
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }

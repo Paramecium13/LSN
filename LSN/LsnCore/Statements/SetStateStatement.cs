@@ -32,5 +32,10 @@ namespace LsnCore.Statements
 			writer.Write(StatementCode.SetState);
 			writer.Write(State);
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return null;
+		}
 	}
 }

@@ -48,5 +48,15 @@ namespace LsnCore.Statements
 				Value.Serialize(writer, resourceSerializer);
 			}
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			if (!Value?.Equals(LsnValue.Nil) ?? false)
+			{
+				yield return Value;
+				foreach (var expr in Value.SelectMany(e => e))
+					yield return expr;
+			}
+		}
 	}
 }

@@ -28,10 +28,6 @@ namespace LsnCore.Values
 		// Events
 		public bool Equals(IExpression other) => other == this;
 		public ILsnValue Clone() => this;
-		public LsnValue Eval(IInterpreter i) => new LsnValue(this);
-		public IExpression Fold() => this;
-		public bool IsReifyTimeConst() => false;
-		public void Replace(IExpression oldExpr, IExpression newExpr){}
 
 		public void SubscribeToEvent(string eventName, ScriptObject eventListener)
 		{

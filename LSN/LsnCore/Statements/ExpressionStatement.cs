@@ -36,5 +36,12 @@ namespace LsnCore.Statements
 			writer.Write(StatementCode.EvaluateExpression);
 			Expression.Serialize(writer, resourceSerializer);
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return Expression;
+			foreach (var expr in Expression.SelectMany(e => e))
+				yield return expr;
+		}
 	}
 }

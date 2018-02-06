@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LsnCore.Types;
 using System.Runtime.CompilerServices;
 using Syroot.BinaryData;
+using System.Collections;
 
 namespace LsnCore
 {
@@ -310,6 +311,15 @@ namespace LsnCore
 			return Value.Equals(other.Value);
 		}
 
+		IEnumerator<IExpression> IEnumerable<IExpression>.GetEnumerator()
+		{
+			yield return null;
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			yield return null;
+		}
 	}
 }
 #pragma warning restore RECS0088 // Comparing equal expression for equality is usually useless

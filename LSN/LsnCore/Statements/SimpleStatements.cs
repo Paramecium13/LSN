@@ -13,6 +13,11 @@ namespace LsnCore.Statements
 	/// </summary>
 	public class BreakStatement : Statement
 	{
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			throw new NotImplementedException();
+		}
+
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			throw new InvalidOperationException();
@@ -31,6 +36,11 @@ namespace LsnCore.Statements
 	/// </summary>
 	public class NextStatement : Statement
 	{
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			throw new NotImplementedException();
+		}
+
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			throw new InvalidOperationException();

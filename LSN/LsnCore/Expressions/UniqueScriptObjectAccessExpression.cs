@@ -36,5 +36,10 @@ namespace LsnCore.Expressions
 			writer.Write((byte)ExpressionCode.UniqueScriptObjectAccess);
 			resourceSerializer.WriteTypeId(Type, writer);
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return null;
+		}
 	}
 }

@@ -58,6 +58,13 @@ namespace LsnCore.Statements
 			FieldedValue.Serialize(writer, resourceSerializer);
 			ValueToAssign.Serialize(writer, resourceSerializer);
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return FieldedValue;
+			foreach (var expr in FieldedValue.SelectMany(e => e))
+				yield return expr;
+		}
 	}
 
 	// Make a const version, where the ValueToAssign is a(n) LsnValue?

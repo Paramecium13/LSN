@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using LsnCore.Expressions;
 using Syroot.BinaryData;
 
@@ -15,6 +17,13 @@ namespace LsnCore.Statements
 			//VariableName = name;
 			Index = index;
 			Value = value;
+		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return Value;
+			foreach (var expr in Value.SelectMany(e => e))
+				yield return expr;
 		}
 
 		public override InterpretValue Interpret(IInterpreter i)

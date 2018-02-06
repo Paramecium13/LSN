@@ -48,5 +48,19 @@ namespace LsnCore.Statements
 			Condition.Serialize(writer, resourceSerializer);
 			ChoiceText.Serialize(writer, resourceSerializer);
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			if(!Condition?.Equals(LsnValue.Nil) ?? false)
+			{
+				yield return Condition;
+				foreach (var expr in Condition.SelectMany(e => e))
+					yield return expr;
+			}
+
+			yield return ChoiceText;
+			foreach (var expr in ChoiceText.SelectMany(e => e))
+				yield return expr;
+		}
 	}
 }

@@ -26,10 +26,5 @@ namespace LsnCore
 		{
 			throw new NotImplementedException();
 		}
-
-		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

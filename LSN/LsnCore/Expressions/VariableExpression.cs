@@ -1,4 +1,5 @@
-﻿using LsnCore.Types;
+﻿using System.Collections.Generic;
+using LsnCore.Types;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
@@ -21,7 +22,7 @@ namespace LsnCore.Expressions
 
 		public override LsnValue Eval(IInterpreter i)
 			=> i.GetVariable(Index);
-		
+
 		public override IExpression Fold() => this;
 
 		public override bool IsReifyTimeConst() => false;
@@ -30,6 +31,11 @@ namespace LsnCore.Expressions
 		{
 			writer.Write((byte)ExpressionCode.Variable);
 			writer.Write((ushort)Index);
+		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return null;
 		}
 	}
 }

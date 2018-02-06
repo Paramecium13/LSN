@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -58,5 +59,14 @@ namespace LsnCore.Expressions
 			writer.Write((ushort)Index);
 			ScriptObject.Serialize(writer, resourceSerializer);
 		}
+
+		public IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return ScriptObject;
+			foreach (var expr in ScriptObject.SelectMany(e => e))
+				yield return expr;
+		}
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }

@@ -34,5 +34,12 @@ namespace LsnCore.Statements
 		{
 			throw new NotImplementedException();
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return Value;
+			foreach (var expr in Value.SelectMany(e => e))
+				yield return expr;
+		}
 	}
 }

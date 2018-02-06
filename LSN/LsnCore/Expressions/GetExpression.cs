@@ -9,6 +9,6 @@ namespace LsnCore.Expressions
 {
 	public abstract class GetExpression : Expression
 	{
-		
+
 	}
 }

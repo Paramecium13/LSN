@@ -42,7 +42,6 @@ namespace LsnCore.Expressions
 			Index = index;
 		}
 
-
 		public override bool IsReifyTimeConst()
 			=> Value.IsReifyTimeConst();
 
@@ -75,6 +74,13 @@ namespace LsnCore.Expressions
 			writer.Write((byte)ExpressionCode.FieldAccess);
 			writer.Write((ushort)Index);
 			Value.Serialize(writer, resourceSerializer);
+		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return Value;
+			foreach (var expr in Value.SelectMany(e => e))
+				yield return expr;
 		}
 	}
 }

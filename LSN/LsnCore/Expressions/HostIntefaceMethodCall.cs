@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -68,5 +69,20 @@ namespace LsnCore.Expressions
 			for (int i = 0; i < Arguments.Length; i++)
 				Arguments[i].Serialize(writer, resourceSerializer);
 		}
+
+		public IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return HostInterface;
+			foreach (var expr in HostInterface.SelectMany(e => e))
+				yield return expr;
+			foreach (var arg in Arguments)
+			{
+				yield return arg;
+				foreach (var expr in arg.SelectMany(e => e))
+					yield return expr;
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }

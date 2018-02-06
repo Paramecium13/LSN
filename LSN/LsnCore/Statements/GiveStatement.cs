@@ -22,6 +22,24 @@ namespace LsnCore.Statements
 			Id = id; Amount = amount; Receiver = receiver;
 		}
 
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return Amount;
+			foreach (var expr in Amount.SelectMany(e => e))
+				yield return expr;
+
+			if (Receiver != null && ! Receiver.Equals(LsnValue.Nil))
+			{
+				yield return Receiver;
+				foreach (var expr in Receiver.SelectMany(e => e))
+					yield return expr;
+			}
+
+			yield return Id;
+			foreach (var expr in Id)
+				yield return expr;
+		}
+
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.GiveItemTo(Id.Eval(i), Amount.Eval(i).IntValue, Receiver.Eval(i));
@@ -49,6 +67,20 @@ namespace LsnCore.Statements
 		public GiveGoldStatement(IExpression amount, IExpression receiver)
 		{
 			Amount = amount; Receiver = receiver;
+		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return Amount;
+			foreach (var expr in Amount.SelectMany(e => e))
+				yield return expr;
+
+			if (Receiver != null && !Receiver.Equals(LsnValue.Nil))
+			{
+				yield return Receiver;
+				foreach (var expr in Receiver.SelectMany(e => e))
+					yield return expr;
+			}
 		}
 
 		public override InterpretValue Interpret(IInterpreter i)

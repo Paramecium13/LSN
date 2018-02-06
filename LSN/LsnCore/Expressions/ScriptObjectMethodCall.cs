@@ -48,5 +48,15 @@ namespace LsnCore.Expressions
 			for (int i = 0; i < Parameters.Length; i++)
 				Parameters[i].Serialize(writer, resourceSerializer);
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			foreach (var arg in Parameters)
+			{
+				yield return arg;
+				foreach (var expr in arg.SelectMany(e => e))
+					yield return expr;
+			}
+		}
 	}
 }

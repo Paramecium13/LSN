@@ -97,16 +97,10 @@ namespace LsnCore
 			return new StringValue(new string(c));
 		}*/
 
-		public LsnValue Eval(IInterpreter i) => new LsnValue(this);
-		public IExpression Fold() => this;
-		public bool IsReifyTimeConst() => true;
-
 		public override string ToString() => Value;
 
 		public static explicit operator string(StringValue v) => v.Value;
 		public static explicit operator StringValue(string s) => new StringValue(s);
-
-		public void Replace(IExpression oldExpr, IExpression newExpr) { }
 
 		public bool Equals(IExpression other)
 		{

@@ -73,7 +73,7 @@ namespace LsnCore.Values
 				Values[i].Serialize(writer);
 		}
 
-		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.TabledConstant);
 			writer.Write(resourceSerializer.TableConstant(this));
