@@ -199,12 +199,7 @@ namespace LsnCore
 					resourceDeserializer.LoadTypes(r.StructTypes.Values);
 				}
 
-				var nTypes = reader.ReadUInt16();
-				var typeNames = new string[nTypes];
-				for (int i = 0; i < nTypes; i++)
-					typeNames[i] = reader.ReadString();
-
-				var typeIds = typeNames.Select(n => new TypeId(n)).ToArray();
+				var typeIds = resourceDeserializer.LoadTypeIds(reader);
 				res = new LsnResourceThing(typeIds)
 				{
 					Includes = includes,

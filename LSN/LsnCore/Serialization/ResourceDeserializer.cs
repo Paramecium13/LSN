@@ -16,6 +16,8 @@ namespace LsnCore.Serialization
 	{
 		private ILsnValue[] ConstantTable;
 
+		private TypeId[] TypeIds;
+
 		private readonly List<Tuple<ICodeBlock, byte[]>> CodeBlocks = new List<Tuple<ICodeBlock, byte[]>>();
 
 		private readonly Dictionary<string, Function> Functions = new Dictionary<string, Function>();
@@ -30,6 +32,17 @@ namespace LsnCore.Serialization
 			Types.Add("double", LsnType.double_);
 			Types.Add("bool", LsnType.Bool_);
 			Types.Add("string", LsnType.string_);
+		}
+
+		internal TypeId[] LoadTypeIds(BinaryDataReader reader)
+		{
+			var nTypes = reader.ReadUInt16();
+			var typeNames = new string[nTypes];
+			for (int i = 0; i < nTypes; i++)
+				typeNames[i] = reader.ReadString();
+
+			TypeIds = typeNames.Select(n => new TypeId(n)).ToArray();
+			return TypeIds;
 		}
 
 		private LsnType GetType(string typeName)
@@ -160,6 +173,19 @@ namespace LsnCore.Serialization
 					}
 				case StatementCode.Detach:
 					return new DetachStatement();
+				case StatementCode.AttachNewScriptObject:
+					{
+						var type = TypeIds[reader.ReadUInt16()];
+						var nProps = reader.ReadByte();
+						var props = new IExpression[nProps];
+						for (int i = 0; i < nProps; i++)
+							props[i] = ReadExpression(reader);
+						var nArgs = reader.ReadByte();
+						var args = new IExpression[nArgs];
+						for (int i = 0; i < nArgs; i++)
+							args[i] = ReadExpression(reader);
+						return new AttachStatement(type, props, args, ReadExpression(reader));
+					}
 				default:
 					throw new ApplicationException();
 			}
@@ -197,7 +223,10 @@ namespace LsnCore.Serialization
 				case ExpressionCode.HostInterfaceAccess:
 					return new HostInterfaceAccessExpression();
 				case ExpressionCode.UniqueScriptObjectAccess:
-					return new UniqueScriptObjectAccessExpression(reader.ReadString());
+					{
+						var typeId = TypeIds[reader.ReadUInt16()];
+						return new UniqueScriptObjectAccessExpression(typeId.Name,typeId);
+					}
 				case ExpressionCode.BinaryExpression:
 					{
 						var info = reader.ReadByte();
@@ -220,7 +249,7 @@ namespace LsnCore.Serialization
 					}
 				case ExpressionCode.MethodCall:
 					{
-						var typeName = reader.ReadString();
+						var typeName = TypeIds[reader.ReadUInt16()].Name;
 						var methodName = reader.ReadString();
 						var numArgs = reader.ReadByte();
 						var args = new IExpression[numArgs];
@@ -249,24 +278,26 @@ namespace LsnCore.Serialization
 					}
 				case ExpressionCode.RecordConstructor:
 					{
+						var type = TypeIds[reader.ReadUInt16()];
 						var numArgs = reader.ReadUInt16();
 						var args = new IExpression[numArgs];
 						for (int i = 0; i < numArgs; i++)
 							args[i] = ReadExpression(reader);
-						return new RecordConstructor(args);
+						return new RecordConstructor(type, args);
 					}
 				case ExpressionCode.StructConstructor:
 					{
+						var type = TypeIds[reader.ReadUInt16()];
 						var numArgs = reader.ReadUInt16();
 						var args = new IExpression[numArgs];
 						for (int i = 0; i < numArgs; i++)
 							args[i] = ReadExpression(reader);
-						return new StructConstructor(args);
+						return new StructConstructor(type, args);
 					}
 				case ExpressionCode.ListConstructor:
 					{
-						var genericTypeName = reader.ReadString();
-						var type = LsnListGeneric.Instance.GetType(new List<TypeId>(1) { GetType(genericTypeName).Id});
+						var typeId = TypeIds[reader.ReadUInt16()];
+						var type = LsnListGeneric.Instance.GetType(new List<TypeId>(1) { typeId});
 						return new ListConstructor((LsnListType)type);
 					}
 				default:

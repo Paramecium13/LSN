@@ -28,9 +28,9 @@ namespace LsnCore.Expressions
 			}
 		}
 
-		public StructConstructor(IEnumerable<IExpression> args)
+		public StructConstructor(TypeId type, IExpression[] args)
 		{
-			Args = args.ToArray();
+			Type = type; Args = args;
 		}
 
 		public override LsnValue Eval(IInterpreter i)
@@ -44,17 +44,12 @@ namespace LsnCore.Expressions
 			return new LsnValue(new StructValue(values));//....
 		}
 
-		public override IExpression Fold() //ToDo: Implement (but do not return a struct value).
-		{//d = Args.Select(pair => new KeyValuePair<string, ILsnValue>(pair.Key, pair.Value as ILsnValue)).ToDictionary()
-			/*var a = Args.Select(pair => new KeyValuePair<string, IExpression>(pair.Key, pair.Value.Fold())).ToDictionary();
-			if (a.Values.All(v => v.IsReifyTimeConst() && v is LsnValue?))
-				return new LsnValue(
-					new StructValue(_Type, Args.Select(pair 
-					=> new KeyValuePair<string,LsnValue>(pair.Key,(LsnValue)pair.Value)).ToDictionary())
-					);
-			else
-				return new StructConstructor(_Type, a);*/
-			return this;
+		public override IExpression Fold()
+		{
+			var a = Args.Select(x => x.Fold()).ToArray();
+			/*if (a.All(v => v.IsReifyTimeConst() && v is LsnValue?))
+				return new LsnValue(new StructValue(Type, a.Cast<LsnValue>().ToArray()));*/
+			return new StructConstructor(Type, a);
 		}
 
 		public override bool IsReifyTimeConst() => false;
@@ -62,6 +57,9 @@ namespace LsnCore.Expressions
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.StructConstructor);
+
+			resourceSerializer.WriteTypeId(Type, writer);
+
 			writer.Write((ushort)Args.Length);
 			for (int i = 0; i < Args.Length; i++)
 				Args[i].Serialize(writer, resourceSerializer);

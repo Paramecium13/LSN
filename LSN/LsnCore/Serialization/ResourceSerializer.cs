@@ -1,5 +1,6 @@
 ﻿using LsnCore.Types;
 using Syroot.BinaryData;
+using System;
 using System.Collections.Generic;
 
 namespace LsnCore
@@ -92,6 +93,12 @@ namespace LsnCore
 			writer.Write((ushort)ConstantTable.Count);
 			for (int i = 0; i < ConstantTable.Count; i++)
 				ConstantTable[i].Serialize(writer);
+		}
+
+		internal void WriteTypeId(TypeId typeId, BinaryDataWriter writer)
+		{
+			var i = (ushort)Array.IndexOf(TypeIds, typeId);
+			writer.Write(i);
 		}
 	}
 }
