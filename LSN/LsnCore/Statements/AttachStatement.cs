@@ -25,7 +25,7 @@ namespace LsnCore.Statements
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			var obj = (ScriptClass.Type as ScriptClass).Construct(PropertyExpressions.Select(e => e.Eval(i)).ToArray(),
-				ConstructorArguments.Select(e => e.Eval(i)).ToArray(), HostExpression.Eval(i).Value as IHostInterface);
+				ConstructorArguments.Select(e => e.Eval(i)).ToArray(), i, HostExpression.Eval(i).Value as IHostInterface);
 			return InterpretValue.Base;
 		}
 

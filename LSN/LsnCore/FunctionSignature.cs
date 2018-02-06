@@ -95,13 +95,13 @@ namespace LsnCore
 			return argsArray;
 		}*/
 
-		public void Serialize(BinaryDataWriter writer)
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(Name);
 			writer.Write(ReturnType?.Name ?? "");
 			writer.Write((ushort)Parameters.Count);
 			foreach (var param in Parameters)
-				param.Serialize(writer);
+				param.Serialize(writer, resourceSerializer);
 		}
 
 		public static FunctionSignature Read(BinaryDataReader reader, ITypeIdContainer typeContainer)

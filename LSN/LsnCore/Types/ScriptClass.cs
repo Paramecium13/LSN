@@ -33,9 +33,11 @@ namespace LsnCore.Types
 
 		public IReadOnlyCollection<Field> FieldsB => _Fields;
 
+		public readonly ScriptClassConstructor Constructor;
+
 		public ScriptClass(TypeId id, TypeId host, IList<Property> properties, IReadOnlyList<Field> fields,
 			IReadOnlyDictionary<string,ScriptClassMethod> methods, IReadOnlyDictionary<string,EventListener> eventListeners,
-			IReadOnlyDictionary<int,ScriptClassState> states, int defaultStateIndex, bool unique)
+			IReadOnlyDictionary<int,ScriptClassState> states, int defaultStateIndex, bool unique, ScriptClassConstructor constructor = null)
 		{
 			Name = id.Name;
 			Id = id;
@@ -47,6 +49,7 @@ namespace LsnCore.Types
 			EventListeners = eventListeners;
 			_States = states;
 			DefaultStateId = defaultStateIndex;
+			Constructor = constructor;
 
 			id.Load(this);
 		}
@@ -93,11 +96,14 @@ namespace LsnCore.Types
 
 		public ScriptClassState GetState(int id) => _States[id];
 
-		internal ScriptObject Construct(LsnValue[] properties, LsnValue[] arguments, IHostInterface host = null)
+		internal ScriptObject Construct(LsnValue[] properties, LsnValue[] arguments, IInterpreter i, IHostInterface host = null)
 		{
 			var fields = new LsnValue[FieldsB.Count];
 			var obj = new ScriptObject(properties, fields, this, DefaultStateId, host);
-
+			var args = new LsnValue[arguments.Length + 1];
+			arguments.CopyTo(args, 1);
+			args[0] = new LsnValue(obj);
+			Constructor.Run(i, args);
 			return obj;
 		}
 

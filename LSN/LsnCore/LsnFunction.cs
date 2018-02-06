@@ -44,7 +44,7 @@ namespace LsnCore
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
-			Signature.Serialize(writer);
+			Signature.Serialize(writer, resourceSerializer);
 			writer.Write((ushort)StackSize);
 			var offset = writer.ReserveOffset();
 			writer.Write((ushort)Code.Length);

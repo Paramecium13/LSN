@@ -67,7 +67,7 @@ namespace LsnCore.Types
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
-			Signature.Serialize(writer);
+			Signature.Serialize(writer, resourceSerializer);
 			byte b = 0;
 			if (IsAbstract)
 				b = 2;

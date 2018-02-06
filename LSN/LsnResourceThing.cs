@@ -14,16 +14,19 @@ namespace LsnCore
 	public interface ITypeIdContainer
 	{
 		TypeId GetTypeId(string name);
+		TypeId GetTypeId(ushort index);
 	}
 
 	public class TypeIdContainer : ITypeIdContainer
 	{
-		private readonly IDictionary<string, TypeId> TypeIds;
+		private readonly IDictionary<string, TypeId> TypeIdDictionary;
 		private readonly IReadOnlyDictionary<string, GenericType> Generics;
+		private readonly TypeId[] TypeIds;
 
-		public TypeIdContainer(TypeId[] typeNames)
+		public TypeIdContainer(TypeId[] typeIds)
 		{
-			TypeIds = typeNames.ToDictionary(i => i.Name);
+			TypeIds = typeIds;
+			TypeIdDictionary = typeIds.ToDictionary(i => i.Name);
 			Generics = LsnType.GetBaseGenerics().ToDictionary(g => g.Name);
 			/*
 			TypeIds.Add(LsnType.Bool_.Id.Name,LsnType.Bool_.Id);
@@ -46,8 +49,10 @@ namespace LsnCore
 				var type = generic.GetType(generics);
 				return type.Id;
 			}
-			return TypeIds[name];
+			return TypeIdDictionary[name];
 		}
+
+		public TypeId GetTypeId(ushort index) => TypeIds[index];
 	}
 
 	public interface ITypeContainer : ITypeIdContainer
@@ -127,7 +132,7 @@ namespace LsnCore
 
 					writer.Write((ushort)HostInterfaces.Count);
 					foreach (var type in HostInterfaces.Values)
-						type.Serialize(writer);
+						type.Serialize(writer, resourceSerializer);
 
 					writer.Write((ushort)ScriptObjectTypes.Count);
 					foreach (var type in ScriptObjectTypes.Values)

@@ -264,7 +264,6 @@ namespace LsnCore
 			return types;
 		}
 
-
 		public static List<GenericType> GetBaseGenerics() => new List<GenericType>
 			{
 				VectorGeneric.Instance,

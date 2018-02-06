@@ -191,6 +191,9 @@ namespace LsnCore.Serialization
 			}
 		}
 
+		internal TypeId LoadTypeId(BinaryDataReader reader)
+			=> TypeIds[reader.ReadUInt16()];
+
 		private IExpression ReadExpression(BinaryDataReader reader)
 		{
 			var code = (ExpressionCode)reader.ReadByte();
