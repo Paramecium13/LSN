@@ -1,4 +1,4 @@
-unique ScriptObject Conversation1
+unique ScriptClass Conversation1
 {
 	NpcFace : string = "NpcFace01";
 	PcFace : string = "PlayerFace";
