@@ -9,7 +9,7 @@ HostInterface IStandardDoor
 	event Activate(actor : IActor);
 }
 
-ScriptObject StandardDoor < IStandardDoor
+ScriptClass StandardDoor < IStandardDoor
 {
 	property InitiallyLocked : bool;
 	property KeyId : string;
