@@ -23,5 +23,10 @@ namespace LsnCore.Statements
 		{
 			writer.Write(StatementCode.Detach);
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return null;
+		}
 	}
 }

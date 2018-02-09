@@ -64,5 +64,24 @@ namespace LsnCore.Statements
 
 			HostExpression.Serialize(writer, resourceSerializer);
 		}
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			for (int i = 0; i < PropertyExpressions.Length; i++)
+			{
+				yield return PropertyExpressions[i];
+				foreach (var expr in PropertyExpressions[i].SelectMany(e => e))
+					yield return expr;
+			}
+			for (int i = 0; i < ConstructorArguments.Length; i++)
+			{
+				yield return ConstructorArguments[i];
+				foreach (var expr in ConstructorArguments[i].SelectMany(e => e))
+					yield return expr;
+			}
+			yield return HostExpression;
+			foreach (var expr in HostExpression.SelectMany(e => e))
+				yield return expr;
+		}
 	}
 }
