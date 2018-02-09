@@ -1,4 +1,4 @@
-unique GameObject FountainOfBlood
+unique ScriptClass FountainOfBlood
 {
 	Blood : int = 10;
 	Name : string;
