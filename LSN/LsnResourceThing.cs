@@ -55,9 +55,10 @@ namespace LsnCore
 		public TypeId GetTypeId(ushort index) => TypeIds[index];
 	}
 
-	public interface ITypeContainer : ITypeIdContainer
+	public interface ITypeContainer
 	{
 		LsnType GetType(string name);
+		TypeId GetTypeId(string name);
 		bool TypeExists(string name);
 		bool GenericTypeExists(string name);
 		GenericType GetGenericType(string name);
