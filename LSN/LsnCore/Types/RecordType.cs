@@ -20,20 +20,11 @@ namespace LsnCore.Types
 
 		public int FieldCount => _FieldsB.Length;
 
-		public RecordType(string name, Tuple<string, TypeId>[] fields)
-		{
-			Name = name;
-			int length = fields.Length;
-			_FieldsB = new Field[length];
-			for (int i = 0; i < length; i++)
-				_FieldsB[i] = new Field(i, fields[i].Item1, fields[i].Item2);
-		}
-
 		public RecordType(TypeId type, Tuple<string, TypeId>[] fields)
 		{
 			Name = type.Name;
 			Id = type;
-			int length = fields.Length;
+			var length = fields.Length;
 			_FieldsB = new Field[length];
 			for (int i = 0; i < length; i++)
 				_FieldsB[i] = new Field(i, fields[i].Item1, fields[i].Item2);
@@ -84,6 +75,5 @@ namespace LsnCore.Types
 
 			return new RecordType(typeContainer.GetTypeId(name), fields);
 		}
-
 	}
 }

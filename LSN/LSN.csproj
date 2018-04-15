@@ -96,6 +96,7 @@
     <Compile Include="LsnCore\Expressions\VariableExpression.cs" />
     <Compile Include="LsnCore\Function.cs" />
     <Compile Include="LsnCore\FunctionSignature.cs" />
+    <Compile Include="LsnCore\GameValue.cs" />
     <Compile Include="LsnCore\GlobalVariableDef.cs" />
     <Compile Include="LsnCore\GlobalVariableValue.cs" />
     <Compile Include="LsnCore\GlobalVariableValueWatched.cs" />

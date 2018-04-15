@@ -16,16 +16,6 @@ namespace LsnCore.Types
 
 		public int FieldCount => _Fields.Length;
 
-
-		public StructType(string name, Tuple<string, TypeId>[] fields)
-		{
-			Name = name;
-			int length = fields.Length;
-			_Fields = new Field[length];
-			for (int i = 0; i < length; i++)
-				_Fields[i] = new Field(i, fields[i].Item1, fields[i].Item2);
-		}
-
 		public StructType(TypeId type, Tuple<string, TypeId>[] fields)
 		{
 			Name = type.Name;
@@ -47,10 +37,7 @@ namespace LsnCore.Types
 			throw new ApplicationException($"The struct type {Name} does not have a field named {name}.");
 		}
 
-
 		public TypeId GetFieldType(int index) => _Fields[index].Type;
-
-
 		public void Serialize(BinaryDataWriter writer)
 		{
 			writer.Write(Name);
@@ -62,7 +49,6 @@ namespace LsnCore.Types
 				writer.Write(field.Type.Name);
 			}
 		}
-
 
 		public static StructType Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
 		{
@@ -78,6 +64,5 @@ namespace LsnCore.Types
 
 			return new StructType(typeContainer.GetTypeId(name), fields);
 		}
-
 	}
 }

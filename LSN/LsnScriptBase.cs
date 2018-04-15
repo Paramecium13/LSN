@@ -10,46 +10,26 @@ namespace LsnCore
 	[Serializable]
 	public class LsnScriptBase
 	{
-		private Dictionary<string, Function> _Functions = new Dictionary<string, Function>(); // TODO: Encapsulate
 		/// <summary>
-		/// The functions that are defined in this resources (if this is a resource) 
+		/// The functions that are defined in this resources (if this is a resource)
 		/// </summary>
-		public Dictionary<string, Function> Functions { get { return _Functions; } set { _Functions = value; } }
+		public Dictionary<string, Function> Functions { get; set; } = new Dictionary<string, Function>();
 
-		private Dictionary<string, RecordType> _RecordTypes = new Dictionary<string, RecordType>(); // TODO: Encapsulate
-		public Dictionary<string, RecordType> RecordTypes { get { return _RecordTypes; } set { _RecordTypes = value; } }
+		public Dictionary<string, RecordType> RecordTypes { get; set; } = new Dictionary<string, RecordType>();
 
-		private Dictionary<string, StructType> _StructTypes = new Dictionary<string, StructType>(); // TODO: Encapsulate
-		public Dictionary<string, StructType> StructTypes { get { return _StructTypes; } set { _StructTypes = value; } }
+		public Dictionary<string, StructType> StructTypes { get; set; } = new Dictionary<string, StructType>();
 
-		//public List<LsnType> Types;
-
-		private List<string> _Usings = new List<string>(); // TODO: Encapsulate
 		/// <summary>
 		/// The resources this script uses.
 		/// </summary>
-		public List<string> Usings { get { return _Usings; } set { _Usings = value; } }
+		public List<string> Usings { get; set; } = new List<string>();
 
+		public List<string> Includes { get; set; } = new List<string>();
+		public IReadOnlyDictionary<string, ScriptClass> ScriptClassTypes { get; set; }
 
-		private List<string> _Includes = new List<string>(); // TODO: Encapsulate
+		public IReadOnlyDictionary<string, HostInterfaceType> HostInterfaces { get; set; }
 
-		public List<string> Includes { get { return _Includes; } set { _Includes = value; } }
-
-		private IReadOnlyDictionary<string, ScriptClass> _ScriptObjectTypes;
-		public IReadOnlyDictionary<string, ScriptClass> ScriptObjectTypes
-		{
-			get { return _ScriptObjectTypes; }
-			set { _ScriptObjectTypes = value; }
-		}
-
-		private IReadOnlyDictionary<string,HostInterfaceType> _HostInterfaces;
-
-		public IReadOnlyDictionary<string, HostInterfaceType> HostInterfaces
-		{
-			get { return _HostInterfaces; }
-			set { _HostInterfaces = value; }
-		}
-
+		public IReadOnlyDictionary<string,GameValue> GameValues { get; set; }
 
 		//protected string Source { get; set; }
 		//protected List<string> PreTokens { get; set; }

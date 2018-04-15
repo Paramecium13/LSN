@@ -191,6 +191,11 @@ namespace LsnCore.Serialization
 			}
 		}
 
+		/// <summary>
+		/// Reads the index (UInt16) from the stream and returns the associated TypeId
+		/// </summary>
+		/// <param name="reader"></param>
+		/// <returns></returns>
 		internal TypeId LoadTypeId(BinaryDataReader reader)
 			=> TypeIds[reader.ReadUInt16()];
 

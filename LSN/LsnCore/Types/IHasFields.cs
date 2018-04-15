@@ -12,6 +12,7 @@ namespace LsnCore.Types
 	/// </summary>
 	public interface IHasFieldsType
 	{
+		TypeId Id { get; }
 		IReadOnlyCollection<Field> FieldsB { get; }
 		int GetIndex(string name);
 	}

@@ -68,7 +68,7 @@ namespace LsnCore
 	/// </summary>
 	public class LsnResourceThing : LsnScriptBase
 	{
-		private LsnEnvironment Environment = null;
+		private LsnEnvironment Environment;
 
 		private readonly TypeId[] TypeIds;
 
@@ -93,30 +93,40 @@ namespace LsnCore
 				writer.Write((byte)1);
 				writer.Write((ulong)0);
 
-				writer.Write((ushort)Includes.Count);
+				writer.Write((ushort)Includes.Count); // Includes
 				foreach (var inc in Includes)
 					writer.Write(inc);
-				writer.Write((ushort)Usings.Count);
+
+				writer.Write((ushort)Usings.Count); // Usings
 				foreach (var u in Usings)
 					writer.Write(u);
 
-				writer.Write((ushort)TypeIds.Length);
+				writer.Write((ushort)TypeIds.Length); // TypeIds
 				foreach (var id in TypeIds)
 					writer.Write(id.Name);
 				// End Header
 				var resourceSerializer = new ResourceSerializer(TypeIds);
 
-				var types = WriteTypesPart(resourceSerializer);
+				WriteGameValues(writer, resourceSerializer);
+
+				var types = WriteTypes(resourceSerializer);
 
 				var functions = WriteFunctions(resourceSerializer);
 
-				resourceSerializer.WriteConstantTable(writer);
-				writer.Write(types);
-				writer.Write(functions);
+				resourceSerializer.WriteConstantTable(writer); // Constants
+				writer.Write(types); // Types
+				writer.Write(functions); // Functions
 			}
 		}
 
-		private byte[] WriteTypesPart(ResourceSerializer resourceSerializer)
+		private void WriteGameValues(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((ushort)GameValues.Count);
+			foreach (var gameValue in GameValues.Values)
+				gameValue.Serialize(writer, resourceSerializer);
+		}
+
+		private byte[] WriteTypes(ResourceSerializer resourceSerializer)
 		{
 			using (var stream = new MemoryStream())
 			{
@@ -134,8 +144,8 @@ namespace LsnCore
 					foreach (var type in HostInterfaces.Values)
 						type.Serialize(writer, resourceSerializer);
 
-					writer.Write((ushort)ScriptObjectTypes.Count);
-					foreach (var type in ScriptObjectTypes.Values)
+					writer.Write((ushort)ScriptClassTypes.Count);
+					foreach (var type in ScriptClassTypes.Values)
 						type.Serialize(writer, resourceSerializer);
 				}
 				var p = (int)stream.Position;
@@ -200,7 +210,7 @@ namespace LsnCore
 					resourceDeserializer.LoadFunctions(r.Functions.Values);
 					resourceDeserializer.LoadTypes(r.HostInterfaces.Values);
 					resourceDeserializer.LoadTypes(r.RecordTypes.Values);
-					resourceDeserializer.LoadTypes(r.ScriptObjectTypes.Values);
+					resourceDeserializer.LoadTypes(r.ScriptClassTypes.Values);
 					resourceDeserializer.LoadTypes(r.StructTypes.Values);
 				}
 
@@ -212,6 +222,14 @@ namespace LsnCore
 				};
 				var typeIdContainer = new TypeIdContainer(typeIds);
 				// End Header
+
+				var nGameValues = reader.ReadUInt16();
+				var gameValues = new Dictionary<string, GameValue>();
+				for (int i = 0; i < nGameValues; i++)
+				{
+					var gameValue = GameValue.Read(reader, resourceDeserializer);
+					gameValues.Add(gameValue.Name, gameValue);
+				}
 
 				resourceDeserializer.ReadConstantTable(reader); // Constant Table
 
@@ -255,7 +273,7 @@ namespace LsnCore
 					var s = ScriptClass.Read(reader, typeIdContainer, filePath, resourceDeserializer);
 					scriptObjectTypes.Add(s.Name, s);
 				}
-				res.ScriptObjectTypes = scriptObjectTypes;
+				res.ScriptClassTypes = scriptObjectTypes;
 				resourceDeserializer.LoadTypes(scriptObjectTypes.Values);
 				// End Types Part 2
 
@@ -272,6 +290,5 @@ namespace LsnCore
 			resourceDeserializer.ResolveCodeBlocks();
 			return res;
 		}
-
 	}
 }

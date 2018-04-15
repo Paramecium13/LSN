@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LSNr
 {
-	public enum TokenType { Ambiguous, Assignment, Float, Identifier, Integer, Keyword, Operator, String, Substitution, SyntaxSymbol}
+	public enum TokenType { Ambiguous, Assignment, Float, Identifier, Integer, Keyword, Operator, String, SyntaxSymbol, GameValue}
 
 	public sealed class Token
 	{

@@ -66,7 +66,7 @@ namespace LsnCore
 		{
 			foreach (var pair in script.Functions)
 				_Functions.Add(pair.Key, pair.Value);
-			foreach (var pair in script.ScriptObjectTypes)
+			foreach (var pair in script.ScriptClassTypes)
 				_ScriptObjectTypes.Add(pair.Key, pair.Value);
 			foreach (var res in script.Usings)
 			{
