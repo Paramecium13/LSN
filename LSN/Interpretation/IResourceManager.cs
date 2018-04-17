@@ -32,6 +32,20 @@ namespace LsnCore
 		LsnValue[] LoadValues(string id);
 
 		void SaveValues(LsnValue[] values, string id);
+
+		LsnType GetType(string typeName);
+
+		// Only the one of these that matches the value in Settings needs to be implemented
+		IHostInterface GetHostInterface(uint id);
+		IHostInterface GetHostInterface(string id);
+
+		// Only the one of these that matches the values in Settings needs to be implemented
+		ScriptObject GetScriptObject(uint scriptId);
+		ScriptObject GetScriptObject(string scriptId);
+		ScriptObject GetScriptObject(uint hostId, uint scriptId);
+		ScriptObject GetScriptObject(uint hostId, string scriptId);
+		ScriptObject GetScriptObject(string hostId, uint scriptId);
+		ScriptObject GetScriptObject(string hostId, string scriptId);
 	}
 
 	public abstract class ResourceManager : IResourceManager
@@ -264,6 +278,20 @@ namespace LsnCore
 		}
 
 		public abstract LsnValue[] LoadValues(string id);
+
 		public abstract void SaveValues(LsnValue[] values, string id);
+
+		public abstract LsnType GetType(string typeName);
+
+		public abstract IHostInterface GetHostInterface(uint id);
+		public abstract IHostInterface GetHostInterface(string id);
+
+		public abstract ScriptObject GetScriptObject(uint scriptId);
+		public abstract ScriptObject GetScriptObject(string scriptId);
+
+		public abstract ScriptObject GetScriptObject(uint hostId, uint scriptId);
+		public abstract ScriptObject GetScriptObject(uint hostId, string scriptId);
+		public abstract ScriptObject GetScriptObject(string hostId, uint scriptId);
+		public abstract ScriptObject GetScriptObject(string hostId, string scriptId);
 	}
 }

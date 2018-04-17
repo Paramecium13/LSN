@@ -66,7 +66,9 @@ namespace LsnCore
 		Record,
 		Struct,
 		Vector,
-		List
+		List,
+		HostInterface,
+		ScriptObject
 	}
 
 	public class ResourceSerializer

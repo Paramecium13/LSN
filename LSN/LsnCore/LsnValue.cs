@@ -29,10 +29,7 @@ namespace LsnCore
 
 		public bool IsPure => true;
 
-
-
 		public bool IsNull => Data != Data && Value == null;
-
 
 		public bool BoolValue =>
 			Data == Data ? Math.Abs(Data) > double.Epsilon : Value?.BoolValue ?? false;
@@ -49,7 +46,7 @@ namespace LsnCore
 		private readonly TypeId Id;
 
 		/// <summary>
-		/// ...
+		/// Unused
 		/// </summary>
 		public int IntValueB => Data.ToInt32Bitwise();
 
@@ -140,7 +137,7 @@ namespace LsnCore
 		public void Replace(IExpression oldExpr, IExpression newExpr){}
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="other"></param>
 		/// <returns></returns>

@@ -15,18 +15,9 @@ namespace LsnCore
 			self.Write((ushort)code);
 		}
 
-		public static List<T> Substitute<T>(this List<T> IEnum, T toReplace, T replacement)
+		public static IEnumerable<T> Substitute<T>(this IEnumerable<T> self, T toReplace, T replacement)
 			where T : IEquatable<T>
-		{
-			if (IEnum == null)
-				throw new ArgumentNullException(nameof(IEnum));
-			var NewIEnum = new List<T>(IEnum.Count);
-			foreach (var item in IEnum)
-			{
-				NewIEnum.Add(item.Equals(toReplace) ? replacement : item);
-			}
-			return NewIEnum;
-		}
+			=> self.Select(x => x.Equals(toReplace) ? replacement : x);
 
 		/// <summary>
 		/// Converts a list of key-value pairs into a dictionary, no parameters needed.
@@ -39,9 +30,7 @@ namespace LsnCore
 		public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> self)
 			=> self.ToDictionary(pair => pair.Key, pair => pair.Value);
 
-
 		public unsafe static int ToInt32Bitwise(this double self)
 			=> *((int*)&self);
-
 	}
 }

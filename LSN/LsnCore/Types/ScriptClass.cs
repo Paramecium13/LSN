@@ -15,7 +15,9 @@ namespace LsnCore.Types
 		public readonly TypeId HostInterface;
 
 		// Properties
-		private readonly IList<Property> Properties;
+		private readonly IList<Property> _Properties;
+
+		public IReadOnlyList<Property> Properties => (IReadOnlyList<Property>)_Properties;
 
 		// Fields
 		private readonly IReadOnlyList<Field> _Fields;
@@ -35,6 +37,10 @@ namespace LsnCore.Types
 
 		public readonly ScriptClassConstructor Constructor;
 
+		public int NumberOfProperties => _Properties.Count;
+
+		public int NumberOfFields => _Fields.Count;
+
 		public ScriptClass(TypeId id, TypeId host, IList<Property> properties, IReadOnlyList<Field> fields,
 			IReadOnlyDictionary<string,ScriptClassMethod> methods, IReadOnlyDictionary<string,EventListener> eventListeners,
 			IReadOnlyDictionary<int,ScriptClassState> states, int defaultStateIndex, bool unique, ScriptClassConstructor constructor = null)
@@ -43,7 +49,7 @@ namespace LsnCore.Types
 			Id = id;
 			HostInterface = host;
 			Unique = unique;
-			Properties = properties;
+			_Properties = properties;
 			_Fields = fields;
 			ScriptObjectMethods = methods;
 			EventListeners = eventListeners;
@@ -72,10 +78,10 @@ namespace LsnCore.Types
 
 		public int GetPropertyIndex(string name)
 		{
-			if (Properties.Any(f => f.Name == name))
+			if (_Properties.Any(f => f.Name == name))
 			{
-				var prop = Properties.First(f => f.Name == name);
-				return Properties.IndexOf(prop);
+				var prop = _Properties.First(f => f.Name == name);
+				return _Properties.IndexOf(prop);
 			}
 			else throw new ApplicationException($"The ScriptObject type {Name} does not have a property named {name}.");
 		}
@@ -114,8 +120,8 @@ namespace LsnCore.Types
 			writer.Write(HostInterface?.Name ?? "");
 			writer.Write(DefaultStateId);
 
-			writer.Write((ushort)Properties.Count);
-			foreach (var prop in Properties)
+			writer.Write((ushort)_Properties.Count);
+			foreach (var prop in _Properties)
 				prop.Write(writer);
 
 			writer.Write((ushort)_Fields.Count);
@@ -147,7 +153,6 @@ namespace LsnCore.Types
 			var defaultStateId = reader.ReadInt32();
 
 			var type = typeContainer.GetTypeId(name);
-
 
 			var nProperties = reader.ReadUInt16();
 			var props = new List<Property>(nProperties);

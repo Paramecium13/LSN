@@ -19,9 +19,7 @@ namespace LsnCore.Values
 
 		//public readonly LsnListType _Type;
 
-		
 		//public ICollectionType CollectionType => _Type;
-
 
 		public LsnValue this[int index] { get { return Values[index]; } set { Values[index] = value; } }
 

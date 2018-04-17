@@ -102,6 +102,7 @@
     <Compile Include="LsnCore\GlobalVariableValueWatched.cs" />
     <Compile Include="LsnCore\LsnFunction.cs" />
     <Compile Include="LsnCore\Serialization\ResourceDeserializer.cs" />
+    <Compile Include="LsnCore\Settings.cs" />
     <Compile Include="LsnCore\Statements\AttachStatement.cs" />
     <Compile Include="LsnCore\Statements\ChangeGlobalVariableStatement.cs" />
     <Compile Include="LsnCore\Statements\CollectionValueReassignmentStatement.cs" />
@@ -127,7 +128,6 @@
     <Compile Include="LsnCore\LsnValue.cs" />
     <Compile Include="LsnCore\Values\EventInstance.cs" />
     <Compile Include="LsnCore\Values\ExternalizedEventInstance.cs" />
-    <Compile Include="LsnCore\Values\HostInterface.cs" />
     <Compile Include="LsnCore\Values\IEventInstance.cs" />
     <Compile Include="LsnCore\Values\IHostInterface.cs" />
     <Compile Include="LsnCore\Values\LSN_List.cs" />
