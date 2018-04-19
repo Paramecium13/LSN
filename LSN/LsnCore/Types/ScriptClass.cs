@@ -20,7 +20,7 @@ namespace LsnCore.Types
 		public IReadOnlyList<Property> Properties => (IReadOnlyList<Property>)_Properties;
 
 		// Fields
-		private readonly IReadOnlyList<Field> _Fields;
+		public readonly IReadOnlyList<Field> Fields;
 
 		// Methods
 		internal IReadOnlyDictionary<string,ScriptClassMethod> ScriptObjectMethods;
@@ -33,13 +33,13 @@ namespace LsnCore.Types
 
 		public readonly int DefaultStateId;
 
-		public IReadOnlyCollection<Field> FieldsB => _Fields;
+		public IReadOnlyCollection<Field> FieldsB => Fields;
 
 		public readonly ScriptClassConstructor Constructor;
 
 		public int NumberOfProperties => _Properties.Count;
 
-		public int NumberOfFields => _Fields.Count;
+		public int NumberOfFields => Fields.Count;
 
 		public ScriptClass(TypeId id, TypeId host, IList<Property> properties, IReadOnlyList<Field> fields,
 			IReadOnlyDictionary<string,ScriptClassMethod> methods, IReadOnlyDictionary<string,EventListener> eventListeners,
@@ -50,7 +50,7 @@ namespace LsnCore.Types
 			HostInterface = host;
 			Unique = unique;
 			_Properties = properties;
-			_Fields = fields;
+			Fields = fields;
 			ScriptObjectMethods = methods;
 			EventListeners = eventListeners;
 			_States = states;
@@ -68,8 +68,8 @@ namespace LsnCore.Types
 
 		int IHasFieldsType.GetIndex(string name)
 		{
-			if (_Fields.Any(f => f.Name == name))
-				return _Fields.First(f => f.Name == name).Index;
+			if (Fields.Any(f => f.Name == name))
+				return Fields.First(f => f.Name == name).Index;
 			else throw new ApplicationException($"The ScriptObject type {Name} does not have a field named {name}.");
 		}
 
@@ -134,8 +134,8 @@ namespace LsnCore.Types
 			foreach (var prop in _Properties)
 				prop.Write(writer);
 
-			writer.Write((ushort)_Fields.Count);
-			foreach (var field in _Fields)
+			writer.Write((ushort)Fields.Count);
+			foreach (var field in Fields)
 			{
 				writer.Write(field.Name);
 				writer.Write(field.Type.Name);
