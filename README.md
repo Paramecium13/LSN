@@ -20,7 +20,7 @@ LSN is a strongly typed language and comes with several built in types and allow
 *string*: Represents text in the Unicode format, wraps the .NET string type. *string* values in LSN are immutable. This allows them to be effectively passed by reference (passing a(n) LSN string value creates a new LSN string value that shares the same .NET string as the original), while it appears that they are passed by value. The *string* type has a multiplication (\*) operator that takes an *int* as the second operand and returns a *string* that is the *string* operand repeated the value of the *int* times. It also has equals (==) and not equals (!=) operators that take another *string* as the second operand and return a *bool*. I intend to add the other comparison operators to allow sorting.
 
 ##### Collection Types
-Currently, none of the collections are fully functional. The syntax for initializing them has not been decided on and is not implemented by the reifier.
+I'm not sure how functional the collections currently are. It should be possible to access elements of vectors and lists and modify the elements of lists. Empty lists can be constructed with a constructor expression. The syntax for initializing non-empty collections has not been decided on and thus is not implemented by the reifier.
 
 ***Vector<T>*** : An immutable collection of values of the same type that appears to be passed by value but is actually passed by reference. I suppose that making a vector of references should not be allowed. It currently has the methods *Length()* and *ToList()*. *Vector<int>* and *Vector<double>* also have the methods *Sum()* and *Mean()*.
 
