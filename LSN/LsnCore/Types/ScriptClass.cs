@@ -105,12 +105,22 @@ namespace LsnCore.Types
 		internal ScriptObject Construct(LsnValue[] properties, LsnValue[] arguments, IInterpreter i, IHostInterface host = null)
 		{
 			var fields = new LsnValue[FieldsB.Count];
-			var obj = new ScriptObject(properties, fields, this, DefaultStateId, host);
-			var args = new LsnValue[arguments.Length + 1];
-			arguments.CopyTo(args, 1);
-			args[0] = new LsnValue(obj);
-			Constructor.Run(i, args);
-			return obj;
+			if (Constructor != null)
+			{
+				var obj = new ScriptObject(properties, fields, this, DefaultStateId, host);
+				var args = new LsnValue[arguments.Length + 1];
+				arguments.CopyTo(args, 1);
+				args[0] = new LsnValue(obj);
+				Constructor.Run(i, args);
+				return obj;
+			}
+			else // Copy args over to fields
+			{
+				for (int j = 0; j < fields.Length; j++)
+					fields[j] = arguments[j];
+				var obj = new ScriptObject(properties, fields, this, DefaultStateId, host);
+				return obj;
+			}
 		}
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
@@ -143,6 +153,9 @@ namespace LsnCore.Types
 			writer.Write((ushort)_States.Count);
 			foreach (var state in _States.Values)
 				state.Serialize(writer, resourceSerializer);
+
+			writer.Write(Constructor != null);
+			Constructor?.Serialize(writer, resourceSerializer);
 		}
 
 		public static ScriptClass Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath, ResourceDeserializer resourceDeserializer)
@@ -191,9 +204,12 @@ namespace LsnCore.Types
 				var state = ScriptClassState.Read(reader, typeContainer, type, resourceFilePath, resourceDeserializer);
 				states.Add(state.Id, state);
 			}
+			ScriptClassConstructor constructor = null;
+			if (reader.ReadBoolean())
+				constructor = ScriptClassConstructor.Read(reader, resourceFilePath, resourceDeserializer);
 
 			return new ScriptClass(type, typeContainer.GetTypeId(hostInterfaceName), props, fields, methods, listeners,
-				states, defaultStateId, unique);
+				states, defaultStateId, unique, constructor);
 		}
 	}
 }

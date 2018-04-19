@@ -63,7 +63,7 @@ namespace LSNr
 
 		internal bool MethodExists(string name) => Methods.ContainsKey(name);
 
-		private List<Parameter> ParseParameters(IReadOnlyList<Token> tokens, bool isEvent)
+		protected IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens, bool isEvent)
 		{
 			var paramaters = new List<Parameter>();
 			ushort index = 0;
@@ -107,7 +107,7 @@ namespace LSNr
 			var name = Tokens[i].Value;
 			i++;
 			if (Tokens[i].Value != "(")
-				throw new LsnrParsingException(Tokens[i], $"Error parsing method {name}: expected '(', received '{Tokens[i].Value}.", Path);
+				throw new LsnrParsingException(Tokens[i], $"Error parsing method {name}: expected '(', received '{Tokens[i].Value}'.", Path);
 
 			var paramTokens = new List<Token>();
 			while (Tokens[++i].Value != ")") // This starts with the token after '('.
@@ -238,8 +238,8 @@ namespace LSNr
 			foreach (var pair in MethodBodies)
 			{
 				var method = Methods[pair.Key];
-				//try
-				//{
+				try
+				{
 					var pre = new PreScriptClassFunction(this);
 					foreach (var param in method.Parameters)
 						pre.CurrentScope.CreateVariable(param);
@@ -250,7 +250,7 @@ namespace LSNr
 					var components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
 					method.Code = new ComponentFlattener().Flatten(components);
 					method.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
-				/*}
+				}
 				catch (LsnrException e)
 				{
 					Valid = false;
@@ -264,7 +264,7 @@ namespace LSNr
 					var st = this as PreState;
 					var x = st != null ? $"state {st.StateName} of " : "";
 					Logging.Log($"method '{method.Name}' in {x}script class {this.Id.Name}", e, Path);
-				}*/
+				}
 			}
 		}
 

@@ -220,6 +220,7 @@ namespace LsnCore.Values
 		{
 			foreach (var name in ScriptClass.EventListeners.Keys.Union(CurrentState.EventsListenedTo).Distinct())
 				Host.UnsubscribeToEvent(name, this);
+			Host.DetachScriptObject(this);
 			Host = null;
 		}
 	}

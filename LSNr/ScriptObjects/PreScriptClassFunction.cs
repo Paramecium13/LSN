@@ -17,9 +17,7 @@ namespace LSNr
 			Parent = parent;
 		}
 
-		private IScope _CurrentScope = new VariableTable(new List<Variable>());
-
-		public IScope CurrentScope { get { return _CurrentScope; } set { _CurrentScope = value; } }
+		public IScope CurrentScope { get; set; } = new VariableTable(new List<Variable>());
 
 		public bool Mutable => Parent.Mutable;
 		public bool Valid { get { return Parent.Valid; } set { Parent.Valid = value; } }
@@ -37,7 +35,7 @@ namespace LSNr
 
 		public SymbolType CheckSymbol(string name)
 		{
-			if (_CurrentScope.VariableExists(name))
+			if (CurrentScope.VariableExists(name))
 				return SymbolType.Variable;
 			return Parent.CheckSymbol(name);
 		}

@@ -96,6 +96,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="IPreScript.cs" />
     <Compile Include="IScope.cs" />
+    <Compile Include="ScriptObjects\PreScriptClassConstructor.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="ITypeContainer.cs" />
     <Compile Include="Optimization\ArithmeticIdentityChecker.cs" />
