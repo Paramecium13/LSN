@@ -5,13 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-
 namespace LSNr
 {
 	public static class TypeContainerExtensions
 	{
 		/// <summary>
-		/// 
+		/// Parses a type name, returning the type object.
 		/// </summary>
 		/// <param name="self"></param>
 		/// <param name="tokens"></param>
@@ -51,7 +50,7 @@ namespace LSNr
 		}
 
 		/// <summary>
-		/// 
+		/// Parses a type name, returning the TypeId object.
 		/// </summary>
 		/// <param name="self"></param>
 		/// <param name="tokens"></param>

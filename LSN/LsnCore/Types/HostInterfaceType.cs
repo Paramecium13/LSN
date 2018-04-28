@@ -65,17 +65,17 @@ namespace LsnCore.Types
 			throw new ArgumentException($"No event named {name} exists.", "name");
 		}
 
-		public void Serialize(BinaryDataWriter writer)
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(Name);
 
 			writer.Write((ushort)EventDefinitions.Count);
 			foreach (var ev in EventDefinitions.Values)
-				ev.Serialize(writer);
+				ev.Serialize(writer, resourceSerializer);
 
 			writer.Write((ushort)MethodDefinitions.Count);
 			foreach (var mdef in MethodDefinitions.Values)
-				mdef.Serialize(writer);
+				mdef.Serialize(writer, resourceSerializer);
 		}
 
 

@@ -33,7 +33,7 @@ namespace LsnCore
 		}
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="args"></param>
 		/// <param name="expression"> The object the method is called on</param>
@@ -42,13 +42,18 @@ namespace LsnCore
 		{
 			// This requires that the call use the named parameters. Do something like if (args.Any(a=>a.Item1=="")){...}
 			// to check if it uses parameters by position, rather than name...
-			var dict = args.ToDictionary(t => t.Item1, t => t.Item2); // TODO: Fix.
 			var argsArray = new IExpression[Parameters.Count];
 			argsArray[0] = expression;
-			foreach (var param in Parameters)
+			for(int i = 1; i < Parameters.Count; i++)
 			{
-				if (param.Name != "self")
-					argsArray[param.Index] = dict.ContainsKey(param.Name) ? dict[param.Name] : param.DefaultValue;
+				var a = args.FirstOrDefault(arg => arg.Item1 == Parameters[i].Name);
+				if (a != null)
+					argsArray[i] = a.Item2;
+				else if (i < args.Count)
+					argsArray[i] = args[i].Item2;
+				else if (!Parameters[i].DefaultValue.IsNull)
+					argsArray[i] = Parameters[i].DefaultValue;
+				else throw new ArgumentException(nameof(args));
 			}
 			return new MethodCall(this, argsArray);
 		}

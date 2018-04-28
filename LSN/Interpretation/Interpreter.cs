@@ -44,9 +44,16 @@ namespace LsnCore
 
 		public void Run(Statements.Statement[] code, string resourceFilePath, int stackSize, LsnValue[] parameters)
 		{
+			if (code == null)
+				throw new ArgumentNullException(nameof(code));
+			if (resourceFilePath == null)
+				throw new ArgumentNullException(nameof(resourceFilePath));
+
 			EnterFunctionScope(resourceFilePath, stackSize);
-			for (int i = 0; i < parameters.Length; i++)
-				CurrentStackFrame[i] = parameters[i];
+
+			if(parameters != null)
+				for (int i = 0; i < parameters.Length; i++)
+					CurrentStackFrame[i] = parameters[i];
 
 			NextStatement = 0;
 			var currentStatement = NextStatement++;
@@ -58,32 +65,7 @@ namespace LsnCore
 				currentStatement = NextStatement++;
 			}
 		}
-
-		/*/// <summary>
-		/// Enters a new scope for interpreting a function. Previously defined variables are inaccessable.
-		/// </summary>
-		/// <param name="env">todo: describe env parameter on EnterFunctionScope</param>
-		/// <param name="scopeSize">todo: describe scopeSize parameter on EnterFunctionScope</param>
-		public virtual void EnterFunctionScope(LsnEnvironment env, int scopeSize)
-		{
-			if(CurrentEnvironment != null)
-				EnvStack.Push(CurrentEnvironment);
-			CurrentEnvironment = env;
-
-			StackFrames.Push(CurrentStackFrame);
-			int i = NearestPower(scopeSize);
-			if (StackFrameStore.ContainsKey(i))
-			{
-				if (!StackFrameStore[i].TryPop(out CurrentStackFrame))
-					CurrentStackFrame = new LsnValue[i];
-			}
-			else
-			{
-				StackFrameStore.Add(i, new ConcurrentStack<LsnValue[]>());
-				CurrentStackFrame = new LsnValue[i];
-			}
-		}*/
-
+		
 		public virtual void EnterFunctionScope(string resourceFilePath, int scopeSize)
 		{
 			NextStatementStack.Push(NextStatement);

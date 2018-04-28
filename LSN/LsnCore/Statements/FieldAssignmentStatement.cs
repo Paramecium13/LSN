@@ -64,6 +64,9 @@ namespace LsnCore.Statements
 			yield return FieldedValue;
 			foreach (var expr in FieldedValue.SelectMany(e => e))
 				yield return expr;
+			yield return ValueToAssign;
+			foreach (var expr in ValueToAssign.SelectMany(e => e))
+				yield return expr;
 		}
 	}
 

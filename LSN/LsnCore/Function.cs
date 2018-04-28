@@ -1,4 +1,5 @@
 ﻿using LsnCore.Expressions;
+using LsnCore.Serialization;
 using LsnCore.Types;
 using Syroot.BinaryData;
 using System;
@@ -36,7 +37,7 @@ namespace LsnCore
 		/// </summary>
 		public abstract bool HandlesScope { get; }
 
-		protected string _ResourceFilePath; //TODO: Give this a value!!!
+		protected string _ResourceFilePath;
 		public string ResourceFilePath { get { return _ResourceFilePath; } protected set { _ResourceFilePath = value; } }
 
 		public virtual FunctionCall CreateCall(IList<Tuple<string,IExpression>> args, bool included = false)
@@ -52,7 +53,6 @@ namespace LsnCore
 	/// <summary>
 	/// A parameter for a function or method.
 	/// </summary>
-	[Serializable]
 	public class Parameter : IEquatable<Parameter>
 	{
 		public readonly string Name;
@@ -79,22 +79,30 @@ namespace LsnCore
 		public bool Equals(Parameter other)
 			=> Name == other.Name && Type == other.Type && DefaultValue.Equals(other.DefaultValue) && Index == other.Index;
 
-		public void Serialize(BinaryDataWriter writer)
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(Name);
-			writer.Write(Type.Name);
+			resourceSerializer.WriteTypeId(Type, writer);
 			writer.Write(!DefaultValue.IsNull);
 		}
-
 
 		public static Parameter Read(ushort index, BinaryDataReader reader, ITypeIdContainer typeContainer)
 		{
 			var name = reader.ReadString();
-			var typeName = reader.ReadString();
+			var typeId = typeContainer.GetTypeId(reader.ReadUInt16());
 			var hasDefault = reader.ReadBoolean();
 			/*if (hasDefault)
 				throw new ApplicationException();*/
-			return new Parameter(name, typeContainer.GetTypeId(typeName), LsnValue.Nil, index);
+			return new Parameter(name, typeId, LsnValue.Nil, index);
+		}
+		public static Parameter Read(ushort index, BinaryDataReader reader, ResourceDeserializer resourceDeserializer)
+		{
+			var name = reader.ReadString();
+			var typeId = resourceDeserializer.LoadTypeId(reader);
+			var hasDefault = reader.ReadBoolean();
+			/*if (hasDefault)
+				throw new ApplicationException();*/
+			return new Parameter(name, typeId, LsnValue.Nil, index);
 		}
 
 	}

@@ -8,6 +8,14 @@ namespace LsnCore.Values
 {
 	public interface IHostInterface : ILsnValue
 	{
+		uint NumericId { get; }
+
+		string TextId { get; }
+
+		uint AttachScriptObject(ScriptObject scriptObject, out string strId);
+
+		void DetachScriptObject(ScriptObject scriptObject);
+
 		LsnValue CallMethod(string name, LsnValue[] arguments);
 
 		void SubscribeToEvent(string eventName, ScriptObject eventListener);

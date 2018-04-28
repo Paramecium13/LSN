@@ -1,4 +1,4 @@
-﻿#using "resource\test2"
+﻿#using "test2"
 
 
 fn TryStakeVampire(vampire : IEnemy)

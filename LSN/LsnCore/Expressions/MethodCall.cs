@@ -46,10 +46,8 @@ namespace LsnCore.Expressions
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.MethodCall);
-			var typeName = Method.TypeId?.Name;
-			if (string.IsNullOrEmpty(typeName))
-				typeName = Method.Parameters[0].Type.Name;
-			writer.Write(typeName);
+			var type = Method.TypeId ?? Method.Parameters[0].Type;
+			resourceSerializer.WriteTypeId(type, writer);
 			writer.Write(Method.Name);
 			writer.Write((byte)Args.Length);
 			for (int i = 0; i < Args.Length; i++)

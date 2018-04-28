@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 namespace LsnCore.ControlStructures
 {
-
-	[Serializable]
 	public class CaseStructure : ControlStructure
 	{
 		private IExpression _Value;

@@ -13,7 +13,7 @@ namespace LSNr
 		};
 
 		private readonly static char[] Symbols = {
-			'+','-','*','/','%',/*'^'*/'>','<','~','!',/*':',*/'?','@','$','=','|','&'
+			'+','-','*','/','%','>','<','~','!','?','@',/*'$',*/'=','|','&'
 		};
 
 		private readonly static char[] SyntaxSymbols = {
@@ -675,6 +675,8 @@ namespace LSNr
 				case TokenizerTokenType.Word:
 					if (Keywords.Contains(str.ToLower()))
 						token = new Token(str.ToLower(), LineNumber, LSNr.TokenType.Keyword);
+					else if (str.StartsWith("$", StringComparison.Ordinal))
+						token = new Token(str, LineNumber, LSNr.TokenType.GameValue);
 					else
 						token = new Token(str, LineNumber, LSNr.TokenType.Identifier);
 					break;

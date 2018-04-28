@@ -14,16 +14,19 @@ namespace LsnCore
 	public interface ITypeIdContainer
 	{
 		TypeId GetTypeId(string name);
+		TypeId GetTypeId(ushort index);
 	}
 
 	public class TypeIdContainer : ITypeIdContainer
 	{
-		private readonly IDictionary<string, TypeId> TypeIds;
+		private readonly IDictionary<string, TypeId> TypeIdDictionary;
 		private readonly IReadOnlyDictionary<string, GenericType> Generics;
+		private readonly TypeId[] TypeIds;
 
-		public TypeIdContainer(TypeId[] typeNames)
+		public TypeIdContainer(TypeId[] typeIds)
 		{
-			TypeIds = typeNames.ToDictionary(i => i.Name);
+			TypeIds = typeIds;
+			TypeIdDictionary = typeIds.ToDictionary(i => i.Name);
 			Generics = LsnType.GetBaseGenerics().ToDictionary(g => g.Name);
 			/*
 			TypeIds.Add(LsnType.Bool_.Id.Name,LsnType.Bool_.Id);
@@ -35,7 +38,6 @@ namespace LsnCore
 		public TypeId GetTypeId(string name)
 		{
 			if (name.Contains('`'))
-			//	return new TypeId(name); // ToDo: use generic types...
 			{
 				var names = name.Split('`');
 				var genericTypeName = names[0];
@@ -46,13 +48,16 @@ namespace LsnCore
 				var type = generic.GetType(generics);
 				return type.Id;
 			}
-			return TypeIds[name];
+			return TypeIdDictionary[name];
 		}
+
+		public TypeId GetTypeId(ushort index) => TypeIds[index];
 	}
 
-	public interface ITypeContainer : ITypeIdContainer
+	public interface ITypeContainer
 	{
 		LsnType GetType(string name);
+		TypeId GetTypeId(string name);
 		bool TypeExists(string name);
 		bool GenericTypeExists(string name);
 		GenericType GetGenericType(string name);
@@ -61,10 +66,9 @@ namespace LsnCore
 	/// <summary>
 	/// Contains functions, structs, constants, and macros/inlines.
 	/// </summary>
-	[Serializable]
 	public class LsnResourceThing : LsnScriptBase
 	{
-		private LsnEnvironment Environment = null;
+		private LsnEnvironment Environment;
 
 		private readonly TypeId[] TypeIds;
 
@@ -89,32 +93,40 @@ namespace LsnCore
 				writer.Write((byte)1);
 				writer.Write((ulong)0);
 
-				writer.Write((ushort)Includes.Count);
+				writer.Write((ushort)Includes.Count); // Includes
 				foreach (var inc in Includes)
 					writer.Write(inc);
-				writer.Write((ushort)Usings.Count);
+
+				writer.Write((ushort)Usings.Count); // Usings
 				foreach (var u in Usings)
 					writer.Write(u);
 
-				writer.Write((ushort)TypeIds.Length);
+				writer.Write((ushort)TypeIds.Length); // TypeIds
 				foreach (var id in TypeIds)
 					writer.Write(id.Name);
 				// End Header
 				var resourceSerializer = new ResourceSerializer(TypeIds);
 
-				var typesPart1 = WriteTypesPart1(resourceSerializer);
-				var typesPart2 = WriteTypesPart2(resourceSerializer);
+				WriteGameValues(writer, resourceSerializer);
+
+				var types = WriteTypes(resourceSerializer);
 
 				var functions = WriteFunctions(resourceSerializer);
 
-				resourceSerializer.WriteConstantTable(writer);
-				writer.Write(typesPart1);
-				writer.Write(typesPart2);
-				writer.Write(functions);
+				resourceSerializer.WriteConstantTable(writer); // Constants
+				writer.Write(types); // Types
+				writer.Write(functions); // Functions
 			}
 		}
 
-		private byte[] WriteTypesPart1(ResourceSerializer resourceSerializer)
+		private void WriteGameValues(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((ushort)GameValues.Count);
+			foreach (var gameValue in GameValues.Values)
+				gameValue.Serialize(writer, resourceSerializer);
+		}
+
+		private byte[] WriteTypes(ResourceSerializer resourceSerializer)
 		{
 			using (var stream = new MemoryStream())
 			{
@@ -130,24 +142,10 @@ namespace LsnCore
 
 					writer.Write((ushort)HostInterfaces.Count);
 					foreach (var type in HostInterfaces.Values)
-						type.Serialize(writer);
-				}
-				var p = (int)stream.Position;
-				stream.Position = 0;
-				var buff = new byte[p];
-				stream.Read(buff, 0, p);
-				return buff;
-			}
-		}
+						type.Serialize(writer, resourceSerializer);
 
-		private byte[] WriteTypesPart2(ResourceSerializer resourceSerializer)
-		{
-			using (var stream = new MemoryStream())
-			{
-				using (var writer = new BinaryDataWriter(stream, new UTF8Encoding(false), true))
-				{
-					writer.Write((ushort)ScriptObjectTypes.Count);
-					foreach (var type in ScriptObjectTypes.Values)
+					writer.Write((ushort)ScriptClassTypes.Count);
+					foreach (var type in ScriptClassTypes.Values)
 						type.Serialize(writer, resourceSerializer);
 				}
 				var p = (int)stream.Position;
@@ -212,16 +210,11 @@ namespace LsnCore
 					resourceDeserializer.LoadFunctions(r.Functions.Values);
 					resourceDeserializer.LoadTypes(r.HostInterfaces.Values);
 					resourceDeserializer.LoadTypes(r.RecordTypes.Values);
-					resourceDeserializer.LoadTypes(r.ScriptObjectTypes.Values);
+					resourceDeserializer.LoadTypes(r.ScriptClassTypes.Values);
 					resourceDeserializer.LoadTypes(r.StructTypes.Values);
 				}
 
-				var nTypes = reader.ReadUInt16();
-				var typeNames = new string[nTypes];
-				for (int i = 0; i < nTypes; i++)
-					typeNames[i] = reader.ReadString();
-
-				var typeIds = typeNames.Select(n => new TypeId(n)).ToArray();
+				var typeIds = resourceDeserializer.LoadTypeIds(reader);
 				res = new LsnResourceThing(typeIds)
 				{
 					Includes = includes,
@@ -229,6 +222,14 @@ namespace LsnCore
 				};
 				var typeIdContainer = new TypeIdContainer(typeIds);
 				// End Header
+
+				var nGameValues = reader.ReadUInt16();
+				var gameValues = new Dictionary<string, GameValue>();
+				for (int i = 0; i < nGameValues; i++)
+				{
+					var gameValue = GameValue.Read(reader, resourceDeserializer);
+					gameValues.Add(gameValue.Name, gameValue);
+				}
 
 				resourceDeserializer.ReadConstantTable(reader); // Constant Table
 
@@ -272,7 +273,7 @@ namespace LsnCore
 					var s = ScriptClass.Read(reader, typeIdContainer, filePath, resourceDeserializer);
 					scriptObjectTypes.Add(s.Name, s);
 				}
-				res.ScriptObjectTypes = scriptObjectTypes;
+				res.ScriptClassTypes = scriptObjectTypes;
 				resourceDeserializer.LoadTypes(scriptObjectTypes.Values);
 				// End Types Part 2
 
@@ -289,6 +290,5 @@ namespace LsnCore
 			resourceDeserializer.ResolveCodeBlocks();
 			return res;
 		}
-
 	}
 }

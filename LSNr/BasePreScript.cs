@@ -14,7 +14,7 @@ namespace LSNr
 	public abstract class BasePreScript : IPreScript
 	{
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		protected readonly string Source;
 		protected string Text;
@@ -35,6 +35,10 @@ namespace LSNr
 		protected readonly List<string> Usings = new List<string>();
 
 		protected readonly List<string> Includes = new List<string>();
+
+		protected readonly Dictionary<string, GameValue> LoadedGameValues = new Dictionary<string, GameValue>();
+
+		protected readonly Dictionary<string, GameValue> IncludedGameValues = new Dictionary<string, GameValue>();
 
 		//protected LsnEnvironment _Environment;
 		//internal LsnEnvironment Environment => _Environment;
@@ -60,25 +64,35 @@ namespace LSNr
 		//
 		protected void Include(LsnScriptBase resource, string path)
 		{
-			foreach (var recType in resource.StructTypes.Values)
+			foreach (var _using in resource.Usings)
+			{
+				Use(_using);
+			}
+			foreach (var structType in resource.StructTypes.Values)
+			{
+				IncludedTypes.Add(structType);
+				IncludedStructTypes.Add(structType);
+				structType.Id.Load(structType);
+				//LoadType(structType);
+			}
+			foreach (var recType in resource.RecordTypes.Values)
 			{
 				IncludedTypes.Add(recType);
+				IncludedRecordTypes.Add(recType);
 				recType.Id.Load(recType);
-			}
-			foreach (var stType in resource.RecordTypes.Values)
-			{
-				IncludedTypes.Add(stType);
-				stType.Id.Load(stType);
+				//LoadType(recType);
 			}
 			foreach (var hostInterface in resource.HostInterfaces.Values)
 			{
 				IncludedTypes.Add(hostInterface);
+				IncludedHostInterfaceTypes.Add(hostInterface);
 				hostInterface.Id.Load(hostInterface);
 				LoadType(hostInterface);
 			}
-			foreach(var scObj in resource.ScriptObjectTypes.Values)
+			foreach(var scObj in resource.ScriptClassTypes.Values)
 			{
 				IncludedTypes.Add(scObj);
+				IncludedScriptClasses.Add(scObj);
 				scObj.Id.Load(scObj);
 				LoadType(scObj);
 			}
@@ -88,6 +102,10 @@ namespace LSNr
 				// if (IncludedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
 				if (! IncludedFunctions.ContainsKey(pair.Key)) IncludedFunctions.Add(pair.Key, pair.Value);
 				LoadFunctionParamAndReturnTypes(pair.Value);
+			}
+			foreach (var gameVal in resource.GameValues)
+			{
+				IncludedGameValues.Add(gameVal.Key,gameVal.Value);
 			}
 
 			Includes.Add(path);
@@ -187,16 +205,8 @@ namespace LSNr
 				foreach (var match in Regex.Matches(source, "#using\\s+\"(.+)\"").Cast<Match>())
 				{
 					var path = match.Groups.OfType<object>().Select(o => o.ToString()).Skip(1).First();
-					LsnResourceThing res;
+					Use(path);
 
-					if (path.StartsWith(@"Lsn Core\", StringComparison.Ordinal))
-						res = ResourceManager.GetStandardLibraryResource(new string(path.Skip(9).ToArray()));
-					else if (path.StartsWith(@"std\", StringComparison.Ordinal))
-						res = ResourceManager.GetStandardLibraryResource(new string(path.Skip(4).ToArray()));
-					else
-						res = Load(path);
-
-					Use(res, path);
 					source = source.Replace(match.Value, ""); // TODO: Test.
 					usePaths.Add(path);
 				}
@@ -219,30 +229,27 @@ namespace LSNr
 				Mutable = true;
 				source = source.Replace("#mut", "");
 			}
-			if (source.Contains("#no_std"))
-			{
-				source = source.Replace("#no_std", "");
-			}
-			else
-			{
-				// Load the standard library.
-			}
 			return source;
 		}
 
+		protected void Use(string path)
+		{
+			LsnResourceThing res;
+			if (path.StartsWith(@"Lsn Core\", StringComparison.Ordinal))
+				res = ResourceManager.GetStandardLibraryResource(new string(path.Skip(9).ToArray()));
+			else if (path.StartsWith(@"std\", StringComparison.Ordinal))
+				res = ResourceManager.GetStandardLibraryResource(new string(path.Skip(4).ToArray()));
+			else
+				res = Load(path);
+
+			Use(res, path);
+		}
 
 		protected void Use(LsnScriptBase resource, string path)
 		{
-			LsnScriptBase res;
 			foreach (var u in resource.Usings)
 			{
-				if (path.StartsWith(@"Lsn Core\", StringComparison.Ordinal))
-					res = ResourceManager.GetStandardLibraryResource(new string(path.Skip(9).ToArray()));
-				else if (path.StartsWith(@"std\", StringComparison.Ordinal))
-					res = ResourceManager.GetStandardLibraryResource(new string(path.Skip(4).ToArray()));
-				else
-					res = Load(path);
-				Use(res, u);
+				Use(u);
 			}
 
 			foreach (var recType in resource.StructTypes.Values)
@@ -262,13 +269,13 @@ namespace LSNr
 				if(!HostInterfaces.ContainsKey(hostInterface.Name))
 					HostInterfaces.Add(hostInterface.Name, hostInterface);
 			}
-			foreach (var scObj in resource.ScriptObjectTypes.Values)
+			foreach (var scObj in resource.ScriptClassTypes.Values)
 			{
 				LoadedTypes.Add(scObj);
 				scObj.Id.Load(scObj);
 				LoadType(scObj);
-				if(!ScriptObjects.ContainsKey(scObj.Name))
-					ScriptObjects.Add(scObj.Name, scObj);
+				if(!ScriptClasses.ContainsKey(scObj.Name))
+					ScriptClasses.Add(scObj.Name, scObj);
 			}
 			foreach (var pair in resource.Functions)
 			{
@@ -277,6 +284,10 @@ namespace LSNr
 					LoadedExternallyDefinedFunctions.Add(pair.Key, pair.Value);
 					LoadFunctionParamAndReturnTypes(pair.Value);
 				}
+			}
+			foreach (var gameValue in resource.GameValues)
+			{
+				LoadedGameValues.Add(gameValue.Key, gameValue.Value);
 			}
 			//ToDo: Generic types and functions...
 			Usings.Add(path);
@@ -377,6 +388,10 @@ namespace LSNr
 		/// The types that will be included by the output.
 		/// </summary>
 		protected readonly IList<LsnType> IncludedTypes = new List<LsnType>();
+		protected readonly IList<StructType> IncludedStructTypes = new List<StructType>();
+		protected readonly IList<RecordType> IncludedRecordTypes = new List<RecordType>();
+		protected readonly IList<HostInterfaceType> IncludedHostInterfaceTypes = new List<HostInterfaceType>();
+		protected readonly IList<ScriptClass> IncludedScriptClasses = new List<ScriptClass>();
 
 		/// <summary>
 		/// The types that will not be included by the output.
@@ -384,7 +399,7 @@ namespace LSNr
 		protected readonly IList<LsnType> LoadedTypes = LsnType.GetBaseTypes();
 		protected readonly Dictionary<string, HostInterfaceType> HostInterfaces = new Dictionary<string, HostInterfaceType>();
 		protected readonly Dictionary<string, HostInterfaceType> MyHostInterfaces = new Dictionary<string, HostInterfaceType>();
-		protected readonly Dictionary<string, ScriptClass> ScriptObjects = new Dictionary<string, ScriptClass>();
+		protected readonly Dictionary<string, ScriptClass> ScriptClasses = new Dictionary<string, ScriptClass>();
 
 		protected readonly IList<GenericType> IncludedGenerics = new List<GenericType>();
 
@@ -432,6 +447,11 @@ namespace LSNr
 
 		public bool TypeIsIncluded(TypeId type)
 			=> IncludedTypes.Contains(type.Type);
+
+		public TypeId GetTypeId(ushort index)
+		{
+			throw new NotImplementedException();
+		}
 
 		/*public virtual void AddType(LsnType type)
 		{

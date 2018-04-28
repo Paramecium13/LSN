@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
-
+using LSNr.Optimization;
 
 namespace LSNr
 {
@@ -26,6 +26,10 @@ namespace LSNr
 		private readonly List<Field> Fields = new List<Field>();
 
 		private int DefaultStateIndex = -1;
+
+		private ScriptClassConstructor Constructor;
+
+		private List<Token> ConstructorTokens;
 
 		public override IScope CurrentScope { get; set; }
 
@@ -234,6 +238,38 @@ namespace LSNr
 								Fields.Add(new Field(Fields.Count, name, type));
 							}
 							break;
+						case "new":
+							{
+								if (Constructor != null)
+									throw new LsnrParsingException(Tokens[i], $"Error parsing Script Class '{Name}': Cannot have more than one constructor.", Path);
+								i++;
+								if (Tokens[i].Value != "(")
+									throw new LsnrParsingException(Tokens[i], $"Error parsing constructor for '{Name}': expected '(', received '{Tokens[i].Value}'.", Path);
+
+								var paramTokens = new List<Token>();
+								while (Tokens[++i].Value != ")") // This starts with the token after '('.
+									paramTokens.Add(Tokens[i]);
+
+								var preParameters = ParseParameters(paramTokens, false);
+
+								var parameters = new List<Parameter> { new Parameter("self", Id, LsnValue.Nil, 0) };
+								parameters.AddRange(preParameters.Select(p => new Parameter(p.Name, p.Type, p.DefaultValue, (ushort)(p.Index + 1))));
+								i++; // 'i' Points to the thing after the closing parenthesis.
+								Constructor = new ScriptClassConstructor(Path, parameters.ToArray());
+								if (Tokens[i].Value != "{")
+									throw LsnrParsingException.UnexpectedToken(Tokens[i], "{", Path);
+								ConstructorTokens = new List<Token>();
+								int openCount = 1;
+								while (openCount > 0)
+								{
+									i++;
+									var v = Tokens[i].Value;
+									if (v == "{") openCount++;
+									else if (v == "}") openCount--;
+									if (openCount > 0) ConstructorTokens.Add(Tokens[i]);
+								}
+								break;
+							}
 						default:
 							/*if (!(i == Tokens.Count - 1 && val == "}"))
 								throw new NotImplementedException("");*/
@@ -274,7 +310,37 @@ namespace LSNr
 			foreach (var state in PreStates)
 				Valid &= state.Parse();
 
+			if (Constructor != null)
+				ParseConstructor();
+
 			return Valid;
+		}
+
+		private void ParseConstructor()
+		{
+			try
+			{
+				var pre = new PreScriptClassFunction(this);
+				foreach (var param in Constructor.Parameters)
+					pre.CurrentScope.CreateVariable(param);
+				var parser = new Parser(ConstructorTokens, pre);
+				parser.Parse();
+				pre.CurrentScope.Pop(parser.Components);
+
+				var components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
+				Constructor.Code = new ComponentFlattener().Flatten(components);
+				Constructor.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
+			}
+			catch (LsnrException e)
+			{
+				Valid = false;
+				Logging.Log($"constructor for script class {Name}", e);
+			}
+			catch (Exception e)
+			{
+				Valid = false;
+				Logging.Log($"consructor for script class {Name}", e, Path);
+			}
 		}
 
 		public override FunctionSignature GetMethodSignature(string name)

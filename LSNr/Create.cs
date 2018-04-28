@@ -22,13 +22,13 @@ namespace LSNr
 		/// <returns></returns>
 		public static ControlStructure ControlStructure(List<Token> head, List<Token> body, IPreScript script)
 		{
-			string h = head[0].Value;
-			int n = head.Count;
+			var h = head[0].Value;
+			var n = head.Count;
 			if (h == "if")
 			{
 				var cnd = Express(head.Skip(2).Take(head.Count - 3).ToList(), script);
 				script.CurrentScope = script.CurrentScope.CreateChild();
-				Parser p = new Parser(body, script);
+				var p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
                 script.CurrentScope = script.CurrentScope.Pop(components);
@@ -37,7 +37,7 @@ namespace LSNr
 			if (h == "elsif")
 			{
 				script.CurrentScope = script.CurrentScope.CreateChild();
-				Parser p = new Parser(body, script);
+				var p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
 				script.CurrentScope = script.CurrentScope.Pop(components);
@@ -46,7 +46,7 @@ namespace LSNr
 			if (h == "else")
 			{
 				script.CurrentScope = script.CurrentScope.CreateChild();
-				Parser p = new Parser(body,script);
+				var p = new Parser(body,script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
 				script.CurrentScope = script.CurrentScope.Pop(components); // 'head.Count == 1'
@@ -60,7 +60,7 @@ namespace LSNr
 			if(h == "choice")
 			{
 				// It's a choice block.
-				Parser p = new Parser(body, script);
+				var p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
 				return new ChoicesBlockControl(components);
@@ -68,11 +68,11 @@ namespace LSNr
 			if(h == "when")
 			{ /* when [expression (condition)] : [expression] -> [block] */
 				// It's a conditional choice (inside a choice block).
-				int endOfCondition = head.ToList().IndexOf(":");
+				var endOfCondition = head.ToList().IndexOf(":");
 				var cnd = Express(head.Skip(1).Take(endOfCondition - 1),script);
 				var endOfStr = head.IndexOf("->");
 				var str = Express(head.Skip(endOfCondition).Take(endOfStr - endOfCondition), script);
-				Parser p = new Parser(body, script);
+				var p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
 				return new Choice(str, components, cnd);
@@ -88,13 +88,12 @@ namespace LSNr
 				if (head[1].Value != "(")
 					throw new LsnrParsingException(head[1], "Incorrectly formatted for loop. (A for loop must use parenthesis)", script.Path);
 
-				string varName = head[2].Value; // Check if it exists, type, mutable...
-
+				var varName = head[2].Value; // Check if it exists, type, mutable...
 
 				if (head[3].Value != "=") throw new LsnrParsingException(head[3], "Incorrectly formatted for loop.", script.Path);
 
 				var exprTokens = new List<Token>();
-				int i = 4;
+				var i = 4;
 				do
 				{
 					exprTokens.Add(head[i]);
@@ -126,7 +125,7 @@ namespace LSNr
 					i++;
 					if(head[i].Value == "=")
 					{
-						for(i = i+1; i < head.Count -1; i++)
+						for(i = i + 1; i < head.Count -1; i++)
 							exprTokens.Add(head[i]);
 						post = new AssignmentStatement(script.CurrentScope.GetVariable(varName).Index, Express(exprTokens, script));
 					}
@@ -151,6 +150,8 @@ namespace LSNr
 						throw new LsnrParsingException(head[i], "Incorrectly formatted for loop.", script.Path);
 					throw new NotImplementedException(); // ToDo: Implement
 				}
+				else
+					throw new LsnrParsingException(head[i], "Incorrectly formatted for loop.", script.Path);
 
 				var p = new Parser(body, script);
 				p.Parse();

@@ -7,14 +7,12 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Types
 {
-	[Serializable]
 	public sealed class EventDefinition
 	{
 		public readonly string Name;
 		public readonly IReadOnlyList<Parameter> Parameters;
 
-
-		public EventDefinition(string name, IList<Parameter> paramaters)
+		public EventDefinition(string name, IReadOnlyList<Parameter> paramaters)
 		{
 			if (paramaters.Any(p => !p.DefaultValue.IsNull)) throw new ArgumentException("Event parameters cannot have default values.", "parameters");
 			Parameters = paramaters.ToList();
@@ -38,16 +36,13 @@ namespace LsnCore.Types
 			return true;
 		}
 
-
-		public void Serialize(BinaryDataWriter writer)
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(Name);
 			writer.Write((ushort)Parameters.Count);
 			foreach (var param in Parameters)
-				param.Serialize(writer);
-			
+				param.Serialize(writer, resourceSerializer);
 		}
-
 
 		public static EventDefinition Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
 		{
@@ -60,6 +55,5 @@ namespace LsnCore.Types
 			}
 			return new EventDefinition(name, new List<Parameter>(parameters));
 		}
-
 	}
 }

@@ -16,6 +16,8 @@ namespace LsnCore.Serialization
 	{
 		private ILsnValue[] ConstantTable;
 
+		private TypeId[] TypeIds;
+
 		private readonly List<Tuple<ICodeBlock, byte[]>> CodeBlocks = new List<Tuple<ICodeBlock, byte[]>>();
 
 		private readonly Dictionary<string, Function> Functions = new Dictionary<string, Function>();
@@ -30,6 +32,17 @@ namespace LsnCore.Serialization
 			Types.Add("double", LsnType.double_);
 			Types.Add("bool", LsnType.Bool_);
 			Types.Add("string", LsnType.string_);
+		}
+
+		internal TypeId[] LoadTypeIds(BinaryDataReader reader)
+		{
+			var nTypes = reader.ReadUInt16();
+			var typeNames = new string[nTypes];
+			for (int i = 0; i < nTypes; i++)
+				typeNames[i] = reader.ReadString();
+
+			TypeIds = typeNames.Select(n => new TypeId(n)).ToArray();
+			return TypeIds;
 		}
 
 		private LsnType GetType(string typeName)
@@ -158,10 +171,33 @@ namespace LsnCore.Serialization
 						var id = reader.ReadString();
 						return new LoadStatement(vars, id);
 					}
+				case StatementCode.Detach:
+					return new DetachStatement();
+				case StatementCode.AttachNewScriptObject:
+					{
+						var type = TypeIds[reader.ReadUInt16()];
+						var nProps = reader.ReadByte();
+						var props = new IExpression[nProps];
+						for (int i = 0; i < nProps; i++)
+							props[i] = ReadExpression(reader);
+						var nArgs = reader.ReadByte();
+						var args = new IExpression[nArgs];
+						for (int i = 0; i < nArgs; i++)
+							args[i] = ReadExpression(reader);
+						return new AttachStatement(type, props, args, ReadExpression(reader));
+					}
 				default:
 					throw new ApplicationException();
 			}
 		}
+
+		/// <summary>
+		/// Reads the index (UInt16) from the stream and returns the associated TypeId
+		/// </summary>
+		/// <param name="reader"></param>
+		/// <returns></returns>
+		internal TypeId LoadTypeId(BinaryDataReader reader)
+			=> TypeIds[reader.ReadUInt16()];
 
 		private IExpression ReadExpression(BinaryDataReader reader)
 		{
@@ -195,7 +231,10 @@ namespace LsnCore.Serialization
 				case ExpressionCode.HostInterfaceAccess:
 					return new HostInterfaceAccessExpression();
 				case ExpressionCode.UniqueScriptObjectAccess:
-					return new UniqueScriptObjectAccessExpression(reader.ReadString());
+					{
+						var typeId = TypeIds[reader.ReadUInt16()];
+						return new UniqueScriptObjectAccessExpression(typeId.Name, typeId);
+					}
 				case ExpressionCode.BinaryExpression:
 					{
 						var info = reader.ReadByte();
@@ -218,7 +257,7 @@ namespace LsnCore.Serialization
 					}
 				case ExpressionCode.MethodCall:
 					{
-						var typeName = reader.ReadString();
+						var typeName = TypeIds[reader.ReadUInt16()].Name;
 						var methodName = reader.ReadString();
 						var numArgs = reader.ReadByte();
 						var args = new IExpression[numArgs];
@@ -247,24 +286,26 @@ namespace LsnCore.Serialization
 					}
 				case ExpressionCode.RecordConstructor:
 					{
+						var type = TypeIds[reader.ReadUInt16()];
 						var numArgs = reader.ReadUInt16();
 						var args = new IExpression[numArgs];
 						for (int i = 0; i < numArgs; i++)
 							args[i] = ReadExpression(reader);
-						return new RecordConstructor(args);
+						return new RecordConstructor(type, args);
 					}
 				case ExpressionCode.StructConstructor:
 					{
+						var type = TypeIds[reader.ReadUInt16()];
 						var numArgs = reader.ReadUInt16();
 						var args = new IExpression[numArgs];
 						for (int i = 0; i < numArgs; i++)
 							args[i] = ReadExpression(reader);
-						return new StructConstructor(args);
+						return new StructConstructor(type, args);
 					}
 				case ExpressionCode.ListConstructor:
 					{
-						var genericTypeName = reader.ReadString();
-						var type = LsnListGeneric.Instance.GetType(new List<TypeId>(1) { GetType(genericTypeName).Id});
+						var typeId = TypeIds[reader.ReadUInt16()];
+						var type = LsnListGeneric.Instance.GetType(new List<TypeId>(1) { typeId });
 						return new ListConstructor((LsnListType)type);
 					}
 				default:
@@ -276,11 +317,11 @@ namespace LsnCore.Serialization
 		{
 			foreach (var codeBlock in CodeBlocks)
 			{
-				using (var stream = new MemoryStream(codeBlock.Item2,false))
+				using (var stream = new MemoryStream(codeBlock.Item2, false))
 				{
-					using (var reader = new BinaryDataReader(stream,true))
+					using (var reader = new BinaryDataReader(stream, true))
 					{
-						ushort nStatements = reader.ReadUInt16();
+						var nStatements = reader.ReadUInt16();
 						var statements = new Statement[nStatements];
 						for (int i = 0; i < nStatements; i++)
 							statements[i] = ReadStatement(reader);
@@ -318,6 +359,30 @@ namespace LsnCore.Serialization
 			}
 		}
 
+		internal void RegisterFunction(LsnFunction fn, byte[] code)
+		{
+			Functions.Add(fn.Name, fn);
+			RegisterCodeBlock(fn, code);
+		}
+
+		internal void RegisterCodeBlock(ICodeBlock codeBlock, byte[] code)
+		{
+			CodeBlocks.Add(new Tuple<ICodeBlock, byte[]>(codeBlock, code));
+		}
+
+		internal void LoadFunctions(IEnumerable<Function> functions)
+		{
+			foreach (var fn in functions)
+				Functions.Add(fn.Name, fn);
+		}
+
+		internal void LoadTypes(IEnumerable<LsnType> types)
+		{
+			foreach (var type in types)
+				if (!Types.ContainsKey(type.Name))
+					Types.Add(type.Name, type);
+		}
+
 		public static LsnValue ReadValue(BinaryDataReader reader)
 		{
 			switch ((ConstantCode)reader.ReadByte())
@@ -344,33 +409,162 @@ namespace LsnCore.Serialization
 					}
 				case ConstantCode.Vector:
 				case ConstantCode.List:
+					throw new NotImplementedException();
 				default:
 					throw new ApplicationException();
 			}
 		}
 
-		internal void RegisterFunction(LsnFunction fn, byte[] code)
+		public static LsnValue ReadValue(BinaryDataReader reader, IResourceManager resourceManager)
 		{
-			Functions.Add(fn.Name, fn);
-			RegisterCodeBlock(fn, code);
+			switch ((ConstantCode)reader.ReadByte())
+			{
+				case ConstantCode.DoubleOrInt:
+					return new LsnValue(reader.ReadDouble());
+				case ConstantCode.String:
+					return new LsnValue(new StringValue(reader.ReadString()));
+				case ConstantCode.Record:
+					{
+						var nFields = reader.ReadUInt16();
+						var fields = new LsnValue[nFields];
+						for (int i = 0; i < nFields; i++)
+							fields[i] = ReadValue(reader);
+						return new LsnValue(new RecordValue(fields));
+					}
+				case ConstantCode.Struct:
+					{
+						var nFields = reader.ReadUInt16();
+						var fields = new LsnValue[nFields];
+						for (int i = 0; i < nFields; i++)
+							fields[i] = ReadValue(reader);
+						return new LsnValue(new StructValue(fields));
+					}
+				case ConstantCode.Vector:
+					{
+						var typeName = reader.ReadString();
+						var nValues = reader.ReadUInt16();
+						var values = new LsnValue[nValues];
+						for (int i = 0; i < nValues; i++)
+							values[i] = ReadValue(reader);
+						var type = (VectorType)resourceManager.GetType(typeName);
+						return new LsnValue(new VectorInstance(type, values));
+					}
+				case ConstantCode.List:
+					{
+						var typeName = reader.ReadString();
+						var nValues = reader.ReadUInt16();
+						var values = new List<LsnValue>(nValues);
+						for (int i = 0; i < nValues; i++)
+							values.Add(ReadValue(reader));
+						var listType = (LsnListType)resourceManager.GetType(typeName);
+						return new LsnValue(new LsnList(listType, values));
+					}
+				case ConstantCode.HostInterface:
+					{
+						switch (Settings.HostInterfaceIdType)
+						{
+							case IdentifierType.Numeric:
+								return new LsnValue(resourceManager.GetHostInterface(reader.ReadUInt32()));
+							case IdentifierType.Text:
+								return new LsnValue(resourceManager.GetHostInterface(reader.ReadString()));
+							default:
+								throw new ApplicationException();
+						}
+					}
+				case ConstantCode.ScriptObject:
+					{
+						return new LsnValue(ReadScriptObjectReference(reader, resourceManager));
+					}
+				default:
+					throw new ApplicationException();
+			}
+			throw new ApplicationException();
 		}
 
-		internal void RegisterCodeBlock(ICodeBlock codeBlock, byte[] code)
+		public static ScriptObject ReadScriptObjectReference(BinaryDataReader reader, IResourceManager resourceManager)
 		{
-			CodeBlocks.Add(new Tuple<ICodeBlock, byte[]>(codeBlock, code));
+			if (reader.ReadBoolean())
+			{
+				resourceManager.GetUniqueScriptObject(reader.ReadString());
+			}
+			switch (Settings.ScriptObjectIdFormat)
+			{
+				case ScriptObjectIdFormat.Host_Self:
+					switch (Settings.ScriptObjectIdType)
+					{
+						case IdentifierType.Numeric:
+							switch (Settings.HostInterfaceIdType)
+							{
+								case IdentifierType.Numeric:
+									return resourceManager.GetScriptObject(reader.ReadUInt32(), reader.ReadUInt32());
+								case IdentifierType.Text:
+									return resourceManager.GetScriptObject(reader.ReadString(), reader.ReadUInt32());
+								default:
+									throw new ApplicationException();
+							}
+						case IdentifierType.Text:
+							switch (Settings.HostInterfaceIdType)
+							{
+								case IdentifierType.Numeric:
+									return resourceManager.GetScriptObject(reader.ReadUInt32(), reader.ReadString());
+								case IdentifierType.Text:
+									return resourceManager.GetScriptObject(reader.ReadString(), reader.ReadString());
+								default:
+									throw new ApplicationException();
+							}
+					}
+					break;
+				case ScriptObjectIdFormat.Self:
+					switch (Settings.ScriptObjectIdType)
+					{
+						case IdentifierType.Numeric:
+							return resourceManager.GetScriptObject(reader.ReadUInt32());
+						case IdentifierType.Text:
+							return resourceManager.GetScriptObject(reader.ReadString());
+						default:
+							throw new ApplicationException();
+					}
+				default:
+					throw new ApplicationException();
+			}
+			throw new ApplicationException();
 		}
 
-		internal void LoadFunctions(IEnumerable<Function> functions)
+		public static ScriptObject ReadScriptObject(BinaryDataReader reader, IResourceManager resourceManager, IHostInterface host)
 		{
-			foreach (var fn in functions)
-				Functions.Add(fn.Name, fn);
+			var typeName = reader.ReadString();
+			var currentState = reader.ReadInt32();
+			var type = (ScriptClass)resourceManager.GetType(typeName);
+			var properties = new LsnValue[type.NumberOfProperties];
+			for (int i = 0; i < type.NumberOfProperties; i++)
+				properties[i] = ReadValue(reader, resourceManager);
+			var fields = new LsnValue[type.NumberOfFields];
+			for (int i = 0; i < type.NumberOfFields; i++)
+				fields[i] = ReadValue(reader, resourceManager);
+
+			return new ScriptObject(properties, fields, type, currentState, host);
 		}
 
-		internal void LoadTypes(IEnumerable<LsnType> types)
+		public static ScriptObject ReadScriptObject(BinaryDataReader reader, IResourceManager resourceManager, bool canHaveHost)
 		{
-			foreach (var type in types)
-				if(!Types.ContainsKey(type.Name))
-					Types.Add(type.Name, type);
+			IHostInterface host = null;
+			if(canHaveHost)
+			{
+				switch (Settings.HostInterfaceIdType)
+				{
+					case IdentifierType.Numeric:
+						var numId = reader.ReadUInt32();
+						if (numId != 0)
+							host = resourceManager.GetHostInterface(numId);
+						break;
+					case IdentifierType.Text:
+						var txtId = reader.ReadString();
+						if ((txtId?.Length ?? 0) > 0)
+							host = resourceManager.GetHostInterface(txtId);
+						break;
+				}
+			}
+			return ReadScriptObject(reader, resourceManager, host);
 		}
 	}
 }

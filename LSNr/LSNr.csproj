@@ -39,7 +39,7 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>6</LangVersion>
+    <LangVersion>7.0</LangVersion>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -51,7 +51,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>6</LangVersion>
+    <LangVersion>7.0</LangVersion>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
@@ -96,6 +96,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="IPreScript.cs" />
     <Compile Include="IScope.cs" />
+    <Compile Include="ScriptObjects\PreScriptClassConstructor.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="ITypeContainer.cs" />
     <Compile Include="Optimization\ArithmeticIdentityChecker.cs" />
@@ -105,7 +106,6 @@
     <Compile Include="PreFunction.cs" />
     <Compile Include="ScriptObjects\PreHostInterface.cs" />
     <Compile Include="PreResource.cs" />
-    <Compile Include="PreScript.cs" />
     <Compile Include="ScriptObjects\PreScriptClass.cs" />
     <Compile Include="ScriptObjects\PreScriptClassFunction.cs" />
     <Compile Include="ScriptObjects\PreState.cs" />
@@ -138,9 +138,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tokens\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -34,7 +34,7 @@ namespace LsnCore.Expressions
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.UniqueScriptObjectAccess);
-			writer.Write(Name);
+			resourceSerializer.WriteTypeId(Type, writer);
 		}
 
 		public override IEnumerator<IExpression> GetEnumerator()

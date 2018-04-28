@@ -15,46 +15,52 @@ namespace LsnCore.Values
 
 		private readonly LsnValue[] Fields;
 
-		private readonly ScriptClass ScObjType;
+		private readonly ScriptClass ScriptClass;
 
-		private readonly IHostInterface Host;
+		private IHostInterface Host;
 
 		private int CurrentStateIndex;
 		private ScriptClassState CurrentState;
-
-		public ScriptObject(LsnValue[] properties, LsnValue[] fields, ScriptClass type, int currentState, IHostInterface host = null)
-		{
-			Properties = properties; Fields = fields; Type = type.Id; ScObjType = type; CurrentStateIndex = currentState;
-			if(type._States.Count > 0)
-				CurrentState = ScObjType.GetState(CurrentStateIndex);
-			if (host != null)
-			{
-				// Check types
-				if (ScObjType.HostInterface == null)
-					throw new ArgumentException("This type of ScriptObject does not have a host.", "host");
-				if (!ScObjType.HostInterface.Equals(host.Type))
-					throw new ArgumentException($"Invalid HostInterface type. Expected {ScObjType.HostInterface.Name}. Recieved {host.Type.Name}.", "host");
-
-				Host = host;
-
-				// Subscribe to events.
-				foreach (var evName in (host.Type.Type as HostInterfaceType).EventDefinitions.Keys)
-					if((CurrentState?.HasEventListener(evName)?? false ) || ScObjType.HasEventListener(evName))
-						host.SubscribeToEvent(evName, this);
-			}
-			else if (ScObjType.HostInterface != null)
-				throw new ArgumentException("This type of ScriptObject cannot survive without a host.", "host");
-		}
 
 		public bool BoolValue => true;
 		public bool IsPure => false;
 		public TypeId Type { get; private set; }
 		public ILsnValue Clone() => this;
-		public bool Equals(IExpression other) => false;
-		public LsnValue Eval(IInterpreter i) => new LsnValue(this);
-		public IExpression Fold() => new LsnValue(this);
-		public bool IsReifyTimeConst() => false;
-		public void Replace(IExpression oldExpr, IExpression newExpr){}
+
+		public uint NumericId { get; private set; }
+
+		public string TextId { get; private set; }
+
+		public ScriptObject(LsnValue[] properties, LsnValue[] fields, ScriptClass type, int currentState, IHostInterface host = null)
+		{
+			Properties = properties; Fields = fields; Type = type.Id; ScriptClass = type; CurrentStateIndex = currentState;
+			if (type._States.Count > 0)
+				CurrentState = ScriptClass.GetState(CurrentStateIndex);
+			if (host != null)
+			{
+				// Check types
+				if (ScriptClass.HostInterface == null)
+					throw new ArgumentException("This type of ScriptObject does not have a host.", nameof(host));
+				if (!ScriptClass.HostInterface.Equals(host.Type))
+					throw new ArgumentException($"Invalid HostInterface type. Expected {ScriptClass.HostInterface.Name}. Recieved {host.Type.Name}.", nameof(host));
+
+				Host = host;
+				// Subscribe to events.
+				foreach (var evName in (host.Type.Type as HostInterfaceType).EventDefinitions.Keys)
+					if ((CurrentState?.HasEventListener(evName) ?? false) || ScriptClass.HasEventListener(evName))
+						host.SubscribeToEvent(evName, this);
+
+				string str;
+				if (Settings.ScriptObjectIdFormat == ScriptObjectIdFormat.Host_Self)
+				{
+					NumericId = host.AttachScriptObject(this, out str);
+					TextId = str;
+				}
+				else host.AttachScriptObject(this, out str);
+			}
+			else if (ScriptClass.HostInterface != null)
+				throw new ArgumentException("This type of ScriptObject cannot survive without a host.", nameof(host));
+		}
 
 		public LsnValue GetFieldValue(int index)
 			=> Fields[index];
@@ -79,9 +85,9 @@ namespace LsnCore.Values
 			//Else
 			//	Return the type's implementation.
 
-			if (ScObjType.HasMethod(methodName))
+			if (ScriptClass.HasMethod(methodName))
 			{
-				var method = ScObjType.GetMethod(methodName);
+				var method = ScriptClass.GetMethod(methodName);
 				if (method.IsVirtual)
 				{
 					if (CurrentState?.HasMethod(methodName) ?? false)
@@ -92,7 +98,7 @@ namespace LsnCore.Values
 				}
 				return method;
 			}
-			throw new ArgumentException($"The ScriptObject type \"{ScObjType.Name}\" does not have a method named \"{methodName}\".",nameof(methodName));
+			throw new ArgumentException($"The ScriptObject type \"{ScriptClass.Name}\" does not have a method named \"{methodName}\".", nameof(methodName));
 		}
 
 		public LsnValue ExecuteHostInterfaceMethod(string name, LsnValue[] values)
@@ -106,14 +112,14 @@ namespace LsnCore.Values
 		{
 			if (CurrentState?.HasEventListener(name) ?? false)
 				return CurrentState.GetEventListener(name);
-			if (ScObjType.HasEventListener(name))
-				return ScObjType.GetEventListener(name);
+			if (ScriptClass.HasEventListener(name))
+				return ScriptClass.GetEventListener(name);
 			throw new ArgumentException("", nameof(name));
 		}
 
 		internal void SetState(int index)
 		{
-			var nextState = ScObjType.GetState(index);
+			var nextState = ScriptClass.GetState(index);
 			var expiringSubscriptions = CurrentState.EventsListenedTo.Except(nextState.EventsListenedTo);
 			var newSubscriptions = nextState.EventsListenedTo.Except(CurrentState.EventsListenedTo);
 
@@ -134,7 +140,74 @@ namespace LsnCore.Values
 		// Serialization?
 		public void Serialize(BinaryDataWriter writer)
 		{
-			writer.Write((byte)0xFF);
+			writer.Write((byte)ConstantCode.ScriptObject);
+			if (ScriptClass.Unique)
+			{
+				writer.Write(true);
+				writer.Write(ScriptClass.Name);
+			}
+			else
+			{
+				writer.Write(false);
+				switch (Settings.ScriptObjectIdFormat)
+				{
+					case ScriptObjectIdFormat.Host_Self:
+						switch (Settings.HostInterfaceIdType)
+						{
+							case IdentifierType.Numeric:
+								writer.Write(Host.NumericId);
+								break;
+							case IdentifierType.Text:
+								writer.Write(Host.TextId);
+								break;
+							default:
+								throw new ApplicationException();
+						}
+						switch (Settings.ScriptObjectIdType)
+						{
+							case IdentifierType.Numeric:
+								writer.Write(NumericId);
+								break;
+							case IdentifierType.Text:
+								writer.Write(TextId);
+								break;
+							default:
+								throw new ApplicationException();
+						}
+						break;
+					case ScriptObjectIdFormat.Self:
+						switch (Settings.ScriptObjectIdType)
+						{
+							case IdentifierType.Numeric:
+								writer.Write(NumericId);
+								break;
+							case IdentifierType.Text:
+								writer.Write(TextId);
+								break;
+							default:
+								throw new ApplicationException();
+						}
+						break;
+					default:
+						throw new ApplicationException();
+				}
+			}
+		}
+
+		public void SerializeScriptObject(BinaryDataWriter writer, bool writeHostId)
+		{
+			if (writeHostId)
+			{
+				switch (Settings.HostInterfaceIdType)
+				{
+					case IdentifierType.Numeric:
+						writer.Write(Host?.NumericId ?? 0);
+						break;
+					case IdentifierType.Text:
+						writer.Write(Host?.TextId ?? "");
+						break;
+				}
+			}
 			writer.Write(Type.Name);
 			writer.Write(CurrentStateIndex);
 			for (int i = 0; i < Properties.Length; i++)
@@ -143,9 +216,12 @@ namespace LsnCore.Values
 				Fields[i].Serialize(writer);
 		}
 
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Detach()
 		{
-			throw new InvalidOperationException();
+			foreach (var name in ScriptClass.EventListeners.Keys.Union(CurrentState.EventsListenedTo).Distinct())
+				Host.UnsubscribeToEvent(name, this);
+			Host.DetachScriptObject(this);
+			Host = null;
 		}
 	}
 }

@@ -76,6 +76,37 @@ namespace LSNr
 		{
 			var newTokens = new List<Token>();
 			string name; IExpression expr;
+			void sub(IExpression ex)
+			{
+				name = SUB + SubCount++;
+				Substitutions.Add(new Token(name, -1, TokenType.Substitution), ex);
+				newTokens.Add(new Token(name, -1, TokenType.Substitution));
+			}
+			List<Token> par(int i, ref int nextIndex)
+			{
+				int j = i;
+				var paramTokens = new List<Token>();
+				int pCount = 0;
+				do
+				{
+					if (++j >= CurrentTokens.Count)
+						throw new LsnrParsingException(CurrentTokens[i], "Mismatched parenthesis.", Script.Path);
+					var t = CurrentTokens[j];
+					var v = t.Value;
+					if (v == "(") ++pCount;
+					if (v == ")") --pCount;
+					paramTokens.Add(t);
+				} while (pCount != 0);
+				nextIndex = j + 1;
+				// Create the function call, add it to the dictionary, and add its identifier to the list (ls).
+				return paramTokens.Skip(1).Take(paramTokens.Count - 2).ToList();
+			}
+			IList<Tuple<string,IExpression>> paren(int i, int paramCount, ref int nextIndex)
+			{
+				var pt = par(i, ref nextIndex);
+				return Create.CreateParamList(pt, paramCount, Script, Substitutions.Where(p => pt.Contains(p.Key)).ToDictionary());
+			}
+
 			for (int i = 0; i < CurrentTokens.Count; i++)
 			{
 				var val = CurrentTokens[i].Value;
@@ -84,11 +115,7 @@ namespace LSNr
 					case SymbolType.Undefined:
 						{
 							if (val == "true" || val == "false")
-							{
-								name = SUB + SubCount++;
-								Substitutions.Add(new Token(name, -1, TokenType.Substitution), LsnBoolValue.GetBoolValue(bool.Parse(val)));
-								newTokens.Add(new Token(name, -1, TokenType.Substitution));
-							}
+								sub(LsnBoolValue.GetBoolValue(bool.Parse(val)));
 							else if (val == "new") // new
 							{
 								#region new
@@ -139,9 +166,7 @@ namespace LSNr
 									j += 2;
 								}
 								i = j;
-								name = SUB + SubCount++;
-								Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
-								newTokens.Add(new Token(name, -1, TokenType.Substitution));
+								sub(expr);
 								#endregion
 							}
 							else if (val == "this")
@@ -149,18 +174,14 @@ namespace LSNr
 								var preScrFn = Script as PreScriptClassFunction;
 								if (preScrFn == null)
 									throw new LsnrParsingException(CurrentTokens[i], "Cannot use 'this' outside of a script object", Script.Path); ;
-								name = SUB + SubCount++;
-								Substitutions.Add(new Token(name, -1, TokenType.Substitution), new VariableExpression(0, preScrFn.Parent.Id));
-								newTokens.Add(new Token(name, -1, TokenType.Substitution));
+								sub(new VariableExpression(0, preScrFn.Parent.Id));
 							}
 							else if (val == "host")
 							{
 								var preScrFn = Script as PreScriptClassFunction;
 								if (preScrFn == null)
 									throw new LsnrParsingException(CurrentTokens[i], "Cannot use 'host' outside of a script object", Script.Path);
-								name = SUB + SubCount++;
-								Substitutions.Add(new Token(name, -1, TokenType.Substitution), new HostInterfaceAccessExpression(preScrFn.Parent.HostType.Id));
-								newTokens.Add(new Token(name, -1, TokenType.Substitution));
+								sub(new HostInterfaceAccessExpression(preScrFn.Parent.HostType.Id));
 							}
 							else
 								newTokens.Add(CurrentTokens[i]);
@@ -169,24 +190,13 @@ namespace LSNr
 					case SymbolType.Variable:
 						{
 							var v = Script.CurrentScope.GetVariable(val);
-							expr = v.AccessExpression;
-							/*if (!v.Mutable && ( v.InitialValue?.IsReifyTimeConst()?? false ) )
-								expr = v.InitialValue.Fold();
-							else expr = new VariableExpression(val, v.Type);*/
-							name = SUB + SubCount++;
 							Variables.Add(v); //TODO: Create a method for adding a substitution.
-							Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
-							newTokens.Add(new Token(name, -1, TokenType.Substitution));
+							sub(v.AccessExpression);
 							break;
 						}
 					case SymbolType.UniqueScriptObject:
-						{
-							expr = new UniqueScriptObjectAccessExpression(val, Script.GetTypeId(val));
-							name = SUB + SubCount++;
-							Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
-							newTokens.Add(new Token(name, -1, TokenType.Substitution));
-							break;
-						}
+						sub(new UniqueScriptObjectAccessExpression(val, Script.GetTypeId(val)));
+						break;
 					case SymbolType.GlobalVariable:
 						throw new NotImplementedException();
 					case SymbolType.Field:
@@ -195,20 +205,15 @@ namespace LSNr
 							var preScr = preScrFn.Parent;
 							IExpression scrObjExpr = new VariableExpression(0, preScr.Id);
 							var f = preScr.GetField(val);
-							expr = new FieldAccessExpression(scrObjExpr, f);
-							name = SUB + SubCount++;
-							Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
-							newTokens.Add(new Token(name, -1, TokenType.Substitution));
+							sub(new FieldAccessExpression(scrObjExpr, f));
 						}
 						break;
 					case SymbolType.Property:
 						{
+							// ToDo: what about accessing the properties of another object?
 							var preScrFn = Script as PreScriptClassFunction;
 							var preScr = preScrFn.Parent;
-							expr = new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
-							name = SUB + SubCount++;
-							Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
-							newTokens.Add(new Token(name, -1, TokenType.Substitution));
+							sub(new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type));
 							break;
 						}
 					case SymbolType.Function:
@@ -220,37 +225,12 @@ namespace LSNr
 							{
 								if (fn.Parameters.Count != 0)
 									throw new LsnrParsingException(CurrentTokens[i], $"Cannot call the function '{val}' without argument(s).", Script.Path); // Or throw or log something...
-								var fnCall = fn.CreateCall(new List<Tuple<string, IExpression>>());
-								name = SUB + SubCount++;
-								Substitutions.Add(new Token(name, -1, TokenType.Substitution), fnCall);
-								newTokens.Add(new Token(name, -1, TokenType.Substitution));
+								sub(fn.CreateCall(new List<Tuple<string, IExpression>>()));
 							}
 							else
 							{
-								//int lCount = 1;
-								//int rCount = 0;
-								int j = i; // Move to the right twice, now looking at token after the opening '('.
-								var paramTokens = new List<Token>();
-								/*int lCount = 0;
-								int rCount = 0;*/
-								int pCount = 0;
-								do
-								{
-									if (++j >= CurrentTokens.Count)
-										throw new LsnrParsingException(CurrentTokens[i], "Mismatched parenthesis.", Script.Path);
-									var t = CurrentTokens[j];
-									var v = t.Value;
-									if (v == "(") ++pCount; // ++lCount;
-									if (v == ")") --pCount; // ++rCount
-									paramTokens.Add(t);
-								} while (/*lCount != rCount*/pCount != 0);
-								nextIndex = j + 1;
-								// Create the function call, add it to the dictionary, and add its identifier to the list (ls).
-								name = SUB + SubCount++;
-								var pt = paramTokens.Skip(1).Take(paramTokens.Count - 2).ToList();
-								expr = Create.CreateFunctionCall(pt, fn, Script, Substitutions.Where(p => pt.Contains(p.Key)).ToDictionary());
-								Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
-								newTokens.Add(new Token(name, -1, TokenType.Substitution));
+								var pt = par(i, ref nextIndex);
+								sub(Create.CreateFunctionCall(pt, fn, Script, Substitutions.Where(p => pt.Contains(p.Key)).ToDictionary()));
 							}
 							i = nextIndex - 1; // In the next iteration, i == nextIndex.
 							#endregion
@@ -258,9 +238,8 @@ namespace LSNr
 						}
 					case SymbolType.ScriptClassMethod:
 						{
-							if (CurrentTokens[i - 1].Value == "this")
-							/*(newTokens.Last().Value.StartsWith(SUB) && Substitutions[newTokens.Last()] is VariableExpression
-								&& (Substitutions[newTokens.Last()] as VariableExpression).Index == 0)*/ // The previous value was 'this'.
+							if (i > 0 && CurrentTokens[i - 1].Value == ".") // It's being called on an object, could be something other than
+																			// this.
 							{
 								newTokens.Add(CurrentTokens[i]);
 								break;
@@ -273,35 +252,13 @@ namespace LSNr
 							{
 								if (meth.Parameters.Count != 1)
 									throw new LsnrParsingException(CurrentTokens[i], $"Cannot call the function '{val}' without argument(s).", Script.Path); // Or throw or log something...
-								var fnCall = new ScriptObjectVirtualMethodCall(new IExpression[] { scrObjExpr }, val);
-								name = SUB + SubCount++;
-								Substitutions.Add(new Token(name, -1, TokenType.Substitution), fnCall);
-								newTokens.Add(new Token(name, -1, TokenType.Substitution));
+								sub(new ScriptObjectVirtualMethodCall(new IExpression[] { scrObjExpr }, val));
 							}
 							else
 							{
-								int j = i; // Move to the right twice, now looking at token after the opening '('.
-								var paramTokens = new List<Token>();
-								int pCount = 0;
-								do
-								{
-									if (++j >= CurrentTokens.Count)
-										throw new LsnrParsingException(CurrentTokens[i], "Mismatched parenthesis.", Script.Path);
-									var t = CurrentTokens[j];
-									var v = t.Value;
-									if (v == "(") ++pCount;
-									if (v == ")") --pCount;
-									paramTokens.Add(t);
-								} while (pCount != 0);
-								nextIndex = j + 1;
-								// Create the function call, add it to the dictionary, and add its identifier to the list (ls).
-								name = SUB + SubCount++;
-								var pt = paramTokens.Skip(1).Take(paramTokens.Count - 2).ToList();
-								var args = Create.CreateParamList(pt, meth.Parameters.Count - 1, Script, Substitutions.Where(p => pt.Contains(p.Key)).ToDictionary());
+								var args = paren(i, meth.Parameters.Count - 1, ref nextIndex);
 								args.Add(new Tuple<string, IExpression>("self", scrObjExpr));
-								expr = new ScriptObjectVirtualMethodCall(meth.CreateArgsArray(args), val);
-								Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
-								newTokens.Add(new Token(name, -1, TokenType.Substitution));
+								sub(new ScriptObjectVirtualMethodCall(meth.CreateArgsArray(args), val));
 							}
 							i = nextIndex - 1; // In the next iteration, i == nextIndex.
 							break;
@@ -321,10 +278,7 @@ namespace LSNr
 							{
 								if (meth.Parameters.Count != 1)
 									throw new LsnrParsingException(CurrentTokens[i], $"Cannot call the function '{val}' without argument(s).", Script.Path); // Or throw or log something...
-								var fnCall = new HostInterfaceMethodCall(meth, new HostInterfaceAccessExpression(), new IExpression[0]);
-								name = SUB + SubCount++;
-								Substitutions.Add(new Token(name, -1, TokenType.Substitution), fnCall);
-								newTokens.Add(new Token(name, -1, TokenType.Substitution));
+								sub(new HostInterfaceMethodCall(meth, new HostInterfaceAccessExpression(), new IExpression[0]));
 							}
 							else if (meth.Parameters.Count == 0)
 							{
@@ -334,34 +288,13 @@ namespace LSNr
 									throw new ApplicationException();
 								if (CurrentTokens[i + 2].Value != ")")
 									throw new ApplicationException();
-								name = SUB + SubCount++;
-								expr = new HostInterfaceMethodCall(meth, new HostInterfaceAccessExpression(), meth.CreateArgsArray(new List<Tuple<string,IExpression>>()));
-								Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
-								newTokens.Add(new Token(name, -1, TokenType.Substitution));
+								sub(new HostInterfaceMethodCall(meth, new HostInterfaceAccessExpression(), meth.CreateArgsArray(new List<Tuple<string, IExpression>>())));
 							}
 							else
 							{
-								int j = i; // Move to the right twice, now looking at token after the opening '('.
-								var paramTokens = new List<Token>();
-								int pCount = 0;
-								do
-								{
-									if (++j >= CurrentTokens.Count)
-										throw new LsnrParsingException(CurrentTokens[i], "Mismatched parenthesis.", Script.Path);
-									var t = CurrentTokens[j];
-									var v = t.Value;
-									if (v == "(") ++pCount;
-									if (v == ")") --pCount;
-									paramTokens.Add(t);
-								} while (pCount != 0);
-								nextIndex = j + 1;
-								// Create the function call, add it to the dictionary, and add its identifier to the list (ls).
-								name = SUB + SubCount++;
-								var pt = paramTokens.Skip(1).Take(paramTokens.Count - 2).ToList();
-								var args = Create.CreateParamList(pt, meth.Parameters.Count - 1, Script, Substitutions.Where(p => pt.Contains(p.Key)).ToDictionary());
-								expr = new HostInterfaceMethodCall(meth, new HostInterfaceAccessExpression(), meth.CreateArgsArray(args));
-								Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
-								newTokens.Add(new Token(name, -1, TokenType.Substitution));
+
+								var args = paren(i, meth.Parameters.Count - 1, ref nextIndex);
+								sub(new HostInterfaceMethodCall(meth, new HostInterfaceAccessExpression(), meth.CreateArgsArray(args)));
 							}
 							i = nextIndex - 1; // In the next iteration, i == nextIndex.
 							break;
@@ -584,44 +517,6 @@ namespace LSNr
 			}
 			CurrentTokens = newTokens;
 		}
-
-		/*private void ParseParenthesis()
-		{
-			var newTokens = new List<Token>();
-			for(int i = 0; i < CurrentTokens.Count; i++)
-			{
-				var val = CurrentTokens[i].Value;
-				if(val == "(")
-				{
-					var nextIndex = i + 1;
-					var lCount = 1;
-					var rCount = 0;
-					var j = 1;
-					var pTokens = new List<Token>();
-					while(lCount != rCount)
-					{
-						if (CurrentTokens[i + j].Value == ")")
-							rCount++;
-						else if (CurrentTokens[i + j].Value == "(")
-							lCount++;
-						if (lCount == rCount) break;
-						pTokens.Add(CurrentTokens[i + j]);
-						j++;
-					}
-					var expr = Build(pTokens, Script, Substitutions.Where(p => pTokens.Contains(p.Key)).ToDictionary(),SubCount);
-					var name = SUB + SubCount++;
-					Substitutions.Add(new Token(name, -1, TokenType.Substitution), expr);
-					newTokens.Add(new Token(name, -1, TokenType.Substitution));
-					nextIndex += j;
-					i = nextIndex - 1; // In the next iteration, i == nextIndex.
-				}
-				else
-				{
-					newTokens.Add(CurrentTokens[i]);
-				}
-			}
-			CurrentTokens = newTokens;
-		}*/
 
 		private void ParseIndexers()
 		{

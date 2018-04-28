@@ -10,7 +10,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-
 namespace LSNr
 {
 	public class PreResource : BasePreScript
@@ -21,27 +20,21 @@ namespace LSNr
 		// Relative to '\src'
 		public readonly string RelativePath;
 
-		private IScope _CurrentScope = new VariableTable(new List<Variable>());
-
-		public override IScope CurrentScope { get { return _CurrentScope; } set { _CurrentScope = value; } }
+		override public IScope CurrentScope { get; set; } = new VariableTable(new List<Variable>());
 
 		//private readonly Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
 
-		private readonly Dictionary<string, RecordType> RecordTypes = new Dictionary<string, RecordType>();
+		private readonly Dictionary<string, RecordType>		MyRecordTypes	= new Dictionary<string, RecordType>();
+		private readonly Dictionary<string, StructType>		MyStructTypes	= new Dictionary<string, StructType>();
+		private readonly Dictionary<string, LsnFunction>	MyFunctions		= new Dictionary<string, LsnFunction>();
+		private readonly Dictionary<string, ScriptClass>	MyScriptClasses	= new Dictionary<string, ScriptClass>();
 
-		private readonly Dictionary<string, StructType> StructTypes = new Dictionary<string, StructType>();
-
-		private readonly Dictionary<string, LsnFunction> MyFunctions = new Dictionary<string, LsnFunction>();
-
-		private readonly Dictionary<string, List<Token>> FunctionBodies = new Dictionary<string, List<Token>>();
-
-		//private readonly List<GenericType> GenericTypes = LsnType.GetBaseGenerics();
-
-		//private readonly Dictionary<string, IReadOnlyList<IToken>> HostInterfaceBodies = new Dictionary<string, IReadOnlyList<IToken>>();
-		private readonly Dictionary<string, PreHostInterface> PreHostInterfaces = new Dictionary<string, PreHostInterface>();
-
-		private readonly Dictionary<string, PreScriptClass> PreScriptClasses = new Dictionary<string, PreScriptClass>();
-
+		private readonly Dictionary<string, List<Token>>		FunctionBodies		= new Dictionary<string, List<Token>>();
+		private readonly Dictionary<string, PreHostInterface>	PreHostInterfaces	= new Dictionary<string, PreHostInterface>();
+		private readonly Dictionary<string, PreScriptClass>		PreScriptClasses	= new Dictionary<string, PreScriptClass>();
+		private readonly Dictionary<string, Token[]>			PreGameValues		= new Dictionary<string, Token[]>();
+		private readonly Dictionary<TypeId, Token[]>			PreRecords			= new Dictionary<TypeId, Token[]>();
+		private readonly Dictionary<TypeId, Token[]>			PreStructs			= new Dictionary<TypeId, Token[]>();
 
 		public PreResource(string src, string path) : base(src,path)
 		{
@@ -73,9 +66,10 @@ namespace LSNr
 				throw;
 			}
 
-			PreParseFunctions(PreParseTypes());
+			PreParseGameValues(PreParseFunctions(PreParseTypes()));
+			ParseRecordsAndStructs();
 			ParseHostInterfaces();
-			PreParseScriptObjects();
+			PreParseScriptClasses();
 
 			foreach (var pre in PreScriptClasses.Values)
 			{
@@ -114,8 +108,8 @@ namespace LSNr
 				var val = Tokens[i].Value;
 				if(val == "record")
 				{
-					string name = Tokens[++i].Value; // Move on to the next token, get the name.
-					//TODO : validate name.
+					var name = Tokens[++i].Value; // Move on to the next token, get the name.
+												  //TODO : validate name.
 					if (Tokens[++i].Value != "{") // Move on to the next token, make sure it is '{'.
 					{
 						Console.WriteLine($"Error in parsing struct {name}: invalid token: {Tokens[i]}, expected {{.");
@@ -124,12 +118,13 @@ namespace LSNr
 					else ++i; // Move on to the token after '{'.
 					var tokens = new List<Token>();
 					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
-					MakeRecord(name, tokens);
+					PreRecords.Add(new TypeId(name), tokens.ToArray());
+					//MakeRecord(name, tokens);
 				}
 				else if(val == "struct")
 				{
-					string name = Tokens[++i].Value; // Move on to the next token, get the name.
-					//TODO : validate name.
+					var name = Tokens[++i].Value; // Move on to the next token, get the name.
+												  //TODO : validate name.
 					if (Tokens[++i].Value != "{") // Move on to the next token, make sure it is '{'.
 					{
 						Console.WriteLine($"Error in parsing record {name}: invalid token: {Tokens[i]}, expected {{.");
@@ -138,12 +133,13 @@ namespace LSNr
 					else ++i; // Move on to the token after '{'.
 					var tokens = new List<Token>();
 					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
-					MakeStruct(name, tokens);
+					PreStructs.Add(new TypeId(name), tokens.ToArray());
+					//MakeStruct(name, tokens);
 				}
 				else if (val == "hostinterface")
 				{
-					string name = Tokens[++i].Value; // Move on to the next token, get the name.
-					//TODO : validate name.
+					var name = Tokens[++i].Value; // Move on to the next token, get the name.
+												  //TODO : validate name.
 					if (Tokens[++i].Value != "{") // Move on to the next token, make sure it is '{'.
 					{
 						Console.WriteLine($"Error in parsing HostInterface {name}: invalid token: {Tokens[i]}, expected {{.");
@@ -195,7 +191,7 @@ namespace LSNr
 						throw LsnrParsingException.UnexpectedToken(Tokens[i],"{",Path);
 
 					var tokens = new List<Token>();
-					int openCount = 1;
+					var openCount = 1;
 					while (openCount > 0)
 					{
 						i++;
@@ -222,7 +218,7 @@ namespace LSNr
 		//		* Store the name and body in a Dictionary<string,List<IToken>> named FunctionBodies.
 		//	* Go through FunctionBodies and parse the tokens.
 		//		* Put the resulting List<Component> in the LSN_Function of the same name stored in Functions.
-		private List<Token> PreParseFunctions(IReadOnlyList<Token> tokens)
+		private IReadOnlyList<Token> PreParseFunctions(IReadOnlyList<Token> tokens)
 		{
 			string name = "";
 			var otherTokens = new List<Token>();
@@ -232,7 +228,7 @@ namespace LSNr
 				{
 					try
 					{
-						Token fnToken = tokens[i];
+						var fnToken = tokens[i];
 						name = tokens[++i].Value;
 						//TODO : validate name.
 						if (tokens[++i].Value != "(")
@@ -240,7 +236,7 @@ namespace LSNr
 						var paramTokens = new List<Token>();
 						while (tokens[++i].Value != ")") // This starts with the token after '('.
 							paramTokens.Add(tokens[i]);
-						List<Parameter> paramaters = ParseParameters(paramTokens);
+						var paramaters = ParseParameters(paramTokens);
 						// At this point, the current token (i.e. tokens[i].Value) is ')'.
 						TypeId returnType = null;
 						if (tokens[++i].Value == "->")
@@ -298,6 +294,44 @@ namespace LSNr
 						Valid = false;
 						continue;
 					}
+				}
+				else otherTokens.Add(tokens[i]);
+			}
+			return otherTokens;
+		}
+
+		private IReadOnlyList<Token> PreParseGameValues(IReadOnlyList<Token> tokens)
+		{
+			var otherTokens = new List<Token>();
+			for (int i = 0; i < tokens.Count; i++)
+			{
+				if (tokens[i].Type != TokenType.Keyword)
+				{
+					otherTokens.Add(tokens[i]);
+					continue;
+				}
+				var val = tokens[i].Value;
+				if ((val == "game" && (i + 1 < tokens.Count && string.Equals(tokens[++i].Value, "value", StringComparison.OrdinalIgnoreCase)))
+					|| val == "gamevalue")
+				{
+					if (i + 4 >= tokens.Count)
+						throw new LsnrParsingException(tokens.Last(), "Unexpected end to game value declaration", Path);
+					i++;
+					if (tokens[i].Type != TokenType.GameValue)
+						throw new LsnrParsingException(tokens[i], $"Improperly formated game value name '{tokens[i].Value}'. A game value name must start with '$'.", Path);
+					var name = tokens[i].Value;
+					var typeTokens = new List<Token>();
+					i++;
+					if (tokens[i].Value != ":")
+						throw new LsnrParsingException(tokens[i], $"Improperly formated declaration of game value '{name}'. Expected ':', recieved '{tokens[i].Value}'.", Path);
+					i++;
+					while (tokens[i].Value != ";")
+					{
+						typeTokens.Add(tokens[i]);
+						if (++i >= tokens.Count)
+							throw new LsnrParsingException(tokens.Last(), $"Unexpected end to declaration of game value '{name}'.", Path);
+					}
+					PreGameValues.Add(name, typeTokens.ToArray());
 				}
 				else otherTokens.Add(tokens[i]);
 			}
@@ -363,7 +397,7 @@ namespace LSNr
 			}
 		}
 
-		private void PreParseScriptObjects()
+		private void PreParseScriptClasses()
 		{
 			foreach (var pre in PreScriptClasses.Values)
 			{
@@ -376,7 +410,7 @@ namespace LSNr
 						pre.HostType = HostInterfaces[pre.HostName];
 					}
 					var sc = pre.PreParse();
-					ScriptObjects.Add(sc.Name, sc);
+					MyScriptClasses.Add(sc.Name, sc);
 				}
 				catch (LsnrException e)
 				{
@@ -447,48 +481,106 @@ namespace LSNr
 			return paramaters;
 		}
 
+		private void ParseRecordsAndStructs()
+		{
+			var records = new List<RecordType>();
+			foreach (var pair in PreRecords)
+				records.Add(MakeRecord(pair.Key, pair.Value));
+
+			var structs = new List<StructType>();
+			foreach (var pair in PreStructs)
+				structs.Add(MakeStruct(pair.Key, pair.Value));
+
+			bool CheckRecursion_Base(IHasFieldsType type/*, ref List<Field> fieldTrace*/)
+			{
+				var value = false;
+				foreach (var field in type.FieldsB)
+				{
+					if (field.Type.Type == type)
+						return true;
+					var s = field.Type.Type as IHasFieldsType;
+
+					if (s != null)
+					{
+						if (CheckRecursion(s, type.Id))
+							return true;
+					}
+				}
+				return value;
+			}
+
+			bool CheckRecursion(IHasFieldsType type, TypeId topType/*, ref List<Field> fieldTrace*/)
+			{
+				var value = false;
+				foreach (var field in type.FieldsB)
+				{
+					if (field.Type.Type == type)
+						return true;
+					if (topType == field.Type)
+						return true;
+					var s = field.Type.Type as IHasFieldsType;
+
+					if (s != null)
+					{
+						if (CheckRecursion(s, topType))
+							return true;
+					}
+				}
+				return value;
+			}
+
+			foreach (var structType in structs)
+			{
+				if (CheckRecursion_Base(structType))
+					throw new LsnrParsingException(PreStructs[structType.Id][0], $"The struct type '{structType.Name}' is recursivly defined", Path);
+			}
+			foreach (var recordType in records)
+			{
+				if (CheckRecursion_Base(recordType))
+					throw new LsnrParsingException(PreStructs[recordType.Id][0], $"The record type '{recordType.Name}' is recursivly defined", Path);
+			}
+		}
+
 		/// <summary>
 		/// ...
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="typeOfType">struct or record.</param>
 		/// <param name="tokens"></param>
 		/// <returns></returns>
-		private Tuple<string, TypeId>[] ParseFields(IReadOnlyList<Token> tokens)
+		private Tuple<string, TypeId>[] ParseFields(Token[] tokens)
 		{
-			if (tokens.Count < 3) // struct Circle { Radius : double}
+			if (tokens.Length < 3) // struct Circle { Radius : double}
 			{
 				throw new LsnrParsingException(tokens[0], "too few tokens.", Path);
 			}
 			var fields = new List<Tuple<string, TypeId>>();
-			for (int i = 0; i < tokens.Count; i++)
+			for (int i = 0; i < tokens.Length; i++)
 			{
 				string fName = tokens[i++].Value; // Get the name of the field, move on to the next token.
-				if (i >= tokens.Count) // Make sure the definition does not end..
+				if (i >= tokens.Length) // Make sure the definition does not end..
 					throw new LsnrParsingException(tokens[i - 1], "unexpected end of declaration, expected ':'.", Path);
 				if (tokens[i++].Value != ":") // Make sure the next token is ':', move on to the next token.
 					throw LsnrParsingException.UnexpectedToken(tokens[i - 1], ":", Path);
-				if (i >= tokens.Count) // Make sure the definition does not end.
+				if (i >= tokens.Length) // Make sure the definition does not end.
 					throw new LsnrParsingException(tokens[i - 1], "unexpected end of declaration, expected type.", Path);
-				LsnType type = this.ParseType(tokens, i, out i);
-				fields.Add(new Tuple<string, TypeId>( fName, type.Id));
-				if (i + 1 < tokens.Count && tokens[i].Value == ",") // Check if the definition ends, move on to the next token
-																	  // and check that it is ','.
+				var tId = this.ParseTypeId(tokens, i, out i);
+				fields.Add(new Tuple<string, TypeId>( fName, tId));
+				if (i + 1 < tokens.Length && tokens[i].Value == ",") // Check if the definition ends, move on to the next token
+																	// and check that it is ','.
 				{
-					// Move on to the next token, which should be the name of the next token.
+					// Move on to the next token, which should be the name of the next field.
 					continue; // Move on to the next field.
 				}
-				else break;
+				break;
 			}
 			return fields.ToArray();
 		}
 
 		/// <summary>
-		/// Make a struct.
+		/// Make a record.
 		/// </summary>
-		/// <param name="name"> The name of the struct to make.</param>
-		/// <param name="tokens"> The tokens defining the struct.</param>
-		private void MakeRecord(string name, IReadOnlyList<Token> tokens)
+		/// <param name="typeId"></param>
+		/// <param name="tokens"></param>
+		private RecordType MakeRecord(TypeId typeId, Token[] tokens)
 		{
 			Tuple<string, TypeId>[] fields = null;
 			try
@@ -497,26 +589,27 @@ namespace LSNr
             }
 			catch (LsnrException e)
 			{
-				Logging.Log("record", name, e);
+				Logging.Log("record", typeId.Name, e);
 				Valid = false;
 			}
 			catch (Exception e)
 			{
-				Logging.Log("record", name, e, Path);
+				Logging.Log("record", typeId.Name, e, Path);
 				Valid = false;
 			}
-			if (fields == null) return;
-			var recordType = new RecordType(name, fields);
-            RecordTypes.Add(name, recordType);
+			if (fields == null) return null;
+			var recordType = new RecordType(typeId, fields);
+            MyRecordTypes.Add(typeId.Name, recordType);
 			IncludedTypes.Add(recordType);
+			return recordType;
 		}
 
 		/// <summary>
-		/// Make a record.
+		/// Make a struct.
 		/// </summary>
-		/// <param name="name"> The name of the record.</param>
-		/// <param name="tokens"> The tokens defining the record.</param>
-		private void MakeStruct(string name, IReadOnlyList<Token> tokens)
+		/// <param name="typeId"></param>
+		/// <param name="tokens"> The tokens defining the struct.</param>
+		private StructType MakeStruct(TypeId typeId, Token[] tokens)
 		{
 			Tuple<string, TypeId>[] fields = null;
 			try
@@ -525,41 +618,63 @@ namespace LSNr
 			}
 			catch (LsnrException e)
 			{
-				Logging.Log("struct", name, e);
+				Logging.Log("struct", typeId.Name, e);
 				Valid = false;
 			}
 			catch (Exception e)
 			{
-				Logging.Log("struct", name, e, Path);
+				Logging.Log("struct", typeId.Name, e, Path);
 				Valid = false;
 			}
-			if (fields == null) return;
-			var structType = new StructType(name, fields);
-			StructTypes.Add(name, structType);
+			if (fields == null) return null;
+			var structType = new StructType(typeId, fields);
+			MyStructTypes.Add(typeId.Name, structType);
 			IncludedTypes.Add(structType);
+			return structType;
+		}
+
+		private void ParseGameValues()
+		{
+			foreach (var pair in PreGameValues)
+			{
+				var type = this.ParseTypeId(pair.Value, 0, out int i);
+			}
 		}
 
 		public LsnResourceThing GetResource()
 		{
 			return new LsnResourceThing(LoadedTypes.Select(t => t.Id)
-				.Union(StructTypes.Select(t => t.Value.Id))
-				.Union(RecordTypes.Select(t => t.Value.Id))
-				.Union(HostInterfaces.Select(t => t.Value.Id))
-				.Union(ScriptObjects.Select(t=>t.Value.Id))
+				.Union(IncludedTypes.Select(t => t.Id))
+				.Union(MyStructTypes.Select(t => t.Value.Id))
+				.Union(MyRecordTypes.Select(t => t.Value.Id))
+				.Union(MyHostInterfaces.Select(t => t.Value.Id))
+				.Union(MyScriptClasses.Select(t=>t.Value.Id))
+				.Distinct()
 				.ToArray())
 			{
-				Functions = IncludedFunctions,
+				Functions = IncludedFunctions
+					.Union(MyFunctions.Select(p => new KeyValuePair<string, Function>(p.Key,p.Value)))
+					.ToDictionary(),
 				Includes = Includes,
-				StructTypes = StructTypes,
-				RecordTypes = RecordTypes,
+				StructTypes = MyStructTypes
+					.Union(IncludedStructTypes.ToDictionary(t => t.Name))
+					.ToDictionary(),
+				RecordTypes = MyRecordTypes
+					.Union(IncludedRecordTypes.ToDictionary(t => t.Name))
+					.ToDictionary(),
 				Usings = Usings,
-				HostInterfaces = MyHostInterfaces,
-				ScriptObjectTypes = ScriptObjects
+				HostInterfaces = MyHostInterfaces
+					.Union(IncludedHostInterfaceTypes.ToDictionary(t => t.Name))
+					.ToDictionary(),
+				ScriptClassTypes = MyScriptClasses
+					.Union(IncludedScriptClasses.ToDictionary(t => t.Name))
+					.ToDictionary()
 				//TODO: Add IncludedTypes.
 			};
 		}
 
-		public override bool TypeExists(string name) => PreScriptClasses.ContainsKey(name) || PreHostInterfaces.ContainsKey(name) || base.TypeExists(name);
+		public override bool TypeExists(string name) => PreScriptClasses.ContainsKey(name) || PreHostInterfaces.ContainsKey(name)
+			|| PreStructs.Keys.Any(k => k.Name == name) || PreRecords.Keys.Any(k => k.Name == name) || base.TypeExists(name);
 
 		public override TypeId GetTypeId(string name)
 		{
@@ -567,6 +682,10 @@ namespace LSNr
 				return PreScriptClasses[name].Id;
 			if (PreHostInterfaces.ContainsKey(name))
 				return PreHostInterfaces[name].HostInterfaceId;
+			if (PreRecords.Keys.Any(k => k.Name == name))
+				return PreRecords.Keys.First(k => k.Name == name);
+			if (PreStructs.Keys.Any(k => k.Name == name))
+				return PreStructs.Keys.First(k => k.Name == name);
 			return base.GetTypeId(name);
 		}
 
@@ -574,7 +693,7 @@ namespace LSNr
 		{
 			if (FunctionExists(name))
 				return SymbolType.Function;
-			if (_CurrentScope.VariableExists(name))
+			if (CurrentScope.VariableExists(name))
 				return SymbolType.Variable;
 			if (UniqueScriptObjectTypeExists(name))
 				return SymbolType.UniqueScriptObject;

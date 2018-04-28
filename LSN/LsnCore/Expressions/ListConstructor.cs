@@ -53,7 +53,7 @@ namespace LsnCore.Expressions
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.ListConstructor);
-			writer.Write(GenericTypeId.Name);
+			resourceSerializer.WriteTypeId(GenericTypeId, writer);
 		}
 
 		public IEnumerator<IExpression> GetEnumerator()

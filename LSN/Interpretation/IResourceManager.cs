@@ -32,6 +32,20 @@ namespace LsnCore
 		LsnValue[] LoadValues(string id);
 
 		void SaveValues(LsnValue[] values, string id);
+
+		LsnType GetType(string typeName);
+
+		// Only the one of these that matches the value in Settings needs to be implemented
+		IHostInterface GetHostInterface(uint id);
+		IHostInterface GetHostInterface(string id);
+
+		// Only the one of these that matches the values in Settings needs to be implemented
+		ScriptObject GetScriptObject(uint scriptId);
+		ScriptObject GetScriptObject(string scriptId);
+		ScriptObject GetScriptObject(uint hostId, uint scriptId);
+		ScriptObject GetScriptObject(uint hostId, string scriptId);
+		ScriptObject GetScriptObject(string hostId, uint scriptId);
+		ScriptObject GetScriptObject(string hostId, string scriptId);
 	}
 
 	public abstract class ResourceManager : IResourceManager
@@ -104,6 +118,7 @@ namespace LsnCore
 		/// Load the standard library math functions.
 		/// </summary>
 		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		public static LsnResourceThing LoadMath()
 		{
 			var functions = new List<Function>
@@ -179,20 +194,20 @@ namespace LsnCore
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
-					return (new LsnValue(Erf(v.DoubleValue)));
+					return new LsnValue(Erf(v.DoubleValue));
 				}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ErrorFunction"),
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
-					return (new LsnValue(Γ(v.DoubleValue)));
-				}, new List<Parameter>() { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Gamma")
+					return new LsnValue(Γ(v.DoubleValue));
+				}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Gamma")
 			};
 
-			return new LsnResourceThing(new TypeId[0])
+			return new LsnResourceThing(new TypeId[] { LsnType.int_.Id, LsnType.double_.Id})
 			{
 				HostInterfaces = new Dictionary<string, HostInterfaceType>(),
 				StructTypes = new Dictionary<string, StructType>(),
-				ScriptObjectTypes = new Dictionary<string, ScriptClass>(),
+				ScriptClassTypes = new Dictionary<string, ScriptClass>(),
 				//Types = new List<LsnType>(),
 				Usings = new List<string>(),
 				Functions = functions.ToDictionary((f) => f.Name)
@@ -263,6 +278,20 @@ namespace LsnCore
 		}
 
 		public abstract LsnValue[] LoadValues(string id);
+
 		public abstract void SaveValues(LsnValue[] values, string id);
+
+		public abstract LsnType GetType(string typeName);
+
+		public abstract IHostInterface GetHostInterface(uint id);
+		public abstract IHostInterface GetHostInterface(string id);
+
+		public abstract ScriptObject GetScriptObject(uint scriptId);
+		public abstract ScriptObject GetScriptObject(string scriptId);
+
+		public abstract ScriptObject GetScriptObject(uint hostId, uint scriptId);
+		public abstract ScriptObject GetScriptObject(uint hostId, string scriptId);
+		public abstract ScriptObject GetScriptObject(string hostId, uint scriptId);
+		public abstract ScriptObject GetScriptObject(string hostId, string scriptId);
 	}
 }

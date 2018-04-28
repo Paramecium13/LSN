@@ -20,16 +20,13 @@ namespace LSNr
 		private const int ERROR_IN_SOURCE = -3;
 		private const int CONFIG_EXISTS = -4;
 
-		private const string END_OF_COMMENTS = "⌧";
-		private const string COMMENTS = "~~~Remarks Section~~~\nDescribe your workplace here\n\n\n~~~Do not comment below this line~~~\n";
-
 		private static Config _Config;
 
 		internal static Config Config => _Config;
 
 		static int Main(string[] args)
 		{
-			if (args.Length == 0 || args[0].ToLower() == "setup") // Set up the workspace.
+			if (args.Length == 0 || string.Equals(args[0], "setup", StringComparison.OrdinalIgnoreCase)) // Set up the workspace.
 			{
 				return SetUp();
 			}
@@ -42,7 +39,7 @@ namespace LSNr
 			else
 				_Config = new Config();
 
-			if(args[0].ToLower() == "build")
+			if(string.Equals(args[0], "build", StringComparison.OrdinalIgnoreCase))
 			{
 				return Build(args);
 			}
@@ -67,8 +64,6 @@ namespace LSNr
 			}
 
 			// The argument that specifies
-			var t = args.FirstOrDefault(a => Regex.IsMatch(a,@"^\s*type\s*=\s*(\w+)\s*$",RegexOptions.IgnoreCase));
-
 			if (Path.IsPathRooted(args[0]))
 			{
 				Console.ForegroundColor = ConsoleColor.Red;
@@ -76,41 +71,8 @@ namespace LSNr
 				Console.ResetColor();
 				return -5;
 			}
-
-			if (t != null)
-			{ // The type of file is defined.
-				string type = Regex.Match(t, @"^\s*type\s*=\s*(\w+)\s*$", RegexOptions.IgnoreCase)
-					.Groups.Cast<Group>()
-					.Select(g => g.Value)
-					.ToArray()[1];
-				if (type == "resource" || type == "res")
-				{
-					LsnResourceThing res = null;
-					return MakeResource(new string(args[0].Take(args[0].Length - 4).ToArray()),src, destination, out res, args);
-				}
-
-				if (type == "quest") throw new NotImplementedException();
-			}
-			// Otherwise it's a script.
-			return MakeScript(Path.GetFileNameWithoutExtension(args[0]),src,destination,args);
-		}
-
-		private static int MakeScript(string path, string src, string destination, string[] args)
-		{
-			var sc = new PreScript(src,path);
-			sc.Reify();
-			if(! sc.Valid)
-			{
-				Console.WriteLine("Invalid source.");
-				// Write error messages, if not already done. (Errors should be printed during reification)
-				return ERROR_IN_SOURCE;
-			}
-			var res = sc.GetScript();
-			using (var fs = new FileStream(destination, FileMode.Create))
-			{
-				new BinaryFormatter().Serialize(fs, res);
-			}
-			return 0;
+			LsnResourceThing res = null;
+			return MakeResource(new string(args[0].Take(args[0].Length - 4).ToArray()),src, destination, out res, args);
 		}
 
 		internal static int MakeResource(string path, string src, string destination, out LsnResourceThing res, string[] args)
@@ -163,6 +125,7 @@ namespace LSNr
 
 		private static int Build(string[] args)
 		{
+			throw new NotImplementedException();
 			if(args.Length > 1 && args[1].ToLower() == "all")
 			{
 

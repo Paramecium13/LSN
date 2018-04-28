@@ -14,7 +14,7 @@ namespace LsnCore.Expressions
 		public RecordConstructor(RecordType type, IDictionary<string,IExpression> args)
 		{
 			Args = new IExpression[type.FieldCount];
-			int i = -1;
+			var i = -1;
 			foreach (var pair in args)
 			{
 				i = type.GetIndex(pair.Key);
@@ -25,11 +25,6 @@ namespace LsnCore.Expressions
 		public RecordConstructor(TypeId type, IEnumerable<IExpression> args)
 		{
 			Type = type;
-			Args = args.ToArray();
-		}
-
-		public RecordConstructor(IEnumerable<IExpression> args)
-		{
 			Args = args.ToArray();
 		}
 
@@ -56,6 +51,9 @@ namespace LsnCore.Expressions
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.RecordConstructor);
+
+			resourceSerializer.WriteTypeId(Type, writer);
+
 			writer.Write((ushort)Args.Length);
 			for (int i = 0; i < Args.Length; i++)
 				Args[i].Serialize(writer, resourceSerializer);
