@@ -37,7 +37,7 @@ namespace LsnCore
 		/// </summary>
 		public abstract bool HandlesScope { get; }
 
-		protected string _ResourceFilePath; //TODO: Give this a value!!!
+		protected string _ResourceFilePath;
 		public string ResourceFilePath { get { return _ResourceFilePath; } protected set { _ResourceFilePath = value; } }
 
 		public virtual FunctionCall CreateCall(IList<Tuple<string,IExpression>> args, bool included = false)
@@ -53,7 +53,6 @@ namespace LsnCore
 	/// <summary>
 	/// A parameter for a function or method.
 	/// </summary>
-	[Serializable]
 	public class Parameter : IEquatable<Parameter>
 	{
 		public readonly string Name;

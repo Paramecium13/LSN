@@ -38,7 +38,6 @@ namespace LsnCore
 		public TypeId GetTypeId(string name)
 		{
 			if (name.Contains('`'))
-			//	return new TypeId(name); // ToDo: use generic types...
 			{
 				var names = name.Split('`');
 				var genericTypeName = names[0];

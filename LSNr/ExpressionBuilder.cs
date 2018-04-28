@@ -86,7 +86,7 @@ namespace LSNr
 			{
 				int j = i;
 				var paramTokens = new List<Token>();
-				int pCount = 0;// 
+				int pCount = 0;
 				do
 				{
 					if (++j >= CurrentTokens.Count)

@@ -150,6 +150,8 @@ namespace LSNr
 						throw new LsnrParsingException(head[i], "Incorrectly formatted for loop.", script.Path);
 					throw new NotImplementedException(); // ToDo: Implement
 				}
+				else
+					throw new LsnrParsingException(head[i], "Incorrectly formatted for loop.", script.Path);
 
 				var p = new Parser(body, script);
 				p.Parse();

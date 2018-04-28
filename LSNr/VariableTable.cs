@@ -13,12 +13,6 @@ namespace LSNr
 	{
 		private readonly VariableTable Parent;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		//private int _MaxSizeFromChildren;
-
-
 		public int MaxSize
 		{
 			get
@@ -37,7 +31,6 @@ namespace LSNr
 
 		private readonly IList<Variable> MasterVariableList;
 
-
 		private readonly IList<VariableTable> Children = new List<VariableTable>();
 
 		/// <summary>
@@ -55,12 +48,10 @@ namespace LSNr
 		/// </summary>
 		public int NextOffset => Offset + Count - ConstCount;
 
-
 		public VariableTable(IList<Variable> masterVarList)
 		{
 			Offset = 0; MasterVariableList = masterVarList;
 		}
-
 
 		public VariableTable(VariableTable parent, IList<Variable> masterVarList)
 		{
@@ -70,18 +61,14 @@ namespace LSNr
 			ConstCount = parent.ConstCount;
 		}
 
-
 		public bool HasVariable(string name)
 			=> Variables.Any(v => v.Name == name);
-
 
 		public bool VariableExists(string name)
 			=> HasVariable(name) || (Parent?.VariableExists(name) ?? false);
 
-
 		public Variable GetVariable(string name)
 			=> Variables.FirstOrDefault(v => v.Name == name) ?? Parent?.GetVariable(name);
-
 
 		public IExpression GetAccessExpression(string name, IExpressionContainer container)
 		{
@@ -90,14 +77,12 @@ namespace LSNr
 			return v.AccessExpression;
 		}
 
-
 		public Variable CreateVariable(string name, bool mutable, IExpression init)
 		{
 			var v = new Variable(name, mutable, init, NextOffset);
 			Variables.Add(v);
 			return v;
 		}
-
 
 		public Variable CreateVariable(Parameter param)
 		{
@@ -107,6 +92,7 @@ namespace LSNr
 				ConstCount++;
 			return v;
 		}
+
 		private const int MaxUsersForReplacement = 2;
 
 		public IScope Pop(List<Component> components)
@@ -167,7 +153,7 @@ namespace LSNr
 
 			return Parent;
 		}
-		
+
 		/// <summary>
 		/// A variable in the parent was removed.
 		/// </summary>
@@ -184,24 +170,11 @@ namespace LSNr
 			}
 		}
 
-
-		//TODO: Use and implement or remove...
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="index"></param>
-		/*private void ParentVariableAdded(int index)
-		{
-			throw new NotImplementedException();
-		}*/
-
-
 		public IScope CreateChild()
 		{
 			var child = new VariableTable(this, MasterVariableList);
 			Children.Add(child);
 			return child;
 		}
-
 	}
 }

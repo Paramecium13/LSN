@@ -23,14 +23,6 @@ namespace LsnCore
 		/// </summary>
 		public IReadOnlyDictionary<string, Function> Functions { get { return _Functions; }}
 
-		/*[NonSerialized]
-		private Dictionary<string, RecordType> _StructTypes = new Dictionary<string, RecordType>();
-		public IReadOnlyDictionary<string, RecordType> StructTypes { get { return _StructTypes; } }
-
-		[NonSerialized]
-		private Dictionary<string, StructType> _RecordTypes = new Dictionary<string, StructType>();
-		public IReadOnlyDictionary<string, StructType> RecordTypes { get { return _RecordTypes; }}*/
-
 		private Dictionary<string, ScriptClass> _ScriptObjectTypes = new Dictionary<string, ScriptClass>();
 		public IReadOnlyDictionary<string, ScriptClass> ScriptObjectTypes => _ScriptObjectTypes;
 
