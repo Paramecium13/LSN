@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LSNr</RootNamespace>
     <AssemblyName>LSNr</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -87,7 +87,7 @@
     <Compile Include="LsnrParsingException.cs" />
     <Compile Include="LsnrTypeNotFoundException.cs" />
     <Compile Include="LssParser\BinaryExpressionRule.cs" />
-    <Compile Include="LssParser\IRule.cs" />
+    <Compile Include="LssParser\IExpressionRule.cs" />
     <Compile Include="Optimization\ComponentFlattener.cs" />
     <Compile Include="PreStatement.cs" />
     <Compile Include="ScriptObjects\BasePreScriptClass.cs" />

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LSNr.LssParser
 {
-	public interface IRule
+	public interface IExpressionRule
 	{
 		uint Priority { get; }
 

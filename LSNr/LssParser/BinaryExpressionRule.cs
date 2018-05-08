@@ -9,7 +9,7 @@ namespace LSNr.LssParser
 {
 	public delegate bool ContextCheck(int index, Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions);
 
-	public class BinaryExpressionRule : IRule
+	public class BinaryExpressionRule : IExpressionRule
 	{
 		public uint Priority { get; private set; }
 		private readonly string operatorValue;
