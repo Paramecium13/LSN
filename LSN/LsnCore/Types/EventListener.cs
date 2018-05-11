@@ -15,7 +15,6 @@ namespace LsnCore.Types
 		Statement[] Code { set; }
 	}
 
-	[Serializable]
 	public sealed class EventListener : ICodeBlock
 	{
 		public readonly EventDefinition Definition;
@@ -25,9 +24,11 @@ namespace LsnCore.Types
 		internal int StackSize;
 		public Statement[] Code { get; set; }
 
-		public EventListener(EventDefinition definition, string resourceFilePath)
+		public readonly int Priority;
+
+		public EventListener(EventDefinition definition, string resourceFilePath, int priority=0)
 		{
-			Definition = definition; ResourceFilePath = resourceFilePath;
+			Definition = definition; ResourceFilePath = resourceFilePath; Priority = priority;
 		}
 
 		public void Run(LsnValue[] args, IInterpreter i)
