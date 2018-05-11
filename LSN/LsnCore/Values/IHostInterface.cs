@@ -18,7 +18,7 @@ namespace LsnCore.Values
 
 		LsnValue CallMethod(string name, LsnValue[] arguments);
 
-		void SubscribeToEvent(string eventName, ScriptObject eventListener);
+		void SubscribeToEvent(string eventName, ScriptObject eventListener, int priority);
 
 		void UnsubscribeToEvent(string eventName, ScriptObject eventListener);
 	}
