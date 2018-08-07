@@ -38,6 +38,7 @@ namespace LSNr
 		public abstract bool GenericTypeExists(string name);
 		public abstract Function GetFunction(string name);
 		internal abstract Field GetField(string name);
+		internal int GetFieldIndex(string name) => GetField(name).Index;
 		public abstract GenericType GetGenericType(string name);
 		public abstract LsnType GetType(string name);
 		public abstract TypeId GetTypeId(string name);
