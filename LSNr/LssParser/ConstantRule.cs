@@ -10,7 +10,7 @@ namespace LSNr.LssParser
 {
 	public class ConstantRule : IExpressionRule
 	{
-		public static readonly IExpressionRule Rule = new ConstantRule;
+		public static readonly IExpressionRule Rule = new ConstantRule();
 
 		public uint Priority => ExpressionRulePriorities.Constant;
 

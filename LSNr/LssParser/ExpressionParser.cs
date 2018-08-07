@@ -35,11 +35,20 @@ namespace LSNr.LssParser
 			}
 		}
 
+		private IExpression Parse()
+		{
+			foreach (var level in Rules)
+			{
+				ApplyRuleLevel(level.Item2);
+				if (CurrentTokens.Count == 1)
+					break;
+			}
+			return Substitutions[CurrentTokens[0]];
+		}
+
 		private void ApplyRuleLevel(IExpressionRule[] rules)
 		{
-			var nextTokens = new List<Token>();
-
-			int i = 0;
+			var i = 0;
 			while (i < CurrentTokens.Count)
 			{
 				foreach (var rule in rules)
@@ -54,12 +63,34 @@ namespace LSNr.LssParser
 						CurrentTokens.Insert(x.indexOfNextToken, t);
 						var c = x.numTokensToRemoveFromLeft + (x.indexOfNextToken-i);
 						CurrentTokens.RemoveRange(i - x.numTokensToRemoveFromLeft, c);
-						i -= c;
+						i -= x.numTokensToRemoveFromLeft;
 						break;
 					}
 				}
 				++i;
 			}
+		}
+
+		public static void DefaultSetUp()
+		{
+			SetupRules(new IExpressionRule[]
+				{ ConstantRule.Rule,
+				new MemberAccessRule(),
+				new PropertyFieldRule(),
+				new VariableExpressionRule(),
+				BinaryExpressionRule.Difference,
+				BinaryExpressionRule.Equal,
+				BinaryExpressionRule.GreaterThan,
+				BinaryExpressionRule.GreaterThanOrEqual,
+				BinaryExpressionRule.LessThan,
+				BinaryExpressionRule.LessThanOrEqual,
+				BinaryExpressionRule.LogicalAnd,
+				BinaryExpressionRule.LogicalOr,
+				BinaryExpressionRule.Modulus,
+				BinaryExpressionRule.NotEqual,
+				BinaryExpressionRule.Product,
+				BinaryExpressionRule.Quotient,
+				BinaryExpressionRule.Sum});
 		}
 
 		public static void SetupRules(IExpressionRule[] rules)
@@ -72,6 +103,6 @@ namespace LSNr.LssParser
 		}
 
 		public static IExpression Parse(Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions = null)
-			=> throw new NotImplementedException();
+			=> new ExpressionParser(tokens,script,substitutions).Parse();
 	}
 }

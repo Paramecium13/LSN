@@ -285,9 +285,12 @@ namespace LSNr
 					LoadFunctionParamAndReturnTypes(pair.Value);
 				}
 			}
-			foreach (var gameValue in resource.GameValues)
+			if(resource.GameValues != null)
 			{
-				LoadedGameValues.Add(gameValue.Key, gameValue.Value);
+				foreach (var gameValue in resource.GameValues)
+				{
+					LoadedGameValues.Add(gameValue.Key, gameValue.Value);
+				}
 			}
 			//ToDo: Generic types and functions...
 			Usings.Add(path);

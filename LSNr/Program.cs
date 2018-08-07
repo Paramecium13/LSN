@@ -48,6 +48,10 @@ namespace LSNr
 				Console.WriteLine($"The file {args[0]} could not be found.");
 				return FILE_NOT_FOUND;
 			}
+#if LSS
+			LssParser.ExpressionParser.DefaultSetUp();
+#endif
+
 			string src;
 			using (var s = new StreamReader(args[0],Encoding.UTF8))
 			{
@@ -83,6 +87,7 @@ namespace LSNr
 			{
 				res = null;
 				Console.WriteLine("Invalid source.");
+				Console.ReadLine();
 				return ERROR_IN_SOURCE;
 			}
 			res = rs.GetResource();

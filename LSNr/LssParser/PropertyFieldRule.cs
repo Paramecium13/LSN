@@ -48,10 +48,10 @@ namespace LSNr.LssParser
 			switch (script.CheckSymbol(str))
 			{
 				case SymbolType.Field:
-					expr = new FieldAccessExpression(self, preScriptClass.GetFieldIndex(str));
+					expr = new FieldAccessExpression(self, preScriptClass.GetField(str));
 					break;
 				case SymbolType.Property:
-					expr = new PropertyAccessExpression(self, preScriptClass.GetPropertyIndex(str));
+					expr = new PropertyAccessExpression(self, preScriptClass.GetPropertyIndex(str), preScriptClass.GetProperty(str).Type);
 					break;
 				default:
 					throw new ApplicationException();

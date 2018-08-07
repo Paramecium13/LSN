@@ -19,7 +19,7 @@ namespace LsnCore.ControlStructures
 		}
 
 		public override InterpretValue Interpret(IInterpreter i)
-			=> Interpret(Components, i);
+			=> throw new NotImplementedException();
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

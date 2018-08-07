@@ -20,13 +20,12 @@ namespace LsnCore.Expressions
 		private readonly TypeId _Type;
 		public TypeId Type => _Type;
 
-
 		public PropertyAccessExpression(IExpression scrObj, int index, TypeId type)
 		{
 			ScriptObject = scrObj; Index = index; _Type = type;
 		}
 
-		public PropertyAccessExpression(IExpression scrObj, int index)
+		internal PropertyAccessExpression(IExpression scrObj, int index)
 		{
 			ScriptObject = scrObj; Index = index;
 		}

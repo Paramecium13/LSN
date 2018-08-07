@@ -54,11 +54,11 @@ namespace LSNr.LssParser
 			}
 		}
 
-		public bool CheckContext(int index, Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
+		public bool CheckContext(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 			=> true;
 
 		public (IExpression expression, int indexOfNextToken, ushort numTokensToRemoveFromLeft)
-			CreateExpression(int index, Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
+			CreateExpression(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
 			var token = tokens[index];
 			var str = token.Value;

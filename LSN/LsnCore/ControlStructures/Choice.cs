@@ -21,7 +21,7 @@ namespace LsnCore.ControlStructures
 		}
 
 		public override InterpretValue Interpret(IInterpreter i)
-			=> Interpret(_Components, i);
+			=> throw new NotImplementedException();
 
 
 		public bool Check(IInterpreter i) => Condition?.Eval(i).BoolValue ?? true;

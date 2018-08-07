@@ -205,9 +205,15 @@ namespace LSNr
 				}
 				return expr;
 			}
-			if(substitutions == null)
+			if (substitutions == null)
+#if LSS
+				return LssParser.ExpressionParser.Parse(list.ToArray(), script);
+			return LssParser.ExpressionParser.Parse(list.ToArray(), script, substitutions);
+#else
+
 				return ExpressionBuilder.Build(list, script);
 			return ExpressionBuilder.Build(list, script, substitutions, substitutions.Count);
+#endif
         }
 
 		public static IExpression SingleTokenExpress(Token token, IPreScript script, IExpressionContainer container = null, IList<Variable> variables = null)

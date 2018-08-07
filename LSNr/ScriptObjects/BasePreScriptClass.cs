@@ -7,12 +7,10 @@ using LsnCore;
 using LsnCore.Types;
 using LSNr.Optimization;
 
-
 namespace LSNr
 {
 	public abstract class BasePreScriptClass : IPreScript
 	{
-
 		public abstract IScope CurrentScope { get; set; }
 		public abstract bool Mutable { get; }
 		public abstract bool Valid { get; set; }
