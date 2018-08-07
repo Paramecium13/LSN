@@ -87,6 +87,8 @@
     <Compile Include="LsnrParsingException.cs" />
     <Compile Include="LsnrTypeNotFoundException.cs" />
     <Compile Include="LssParser\BinaryExpressionRule.cs" />
+    <Compile Include="LssParser\ConstantRule.cs" />
+    <Compile Include="LssParser\ExpressionRulePriorities.cs" />
     <Compile Include="LssParser\IExpressionRule.cs" />
     <Compile Include="Optimization\ComponentFlattener.cs" />
     <Compile Include="PreStatement.cs" />

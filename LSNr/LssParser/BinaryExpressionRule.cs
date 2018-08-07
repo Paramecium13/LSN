@@ -49,5 +49,43 @@ namespace LSNr.LssParser
 			return (createExpr(left, right), index + 2, 1);
 		}
 
+		public static readonly IExpressionRule Sum = new BinaryExpressionRule(ExpressionRulePriorities.AddSub, "+",
+			(l, r) => new BinaryExpression(l, r, BinaryOperation.Sum, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+
+		public static readonly IExpressionRule Difference = new BinaryExpressionRule(ExpressionRulePriorities.AddSub, "-",
+			(l, r) => new BinaryExpression(l, r, BinaryOperation.Difference, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+
+		public static readonly IExpressionRule Product = new BinaryExpressionRule(ExpressionRulePriorities.MultDiv, "*",
+			(l, r) => new BinaryExpression(l, r, BinaryOperation.Product, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+
+		public static readonly IExpressionRule Quotient = new BinaryExpressionRule(ExpressionRulePriorities.MultDiv, "/",
+			(l, r) => new BinaryExpression(l, r, BinaryOperation.Quotient, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+
+		public static readonly IExpressionRule Modulus = new BinaryExpressionRule(ExpressionRulePriorities.MultDiv, "%",
+			(l, r) => new BinaryExpression(l, r, BinaryOperation.Modulus, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+
+		public static readonly IExpressionRule LessThan = new BinaryExpressionRule(ExpressionRulePriorities.Comparative, "<",
+			(l, r) => new BinaryExpression(l, r, BinaryOperation.LessThan, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+
+		public static readonly IExpressionRule LessThanOrEqual = new BinaryExpressionRule(ExpressionRulePriorities.Comparative, "<=",
+			(l, r) => new BinaryExpression(l, r, BinaryOperation.LessThanOrEqual, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+
+		public static readonly IExpressionRule GreaterThan = new BinaryExpressionRule(ExpressionRulePriorities.Comparative, ">",
+			(l, r) => new BinaryExpression(l, r, BinaryOperation.GreaterThan, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+
+		public static readonly IExpressionRule GreaterThanOrEqual = new BinaryExpressionRule(ExpressionRulePriorities.Comparative, ">=",
+			(l, r) => new BinaryExpression(l, r, BinaryOperation.GreaterThanOrEqual, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+
+		public static readonly IExpressionRule Equal = new BinaryExpressionRule(ExpressionRulePriorities.Comparative, "==",
+			(l, r) => new BinaryExpression(l, r, BinaryOperation.Equal, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+
+		public static readonly IExpressionRule NotEqual = new BinaryExpressionRule(ExpressionRulePriorities.Comparative, "!=",
+			(l, r) => new BinaryExpression(l, r, BinaryOperation.NotEqual, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+
+		public static readonly IExpressionRule LogicalAnd = new BinaryExpressionRule(ExpressionRulePriorities.Comparative, "&&",
+			(l, r) => new BinaryExpression(l, r, BinaryOperation.And, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+
+		public static readonly IExpressionRule LogicalOr = new BinaryExpressionRule(ExpressionRulePriorities.Comparative, "||",
+					(l, r) => new BinaryExpression(l, r, BinaryOperation.Or, BinaryExpression.GetArgTypes(l.Type, r.Type)));
 	}
 }
