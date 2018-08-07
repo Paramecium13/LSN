@@ -90,6 +90,8 @@
     <Compile Include="LssParser\ConstantRule.cs" />
     <Compile Include="LssParser\ExpressionRulePriorities.cs" />
     <Compile Include="LssParser\IExpressionRule.cs" />
+    <Compile Include="LssParser\PropertyFieldRule.cs" />
+    <Compile Include="LssParser\VariableExpressionRule.cs" />
     <Compile Include="Optimization\ComponentFlattener.cs" />
     <Compile Include="PreStatement.cs" />
     <Compile Include="ScriptObjects\BasePreScriptClass.cs" />

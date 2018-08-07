@@ -486,7 +486,7 @@ namespace LSNr
 			{
 				var val = CurrentTokens[i].Value;
 								// Its' not a function or method
-				if (val == "(" && (i < 1 || (CurrentTokens[i - 1].Type != TokenType.Identifier && CurrentTokens[i-1].Value != ">"))) // && (i < 3 || CurrentTokens[i - 2].Value != ".")
+				if (val == "(" && (i < 1 || (CurrentTokens[i - 1].Type != TokenType.Identifier /*&& CurrentTokens[i-1].Value != ">"*/))) // && (i < 3 || CurrentTokens[i - 2].Value != ".")
 				{
 					var nextIndex = i + 1;
 					var lCount = 1;
