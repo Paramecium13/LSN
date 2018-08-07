@@ -100,6 +100,7 @@
     <Compile Include="LsnCore\GlobalVariableDef.cs" />
     <Compile Include="LsnCore\GlobalVariableValue.cs" />
     <Compile Include="LsnCore\GlobalVariableValueWatched.cs" />
+    <Compile Include="LsnCore\HostInterfaceMethod.cs" />
     <Compile Include="LsnCore\LsnFunction.cs" />
     <Compile Include="LsnCore\Serialization\ResourceDeserializer.cs" />
     <Compile Include="LsnCore\Settings.cs" />

@@ -29,10 +29,10 @@ namespace LSNr.LssParser
 			}
 		}
 
-		public bool CheckContext(int index, Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
+		public bool CheckContext(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 			=> true;
 
-		public (IExpression expression, int indexOfNextToken, ushort numTokensToRemoveFromLeft) CreateExpression(int index, Token[] tokens,
+		public (IExpression expression, int indexOfNextToken, ushort numTokensToRemoveFromLeft) CreateExpression(int index, IReadOnlyList<Token> tokens,
 			IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
 			var token = tokens[index];
@@ -43,7 +43,7 @@ namespace LSNr.LssParser
 				case TokenType.Integer:
 					return (new LsnValue(token.IntValue), index + 1, 0);
 				case TokenType.String:
-					return (new LsnValue(new StringValue(token.ToString())), index + 1, 0);
+					return (new LsnValue(new StringValue(token.Value)), index + 1, 0);
 				default:
 					throw new ApplicationException();
 			}

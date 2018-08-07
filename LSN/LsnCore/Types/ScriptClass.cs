@@ -58,6 +58,13 @@ namespace LsnCore.Types
 			Constructor = constructor;
 
 			id.Load(this);
+
+			foreach (var method in ScriptObjectMethods.Values)
+			{
+				if (method.IsVirtual)
+					_Methods.Add(method.Name, method.ToVirtualMethod());
+				else _Methods.Add(method.Name, method);
+			}
 		}
 
 		public ScriptClassState GetDefaultState()

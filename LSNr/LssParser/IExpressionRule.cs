@@ -27,7 +27,7 @@ namespace LSNr.LssParser
 		/// <param name="script">The context of the expression.</param>
 		/// <param name="substitutions">The current substitutions.</param>
 		/// <returns>Does the rule apply?</returns>
-		bool CheckContext(int index, Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions);
+		bool CheckContext(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions);
 
 		/// <summary>
 		/// Create the expression.
@@ -40,6 +40,6 @@ namespace LSNr.LssParser
 		/// the number of tokens to the left that are part of this expression.
 		/// Tokens between [index - numTokensToRemoveFromLeft, indexOfNextToken) are part of the new expression and will be removed.</returns>
 		(IExpression expression, int indexOfNextToken, ushort numTokensToRemoveFromLeft)
-			CreateExpression(int index, Token[] tokens, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions);
+			CreateExpression(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions);
 	}
 }

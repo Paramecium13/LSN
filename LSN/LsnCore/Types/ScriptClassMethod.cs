@@ -1,6 +1,7 @@
 ﻿using LsnCore.Expressions;
 using LsnCore.Serialization;
 using LsnCore.Statements;
+using LsnCore.Values;
 using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
@@ -108,5 +109,27 @@ namespace LsnCore.Types
 
 			return method;
 		}
+
+		public Method ToVirtualMethod()
+			=> new ScriptClassVirtualMethod(TypeId, ReturnType, Parameters.ToList(), ResourceFilePath, Name);
+	}
+
+	public class ScriptClassVirtualMethod : Method
+	{
+		public override bool HandlesScope => false;
+
+		public Statement[] Code { get; set; } // Assigned in LSNr.
+
+		internal ScriptClassVirtualMethod(TypeId type, TypeId returnType, IList<Parameter> parameters, string resourceFilePath, string name)
+			: base(type, returnType, name, parameters)
+		{
+			if (Parameters[0].Name != "self")
+				throw new ApplicationException("");
+			ResourceFilePath = resourceFilePath;
+		}
+
+		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
+			=> (args[0].Value as ScriptObject).GetMethod(Name).Eval(args, i);
+
 	}
 }

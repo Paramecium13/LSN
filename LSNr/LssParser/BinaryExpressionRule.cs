@@ -7,7 +7,7 @@ using LsnCore.Expressions;
 
 namespace LSNr.LssParser
 {
-	public delegate bool ContextCheck(int index, Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions);
+	public delegate bool ContextCheck(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions);
 
 	public class BinaryExpressionRule : IExpressionRule
 	{
@@ -26,11 +26,11 @@ namespace LSNr.LssParser
 		public bool CheckToken(Token token, IPreScript script)
 			=> token.Value == operatorValue;
 
-		public bool CheckContext(int index, Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
+		public bool CheckContext(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 			=> contextCheck?.Invoke(index, tokens, script, substitutions) ?? true;
 
 			public (IExpression expression, int indexOfNextToken, ushort numTokensToRemoveFromLeft)
-			CreateExpression(int index, Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
+			CreateExpression(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
 			IExpression left, right;
 			if (index == 0) throw new ApplicationException();

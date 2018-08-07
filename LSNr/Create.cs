@@ -395,5 +395,47 @@ namespace LSNr
 			var ls = CreateParamList(tokens, method.Parameters.Count, script,substitutions);
 			return method.CreateMethodCall(ls,obj);
 		}
+
+		public static (Token[][] argTokens, int indexOfNextToken) CreateArgList(int indexOfOpen, IReadOnlyList<Token> tokens, IPreScript script)
+		{
+			var argTokens = new List<Token[]>();
+			var currentList = new List<Token>();
+			var j = indexOfOpen;
+			if (j >= tokens.Count || tokens[j].Value != "(")
+				throw new LsnrParsingException(tokens[j], "...", script.Path);
+
+			void pop()
+			{
+				argTokens.Add(currentList.ToArray());
+				currentList.Clear();
+			}
+
+			var balance = 1;
+			while (balance != 0)
+			{
+				++j;
+				var t = tokens[j];
+				if (t.Value == "(")
+				{
+					++balance;
+					currentList.Add(t);
+				}
+				else if (t.Value == ")")
+				{
+					--balance;
+					if (balance != 0)
+						currentList.Add(t);
+				}
+				else if (t.Value == ",")
+				{
+					if (balance == 1)
+						pop();
+					else
+						currentList.Add(t);
+				}
+			}
+
+			return (argTokens.ToArray(), j + 1);
+		}
 	}
 }

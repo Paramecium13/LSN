@@ -20,7 +20,7 @@ namespace LSNr.LssParser
 			switch (token.Type)
 			{
 				case TokenType.Identifier:
-					switch (script.CheckSymbol(token.ToString()))
+					switch (script.CheckSymbol(token.Value))
 					{
 						case SymbolType.Variable:
 						case SymbolType.GlobalVariable:
@@ -30,7 +30,7 @@ namespace LSNr.LssParser
 							return false;
 					}
 				case TokenType.Keyword:
-					var str = token.ToString();
+					var str = token.Value;
 					var preScFn = script as PreScriptClassFunction;
 					if (str == "this")
 					{
@@ -61,7 +61,7 @@ namespace LSNr.LssParser
 			CreateExpression(int index, Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
 			var token = tokens[index];
-			var str = token.ToString();
+			var str = token.Value;
 			IExpression expr;
 			switch (token.Type)
 			{

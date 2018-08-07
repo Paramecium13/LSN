@@ -12,8 +12,7 @@ namespace LsnCore.Types
 	{
 		// Method definitions
 		internal readonly IReadOnlyDictionary<string, FunctionSignature> MethodDefinitions;
-		
-		
+
 		// Event definitions
 		internal readonly IReadOnlyDictionary<string, EventDefinition> EventDefinitions;
 
@@ -27,7 +26,7 @@ namespace LsnCore.Types
 		public override LsnValue CreateDefaultValue() => LsnValue.Nil;
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
@@ -46,7 +45,7 @@ namespace LsnCore.Types
 		}
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
