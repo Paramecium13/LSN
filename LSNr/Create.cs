@@ -205,8 +205,6 @@ namespace LSNr
 				}
 				return expr;
 			}
-			if (substitutions == null)
-				return LssParser.ExpressionParser.Parse(list.ToArray(), script);
 			return LssParser.ExpressionParser.Parse(list.ToArray(), script, substitutions);
         }
 

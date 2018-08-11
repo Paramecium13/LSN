@@ -368,6 +368,10 @@ namespace LSNr
 			var scClassType = script.GetType(scClassName) as ScriptClass;
 			if (scClassType == null)
 				throw new LsnrParsingException(tokens[2], $"The type ${scClassName} is not a script class.", script.Path);
+
+			if (scClassType.Unique)
+				throw new LsnrParsingException(tokens[2], $"Cannot create an instance of a unique script class ('{scClassName}')", script.Path);
+
 			int i = 4;
 			List<Token>[] parseP(string open, string close)
 			{
@@ -415,7 +419,7 @@ namespace LSNr
 				throw new LsnrParsingException(tokens[2], $"All properties of script class '{scClassName}' must be given a value.",
 					script.Path);
 
-			IExpression[] propExps = new IExpression[scClassType.Properties.Count];
+			var propExps = new IExpression[scClassType.Properties.Count];
 			IExpression[] argExps = null;
 			if (props.Length > 0 && props[0].Count > 2 && props[0][1].Value == ":")
 			{
