@@ -445,7 +445,8 @@ namespace LSNr
 				}
 				else currentList.Add(t);
 			}
-			pop();
+			if (currentList.Count != 0)
+				pop();
 
 			return (argTokens.ToArray(), j + 1);
 		}

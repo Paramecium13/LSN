@@ -1,6 +1,18 @@
 ﻿#using "std\Math"
 
 
+fn PathDistance(path:Vector<Point>)-> double
+{
+	let mut sum = 0.0;
+	let mut point = path[0];
+	for(i = 1` i < path.Length()` i = i + 1)
+	{
+		sum = sum + Distance(point,path[i]);
+		point = path[i];
+	}
+	return sum;
+}
+
 fn Distance(a:Point,b:Point)-> double
 {
 	return Hypot(a.X-b.X,a.Y-b.Y);
@@ -139,17 +151,4 @@ record Point
 fn ToDog(cat:Cat) -> Dog
 {
 	return new Dog(Age:cat.Age, Name:cat.Name);
-}*/
-
-
-/*fn PathDistance(path:Vector<Point>)-> double
-{
-	let mut sum = 0.0;
-	let mut point = path[0];
-	for(i = 1` i < path.Length()` i = i + 1)
-	{
-		sum = sum + Distance(point,path[i]);
-		point = path[i];
-	}
-	return sum;
 }*/

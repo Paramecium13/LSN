@@ -366,6 +366,7 @@ namespace LSNr
 				catch (Exception e)
 				{
 					Logging.Log("function", pair.Key, e, Path);
+					Valid = false;
 				}
 			}
 		}

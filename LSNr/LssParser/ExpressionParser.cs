@@ -97,7 +97,8 @@ namespace LSNr.LssParser
 				BinaryExpressionRule.Sum,
 				BinaryExpressionRule.Power,
 				new ParenthesisRule(),
-				new FunctionCallRule()});
+				new FunctionCallRule(),
+				new IndexerRule()});
 		}
 
 		public static void SetupRules(IExpressionRule[] rules)
