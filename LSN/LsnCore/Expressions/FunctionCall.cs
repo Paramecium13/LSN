@@ -9,8 +9,6 @@ namespace LsnCore.Expressions
 	{
 		public Function Fn;
 
-		private string FnName;
-
 		public override bool IsPure => false;
 
 		//ToDo: Encapsulate? Used in ExpressionWalker...
@@ -21,17 +19,8 @@ namespace LsnCore.Expressions
 															// all its functions before any code is read. Thus when the reader reads the code, it has
 															// a function object for every function that the code could call.
 		{
-			FnName = fn.Name;
 			Args = args;
 			Type = fn.ReturnType;
-		}
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-		private FunctionCall(string fnName, IExpression[] args, LsnType type = null)
-		{
-			FnName = fnName;
-			Args = args;
-			Type = type?.Id;
 		}
 
 		public override LsnValue Eval(IInterpreter i)
@@ -41,16 +30,13 @@ namespace LsnCore.Expressions
 				args[x] = Args[x].Eval(i);
 			//var args = Args.Select(a => a.Eval(i)).ToArray();
 
-			var fn = Fn ?? i.GetFunction(FnName);
-
-			return fn.Eval(args, i);
+			return Fn.Eval(args, i);
 		}
 
 		public override IExpression Fold()
 		{
-			var dict = Args.Select(a => a.Fold()).ToArray();
-			if (Fn != null) return new FunctionCall(Fn, dict);
-			return new FunctionCall(FnName,dict);
+			var args = Args.Select(a => a.Fold()).ToArray();
+			return new FunctionCall(Fn, args);
 		}
 
 		public override bool IsReifyTimeConst() => false;
@@ -71,7 +57,7 @@ namespace LsnCore.Expressions
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.FunctionCall);
-			writer.Write(FnName);
+			writer.Write(Fn.Name);
 			writer.Write((byte)Args.Length);
 			for (int i = 0; i < Args.Length; i++)
 				Args[i].Serialize(writer, resourceSerializer);

@@ -101,6 +101,7 @@
     <Compile Include="LssParser\ConstantRule.cs" />
     <Compile Include="LssParser\ExpressionParser.cs" />
     <Compile Include="LssParser\ExpressionRulePriorities.cs" />
+    <Compile Include="LssParser\FunctionCallRule.cs" />
     <Compile Include="LssParser\IExpressionRule.cs" />
     <Compile Include="LssParser\MemberAccessRule.cs" />
     <Compile Include="LssParser\ParenthesisRule.cs" />
