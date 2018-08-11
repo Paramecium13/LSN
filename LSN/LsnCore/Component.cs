@@ -36,5 +36,7 @@ namespace LsnCore
 		public abstract InterpretValue Interpret(IInterpreter i);
 
 		public abstract void Replace(IExpression oldExpr, IExpression newExpr);
+
+		public abstract PreStatement[] Flatten(LabelInfo labelInfo);
 	}
 }

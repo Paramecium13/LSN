@@ -7,7 +7,6 @@ using LsnCore.Expressions;
 
 namespace LsnCore.ControlStructures
 {
-	[Serializable]
 	public class ChoicesBlockControl : ControlStructure
 	{
 		public readonly List<Choice> Choices = new List<Choice>();
@@ -31,5 +30,10 @@ namespace LsnCore.ControlStructures
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{}
+
+		public override PreStatement[] Flatten(LabelInfo labelInfo)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

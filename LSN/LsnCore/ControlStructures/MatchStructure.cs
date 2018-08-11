@@ -8,9 +8,8 @@ using LsnCore.Expressions;
 namespace LsnCore.ControlStructures
 {
 	/// <summary>
-	/// 
+	/// ...
 	/// </summary>
-	[Serializable]
 	public class MatchStructure : ControlStructure
 	{
 		/// <summary>
@@ -19,7 +18,7 @@ namespace LsnCore.ControlStructures
 		private int VariableIndex;
 
 		public readonly List<CaseStructure> Cases = new List<CaseStructure>();
-		
+
 
 		public MatchStructure(int variable, IList<Component> components)
 		{
@@ -44,5 +43,10 @@ namespace LsnCore.ControlStructures
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
+
+		public override PreStatement[] Flatten(LabelInfo labelInfo)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

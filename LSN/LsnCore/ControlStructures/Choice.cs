@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace LsnCore.ControlStructures
 {
-	[Serializable]
 	public class Choice : ControlStructure
 	{
 		private List<Component> _Components;
@@ -23,13 +22,17 @@ namespace LsnCore.ControlStructures
 		public override InterpretValue Interpret(IInterpreter i)
 			=> throw new NotImplementedException();
 
-
 		public bool Check(IInterpreter i) => Condition?.Eval(i).BoolValue ?? true;
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if (Title.Equals(oldExpr)) Title = newExpr;
 			if (Condition.Equals(oldExpr)) Condition = newExpr;
+		}
+
+		public override PreStatement[] Flatten(LabelInfo labelInfo)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

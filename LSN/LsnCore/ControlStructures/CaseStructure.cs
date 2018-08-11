@@ -25,5 +25,10 @@ namespace LsnCore.ControlStructures
 		{
 			if (oldExpr.Equals(Value)) Value = newExpr;
 		}
+
+		public override PreStatement[] Flatten(LabelInfo labelInfo)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

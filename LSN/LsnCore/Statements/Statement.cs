@@ -11,5 +11,13 @@ namespace LsnCore.Statements
 		internal abstract void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer);
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+		public override PreStatement[] Flatten(LabelInfo labelInfo)
+		{
+			var pre = new PreStatement(this) { Target = GetPreStatementTarget(labelInfo) };
+			return new PreStatement[] { pre };
+		}
+
+		public virtual string GetPreStatementTarget(LabelInfo labelInfo) => null;
 	}
 }
