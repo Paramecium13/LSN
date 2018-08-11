@@ -16,6 +16,8 @@ namespace LSNr.LssParser
 
 		public const uint Parenthesis	= 6000;
 
+		public const uint Negation		= 5500;
+
 		public const uint Exponents		= 5000;
 
 		public const uint MultDiv		= 4000;
@@ -23,5 +25,7 @@ namespace LSNr.LssParser
 		public const uint AddSub		= 3000;
 
 		public const uint Comparative	= 2000;
+
+		public const uint Logical		= 1000;
 	}
 }

@@ -99,7 +99,9 @@ namespace LSNr.LssParser
 				new ParenthesisRule(),
 				new FunctionCallRule(),
 				new IndexerRule(),
-				new ConstructorRule()});
+				new ConstructorRule(),
+				UnaryExpressionRule.NegationRule,
+				UnaryExpressionRule.NotRule});
 		}
 
 		public static void SetupRules(IExpressionRule[] rules)

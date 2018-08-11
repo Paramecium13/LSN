@@ -106,6 +106,7 @@
     <Compile Include="LssParser\IExpressionRule.cs" />
     <Compile Include="LssParser\IndexerRule.cs" />
     <Compile Include="LssParser\MemberAccessRule.cs" />
+    <Compile Include="LssParser\UnaryExpressionRule.cs" />
     <Compile Include="LssParser\ParenthesisRule.cs" />
     <Compile Include="LssParser\PropertyFieldRule.cs" />
     <Compile Include="LssParser\VariableExpressionRule.cs" />
