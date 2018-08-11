@@ -131,12 +131,14 @@ fn Distance(a:Point,b:Point)-> double
 
 fn ToCat(dog:Dog) -> Cat
 {
-	return new Cat(Age:dog.Age,Name:dog.Name);
+	//return new Cat(Age:dog.Age,Name:dog.Name);
+	return new Cat(dog.Age, dog.Name);
 }
 
 fn ToDog(cat:Cat) -> Dog
 {
-	return new Dog(Age:cat.Age, Name:cat.Name);
+	//return new Dog(Age:cat.Age, Name:cat.Name);
+	return new Dog(cat.Age, cat.Name);
 }
 
 

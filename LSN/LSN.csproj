@@ -178,6 +178,7 @@
     <Compile Include="LsnCore\Values\VectorInstance.cs" />
     <Compile Include="LsnResourceThing.cs" />
     <Compile Include="LsnScriptBase.cs" />
+    <Compile Include="PreStatement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LsnCore\Serialization\ResourceSerializer.cs" />
   </ItemGroup>

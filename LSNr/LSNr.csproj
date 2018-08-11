@@ -34,7 +34,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Test\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -111,7 +111,6 @@
     <Compile Include="LssParser\PropertyFieldRule.cs" />
     <Compile Include="LssParser\VariableExpressionRule.cs" />
     <Compile Include="Optimization\ComponentFlattener.cs" />
-    <Compile Include="PreStatement.cs" />
     <Compile Include="ScriptObjects\BasePreScriptClass.cs" />
     <Compile Include="CharStreamTokenizer.cs" />
     <Compile Include="Config.cs" />
