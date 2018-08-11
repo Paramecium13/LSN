@@ -48,9 +48,8 @@ namespace LSNr
 				Console.WriteLine($"The file {args[0]} could not be found.");
 				return FILE_NOT_FOUND;
 			}
-#if LSS
+
 			LssParser.ExpressionParser.DefaultSetUp();
-#endif
 
 			string src;
 			using (var s = new StreamReader(args[0],Encoding.UTF8))
