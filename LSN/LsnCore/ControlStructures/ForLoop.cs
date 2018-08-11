@@ -11,26 +11,22 @@ namespace LsnCore.ControlStructures
 	/// <summary>
 	/// A(n) LSN for loop...
 	/// </summary>
-	[Serializable]
 	public class ForLoop : ControlStructure
 	{
-
 		public int Index;
 
 		public IExpression VarValue;
 
 		public IExpression Condition;
-		
+
 		public readonly List<Component> Body;
 
 		public Statement Post;
-
 
 		public ForLoop(int index, IExpression val, IExpression con, List<Component> body, Statement post)
 		{
 			Index = index; VarValue = val; Condition = con; Body = body; Post = post;
 		}
-
 
 		public override InterpretValue Interpret(IInterpreter i)
 		{

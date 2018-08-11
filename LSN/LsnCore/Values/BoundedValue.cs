@@ -69,7 +69,7 @@ namespace LsnCore
 		public string Value { get; private set; }
 		public bool BoolValue { get { return true; } }
 
-		public bool IsPure => true;
+		public static bool IsPure => true;
 
 		/// <summary>
 		/// ...

@@ -12,13 +12,13 @@ namespace LsnCore
 	{
 		private readonly LsnValue[] Fields;
 
-		public bool IsPure => true;
+		public static bool IsPure => true;
 
 		private readonly TypeId Id;
 		public TypeId Type => Id;
 
 		public bool BoolValue { get{ return true; } }
-		
+
 		public RecordValue(LsnValue[] values, TypeId id)
 		{
 			Id = id; Fields = values;

@@ -238,7 +238,7 @@ namespace LsnCore.Serialization
 				case ExpressionCode.BinaryExpression:
 					{
 						var info = reader.ReadByte();
-						var argType = (BinaryOperationArgTypes)(info >> 4);
+						var argType = (BinaryOperationArgsType)(info >> 4);
 						var opType = (BinaryOperation)(info & 0x0F);
 						var left = ReadExpression(reader);
 						var right = ReadExpression(reader);

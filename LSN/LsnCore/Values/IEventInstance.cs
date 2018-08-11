@@ -9,6 +9,7 @@ namespace LsnCore.Values
 		/// </summary>
 		/// <param name="args"></param>
 		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
 		Task Fire(LsnValue[] args);
 		void Subscribe(ScriptObject obj);
 		void Unsubscribe(ScriptObject obj);

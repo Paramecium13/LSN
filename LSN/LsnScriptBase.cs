@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace LsnCore
 {
-	[Serializable]
 	public class LsnScriptBase
 	{
 		/// <summary>

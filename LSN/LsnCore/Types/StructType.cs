@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Types
 {
-	[Serializable]
 	public class StructType : LsnType, IHasFieldsType
 	{
 		private readonly Field[] _Fields;

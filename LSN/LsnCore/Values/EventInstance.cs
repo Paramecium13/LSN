@@ -60,6 +60,7 @@ namespace LsnCore.Values
 			);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
 		protected abstract void Fire(EventListener eventListener, LsnValue[] args);
 
 

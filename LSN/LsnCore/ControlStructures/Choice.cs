@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 
 namespace LsnCore.ControlStructures
 {
-	[Serializable]
 	public class Choice : ControlStructure
 	{
-		private List<Component> _Components;
-		public IList<Component> Components { get { return _Components; } set { _Components = value.ToList(); } }
+		public IList<Component> Components { get; }
 		public IExpression Title { get; private set; }
 		public IExpression Condition;
 
@@ -22,7 +20,6 @@ namespace LsnCore.ControlStructures
 
 		public override InterpretValue Interpret(IInterpreter i)
 			=> throw new NotImplementedException();
-
 
 		public bool Check(IInterpreter i) => Condition?.Eval(i).BoolValue ?? true;
 

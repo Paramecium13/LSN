@@ -22,14 +22,14 @@ namespace LsnCore
 
 		public abstract ILsnValue Clone();
 
-		public bool IsPure => true;
+		public static bool IsPure => true;
 
 		public LsnValue Eval(IInterpreter i)
 		{
 			return new LsnValue(this);//Clone() ?
 		}
 
-		public bool IsReifyTimeConst() => true;
+		public static bool IsReifyTimeConst() => true;
 		public abstract void Serialize(BinaryDataWriter writer);
 	}
 }

@@ -8,9 +8,11 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1028:EnumStorageShouldBeInt32")]
 	public enum BinaryOperation : byte { Sum, Difference, Product, Quotient, Modulus, Power, LessThan, LessThanOrEqual, GreaterThan,GreaterThanOrEqual,Equal,NotEqual,And,Or,Xor}
 
-	public enum BinaryOperationArgTypes : byte { Int_Int, Int_Double,Double_Double,Double_Int,String_String,String_Int,Bool_Bool}
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1028:EnumStorageShouldBeInt32")]
+	public enum BinaryOperationArgsType : byte { Int_Int, Int_Double,Double_Double,Double_Int,String_String,String_Int,Bool_Bool}
 
 	public sealed class BinaryExpression : Expression
 	{
@@ -31,26 +33,26 @@ namespace LsnCore.Expressions
 		public override bool IsPure => _Left.IsPure && _Right.IsPure;
 
 		public readonly BinaryOperation Operation;
-		public readonly BinaryOperationArgTypes ArgumentTypes;
+		public readonly BinaryOperationArgsType ArgumentTypes;
 
-		public BinaryExpression(IExpression left,IExpression right, BinaryOperation operation, BinaryOperationArgTypes argTypes)
+		public BinaryExpression(IExpression left,IExpression right, BinaryOperation operation, BinaryOperationArgsType argTypes)
 		{
 			_Left = left; _Right = right; Operation = operation; ArgumentTypes = argTypes;
 			switch (argTypes)
 			{
-				case BinaryOperationArgTypes.Int_Int:
+				case BinaryOperationArgsType.Int_Int:
 					Type = LsnType.int_.Id;
 					break;
-				case BinaryOperationArgTypes.Int_Double:
-				case BinaryOperationArgTypes.Double_Double:
-				case BinaryOperationArgTypes.Double_Int:
+				case BinaryOperationArgsType.Int_Double:
+				case BinaryOperationArgsType.Double_Double:
+				case BinaryOperationArgsType.Double_Int:
 					Type = LsnType.double_.Id;
 					break;
-				case BinaryOperationArgTypes.String_String:
-				case BinaryOperationArgTypes.String_Int:
+				case BinaryOperationArgsType.String_String:
+				case BinaryOperationArgsType.String_Int:
 					Type = LsnType.string_.Id;
 					break;
-				case BinaryOperationArgTypes.Bool_Bool:
+				case BinaryOperationArgsType.Bool_Bool:
 					Type = LsnType.Bool_.Id;
 					break;
 			}
@@ -62,7 +64,7 @@ namespace LsnCore.Expressions
 			LsnValue right;
 			switch (ArgumentTypes)
 			{
-				case BinaryOperationArgTypes.Int_Int:
+				case BinaryOperationArgsType.Int_Int:
 					right = _Right.Eval(i);
 					switch (Operation)
 					{
@@ -75,7 +77,6 @@ namespace LsnCore.Expressions
 						case BinaryOperation.LessThan:				return new LsnValue(left.IntValue <  right.IntValue);
 						case BinaryOperation.LessThanOrEqual:		return new LsnValue(left.IntValue <= right.IntValue);
 						case BinaryOperation.GreaterThan:			return new LsnValue(left.IntValue >  right.IntValue);
-							
 						case BinaryOperation.GreaterThanOrEqual:	return new LsnValue(left.IntValue >= right.IntValue);
 						case BinaryOperation.Equal:					return new LsnValue(left.IntValue == right.IntValue);
 						case BinaryOperation.NotEqual:				return new LsnValue(left.IntValue != right.IntValue);
@@ -85,7 +86,7 @@ namespace LsnCore.Expressions
 						default:
 							throw new InvalidOperationException(Operation.ToString());
 					}
-				case BinaryOperationArgTypes.Int_Double:
+				case BinaryOperationArgsType.Int_Double:
 					right = _Right.Eval(i);
 					switch (Operation)
 					{
@@ -98,14 +99,13 @@ namespace LsnCore.Expressions
 						case BinaryOperation.LessThan:				return new LsnValue(left.IntValue <  right.DoubleValue);
 						case BinaryOperation.LessThanOrEqual:		return new LsnValue(left.IntValue <= right.DoubleValue);
 						case BinaryOperation.GreaterThan:			return new LsnValue(left.IntValue >  right.DoubleValue);
-							
 						case BinaryOperation.GreaterThanOrEqual:	return new LsnValue(left.IntValue >= right.DoubleValue);
 						case BinaryOperation.Equal:					return new LsnValue((left.IntValue - right.DoubleValue) < double.Epsilon);
 						case BinaryOperation.NotEqual:				return new LsnValue((left.IntValue - right.DoubleValue) >= double.Epsilon);
 						default:
 							throw new InvalidOperationException(Operation.ToString());
 					}
-				case BinaryOperationArgTypes.Double_Double:
+				case BinaryOperationArgsType.Double_Double:
 					right = _Right.Eval(i);switch (Operation)
 					{
 						case BinaryOperation.Sum:					return LsnValue.DoubleSum(left, right);
@@ -123,7 +123,7 @@ namespace LsnCore.Expressions
 						default:
 							throw new InvalidOperationException(Operation.ToString());
 					}
-				case BinaryOperationArgTypes.Double_Int:
+				case BinaryOperationArgsType.Double_Int:
 					right = _Right.Eval(i);
 					switch (Operation)
 					{
@@ -136,14 +136,13 @@ namespace LsnCore.Expressions
 						case BinaryOperation.LessThan:				return new LsnValue(left.DoubleValue <  right.IntValue);
 						case BinaryOperation.LessThanOrEqual:		return new LsnValue(left.DoubleValue <= right.IntValue);
 						case BinaryOperation.GreaterThan:			return new LsnValue(left.DoubleValue >  right.IntValue);
-							
 						case BinaryOperation.GreaterThanOrEqual:	return new LsnValue(left.DoubleValue >= right.IntValue);
 						case BinaryOperation.Equal:					return new LsnValue((left.DoubleValue - right.IntValue) < double.Epsilon);
 						case BinaryOperation.NotEqual:				return new LsnValue((left.DoubleValue - right.IntValue) >= double.Epsilon);
 						default:
 							throw new InvalidOperationException(Operation.ToString());
 					}
-				case BinaryOperationArgTypes.String_String:
+				case BinaryOperationArgsType.String_String:
 					right = _Right.Eval(i);
 					var lefts  = (left .Value as StringValue)?.Value;
 					var rights = (right.Value as StringValue)?.Value;
@@ -160,17 +159,18 @@ namespace LsnCore.Expressions
 						default:
 							throw new InvalidOperationException();
 					}
-				case BinaryOperationArgTypes.String_Int:
+				case BinaryOperationArgsType.String_Int:
 					right = _Right.Eval(i);
 					lefts = (left.Value as StringValue)?.Value ?? "";
 					var righti = right.IntValue;
 					switch (Operation)
 					{
 						case BinaryOperation.Product:		return new LsnValue(new StringValue(new StringBuilder().Append(lefts, 0, righti).ToString()));
+						case BinaryOperation.Sum:			return new LsnValue(new StringValue(lefts + right.IntValue));
 						default:
 							throw new InvalidOperationException(Operation.ToString());
 					}
-				case BinaryOperationArgTypes.Bool_Bool:
+				case BinaryOperationArgsType.Bool_Bool:
 					switch (Operation)
 					{
 						case BinaryOperation.Equal:			return new LsnValue(left.BoolValue == _Right.Eval(i).BoolValue);
@@ -200,7 +200,7 @@ namespace LsnCore.Expressions
 					var right = (LsnValue)_Right;
 					switch (ArgumentTypes)
 					{
-						case BinaryOperationArgTypes.Int_Int:
+						case BinaryOperationArgsType.Int_Int:
 							switch (Operation)
 							{
 								case BinaryOperation.Sum:					return LsnValue.IntSum(left, right);
@@ -212,7 +212,6 @@ namespace LsnCore.Expressions
 								case BinaryOperation.LessThan:				return new LsnValue(left.IntValue < right.IntValue);
 								case BinaryOperation.LessThanOrEqual:		return new LsnValue(left.IntValue <= right.IntValue);
 								case BinaryOperation.GreaterThan:			return new LsnValue(left.IntValue > right.IntValue);
-
 								case BinaryOperation.GreaterThanOrEqual:	return new LsnValue(left.IntValue >= right.IntValue);
 								case BinaryOperation.Equal:					return new LsnValue(left.IntValue == right.IntValue);
 								case BinaryOperation.NotEqual:				return new LsnValue(left.IntValue != right.IntValue);
@@ -222,7 +221,7 @@ namespace LsnCore.Expressions
 								default:
 									throw new InvalidOperationException(Operation.ToString());
 							}
-						case BinaryOperationArgTypes.Int_Double:
+						case BinaryOperationArgsType.Int_Double:
 							switch (Operation)
 							{
 								case BinaryOperation.Sum:					return LsnValue.DoubleSum(left, right);
@@ -240,7 +239,7 @@ namespace LsnCore.Expressions
 								default:
 									throw new InvalidOperationException(Operation.ToString());
 							}
-						case BinaryOperationArgTypes.Double_Double:
+						case BinaryOperationArgsType.Double_Double:
 							switch (Operation)
 							{
 								case BinaryOperation.Sum:					return LsnValue.DoubleSum(left, right);
@@ -258,7 +257,7 @@ namespace LsnCore.Expressions
 								default:
 									throw new InvalidOperationException(Operation.ToString());
 							}
-						case BinaryOperationArgTypes.Double_Int:
+						case BinaryOperationArgsType.Double_Int:
 							switch (Operation)
 							{
 								case BinaryOperation.Sum:					return LsnValue.DoubleSum(left, right);
@@ -276,7 +275,7 @@ namespace LsnCore.Expressions
 								default:
 									throw new InvalidOperationException(Operation.ToString());
 							}
-						case BinaryOperationArgTypes.String_String:
+						case BinaryOperationArgsType.String_String:
 							var lefts = (left.Value as StringValue)?.Value;
 							var rights = (right.Value as StringValue)?.Value;
 							switch (Operation)
@@ -292,7 +291,7 @@ namespace LsnCore.Expressions
 								default:
 									throw new InvalidOperationException();
 							}
-						case BinaryOperationArgTypes.String_Int:
+						case BinaryOperationArgsType.String_Int:
 							lefts = (left.Value as StringValue)?.Value ?? "";
 							var righti = right.IntValue;
 							switch (Operation)
@@ -301,7 +300,7 @@ namespace LsnCore.Expressions
 								default:
 									throw new InvalidOperationException(Operation.ToString());
 							}
-						case BinaryOperationArgTypes.Bool_Bool:
+						case BinaryOperationArgsType.Bool_Bool:
 							switch (Operation)
 							{
 								case BinaryOperation.Equal:		return new LsnValue(left.BoolValue == right.BoolValue);
@@ -321,20 +320,22 @@ namespace LsnCore.Expressions
 					case BinaryOperation.Sum:
 						switch (ArgumentTypes)
 						{
-							case BinaryOperationArgTypes.Int_Int:
-							case BinaryOperationArgTypes.Int_Double:
-								if(left.IntValue == 0)
+							case BinaryOperationArgsType.Int_Int:
+							case BinaryOperationArgsType.Int_Double:
+								if (left.IntValue == 0)
 									return _Right;
 								return this;
-							case BinaryOperationArgTypes.Double_Double:
-							case BinaryOperationArgTypes.Double_Int:
+							case BinaryOperationArgsType.Double_Double:
+							case BinaryOperationArgsType.Double_Int:
 								if (left.DoubleValue < double.Epsilon)
 									return _Right;
 								return this;
-							case BinaryOperationArgTypes.String_String:
-								if(string.IsNullOrEmpty((left.Value as StringValue).Value))
+							case BinaryOperationArgsType.String_String:
+								if (string.IsNullOrEmpty((left.Value as StringValue).Value))
 									return _Right;
 								return this;
+							default:
+								break;
 						}
 						return this;
 					case BinaryOperation.Difference:
@@ -342,63 +343,69 @@ namespace LsnCore.Expressions
 					case BinaryOperation.Product:
 						switch (ArgumentTypes)
 						{
-							case BinaryOperationArgTypes.Int_Int:
-							case BinaryOperationArgTypes.Int_Double:
+							case BinaryOperationArgsType.Int_Int:
+							case BinaryOperationArgsType.Int_Double:
 								var leftI = left.IntValue;
 								if (leftI == 0)
 									return new LsnValue(0);
 								if (leftI == 1)
 									return _Right;
 								break;
-							case BinaryOperationArgTypes.Double_Double:
-							case BinaryOperationArgTypes.Double_Int:
+							case BinaryOperationArgsType.Double_Double:
+							case BinaryOperationArgsType.Double_Int:
 								if (Math.Abs(left.DoubleValue) < double.Epsilon)
 									return new LsnValue(0.0);
 								if (Math.Abs(left.DoubleValue - 1) < double.Epsilon)
 									return _Right;
 								return this;
+							default:
+								break;
 						}
 						return this;
 					case BinaryOperation.Quotient:
 					case BinaryOperation.Modulus:
 						switch (ArgumentTypes)
 						{
-							case BinaryOperationArgTypes.Int_Int:
-							case BinaryOperationArgTypes.Int_Double:
+							case BinaryOperationArgsType.Int_Int:
+							case BinaryOperationArgsType.Int_Double:
 								var leftI = left.IntValue;
 								if (leftI == 0)
 									return new LsnValue(0);
 								return this;
-							case BinaryOperationArgTypes.Double_Double:
-							case BinaryOperationArgTypes.Double_Int:
+							case BinaryOperationArgsType.Double_Double:
+							case BinaryOperationArgsType.Double_Int:
 								if (Math.Abs(left.DoubleValue) < double.Epsilon)
 									return new LsnValue(0.0);
 								return this;
+							default:
+								break;
 						}
 						break;
 					case BinaryOperation.Power:
 						switch (ArgumentTypes)
 						{
-							case BinaryOperationArgTypes.Int_Int:
-							case BinaryOperationArgTypes.Int_Double:
+							case BinaryOperationArgsType.Int_Int:
+							case BinaryOperationArgsType.Int_Double:
 								var leftI = left.IntValue;
 								if (leftI == 0)
 									return new LsnValue(0);
 								if (leftI == 1)
 									return new LsnValue(1);
 								break;
-							case BinaryOperationArgTypes.Double_Double:
-							case BinaryOperationArgTypes.Double_Int:
+							case BinaryOperationArgsType.Double_Double:
+							case BinaryOperationArgsType.Double_Int:
 								var leftD = left.DoubleValue;
 								if (Math.Abs(leftD) < double.Epsilon)
 									return new LsnValue(0.0);
 								if (Math.Abs(leftD - 1) < double.Epsilon)
 									return new LsnValue(1.0);
 								break;
+							default:
+								break;
 						}
 						break;
 					case BinaryOperation.And:
-						if (ArgumentTypes == BinaryOperationArgTypes.Bool_Bool)
+						if (ArgumentTypes == BinaryOperationArgsType.Bool_Bool)
 						{
 							if(!left.BoolValue)
 								return new LsnValue(false);
@@ -406,7 +413,7 @@ namespace LsnCore.Expressions
 						}
 						break;
 					case BinaryOperation.Or:
-						if(ArgumentTypes == BinaryOperationArgTypes.Bool_Bool)
+						if(ArgumentTypes == BinaryOperationArgsType.Bool_Bool)
 						{
 							if (left.BoolValue)
 								return new LsnValue(true);
@@ -482,34 +489,48 @@ namespace LsnCore.Expressions
 			Right.Serialize(writer, resourceSerializer);
 		}
 
-		public static BinaryOperationArgTypes GetArgTypes(TypeId left, TypeId right)
+		public static BinaryOperationArgsType GetArgTypes(TypeId left, TypeId right)
 		{
 			switch (left.Name)
 			{
 				case "int":
 					switch (right.Name)
 					{
-						case "int":		return BinaryOperationArgTypes.Int_Int;
-						case "double":	return BinaryOperationArgTypes.Int_Double;
+						case "int": return BinaryOperationArgsType.Int_Int;
+						case "double": return BinaryOperationArgsType.Int_Double;
+						default:
+							break;
 					}
 					break;
 				case "double":
 					switch (right.Name)
 					{
-						case "int":		return BinaryOperationArgTypes.Double_Int;
-						case "double":	return BinaryOperationArgTypes.Double_Double;
+						case "int": return BinaryOperationArgsType.Double_Int;
+						case "double": return BinaryOperationArgsType.Double_Double;
+						default:
+							break;
 					}
 					break;
 				case "string":
 					switch (right.Name)
 					{
-						case "string":	return BinaryOperationArgTypes.String_String;
-						case "int":		return BinaryOperationArgTypes.String_Int;
+						case "string": return BinaryOperationArgsType.String_String;
+						case "int": return BinaryOperationArgsType.String_Int;
+						default:
+							break;
 					}
 					break;
 				case "bool":
+					/*switch (right.Name)
+					{
+						case "bool": return BinaryOperationArgTypes.Bool_Bool;
+						default:
+							break;
+					}
+					break;*/
+					return BinaryOperationArgsType.Bool_Bool;
 				default:
-					return BinaryOperationArgTypes.Bool_Bool;
+					return BinaryOperationArgsType.Bool_Bool;
 			}
 
 			throw new InvalidOperationException();
