@@ -46,15 +46,15 @@ namespace LSNr
 		/// </summary>
 		public void Reify()
 		{
-			/*try
-			{*/
+			try
+			{
 				ProcessDirectives();
-			/*}
+			}
 			catch (Exception)
 			{
 				//TODO: Logging
 				throw;
-			}*/
+			}
 
 			try
 			{

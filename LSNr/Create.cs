@@ -243,6 +243,8 @@ namespace LSNr
 				case SymbolType.Property:
 					var preScr = preScrFn.Parent;
 					return new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
+				default:
+					break;
 			}
 			if (token != null)
 			{
@@ -256,6 +258,8 @@ namespace LSNr
 						return new LsnValue(new StringValue(token.Value));
 					case TokenType.Substitution:
 						throw new ApplicationException();
+					default:
+						throw new Exception("Unexpected Case");
 				}
 			}
 
@@ -439,6 +443,7 @@ namespace LSNr
 					else
 						currentList.Add(t);
 				}
+				else currentList.Add(t);
 			}
 
 			return (argTokens.ToArray(), j + 1);

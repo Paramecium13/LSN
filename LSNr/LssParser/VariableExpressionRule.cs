@@ -72,6 +72,7 @@ namespace LSNr.LssParser
 							var v = script.CurrentScope.GetVariable(str);
 							expr = v.AccessExpression;
 							//ToDo: Mark that this variable is used here...
+							v.MarkAsUsed();
 							break;
 						case SymbolType.UniqueScriptObject:
 							expr = new UniqueScriptObjectAccessExpression(str);

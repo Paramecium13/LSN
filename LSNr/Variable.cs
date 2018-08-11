@@ -39,19 +39,12 @@ namespace LSNr
 
 		public AssignmentStatement Assignment { get; set; }
 
-		public bool Used { get { return Users.Count > 0; } }
+		private bool _IsUsed;
+		public bool Used { get { return /*Users.Count > 0*/ _IsUsed; } }
 
 		public Variable(string name, bool m, IExpression init)
 		{
-			Name = name;
-			Type = init.Type.Type;
-			Mutable = m;
-			InitialValue = init;
-			var e = init.Fold();
-			if (e.IsReifyTimeConst())
-				_AccessExpression = e;
-			else
-				_AccessExpression = new VariableExpression(Index, Type.Id);
+			throw new NotImplementedException();
 		}
 
 		public Variable(string name, bool m, IExpression init, int index)
@@ -125,6 +118,11 @@ namespace LSNr
 			if (newIndex == Index) return;
 			var v = _AccessExpression as VariableExpression;
 			if (v != null) v.Index = newIndex;
+		}
+
+		public void MarkAsUsed()
+		{
+			_IsUsed = true;
 		}
 	}
 }

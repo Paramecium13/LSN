@@ -90,7 +90,9 @@ namespace LSNr.LssParser
 				BinaryExpressionRule.NotEqual,
 				BinaryExpressionRule.Product,
 				BinaryExpressionRule.Quotient,
-				BinaryExpressionRule.Sum});
+				BinaryExpressionRule.Sum,
+				BinaryExpressionRule.Power,
+				new ParenthesisRule()});
 		}
 
 		public static void SetupRules(IExpressionRule[] rules)

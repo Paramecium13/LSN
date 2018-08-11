@@ -1,6 +1,11 @@
 ﻿#using "std\Math"
 
 
+fn IsInCircle(circ:Circle,x:double,y:double)
+{
+	return (x-circ.X)^2 + (y-circ.Y)^2 <= circ.Radius;
+}
+
 record Cat {Age:int, Name:string}
 
 record Dog {Age: int, Name:string}
@@ -102,11 +107,6 @@ HostInterface IStandardActivator
 {
 	event Activate(actor : IActor);
 }
-
-/*fn IsInCircle(circ:Circle,x:double,y:double)
-{
-	return (x-circ.X)^2 + (y-circ.Y)^2 <= circ.Radius;
-}*/
 
 fn GetArea(circ:Circle)->double
 {

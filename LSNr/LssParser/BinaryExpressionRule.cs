@@ -43,7 +43,7 @@ namespace LSNr.LssParser
 			else left = Create.SingleTokenExpress(tokens[index - 1], script);
 
 			if (substitutions.ContainsKey(tokens[index + 1]))
-				right = substitutions[tokens[index - 1]];
+				right = substitutions[tokens[index + 1]];
 			else right = Create.SingleTokenExpress(tokens[index + 1], script);
 
 			return (createExpr(left, right), index + 2, 1);
@@ -87,5 +87,8 @@ namespace LSNr.LssParser
 
 		public static readonly IExpressionRule LogicalOr = new BinaryExpressionRule(ExpressionRulePriorities.Comparative, "||",
 					(l, r) => new BinaryExpression(l, r, BinaryOperation.Or, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+
+		public static readonly IExpressionRule Power = new BinaryExpressionRule(ExpressionRulePriorities.Exponents, "^",
+			(l, r) => new BinaryExpression(l, r, BinaryOperation.Power, BinaryExpression.GetArgTypes(l.Type, r.Type)));
 	}
 }
