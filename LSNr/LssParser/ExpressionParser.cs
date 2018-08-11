@@ -43,6 +43,10 @@ namespace LSNr.LssParser
 				if (CurrentTokens.Count == 1)
 					break;
 			}
+
+			if (CurrentTokens.Count != 1)
+				throw new ApplicationException();
+
 			return Substitutions[CurrentTokens[0]];
 		}
 
@@ -92,7 +96,8 @@ namespace LSNr.LssParser
 				BinaryExpressionRule.Quotient,
 				BinaryExpressionRule.Sum,
 				BinaryExpressionRule.Power,
-				new ParenthesisRule()});
+				new ParenthesisRule(),
+				new FunctionCallRule()});
 		}
 
 		public static void SetupRules(IExpressionRule[] rules)

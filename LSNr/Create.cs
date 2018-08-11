@@ -445,8 +445,19 @@ namespace LSNr
 				}
 				else currentList.Add(t);
 			}
+			pop();
 
 			return (argTokens.ToArray(), j + 1);
+		}
+
+		public static (IExpression[] args, int nextIndex)
+			CreateArgs(int indexOfOpen, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions = null)
+		{
+			var x = CreateArgList(indexOfOpen, tokens, script);
+			var args = new IExpression[x.argTokens.Length];
+			for (int i = 0; i < x.argTokens.Length; i++)
+				args[i] = LssParser.ExpressionParser.Parse(x.argTokens[i], script, substitutions);
+			return (args, x.indexOfNextToken);
 		}
 	}
 }

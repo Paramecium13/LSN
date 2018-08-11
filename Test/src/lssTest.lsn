@@ -1,9 +1,9 @@
 ﻿#using "std\Math"
 
 
-fn IsInCircle(circ:Circle,x:double,y:double)
+fn Distance(a:Point,b:Point)-> double
 {
-	return (x-circ.X)^2 + (y-circ.Y)^2 <= circ.Radius;
+	return Hypot(a.X-b.X,a.Y-b.Y);
 }
 
 record Cat {Age:int, Name:string}
@@ -108,6 +108,11 @@ HostInterface IStandardActivator
 	event Activate(actor : IActor);
 }
 
+fn IsInCircle(circ:Circle,x:double,y:double)
+{
+	return (x-circ.X)^2 + (y-circ.Y)^2 <= circ.Radius;
+}
+
 fn GetArea(circ:Circle)->double
 {
 	say "Can't find π";
@@ -119,10 +124,6 @@ record Point
 	Y : double
 }
 
-/*fn Distance(a:Point,b:Point)-> double
-{
-	return Hypot(a.X-b.X,a.Y-b.Y);
-}*/
 
 
 // for( i = 0 ` a ` a)

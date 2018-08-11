@@ -19,6 +19,7 @@ namespace LsnCore.Expressions
 															// all its functions before any code is read. Thus when the reader reads the code, it has
 															// a function object for every function that the code could call.
 		{
+			Fn = fn;
 			Args = args;
 			Type = fn.ReturnType;
 		}
