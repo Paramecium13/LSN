@@ -47,8 +47,12 @@ namespace LsnCore.Values
 				Host = host;
 				// Subscribe to events.
 				foreach (var evName in (host.Type.Type as HostInterfaceType).EventDefinitions.Keys)
-					if ((CurrentState?.HasEventListener(evName) ?? false) || ScriptClass.HasEventListener(evName))
-						host.SubscribeToEvent(evName, this);
+				{
+					if ((CurrentState?.HasEventListener(evName) ?? false))
+						host.SubscribeToEvent(evName, this, CurrentState.GetEventListener(evName).Priority);
+					else if (ScriptClass.HasEventListener(evName))
+						host.SubscribeToEvent(evName, this, GetEventListener(evName).Priority);
+				}
 
 				string str;
 				if (Settings.ScriptObjectIdFormat == ScriptObjectIdFormat.Host_Self)
@@ -120,8 +124,8 @@ namespace LsnCore.Values
 		internal void SetState(int index)
 		{
 			var nextState = ScriptClass.GetState(index);
-			var expiringSubscriptions = CurrentState.EventsListenedTo.Except(nextState.EventsListenedTo);
-			var newSubscriptions = nextState.EventsListenedTo.Except(CurrentState.EventsListenedTo);
+			var expiringSubscriptions = CurrentState.EventsListenedTo;//.Except(nextState.EventsListenedTo);
+			var newSubscriptions = nextState.EventsListenedTo;//.Except(CurrentState.EventsListenedTo);
 
 			// Unsubscribe from old state's event subscriptions (if valid). Run old state exit method.
 			if (Host != null)
@@ -134,7 +138,7 @@ namespace LsnCore.Values
 			// Subscribe to new state's event subscriptions (if valid). Run new state Start method.
 			if (Host != null)
 				foreach (var subscription in newSubscriptions)
-					Host.SubscribeToEvent(subscription, this);
+					Host.SubscribeToEvent(subscription, this,CurrentState.GetEventListener(subscription).Priority);
 		}
 
 		// Serialization?
