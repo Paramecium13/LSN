@@ -1,6 +1,12 @@
 ﻿#using "std\Math"
 
 
+fn ToCat(dog:Dog) -> Cat
+{
+	return new Cat(dog.Age, dog.Name);
+	//return new Cat(Age:dog.Age,Name:dog.Name);
+}
+
 fn PathDistance(path:Vector<Point>)-> double
 {
 	let mut sum = 0.0;
@@ -142,13 +148,8 @@ record Point
 
 
 
-
-/*fn ToCat(dog:Dog) -> Cat
-{
-	return new Cat(Age:dog.Age,Name:dog.Name);
-}
-
 fn ToDog(cat:Cat) -> Dog
 {
-	return new Dog(Age:cat.Age, Name:cat.Name);
-}*/
+	//return new Dog(Age:cat.Age, Name:cat.Name);
+	return new Dog(cat.Age, cat.Name);
+}

@@ -99,6 +99,7 @@
     <Compile Include="LsnrTypeNotFoundException.cs" />
     <Compile Include="LssParser\BinaryExpressionRule.cs" />
     <Compile Include="LssParser\ConstantRule.cs" />
+    <Compile Include="LssParser\ConstructorRule.cs" />
     <Compile Include="LssParser\ExpressionParser.cs" />
     <Compile Include="LssParser\ExpressionRulePriorities.cs" />
     <Compile Include="LssParser\FunctionCallRule.cs" />

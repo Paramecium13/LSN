@@ -98,7 +98,8 @@ namespace LSNr.LssParser
 				BinaryExpressionRule.Power,
 				new ParenthesisRule(),
 				new FunctionCallRule(),
-				new IndexerRule()});
+				new IndexerRule(),
+				new ConstructorRule()});
 		}
 
 		public static void SetupRules(IExpressionRule[] rules)

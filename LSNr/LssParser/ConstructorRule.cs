@@ -1,0 +1,39 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using LsnCore;
+using LsnCore.Expressions;
+using LsnCore.Types;
+
+namespace LSNr.LssParser
+{
+	public class ConstructorRule : IExpressionRule
+	{
+		public uint Priority => ExpressionRulePriorities.MemberAccess;
+
+		public bool CheckToken(Token token, IPreScript script)
+			=> token.Type == TokenType.Keyword && token.Value == "new";
+
+		public bool CheckContext(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
+			=> true;
+
+		public (IExpression expression, int indexOfNextToken, ushort numTokensToRemoveFromLeft)
+			CreateExpression(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
+		{
+			var type = script.GetType(tokens[index + 1].Value);
+
+			var x = Create.CreateArgs(index + 2, tokens, script, substitutions);
+
+			if (type is StructType)
+				return (new StructConstructor(type.Id, x.args), x.nextIndex, 0);
+			if (type is RecordType)
+				return (new RecordConstructor(type.Id, x.args), x.nextIndex, 0);
+			var lsTy = type as LsnListType;
+			if (lsTy != null)
+				return (new ListConstructor(lsTy), x.nextIndex, 0);
+			throw new ApplicationException();
+		}
+	}
+}
