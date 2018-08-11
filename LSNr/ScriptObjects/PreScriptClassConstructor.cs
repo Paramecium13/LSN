@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+/*using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
@@ -34,4 +34,4 @@ namespace LSNr.ScriptObjects
 			return ScriptClass.CheckSymbol(name);
 		}
 	}
-}
+}*/

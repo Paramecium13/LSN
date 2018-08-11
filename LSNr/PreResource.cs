@@ -69,6 +69,7 @@ namespace LSNr
 			PreParseGameValues(PreParseFunctions(PreParseTypes()));
 			ParseRecordsAndStructs();
 			ParseHostInterfaces();
+			ParseGameValues();
 			PreParseScriptClasses();
 
 			foreach (var pre in PreScriptClasses.Values)

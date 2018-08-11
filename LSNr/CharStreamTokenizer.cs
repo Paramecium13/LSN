@@ -681,7 +681,7 @@ namespace LSNr
 						token = new Token(str, LineNumber, LSNr.TokenType.Identifier);
 					break;
 				case TokenizerTokenType.Float:
-					token = new Token(LineNumber, double.Parse(str));
+					token = new Token(LineNumber, double.Parse(str, CultureInfo.InvariantCulture));
 					break;
 				case TokenizerTokenType.Int:
 					token = new Token(LineNumber, int.Parse(str));

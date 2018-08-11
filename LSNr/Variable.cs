@@ -42,6 +42,7 @@ namespace LSNr
 		private bool _IsUsed;
 		public bool Used { get { return /*Users.Count > 0*/ _IsUsed; } }
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
 		public Variable(string name, bool m, IExpression init)
 		{
 			throw new NotImplementedException();

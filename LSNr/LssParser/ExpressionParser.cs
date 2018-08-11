@@ -14,6 +14,7 @@ namespace LSNr.LssParser
 		private const string SUB = "Ƨ";
 
 		private readonly Dictionary<Token, IExpression> Substitutions;
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
 		private readonly Token[] InitialTokens;
 		private List<Token> CurrentTokens;
 		private int SubCount;

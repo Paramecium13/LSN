@@ -36,7 +36,6 @@ namespace LSNr
 		public abstract bool GenericTypeExists(string name);
 		public abstract Function GetFunction(string name);
 		internal abstract Field GetField(string name);
-		internal int GetFieldIndex(string name) => GetField(name).Index;
 		public abstract GenericType GetGenericType(string name);
 		public abstract LsnType GetType(string name);
 		public abstract TypeId GetTypeId(string name);
@@ -232,6 +231,7 @@ namespace LSNr
 			return new EventListener(def, Resource.RelativePath);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
 		protected void ParseMethods()
 		{
 			foreach (var pair in MethodBodies)
@@ -267,6 +267,7 @@ namespace LSNr
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
 		protected void ParseEventListeners()
 		{
 			foreach (var pair in EventListenerBodies)

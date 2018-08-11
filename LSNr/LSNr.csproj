@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasePreScript.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="LsnrException.cs" />
     <Compile Include="LsnrParsingException.cs" />

@@ -260,144 +260,29 @@ namespace LSNr
 			if (val == "false")
 				return LsnBoolValue.GetBoolValue(false);
 
-			var preScObjFn = script as PreScriptClassFunction;
 			if (val == "this")
 			{
-				if (preScObjFn == null)
+				if (preScrFn == null)
 					throw new LsnrParsingException(token, "Cannot use 'this' outside a script object method or event listener.", script.Path);
-				return new VariableExpression(0, preScObjFn.Parent.Id);
+				return new VariableExpression(0, preScrFn.Parent.Id);
 			}
 			if (val == "host")
 			{
-				if (preScObjFn == null)
+				if (preScrFn == null)
 					throw new LsnrParsingException(token, "Cannot use 'host' outside a script object method or event listener.", script.Path);
-				return new HostInterfaceAccessExpression(preScObjFn.Parent.HostType.Id);
+				return new HostInterfaceAccessExpression(preScrFn.Parent.HostType.Id);
 			}
 
 			throw new LsnrParsingException(token, $"Cannot parse token '{token.Value}' as an expression.", script.Path);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "tokens")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "script")]
 		private static Expression CreateGet(List<Token> tokens, IPreScript script)
 		{
 			throw new NotImplementedException();
 		}
-
-		public static IList<Tuple<string,IExpression>> CreateParamList(List<Token> tokens, int paramCount, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions)
-		{
-			if (tokens.Count == 0)
-				throw new ApplicationException();
-			/*if(tokens[0].Value == "(")
-			{
-				if (tokens[tokens.Count - 1].Value == ")")
-					tokens = tokens.Skip(1).Take(tokens.Count - 2).ToList();
-				else tokens = tokens.Skip(1).ToList();
-			}*/
-			var ls = new List<Tuple<string, IExpression>>();
-			var parameterTokens = new List<List<Token>> { new List<Token>() };
-			int paramIndex = 0;
-			if (tokens.Count(t => t.Value == ",") > paramCount - 1) // There is one less comma than parameter. numCommas = numParameters - 1, where numParameters > 0
-			{
-				int lPCount = 0;
-				int rPCount = 0;
-				int lBCount = 0;
-				int rBCount = 0;
-				int start = 1;
-				int end = tokens.Count - 1;
-
-				if(tokens[0].Value != "(")
-				{
-					start = 0;
-					//++end; This would make it go out of bounds.
-				}
-
-				for (int i = start; i < end; i++)
-				{
-					if (tokens[i].Value == ",")
-					{
-						if (lPCount == rPCount && lBCount == rBCount)
-						{ // This is not inside a nested function or index thing.
-							parameterTokens.Add(new List<Token>());
-							++paramIndex;
-						}
-						else // This is inside a nested function or index thing.
-							parameterTokens[paramIndex].Add(tokens[i]);
-					}
-					else if (tokens[i].Value == "(")
-					{
-						++lPCount;
-						parameterTokens[paramIndex].Add(tokens[i]);
-					}
-					else if (tokens[i].Value == ")")
-					{
-						++rPCount;
-						parameterTokens[paramIndex].Add(tokens[i]);
-					}
-					else if (tokens[i].Value == "[")
-					{
-						++lBCount;
-						parameterTokens[paramIndex].Add(tokens[i]);
-					}
-					else if (tokens[i].Value == "]")
-					{
-						++rBCount;
-						parameterTokens[paramIndex].Add(tokens[i]);
-					}
-					else
-						parameterTokens[paramIndex].Add(tokens[i]);
-				}
-			}
-			else
-			{
-				// Split the list of tokens into multiple lists by commas.
-				for (int i = 0; i < tokens.Count; i++) // Takes into account starting and closing parenthesis.
-														   // (int i = 0; i < tokens.Count; i++) [old]
-				{
-					if (tokens[i].Value == ",")
-					{
-						parameterTokens.Add(new List<Token>());
-						++paramIndex;
-					}
-					else
-						parameterTokens[paramIndex].Add(tokens[i]);
-				}
-			}
-
-			// Parse the parameters
-			for (int i = 0; i < parameterTokens.Count; i++)
-			{
-				var p = parameterTokens[i];
-				if (p.Count > 2 && p[1].Value == ":") // It's named
-				{
-					ls.Add(new Tuple<string, IExpression>(p[0].Value, Express(p.Skip(2).ToList(), script, substitutions)));
-				}
-				else
-				{
-					ls.Add(new Tuple<string, IExpression>("", Express(p, script,substitutions)));
-				}
-			}
-			return ls;
-		}
-
-		/// <summary>
-		/// ...
-		/// </summary>
-		/// <param name="tokens"> The tokens, without the function name and containing parenthesis</param>
-		/// <param name="fn"></param>
-		/// <param name="script">todo: describe script parameter on CreateFunctionCall</param>
-		/// <param name="substitutions">todo: describe substitutions parameter on CreateFunctionCall</param>
-		/// <returns></returns>
-		public static FunctionCall CreateFunctionCall(List<Token> tokens, Function fn, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions = null)
-		{
-			var ls = CreateParamList(tokens, fn.Parameters.Count, script, substitutions);
-			return fn.CreateCall(ls);
-		}
-
-		public static IExpression CreateMethodCall(List<Token> tokens, Method method, IExpression obj, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions = null)
-		{
-			var ls = CreateParamList(tokens, method.Parameters.Count, script,substitutions);
-			return method.CreateMethodCall(ls,obj);
-		}
-
+		
 		public static (Token[][] argTokens, int indexOfNextToken) CreateArgList(int indexOfOpen, IReadOnlyList<Token> tokens, IPreScript script)
 		{
 			var argTokens = new List<Token[]>();

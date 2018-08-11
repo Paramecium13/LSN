@@ -75,10 +75,10 @@ namespace LSNr
 				return -5;
 			}
 			LsnResourceThing res = null;
-			return MakeResource(new string(args[0].Take(args[0].Length - 4).ToArray()),src, destination, out res, args);
+			return MakeResource(new string(args[0].Take(args[0].Length - 4).ToArray()),src, destination, out res);
 		}
 
-		internal static int MakeResource(string path, string src, string destination, out LsnResourceThing res, string[] args)
+		internal static int MakeResource(string path, string src, string destination, out LsnResourceThing res)
 		{
 			var rs = new PreResource(src,path);
 			rs.Reify();
@@ -127,10 +127,11 @@ namespace LSNr
 			return 0;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args")]
 		private static int Build(string[] args)
 		{
 			throw new NotImplementedException();
-			if(args.Length > 1 && args[1].ToLower() == "all")
+			/*if(args.Length > 1 && args[1].ToLower() == "all")
 			{
 
 			}
@@ -138,7 +139,7 @@ namespace LSNr
 			{
 
 			}
-			return 0;
+			return 0;*/
 		}
 
 		public static string GetObjectPath(string rawPath)

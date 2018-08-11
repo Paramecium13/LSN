@@ -148,7 +148,7 @@ namespace LSNr
 					}
 				}
 			}
-			else if (Program.MakeResource(path, File.ReadAllText(srcPath), objPath, out res, new string[0]) != 0)
+			else if (Program.MakeResource(path, File.ReadAllText(srcPath), objPath, out res) != 0)
 				throw new ApplicationException();
 			return res;
 		}
@@ -451,6 +451,8 @@ namespace LSNr
 		public bool TypeIsIncluded(TypeId type)
 			=> IncludedTypes.Contains(type.Type);
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "index")]
 		public TypeId GetTypeId(ushort index)
 		{
 			throw new NotImplementedException();
