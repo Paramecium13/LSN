@@ -65,7 +65,7 @@ namespace LsnCore
 				currentStatement = NextStatement++;
 			}
 		}
-		
+
 		public virtual void EnterFunctionScope(string resourceFilePath, int scopeSize)
 		{
 			NextStatementStack.Push(NextStatement);
@@ -246,5 +246,18 @@ namespace LsnCore
 			for (int i = 0; i < indexes.Length; i++)
 				CurrentStackFrame[indexes[i]] = values[i];
 		}
+
+		protected Random Rng = new Random();
+
+		public virtual void RngSetSeed(int seed)
+		{
+			Rng = new Random(seed);
+		}
+
+		public virtual int RngGetInt(int min, int max)
+			=> Rng.Next(min, max);
+
+		public virtual double RngGetDouble()
+			=> Rng.NextDouble();
 	}
 }

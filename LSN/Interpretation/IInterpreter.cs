@@ -1,4 +1,5 @@
 ﻿using LsnCore.Values;
+using System;
 using System.Collections.Generic;
 
 namespace LsnCore
@@ -115,5 +116,87 @@ namespace LsnCore
 		/// Clear the registered choices.
 		/// </summary>
 		void ClearChoices();
+
+		/// <summary>
+		/// Set the seed used for random number generation.
+		/// </summary>
+		/// <param name="seed"></param>
+		void RngSetSeed(int seed);
+
+		/// <summary>
+		/// Get a random integer.
+		/// </summary>
+		/// <param name="min">The minimum value, inclusive.</param>
+		/// <param name="max">The maximum value, exclusive.</param>
+		/// <returns></returns>
+		int RngGetInt(int min, int max);
+
+		/// <summary>
+		/// Get a random double from the uniform distribution [0,1).
+		/// </summary>
+		/// <returns></returns>
+		double RngGetDouble();
+	}
+
+	public static class InterpreterExtensions
+	{
+		/// <summary>
+		/// Get a random double from the specified uniform distribution.
+		/// </summary>
+		/// <param name="i"></param>
+		/// <param name="min">The minimum value, inclusive.</param>
+		/// <param name="max">The maximum value, exclusive.</param>
+		/// <returns></returns>
+		public static double RngGetDouble(this IInterpreter i, double min, double max)
+			=> min + (max - min) * i.RngGetDouble();
+
+		/// <summary>
+		/// Returns a random number from the standard normal distribution.
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		public static double RngGetNormal(this IInterpreter i)
+		{
+			var u1 = i.RngGetDouble();
+			var u2 = i.RngGetDouble();
+			return Math.Sqrt(-2 * Math.Log(u1)) * Math.Cos(2 * Math.PI * u2);
+		}
+
+		/// <summary>
+		/// Returns a random number from the specified normal distribution.
+		/// </summary>
+		/// <param name="i"></param>
+		/// <param name="mean"></param>
+		/// <param name="standardDeviation"></param>
+		/// <returns></returns>
+		public static double RngGetNormal(this IInterpreter i, double mean, double standardDeviation)
+			=> mean + i.RngGetNormal() * standardDeviation;
+
+		/// <summary>
+		/// Returns a random number from the standard normal distribution that is within 'cap'
+		/// standard deviations of the mean.
+		/// </summary>
+		/// <param name="i"></param>
+		/// <param name="cap">The furthest the result can be from 0.</param>
+		/// <returns></returns>
+		public static double RngGetCappedNormal(this IInterpreter i, double cap)
+		{
+			var x = i.RngGetNormal();
+			while (x > cap || x < -cap)
+				x = i.RngGetNormal();
+			return x;
+		}
+
+		/// <summary>
+		/// Returns a random number from the specified normal distribution that is within 'cap'
+		/// of the mean.
+		/// </summary>
+		/// <param name="i"></param>
+		/// <param name="mean">The mean value.</param>
+		/// <param name="standardDeviation">The standard deviation</param>
+		/// <param name="cap">The furthest away the result can be from the mean.</param>
+		/// <returns></returns>
+		public static double RngGetCappedNormal(this IInterpreter i, double mean, double standardDeviation, double cap)
+			=> mean + standardDeviation * i.RngGetCappedNormal(cap / standardDeviation);
 	}
 }
