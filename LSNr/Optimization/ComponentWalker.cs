@@ -11,7 +11,6 @@ namespace LSNr.Optimization
 {
 	public abstract class ComponentWalker
 	{
-
 		public void Walk(Component c)
 		{
 			var cs = c as ControlStructure;
@@ -20,60 +19,48 @@ namespace LSNr.Optimization
 			else View((Statement)c);
 		}
 
-
 		protected virtual void Walk(IList<Component> components)
 		{
-			int length = components.Count;
+			var length = components.Count;
 			for (int i = 0; i < length; i++)
 				Walk(components[i]);
 		}
 
-
 		private void Walk(ControlStructure c)
 		{
-			var cs = c as CaseStructure;
-			if(cs != null)
+			if (c is CaseStructure cs)
 			{
 				WalkCaseStructure(cs);
 				return;
 			}
-			var ch = c as Choice;
-			if (ch != null)
+			if (c is Choice ch)
 			{
 				WalkChioce(ch);
 				return;
 			}
-			var cbc = c as ChoicesBlockControl;
-			if(cbc != null)
+			if (c is ChoicesBlockControl cbc)
 			{
 				WalkCbc(cbc);
 				return;
 			}
-
-			var fl = c as ForLoop;
-			if(fl != null)
+			if (c is ForLoop fl)
 			{
 				WalkForLoop(fl);
 				return;
 			}
-			var ife = c as IfElseControl;
-			if(ife != null)
+			if (c is IfElseControl ife)
 			{
 				WalkIfElse(ife);
 				return;
 			}
-			var ms = c as MatchStructure;
-			if(ms != null)
+			if (c is MatchStructure ms)
 			{
 				WalkMatchStructure(ms);
 				return;
 			}
-			var wl = c as WhileLoop;
-			if(wl != null)
-			{
+			if (c is WhileLoop wl)
 				WalkWhileLoop(wl);
-				return;
-			}
+			throw new NotImplementedException();
 		}
 
 		protected virtual void WalkCaseStructure(CaseStructure c)
@@ -83,30 +70,24 @@ namespace LSNr.Optimization
 				Walk(component);
 		}
 
-
 		protected virtual void View(CaseStructure c) { }
-
 
 		protected virtual void WalkChioce(Choice c)
 		{
 			View(c); Walk(c.Components);
 		}
 
-
 		protected virtual void View(Choice c) { }
-
 
 		protected virtual void WalkCbc(ChoicesBlockControl c)
 		{
 			View(c);
-			int length = c.Choices.Count;
+			var length = c.Choices.Count;
 			for (int i = 0; i < length; i++)
 				WalkChioce(c.Choices[i]);
 		}
 
-
 		protected virtual void View(ChoicesBlockControl c) { }
-
 
 		protected virtual void WalkForLoop(ForLoop f)
 		{
@@ -114,9 +95,7 @@ namespace LSNr.Optimization
 			Walk(f.Body);
 		}
 
-
 		protected virtual void View(ForLoop f) { }
-
 
 		protected virtual void WalkIfElse(IfElseControl f)
 		{
@@ -129,9 +108,7 @@ namespace LSNr.Optimization
 			Walk(f.ElseBlock);
 		}
 
-
 		protected virtual void View(IfElseControl f) { }
-
 
 		protected virtual void WalkElsif(ElsifControl e)
 		{
@@ -139,9 +116,7 @@ namespace LSNr.Optimization
 			Walk(e.Body);
 		}
 
-
 		protected virtual void View(ElsifControl e) { }
-
 
 		protected virtual void WalkMatchStructure(MatchStructure ms)
 		{
@@ -150,9 +125,7 @@ namespace LSNr.Optimization
 				WalkCaseStructure(ms.Cases[i]);
 		}
 
-
 		protected virtual void View(MatchStructure c) { }
-
 
 		protected virtual void WalkWhileLoop(WhileLoop wl)
 		{
@@ -160,14 +133,11 @@ namespace LSNr.Optimization
 			Walk(wl.Body);
 		}
 
-
 		protected virtual void View(WhileLoop wl) { }
-
 
 		protected virtual void View(Statement s)
 		{
 
 		}
-
 	}
 }

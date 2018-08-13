@@ -61,6 +61,7 @@ namespace LsnCore
 		bool TypeExists(string name);
 		bool GenericTypeExists(string name);
 		GenericType GetGenericType(string name);
+		void GenericTypeUsed(TypeId typeId);
 	}
 
 	/// <summary>

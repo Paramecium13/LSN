@@ -19,11 +19,6 @@ namespace LsnCore.Expressions
 			Name = name; Type = type;
 		}
 
-		public UniqueScriptObjectAccessExpression(string name)
-		{
-			Name = name;
-		}
-
 		public override LsnValue Eval(IInterpreter i)
 			=> new LsnValue(i.GetUniqueScriptObject(Name));
 

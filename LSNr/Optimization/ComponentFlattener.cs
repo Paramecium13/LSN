@@ -12,15 +12,13 @@ namespace LSNr.Optimization
 {
 	sealed class ComponentFlattener : ComponentWalker
 	{
-
 		private readonly List<PreStatement> PreStatements = new List<PreStatement>();
-		
+
 		private readonly Stack<string> InnerMostLoopStartLabels = new Stack<string>();
 
 		private readonly Stack<string> InnerMostLoopEndLabels = new Stack<string>();
 
 		private string NextLabel;
-
 
 		public Statement[] Flatten(List<Component> components)
 		{
@@ -28,7 +26,6 @@ namespace LSNr.Optimization
 
 			foreach (var jmp in PreStatements.Where(s => s.Target != null))
 				(jmp.Statement as IHasTargetStatement).Target = FindLabel(jmp.Target);
-			
 
 			return PreStatements.Select(p => p.Statement).ToArray();
 		}
@@ -44,7 +41,7 @@ namespace LSNr.Optimization
 		private int IfCount;
 		protected override void WalkIfElse(IfElseControl f)
 		{
-			string endifLabel = "EndIf" + (IfCount++).ToString();
+			var endifLabel = "EndIf" + (IfCount++);
 			var preSt = new PreStatement(new ConditionalJumpStatement(new NotExpression(f.Condition)))
 			{
 				Target = endifLabel
@@ -64,12 +61,11 @@ namespace LSNr.Optimization
 				WalkElsif(f.Elsifs[i]);
 			}
 			if(f.ElseBlock != null) Walk(f.ElseBlock);
-
 		}
 
 		protected override void WalkElsif(ElsifControl e)
 		{
-			string endifLabel = "EndIf" + (IfCount++).ToString();
+			var endifLabel = "EndIf" + (IfCount++);
 			var preSt = new PreStatement(new ConditionalJumpStatement(new NotExpression(e.Condition)))
 			{
 				Target = endifLabel
@@ -84,9 +80,7 @@ namespace LSNr.Optimization
 
 			Walk(e.Body);
 			NextLabel = endifLabel;
-
 		}
-
 
 		private int WhileLoopCount;
 		protected override void WalkWhileLoop(WhileLoop wl)
@@ -121,7 +115,6 @@ namespace LSNr.Optimization
 			InnerMostLoopStartLabels.Pop();
 			InnerMostLoopEndLabels.Pop();
 		}
-
 
 		private int ForLoopCount;
 		protected override void WalkForLoop(ForLoop f)
@@ -175,7 +168,7 @@ namespace LSNr.Optimization
 			for (int i = 0; i < c.Choices.Count; i++)
 			{
 				var ch = c.Choices[i];
-				string chTarget = "Choice" + index + "Target" + i.ToString();
+				var chTarget = "Choice" + index + "Target" + i;
 				var regPreSt = new PreStatement(new RegisterChoiceStatement(ch.Condition ?? LsnBoolValue.GetBoolValue(true), ch.Title))
 				{Target = chTarget};
 				if (i == 0 && NextLabel != null)
@@ -205,7 +198,7 @@ namespace LSNr.Optimization
 
 			NextLabel = endLabel;
 		}
-		
+
 		protected override void View(Statement s)
 		{
 			PreStatement preSt;
@@ -238,6 +231,5 @@ namespace LSNr.Optimization
 			}
 			PreStatements.Add(preSt);
 		}
-
 	}
 }

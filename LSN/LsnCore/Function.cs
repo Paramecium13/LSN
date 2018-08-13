@@ -95,6 +95,7 @@ namespace LsnCore
 				throw new ApplicationException();*/
 			return new Parameter(name, typeId, LsnValue.Nil, index);
 		}
+
 		public static Parameter Read(ushort index, BinaryDataReader reader, ResourceDeserializer resourceDeserializer)
 		{
 			var name = reader.ReadString();

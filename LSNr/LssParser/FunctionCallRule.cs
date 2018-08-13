@@ -22,10 +22,24 @@ namespace LSNr.LssParser
 			CreateExpression(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
 			var fn = script.GetFunction(tokens[index].Value);
+			if(fn.Parameters.Count == 0)
+			{
+				var next = index + 1;
+				if(next < tokens.Count && tokens[next].Value == "(")
+				{
+					++next;
+					if (next >= tokens.Count)
+						throw new LsnrParsingException(tokens[index + 1], $"Missing closing parenthesis for function call '{fn.Name}'.", script.Path);
+					if (tokens[next].Value != ")")
+						throw LsnrParsingException.UnexpectedToken(tokens[next], ")", script.Path);
+					++next;
+				}
+				return (new FunctionCall(fn, new IExpression[0]), next, 0);
+			}
 
-			var x = Create.CreateArgs(index + 1, tokens, script, substitutions);
+			var (args, nextIndex) = Create.CreateArgs(index + 1, tokens, script, substitutions);
 
-			return (new FunctionCall(fn, x.args), x.nextIndex, 0);
+			return (new FunctionCall(fn, args), nextIndex, 0);
 		}
 	}
 }

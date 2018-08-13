@@ -57,5 +57,10 @@ namespace LSNr
 		{
 			return Resource.TypeIsIncluded(type);
 		}
+
+		public void GenericTypeUsed(TypeId typeId)
+		{
+			Resource.GenericTypeUsed(typeId);
+		}
 	}
 }

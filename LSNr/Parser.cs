@@ -84,9 +84,9 @@ namespace LSNr
 			var c = new List<Component>();
 			for (int i = 0; i < components.Count; i++)
 			{
-				if (components[i] is IfControl)
+				if (components[i] is IfControl ifc)
 				{
-					IfElseControl f = new IfElseControl((components[i] as IfControl).Condition,(components[i] as IfControl).Body);
+					var f = new IfElseControl(ifc.Condition, ifc.Body);
 					i++;
 					if (i >= components.Count)
 						c.Add(f);
@@ -95,6 +95,7 @@ namespace LSNr
 						if (components[i] is ElsifControl)
 						{
 							f.Elsifs.Add(components[i] as ElsifControl);
+							i++;
 						}
 						else if (components[i] is ElseControl)
 						{
@@ -106,17 +107,13 @@ namespace LSNr
 						else
 						{
 							c.Add(f);
-							//i++; // This component still needs to be analysed.
+							i--;
 							break;
 						}
-						i++;
 					}
-
 				}
 				else
-				{
 					c.Add(components[i]);
-				}
 			}
 			return c;
 		}

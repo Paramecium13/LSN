@@ -427,6 +427,8 @@ namespace LSNr
 			var type = IncludedTypes.FirstOrDefault(t => t.Name == name);
 			if (type != null) return type;
 			type = LoadedTypes.FirstOrDefault(t => t.Name == name);
+			if (type != null) return type;
+
 			if (type == null)
 				throw new LsnrTypeNotFoundException(Path, name);
 			return type;
@@ -457,6 +459,8 @@ namespace LSNr
 		{
 			throw new NotImplementedException();
 		}
+
+		public abstract void GenericTypeUsed(TypeId typeId);
 
 		/*public virtual void AddType(LsnType type)
 		{

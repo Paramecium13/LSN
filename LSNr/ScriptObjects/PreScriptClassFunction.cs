@@ -44,5 +44,10 @@ namespace LSNr
 		{
 			return Parent.TypeIsIncluded(type);
 		}
+
+		public void GenericTypeUsed(TypeId typeId)
+		{
+			Parent.GenericTypeUsed(typeId);
+		}
 	}
 }

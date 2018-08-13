@@ -50,7 +50,8 @@ namespace LsnCore
 
 	public abstract class ResourceManager : IResourceManager
 	{
-		private LsnResourceThing LsnMath;
+		private static LsnResourceThing LsnMath;
+		private static LsnResourceThing LsnRandom;
 
 		/// <summary>
 		/// Get the unique script object that has the provided name, typically from the current save file...
@@ -87,6 +88,10 @@ namespace LsnCore
 					if(LsnMath == null)
 						LsnMath = LoadMath();
 					return LsnMath;
+				case "Random":
+					if (LsnRandom == null)
+						LsnRandom = LoadRandom();
+					return LsnRandom;
 				case "Regex":
 				case "RegEx":
 					throw new NotImplementedException();
@@ -105,7 +110,13 @@ namespace LsnCore
 			switch (path)
 			{
 				case "Math":
-					return LoadMath();
+					if (LsnMath == null)
+						LsnMath = LoadMath();
+					return LsnMath;
+				case "Random":
+					if (LsnRandom == null)
+						LsnRandom = LoadRandom();
+					return LsnRandom;
 				case "Regex":
 				case "RegEx":
 					throw new NotImplementedException();
@@ -119,9 +130,9 @@ namespace LsnCore
 		/// </summary>
 		/// <returns></returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-		public static LsnResourceThing LoadMath()
+		private static LsnResourceThing LoadMath()
 		{
-			var functions = new List<Function>
+			var functions = new Function[]
 			{
 				new BoundedFunction(d =>
 				{
@@ -212,6 +223,55 @@ namespace LsnCore
 				Usings = new List<string>(),
 				Functions = functions.ToDictionary((f) => f.Name)
 			};
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
+		private static LsnResourceThing LoadRandom()
+		{
+			var functions = new Function[]
+			{
+				new BoundedFunctionWithInterpreter((i,_) => new LsnValue(i.RngGetDouble()), new List<Parameter>(), LsnType.double_.Id, "Random"),
+				new BoundedFunctionWithInterpreter((i,d) =>
+				{
+					i.RngSetSeed(d[0].IntValue);
+					return LsnValue.Nil;
+				},new List<Parameter> {new Parameter("seed",LsnType.int_,new LsnValue(0),0)},null, "SetRandomSeed"),
+				new BoundedFunctionWithInterpreter((i,d) => new LsnValue(i.RngGetInt(d[0].IntValue,d[1].IntValue)),
+					new List<Parameter> {new Parameter("min",LsnType.int_,new LsnValue(0),0), new Parameter("max",LsnType.int_,new LsnValue(int.MaxValue),1)},
+					LsnType.int_.Id, "RandomInt"),
+				new BoundedFunctionWithInterpreter((i,d) => new LsnValue(i.RngGetDouble(d[0].DoubleValue, d[1].DoubleValue)),
+					new List<Parameter> {new Parameter("min",LsnType.double_,new LsnValue(0.0),0), new Parameter("max",LsnType.double_,new LsnValue(1.0),1)},
+					LsnType.double_.Id, "RandomDouble"),
+				new BoundedFunctionWithInterpreter((i,d) => new LsnValue(i.RngGetNormal()),
+					new List<Parameter>(), LsnType.double_.Id, "StandardNormal"),
+				new BoundedFunctionWithInterpreter((i,d) => new LsnValue(i.RngGetCappedNormal(d[0].DoubleValue)),
+					new List<Parameter> {new Parameter("cap",LsnType.double_, new LsnValue(4.0),0)},
+					LsnType.double_.Id, "CappedStandardNormal"),
+				new BoundedFunctionWithInterpreter((i,d) => new LsnValue(i.RngGetNormal(d[0].DoubleValue, d[1].DoubleValue)),
+					new List<Parameter> {new Parameter("mean",LsnType.double_,new LsnValue(0.0),0), new Parameter("standardDeviation",LsnType.double_,new LsnValue(1.0),1)},
+					LsnType.double_.Id, "Normal"),
+				new BoundedFunctionWithInterpreter((i,d) => new LsnValue(i.RngGetCappedNormal(d[0].DoubleValue, d[1].DoubleValue,d[2].DoubleValue)),
+					new List<Parameter> { new Parameter("mean", LsnType.double_, new LsnValue(0.0), 0),
+						new Parameter("standardDeviation", LsnType.double_, new LsnValue(1.0), 1),
+						new Parameter("cap",LsnType.double_, new LsnValue(4.0),2)},
+					LsnType.double_.Id, "CappedNormal"),
+
+				new BoundedFunctionWithInterpreter((i,d) => new LsnValue(i.RngGetDouble() < d[0].DoubleValue),
+					new List<Parameter> {new Parameter("percent",LsnType.double_,new LsnValue(50.0),0)},
+					LsnType.double_.Id, "PercentChance"),
+
+
+			};
+			return new LsnResourceThing(new TypeId[0] /*{ LsnType.int_.Id, LsnType.double_.Id }*/)
+			{
+				HostInterfaces = new Dictionary<string, HostInterfaceType>(),
+				StructTypes = new Dictionary<string, StructType>(),
+				ScriptClassTypes = new Dictionary<string, ScriptClass>(),
+				//Types = new List<LsnType>(),
+				Usings = new List<string>(),
+				Functions = functions.ToDictionary((f) => f.Name)
+			};
+
 		}
 
 		/// <summary>

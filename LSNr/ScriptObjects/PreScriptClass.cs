@@ -44,7 +44,7 @@ namespace LSNr
 		public PreScriptClass(string name, PreResource resource, string hostName, bool isUnique, IReadOnlyList<Token> tokens)
 			:base(tokens, new TypeId(name),resource,hostName)
 		{
-			Name = name; IsUnique = isUnique;
+			Name = name; IsUnique = isUnique; //ToDo: Make the typeId contain the actual type...
 		}
 
 		public override bool FunctionExists(string name) => Resource.FunctionExists(name);

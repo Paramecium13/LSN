@@ -24,17 +24,17 @@ namespace LSNr
 
 		//private readonly Dictionary<Identifier, List<IToken>> InlineLiterals = new Dictionary<Identifier, List<IToken>>();
 
-		private readonly Dictionary<string, RecordType>		MyRecordTypes	= new Dictionary<string, RecordType>();
-		private readonly Dictionary<string, StructType>		MyStructTypes	= new Dictionary<string, StructType>();
-		private readonly Dictionary<string, LsnFunction>	MyFunctions		= new Dictionary<string, LsnFunction>();
-		private readonly Dictionary<string, ScriptClass>	MyScriptClasses	= new Dictionary<string, ScriptClass>();
-
+		private readonly Dictionary<string, RecordType>			MyRecordTypes		= new Dictionary<string, RecordType>();
+		private readonly Dictionary<string, StructType>			MyStructTypes		= new Dictionary<string, StructType>();
+		private readonly Dictionary<string, LsnFunction>		MyFunctions			= new Dictionary<string, LsnFunction>();
+		private readonly Dictionary<string, ScriptClass>		MyScriptClasses		= new Dictionary<string, ScriptClass>();
 		private readonly Dictionary<string, List<Token>>		FunctionBodies		= new Dictionary<string, List<Token>>();
 		private readonly Dictionary<string, PreHostInterface>	PreHostInterfaces	= new Dictionary<string, PreHostInterface>();
 		private readonly Dictionary<string, PreScriptClass>		PreScriptClasses	= new Dictionary<string, PreScriptClass>();
 		private readonly Dictionary<string, Token[]>			PreGameValues		= new Dictionary<string, Token[]>();
 		private readonly Dictionary<TypeId, Token[]>			PreRecords			= new Dictionary<TypeId, Token[]>();
 		private readonly Dictionary<TypeId, Token[]>			PreStructs			= new Dictionary<TypeId, Token[]>();
+		private readonly HashSet<TypeId>						UsedGenerics		= new HashSet<TypeId>();
 
 		public PreResource(string src, string path) : base(src,path)
 		{
@@ -46,15 +46,15 @@ namespace LSNr
 		/// </summary>
 		public void Reify()
 		{
-			try
-			{
+			//try
+			//{
 				ProcessDirectives();
-			}
-			catch (Exception)
+			//}
+			/*catch (Exception)
 			{
 				//TODO: Logging
 				throw;
-			}
+			}*/
 
 			try
 			{
@@ -264,8 +264,8 @@ namespace LSNr
 							throw LsnrParsingException.UnexpectedToken(tokens[i], "}", Path);
 
 						var fnBody = new List<Token>();
-						int openCount = 1;
-						int closeCount = 0;
+						var openCount = 1;
+						var closeCount = 0;
 						string v = null;
 						while (true)
 						{
@@ -343,8 +343,8 @@ namespace LSNr
 		{
 			foreach(var pair in MyFunctions)
 			{
-				try
-				{
+				//try
+				//{
 					var preFn = new PreFunction(this);
 					foreach (var param in pair.Value.Parameters)
 						preFn.CurrentScope.CreateVariable(param);
@@ -353,12 +353,13 @@ namespace LSNr
 					preFn.CurrentScope.Pop(parser.Components);
 					if (preFn.Valid)
 					{
-						pair.Value.Code = new ComponentFlattener().Flatten(Parser.Consolidate(parser.Components).Where(c => c != null).ToList());
+						var cmps = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
+						pair.Value.Code = new ComponentFlattener().Flatten(cmps);
 						pair.Value.StackSize = (preFn.CurrentScope as VariableTable)?.MaxSize ?? -1;
 					}
 					else
 						Valid = false;
-				}
+				/*}
 				catch (LsnrException e)
 				{
 					Logging.Log("function", pair.Key, e);
@@ -368,7 +369,7 @@ namespace LSNr
 				{
 					Logging.Log("function", pair.Key, e, Path);
 					Valid = false;
-				}
+				}*/
 			}
 		}
 
@@ -438,11 +439,11 @@ namespace LSNr
 			ushort index = 0;
 			for(int i = 0; i < tokens.Count; i++)
 			{
-				string name = tokens[i].Value;
+				var name = tokens[i].Value;
 				if (tokens[++i].Value != ":")
 					throw new LsnrParsingException(tokens[i], $"Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.", Path);
-                TypeId type = this.ParseTypeId(tokens, ++i, out i);
-				LsnValue defaultValue = LsnValue.Nil;
+                var type = this.ParseTypeId(tokens, ++i, out i);
+				var defaultValue = LsnValue.Nil;
 				if (i < tokens.Count && tokens[i].Value == "=")
 				{
 					if (tokens[++i].Type == TokenType.String)
@@ -557,7 +558,7 @@ namespace LSNr
 			var fields = new List<Tuple<string, TypeId>>();
 			for (int i = 0; i < tokens.Length; i++)
 			{
-				string fName = tokens[i++].Value; // Get the name of the field, move on to the next token.
+				var fName = tokens[i++].Value; // Get the name of the field, move on to the next token.
 				if (i >= tokens.Length) // Make sure the definition does not end..
 					throw new LsnrParsingException(tokens[i - 1], "unexpected end of declaration, expected ':'.", Path);
 				if (tokens[i++].Value != ":") // Make sure the next token is ':', move on to the next token.
@@ -643,16 +644,23 @@ namespace LSNr
 			}
 		}
 
+		private TypeId[] GetTypeIds()
+		{
+			return new List<TypeId> {new TypeId("void") }
+				.Union(LoadedTypes		.Select(t => t.Id))
+				.Union(IncludedTypes	.Select(t => t.Id))
+				.Union(MyStructTypes	.Select(t => t.Value.Id))
+				.Union(MyRecordTypes	.Select(t => t.Value.Id))
+				.Union(MyHostInterfaces	.Select(t => t.Value.Id))
+				.Union(MyScriptClasses	.Select(t => t.Value.Id))
+				.Union(UsedGenerics)
+				.Distinct()
+				.ToArray();
+		}
+
 		public LsnResourceThing GetResource()
 		{
-			return new LsnResourceThing(LoadedTypes.Select(t => t.Id)
-				.Union(IncludedTypes.Select(t => t.Id))
-				.Union(MyStructTypes.Select(t => t.Value.Id))
-				.Union(MyRecordTypes.Select(t => t.Value.Id))
-				.Union(MyHostInterfaces.Select(t => t.Value.Id))
-				.Union(MyScriptClasses.Select(t=>t.Value.Id))
-				.Distinct()
-				.ToArray())
+			return new LsnResourceThing(GetTypeIds())
 			{
 				Functions = IncludedFunctions
 					.Union(MyFunctions.Select(p => new KeyValuePair<string, Function>(p.Key,p.Value)))
@@ -705,5 +713,47 @@ namespace LSNr
 
 		public override bool UniqueScriptObjectTypeExists(string name)
 			=> base.UniqueScriptObjectTypeExists(name) || PreScriptClasses.Any(p => p.Key == name && p.Value.IsUnique);
+
+		public override void GenericTypeUsed(TypeId typeId)
+		{
+			if (!UsedGenerics.Contains(typeId))
+				UsedGenerics.Add(typeId);
+		}
+
+		public override LsnType GetType(string name)
+		{
+			if (name.Contains('`'))
+			{
+				var names = name.Split('`');
+				if (GenericTypeExists(names[0]))
+				{
+					var generic = GetGenericType(names[0]);
+					return generic.GetType(names.Skip(1).Select(n => GetType(n)).Select(t => t.Id).ToList());
+				}
+
+				throw new LsnrTypeNotFoundException(Path, name);
+			}
+			var type = IncludedTypes.FirstOrDefault(t => t.Name == name);
+			if (type != null) return type;
+			type = LoadedTypes.FirstOrDefault(t => t.Name == name);
+			if (type != null) return type;
+
+			if (MyScriptClasses.ContainsKey(name))
+				return MyScriptClasses[name];
+			if (MyHostInterfaces.ContainsKey(name))
+				return MyHostInterfaces[name];
+			if (MyStructTypes.ContainsKey(name))
+				return MyStructTypes[name];
+			if (MyRecordTypes.ContainsKey(name))
+				return MyRecordTypes[name];
+			if (PreHostInterfaces.ContainsKey(name))
+				return PreHostInterfaces[name].HostInterfaceId.Type;
+			if (PreScriptClasses.ContainsKey(name))
+				return PreScriptClasses[name].Id.Type;
+
+			if (type == null)
+				throw new LsnrTypeNotFoundException(Path, name);
+			return type;
+		}
 	}
 }

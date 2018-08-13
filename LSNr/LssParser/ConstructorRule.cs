@@ -22,9 +22,10 @@ namespace LSNr.LssParser
 		public (IExpression expression, int indexOfNextToken, ushort numTokensToRemoveFromLeft)
 			CreateExpression(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
-			var type = script.GetType(tokens[index + 1].Value);
+			var i = index + 1;
+			var type = script.ParseType(tokens, i, out i);
 
-			var x = Create.CreateArgs(index + 2, tokens, script, substitutions);
+			var x = Create.CreateArgs(i, tokens, script, substitutions);
 
 			if (type is StructType)
 				return (new StructConstructor(type.Id, x.args), x.nextIndex, 0);

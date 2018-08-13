@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Expressions;
+using LsnCore.Types;
 
 namespace LSNr.LssParser
 {
@@ -75,7 +76,7 @@ namespace LSNr.LssParser
 							v.MarkAsUsed();
 							break;
 						case SymbolType.UniqueScriptObject:
-							expr = new UniqueScriptObjectAccessExpression(str);
+							expr = new UniqueScriptObjectAccessExpression(str,script.GetType(str).Id);
 							break;
 						case SymbolType.GlobalVariable:
 							throw new NotImplementedException();

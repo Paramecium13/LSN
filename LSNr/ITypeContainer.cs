@@ -19,14 +19,14 @@ namespace LSNr
 		/// <returns></returns>
 		public static LsnType ParseType(this ITypeContainer self, IReadOnlyList<Token> tokens, int startIndex, out int endIndex)
 		{
-			int i = startIndex;
+			var i = startIndex;
 			var tName = tokens[startIndex].Value;
 			if (self.TypeExists(tName))
 			{
 				endIndex = i + 1;
 				return self.GetType(tokens[i].Value);
 			}
-			else if (self.GenericTypeExists(tName))
+			if (self.GenericTypeExists(tName))
 			{
 				if(tokens[++i].Value != "<")
 				{
@@ -35,7 +35,7 @@ namespace LSNr
 					return null;
 				}
 				++i;
-				GenericType gType = self.GetGenericType(tName);
+				var gType = self.GetGenericType(tName);
 				var generics = new List<LsnType>();
 				while(tokens[i].Value != ">")
 				{
@@ -43,7 +43,9 @@ namespace LSNr
 					if(tokens[i].Value == ",") i++; // else error?
 				}
 				endIndex = i + 1;
-				return gType.GetType(generics.Select(t => t.Id).ToList());
+				var ty = gType.GetType(generics.Select(t => t.Id).ToList());
+				self.GenericTypeUsed(ty.Id);
+				return ty;
 			}
 			endIndex = -1;
 			return null;
@@ -59,14 +61,14 @@ namespace LSNr
 		/// <returns></returns>
 		public static TypeId ParseTypeId(this ITypeContainer self, IReadOnlyList<Token> tokens, int startIndex, out int endIndex)
 		{
-			int i = startIndex;
+			var i = startIndex;
 			var tName = tokens[startIndex].Value;
 			if (self.TypeExists(tName))
 			{
 				endIndex = i + 1;
 				return self.GetTypeId(tokens[i].Value);
 			}
-			else if (self.GenericTypeExists(tName))
+			if (self.GenericTypeExists(tName))
 			{
 				if (tokens[++i].Value != "<")
 				{
@@ -75,7 +77,7 @@ namespace LSNr
 					return null;
 				}
 				++i;
-				GenericType gType = self.GetGenericType(tName);
+				var gType = self.GetGenericType(tName);
 				var generics = new List<TypeId>();
 				while (tokens[i].Value != ">")
 				{
@@ -83,7 +85,9 @@ namespace LSNr
 					if (tokens[i].Value == ",") i++; // else error?
 				}
 				endIndex = i + 1;
-				return gType.GetType(generics).Id;
+				var tId = gType.GetType(generics).Id;
+				self.GenericTypeUsed(tId);
+				return tId;
 			}
 			endIndex = -1;
 			return null;

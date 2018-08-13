@@ -1,9 +1,29 @@
 ﻿#using "std\Math"
-
+#using "std\Random"
 
 record Cat {Age:int, Name:string}
 
 record Dog {Age: int, Name:string}
+
+fn Test(x : double) -> int
+{
+	if (PercentChance(Random))
+	{
+		return RandomInt(0,99);
+	}
+	if(StandardNormal() <= CappedNormal(10.0) || RandomDouble(0.0,100.0) < 50.0)
+	{
+		return 100;
+	}
+	if(Normal(50.0,10.2) > x)
+	{
+		return 101;
+	}
+	if(CappedNormal(50.0,10.2,50.0) < x)
+	{
+		return 102;
+	}
+}
 
 fn Bark(dog : Dog)
 {
@@ -131,12 +151,14 @@ fn Distance(a:Point,b:Point)-> double
 
 fn ToCat(dog:Dog) -> Cat
 {
-	return new Cat(Age:dog.Age,Name:dog.Name);
+	//return new Cat(Age:dog.Age,Name:dog.Name);
+	return new Cat(dog.Age, dog.Name);
 }
 
 fn ToDog(cat:Cat) -> Dog
 {
-	return new Dog(Age:cat.Age, Name:cat.Name);
+	//return new Dog(Age:cat.Age, Name:cat.Name);
+	return new Dog(cat.Age, cat.Name);
 }
 
 
@@ -151,3 +173,5 @@ fn PathDistance(path:Vector<Point>)-> double
 	}
 	return sum;
 }
+
+
