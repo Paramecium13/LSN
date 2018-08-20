@@ -300,8 +300,6 @@ namespace LSNr
 			}
 		}
 
-		public bool TypeIsIncluded(TypeId type) => Resource.TypeIsIncluded(type);
-
 		public abstract FunctionSignature GetMethodSignature(string name);
 
 		public void GenericTypeUsed(TypeId typeId)

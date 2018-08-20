@@ -14,8 +14,6 @@ namespace LSNr
 		string Path { get; }
 
 		SymbolType CheckSymbol(string name);
-
 		Function GetFunction(string name);
-		bool TypeIsIncluded(TypeId type);
 	}
 }

@@ -46,7 +46,6 @@ namespace LSNr
 		public GenericType GetGenericType(string name)	=> Parent.GetGenericType(name);
 		public LsnType GetType(string name)				=> Parent.GetType(name);
 		public bool TypeExists(string name)				=> name == Name || Parent.TypeExists(name);
-		public bool TypeIsIncluded(TypeId type)			=> Parent.TypeIsIncluded(type);
 
 		public TypeId GetTypeId(string name)
 		{

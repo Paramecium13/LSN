@@ -29,7 +29,6 @@ namespace LSNr
 		public bool TypeExists(string name)				=> Resource.TypeExists(name);
 		public string Path								=> Resource.Path;
 		public TypeId GetTypeId(string name)			=> Resource.GetTypeId(name);
-		public bool TypeIsIncluded(TypeId type)			=> Resource.TypeIsIncluded(type);
 
 		public void GenericTypeUsed(TypeId typeId)
 		{

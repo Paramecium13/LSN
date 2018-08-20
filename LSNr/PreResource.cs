@@ -276,7 +276,6 @@ namespace LSNr
 							fnBody.Add(tokens[i]);
 						}
 						var fn = new LsnFunction(paramaters, returnType, name, RelativePath);
-						IncludeFunction(fn);
 						FunctionBodies.Add(name, fnBody);
 						MyFunctions.Add(name, fn);
 					}
@@ -600,7 +599,6 @@ namespace LSNr
 			if (fields == null) return null;
 			var recordType = new RecordType(typeId, fields);
             MyRecordTypes.Add(typeId.Name, recordType);
-			IncludedTypes.Add(recordType);
 			return recordType;
 		}
 
@@ -629,7 +627,6 @@ namespace LSNr
 			if (fields == null) return null;
 			var structType = new StructType(typeId, fields);
 			MyStructTypes.Add(typeId.Name, structType);
-			IncludedTypes.Add(structType);
 			return structType;
 		}
 
@@ -645,7 +642,6 @@ namespace LSNr
 		{
 			return new List<TypeId> {new TypeId("void") }
 				.Union(LoadedTypes		.Select(t => t.Id))
-				.Union(IncludedTypes	.Select(t => t.Id))
 				.Union(MyStructTypes	.Select(t => t.Value.Id))
 				.Union(MyRecordTypes	.Select(t => t.Value.Id))
 				.Union(MyHostInterfaces	.Select(t => t.Value.Id))
@@ -659,24 +655,13 @@ namespace LSNr
 		{
 			return new LsnResourceThing(GetTypeIds())
 			{
-				Functions = IncludedFunctions
-					.Union(MyFunctions.Select(p => new KeyValuePair<string, Function>(p.Key,p.Value)))
-					.ToDictionary(),
-				Includes = Includes,
-				StructTypes = MyStructTypes
-					.Union(IncludedStructTypes.ToDictionary(t => t.Name))
-					.ToDictionary(),
-				RecordTypes = MyRecordTypes
-					.Union(IncludedRecordTypes.ToDictionary(t => t.Name))
-					.ToDictionary(),
+				Functions = MyFunctions.ToDictionary(p=> p.Key, p => (Function)p.Value),
+				Includes = new List<string>(),
+				StructTypes = MyStructTypes,
+				RecordTypes = MyRecordTypes,
 				Usings = Usings,
-				HostInterfaces = MyHostInterfaces
-					.Union(IncludedHostInterfaceTypes.ToDictionary(t => t.Name))
-					.ToDictionary(),
+				HostInterfaces = MyHostInterfaces,
 				ScriptClassTypes = MyScriptClasses
-					.Union(IncludedScriptClasses.ToDictionary(t => t.Name))
-					.ToDictionary()
-				//TODO: Add IncludedTypes.
 			};
 		}
 
@@ -730,9 +715,7 @@ namespace LSNr
 
 				throw new LsnrTypeNotFoundException(Path, name);
 			}
-			var type = IncludedTypes.FirstOrDefault(t => t.Name == name);
-			if (type != null) return type;
-			type = LoadedTypes.FirstOrDefault(t => t.Name == name);
+			var type = LoadedTypes.FirstOrDefault(t => t.Name == name);
 			if (type != null) return type;
 
 			if (MyScriptClasses.ContainsKey(name))

@@ -29,7 +29,6 @@ namespace LSNr
 		public LsnType GetType(string name)				=> Parent.GetType(name);
 		public TypeId GetTypeId(string name)			=> Parent.GetTypeId(name);
 		public bool TypeExists(string name)				=> Parent.TypeExists(name);
-		public bool TypeIsIncluded(TypeId type)			=> Parent.TypeIsIncluded(type);
 
 		public SymbolType CheckSymbol(string name)
 		{

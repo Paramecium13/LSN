@@ -34,11 +34,7 @@ namespace LSNr
 
 		protected readonly List<string> Usings = new List<string>();
 
-		protected readonly List<string> Includes = new List<string>();
-
 		protected readonly Dictionary<string, GameValue> LoadedGameValues = new Dictionary<string, GameValue>();
-
-		protected readonly Dictionary<string, GameValue> IncludedGameValues = new Dictionary<string, GameValue>();
 
 		//protected LsnEnvironment _Environment;
 		//internal LsnEnvironment Environment => _Environment;
@@ -59,56 +55,6 @@ namespace LSNr
 		protected void Tokenize()
 		{
 			Tokens = new CharStreamTokenizer().Tokenize(Text);
-		}
-
-		//
-		protected void Include(LsnScriptBase resource, string path)
-		{
-			foreach (var _using in resource.Usings)
-			{
-				Use(_using);
-			}
-			foreach (var structType in resource.StructTypes.Values)
-			{
-				IncludedTypes.Add(structType);
-				IncludedStructTypes.Add(structType);
-				structType.Id.Load(structType);
-				//LoadType(structType);
-			}
-			foreach (var recType in resource.RecordTypes.Values)
-			{
-				IncludedTypes.Add(recType);
-				IncludedRecordTypes.Add(recType);
-				recType.Id.Load(recType);
-				//LoadType(recType);
-			}
-			foreach (var hostInterface in resource.HostInterfaces.Values)
-			{
-				IncludedTypes.Add(hostInterface);
-				IncludedHostInterfaceTypes.Add(hostInterface);
-				hostInterface.Id.Load(hostInterface);
-				LoadType(hostInterface);
-			}
-			foreach(var scObj in resource.ScriptClassTypes.Values)
-			{
-				IncludedTypes.Add(scObj);
-				IncludedScriptClasses.Add(scObj);
-				scObj.Id.Load(scObj);
-				LoadType(scObj);
-			}
-			//ToDo: Generic types and functions...
-			foreach(var pair in resource.Functions)
-			{
-				// if (IncludedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
-				if (! IncludedFunctions.ContainsKey(pair.Key)) IncludedFunctions.Add(pair.Key, pair.Value);
-				LoadFunctionParamAndReturnTypes(pair.Value.Signature);
-			}
-			foreach (var gameVal in resource.GameValues)
-			{
-				IncludedGameValues.Add(gameVal.Key,gameVal.Value);
-			}
-
-			Includes.Add(path);
 		}
 
 		//
@@ -213,17 +159,6 @@ namespace LSNr
 			}
 			//_Environment = new LsnEnvironment(usePaths);
 
-			if (Regex.IsMatch(source, "#include", RegexOptions.IgnoreCase))
-			{
-				//Process #include directive(s)
-				foreach (var match in Regex.Matches(source, "#include\\s+\"(.+)\"").Cast<Match>())
-				{
-					var path = match.Groups.OfType<object>().Select(o => o.ToString()).Skip(1).First();
-					var res = Load(path);
-					Include(res, path);
-					source = source.Replace(match.Value, ""); // TODO: Test.
-				}
-			}
 			if (source.Contains("#mut"))
 			{
 				Mutable = true;
@@ -297,30 +232,14 @@ namespace LSNr
 		}
 
 		#region Functions
-
-		/// <summary>
-		/// The functions included in this script.
-		/// </summary>
-		protected readonly Dictionary<string, Function> IncludedFunctions = new Dictionary<string, Function>();
-
 		private readonly Dictionary<string, Function> _LoadedExternallyDefinedFunctions = new Dictionary<string, Function>();
 		protected IReadOnlyDictionary<string, Function> LoadedExternallyDefinedFunctions => _LoadedExternallyDefinedFunctions;
 
 		public Function GetFunction(string name)
 		{
-			if (IncludedFunctions.ContainsKey(name)) return IncludedFunctions[name];
 			if (_LoadedExternallyDefinedFunctions.ContainsKey(name)) return _LoadedExternallyDefinedFunctions[name];
 
 			throw new LsnrFunctionNotFoundException(Path, name);
-		}
-
-		/// <summary>
-		/// ...
-		/// </summary>
-		/// <param name="fn"></param>
-		protected void IncludeFunction(Function fn)
-		{
-			IncludedFunctions.Add(fn.Name, fn);
 		}
 		#endregion
 
@@ -339,7 +258,6 @@ namespace LSNr
 		}
 
 		#region Types
-
 		protected void LoadType(LsnType type)
 		{
 			if (type != null && type.Id.Type == null)
@@ -370,15 +288,6 @@ namespace LSNr
 		}
 
 		/// <summary>
-		/// The types that will be included by the output.
-		/// </summary>
-		protected readonly IList<LsnType> IncludedTypes = new List<LsnType>();
-		protected readonly IList<StructType> IncludedStructTypes = new List<StructType>();
-		protected readonly IList<RecordType> IncludedRecordTypes = new List<RecordType>();
-		protected readonly IList<HostInterfaceType> IncludedHostInterfaceTypes = new List<HostInterfaceType>();
-		protected readonly IList<ScriptClass> IncludedScriptClasses = new List<ScriptClass>();
-
-		/// <summary>
 		/// The types that will not be included by the output.
 		/// </summary>
 		protected readonly IList<LsnType> LoadedTypes = LsnType.GetBaseTypes();
@@ -386,12 +295,10 @@ namespace LSNr
 		protected readonly Dictionary<string, HostInterfaceType> MyHostInterfaces = new Dictionary<string, HostInterfaceType>();
 		protected readonly Dictionary<string, ScriptClass> ScriptClasses = new Dictionary<string, ScriptClass>();
 
-		protected readonly IList<GenericType> IncludedGenerics = new List<GenericType>();
-
 		protected readonly IList<GenericType> LoadedGenerics = LsnType.GetBaseGenerics();
 
 		public virtual bool TypeExists(string name)
-			=> IncludedTypes.Any(t => t.Name == name) || LoadedTypes.Any(t => t.Name == name);
+			=> LoadedTypes.Any(t => t.Name == name);
 
 		public virtual LsnType GetType(string name)
 		{
@@ -406,9 +313,7 @@ namespace LSNr
 
 				throw new LsnrTypeNotFoundException(Path, name);
 			}
-			var type = IncludedTypes.FirstOrDefault(t => t.Name == name);
-			if (type != null) return type;
-			type = LoadedTypes.FirstOrDefault(t => t.Name == name);
+			var type = LoadedTypes.FirstOrDefault(t => t.Name == name);
 			if (type != null) return type;
 
 			if (type == null)
@@ -417,23 +322,18 @@ namespace LSNr
 		}
 
 		public virtual bool UniqueScriptObjectTypeExists(string name)
-			=> LoadedTypes.Union(IncludedTypes).Any((t) => t.Name == name && ((t as ScriptClass)?.Unique ?? false));
+			=> LoadedTypes.Any((t) => t.Name == name && ((t as ScriptClass)?.Unique ?? false));
 
 		public virtual bool GenericTypeExists(string name)
-			=> IncludedGenerics.Any(t => t.Name == name) || LoadedGenerics.Any(t => t.Name == name);
+			=> LoadedGenerics.Any(t => t.Name == name);
 
 		public virtual GenericType GetGenericType(string name)
 		{
-			var type = IncludedGenerics.FirstOrDefault(t => t.Name == name);
-			if (type != null) return type;
-			type = LoadedGenerics.FirstOrDefault(t => t.Name == name);
+			var type = LoadedGenerics.FirstOrDefault(t => t.Name == name);
 			return type;
 		}
 
 		public virtual TypeId GetTypeId(string name) => GetType(name).Id;
-
-		public bool TypeIsIncluded(TypeId type)
-			=> IncludedTypes.Contains(type.Type);
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "index")]
