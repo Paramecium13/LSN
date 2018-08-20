@@ -47,7 +47,6 @@ namespace LSNr
 			Name = name; IsUnique = isUnique; //ToDo: Make the typeId contain the actual type...
 		}
 
-		public override bool FunctionExists(string name)		=> Resource.FunctionExists(name);
 		public override Function GetFunction(string name)		=> Resource.GetFunction(name);
 		public override bool GenericTypeExists(string name)		=> Resource.GenericTypeExists(name);
 		public override GenericType GetGenericType(string name)	=> Resource.GetGenericType(name);

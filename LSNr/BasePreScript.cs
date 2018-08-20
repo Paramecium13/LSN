@@ -279,9 +279,9 @@ namespace LSNr
 			}
 			foreach (var pair in resource.Functions)
 			{
-				if (!LoadedExternallyDefinedFunctions.ContainsKey(pair.Key))
+				if (!_LoadedExternallyDefinedFunctions.ContainsKey(pair.Key))
 				{
-					LoadedExternallyDefinedFunctions.Add(pair.Key, pair.Value);
+					_LoadedExternallyDefinedFunctions.Add(pair.Key, pair.Value);
 					LoadFunctionParamAndReturnTypes(pair.Value.Signature);
 				}
 			}
@@ -303,15 +303,13 @@ namespace LSNr
 		/// </summary>
 		protected readonly Dictionary<string, Function> IncludedFunctions = new Dictionary<string, Function>();
 
-		private readonly Dictionary<string, Function> LoadedExternallyDefinedFunctions = new Dictionary<string, Function>();
-
-		public bool FunctionExists(string name)
-			=> IncludedFunctions.ContainsKey(name) || LoadedExternallyDefinedFunctions.ContainsKey(name);
+		private readonly Dictionary<string, Function> _LoadedExternallyDefinedFunctions = new Dictionary<string, Function>();
+		protected IReadOnlyDictionary<string, Function> LoadedExternallyDefinedFunctions => _LoadedExternallyDefinedFunctions;
 
 		public Function GetFunction(string name)
 		{
 			if (IncludedFunctions.ContainsKey(name)) return IncludedFunctions[name];
-			if (LoadedExternallyDefinedFunctions.ContainsKey(name)) return LoadedExternallyDefinedFunctions[name];
+			if (_LoadedExternallyDefinedFunctions.ContainsKey(name)) return _LoadedExternallyDefinedFunctions[name];
 
 			throw new LsnrFunctionNotFoundException(Path, name);
 		}

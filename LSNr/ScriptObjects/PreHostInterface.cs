@@ -41,7 +41,6 @@ namespace LSNr
 		}
 
 		public SymbolType CheckSymbol(string name)		=> Parent.CheckSymbol(name);
-		public bool FunctionExists(string name)			=> Parent.FunctionExists(name);
 		public Function GetFunction(string name)		=> Parent.GetFunction(name);
 		public bool GenericTypeExists(string name)		=> Parent.GenericTypeExists(name);
 		public GenericType GetGenericType(string name)	=> Parent.GetGenericType(name);

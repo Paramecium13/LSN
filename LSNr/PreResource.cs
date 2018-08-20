@@ -698,7 +698,7 @@ namespace LSNr
 
 		public override SymbolType CheckSymbol(string name)
 		{
-			if (FunctionExists(name))
+			if (MyFunctions.ContainsKey(name) || LoadedExternallyDefinedFunctions.ContainsKey(name))
 				return SymbolType.Function;
 			if (CurrentScope.VariableExists(name))
 				return SymbolType.Variable;

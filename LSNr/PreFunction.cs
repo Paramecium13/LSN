@@ -17,48 +17,30 @@ namespace LSNr
 			Resource = resource;
 		}
 
-		private IScope _CurrentScope = new VariableTable(new List<Variable>());
-
-		public IScope CurrentScope { get { return _CurrentScope; } set { _CurrentScope = value; } }
-
-		public bool Mutable => Resource.Mutable;
+		public IScope CurrentScope { get; set; } = new VariableTable(new List<Variable>());
 
 		public bool Valid {get { return Resource.Valid; } set { Resource.Valid = value; } }
 
-		public bool FunctionExists(string name) => Resource.FunctionExists(name);
-
-		public bool GenericTypeExists(string name) => Resource.GenericTypeExists(name);
-
-		public Function GetFunction(string name) => Resource.GetFunction(name);
-
-		public GenericType GetGenericType(string name) => Resource.GetGenericType(name);
-
-		public LsnType GetType(string name) => Resource.GetType(name);
-
-		public bool TypeExists(string name) => Resource.TypeExists(name);
-
-		public string Path => Resource.Path;
-
-		public SymbolType CheckSymbol(string name)
-		{
-			/*if (FunctionExists(name))
-				return SymbolType.Function;*/
-			if (_CurrentScope.VariableExists(name))
-				return SymbolType.Variable;
-
-			return Resource.CheckSymbol(name);
-		}
-
-		public TypeId GetTypeId(string name) => Resource.GetTypeId(name);
-
-		public bool TypeIsIncluded(TypeId type)
-		{
-			return Resource.TypeIsIncluded(type);
-		}
+		public bool Mutable								=> Resource.Mutable;
+		public bool GenericTypeExists(string name)		=> Resource.GenericTypeExists(name);
+		public Function GetFunction(string name)		=> Resource.GetFunction(name);
+		public GenericType GetGenericType(string name)	=> Resource.GetGenericType(name);
+		public LsnType GetType(string name)				=> Resource.GetType(name);
+		public bool TypeExists(string name)				=> Resource.TypeExists(name);
+		public string Path								=> Resource.Path;
+		public TypeId GetTypeId(string name)			=> Resource.GetTypeId(name);
+		public bool TypeIsIncluded(TypeId type)			=> Resource.TypeIsIncluded(type);
 
 		public void GenericTypeUsed(TypeId typeId)
 		{
 			Resource.GenericTypeUsed(typeId);
+		}
+
+		public SymbolType CheckSymbol(string name)
+		{
+			if (CurrentScope.VariableExists(name))
+				return SymbolType.Variable;
+			return Resource.CheckSymbol(name);
 		}
 	}
 }

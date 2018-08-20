@@ -23,7 +23,6 @@ namespace LSNr
 
 		public bool Mutable								=> Parent.Mutable;
 		public string Path								=> Parent.Path;
-		public bool FunctionExists(string name)			=> Parent.FunctionExists(name);
 		public bool GenericTypeExists(string name)		=> Parent.GenericTypeExists(name);
 		public Function GetFunction(string name)		=> Parent.GetFunction(name);
 		public GenericType GetGenericType(string name)	=> Parent.GetGenericType(name);

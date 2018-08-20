@@ -31,7 +31,6 @@ namespace LSNr
 		protected readonly Dictionary<string, IReadOnlyList<Token>> EventListenerBodies = new Dictionary<string, IReadOnlyList<Token>>();
 
 		public abstract SymbolType CheckSymbol(string name);
-		public abstract bool FunctionExists(string name);
 		public abstract bool GenericTypeExists(string name);
 		public abstract Function GetFunction(string name);
 		internal abstract Field GetField(string name);
@@ -66,7 +65,7 @@ namespace LSNr
 			ushort index = 0;
 			for (int i = 0; i < tokens.Count; i++)
 			{
-				string name = tokens[i].Value;
+				var name = tokens[i].Value;
 				if (tokens[++i].Value != ":")
 					throw new LsnrParsingException(tokens[i], $"Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.", Path);
 				var type = this.ParseTypeId(tokens, ++i, out i);
