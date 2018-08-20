@@ -40,30 +40,14 @@ namespace LSNr
 			Name = name; HostInterfaceId = new TypeId(name);  Parent = parent; Tokens = tokens;
 		}
 
-		public SymbolType CheckSymbol(string name) => Parent.CheckSymbol(name);
-
-		public bool FunctionExists(string name)
-		{
-			throw new NotImplementedException();
-		}
-
-		public bool FunctionIsIncluded(string name)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Function GetFunction(string name)
-		{
-			throw new NotImplementedException();
-		}
-
-		public bool GenericTypeExists(string name) => Parent.GenericTypeExists(name);
-
-		public GenericType GetGenericType(string name) => Parent.GetGenericType(name);
-
-		public LsnType GetType(string name) => Parent.GetType(name);
-
-		public bool TypeExists(string name) => name == Name || Parent.TypeExists(name);
+		public SymbolType CheckSymbol(string name)		=> Parent.CheckSymbol(name);
+		public bool FunctionExists(string name)			=> Parent.FunctionExists(name);
+		public Function GetFunction(string name)		=> Parent.GetFunction(name);
+		public bool GenericTypeExists(string name)		=> Parent.GenericTypeExists(name);
+		public GenericType GetGenericType(string name)	=> Parent.GetGenericType(name);
+		public LsnType GetType(string name)				=> Parent.GetType(name);
+		public bool TypeExists(string name)				=> name == Name || Parent.TypeExists(name);
+		public bool TypeIsIncluded(TypeId type)			=> Parent.TypeIsIncluded(type);
 
 		public TypeId GetTypeId(string name)
 		{
@@ -210,10 +194,6 @@ namespace LSNr
 			return new FunctionSignature(parameters, name, returnType);
 		}
 
-		public bool TypeIsIncluded(TypeId type)
-		{
-			return Parent.TypeIsIncluded(type);
-		}
 
 		public void GenericTypeUsed(TypeId typeId)
 		{

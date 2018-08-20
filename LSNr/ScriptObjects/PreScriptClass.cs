@@ -47,17 +47,13 @@ namespace LSNr
 			Name = name; IsUnique = isUnique; //ToDo: Make the typeId contain the actual type...
 		}
 
-		public override bool FunctionExists(string name) => Resource.FunctionExists(name);
-		public override bool FunctionIsIncluded(string name) => Resource.FunctionIsIncluded(name);
-		public override Function GetFunction(string name) => Resource.GetFunction(name);
-
-		public override bool TypeExists(string name) => name == Name || Resource.TypeExists(name);
-		public override LsnType GetType(string name) => Resource.GetType(name);
-
-		public override bool GenericTypeExists(string name) => Resource.GenericTypeExists(name);
-		public override GenericType GetGenericType(string name) => Resource.GetGenericType(name);
-
-		private bool PreParsed;
+		public override bool FunctionExists(string name)		=> Resource.FunctionExists(name);
+		public override Function GetFunction(string name)		=> Resource.GetFunction(name);
+		public override bool GenericTypeExists(string name)		=> Resource.GenericTypeExists(name);
+		public override GenericType GetGenericType(string name)	=> Resource.GetGenericType(name);
+		public override LsnType GetType(string name)			=> name == Name ? Id.Type : Resource.GetType(name);
+		public override TypeId GetTypeId(string name)			=> name == Name ? Id : Resource.GetTypeId(name);
+		public override bool TypeExists(string name)			=> name == Name || Resource.TypeExists(name);
 
 		public override SymbolType CheckSymbol(string name)
 		{
@@ -70,14 +66,6 @@ namespace LSNr
 			return Resource.CheckSymbol(name);
 		}
 
-		public override TypeId GetTypeId(string name)
-		{
-			if (name == Name) return Id;
-			return Resource.GetTypeId(name);
-		}
-
-		//internal ScriptObjectMethod GetMethod(string name) => Methods[name]; //ToDo: Use...
-
 		internal override int GetPropertyIndex(string name)
 		{
 			var prop = Properties.Find(p => p.Name == name);
@@ -85,13 +73,9 @@ namespace LSNr
 		}
 
 		internal override Property GetProperty(string name) => Properties.Find(p => p.Name == name);
-
-		internal override Field GetField(string name)
-			=> Fields.First(f => f.Name == name);
-
-		internal override bool StateExists(string name) => PreStates.Any(p => p.StateName == name);
-
-		internal override int GetStateIndex(string name) => PreStates.FirstOrDefault(p => p.StateName == name).Index;
+		internal override Field GetField(string name)		=> Fields.First(f => f.Name == name);
+		internal override bool StateExists(string name)		=> PreStates.Any(p => p.StateName == name);
+		internal override int GetStateIndex(string name)	=> PreStates.FirstOrDefault(p => p.StateName == name).Index;
 
 		/// <summary>
 		/// No method with this name has been defined already.
@@ -288,7 +272,6 @@ namespace LSNr
 					Valid = false;
 				}
 			}
-			PreParsed = true;
 
 			// PreParse states
 			var states = PreStates.Select(p => p.PreParse()).ToDictionary((s) => s.Id);
@@ -299,7 +282,6 @@ namespace LSNr
 
 		internal bool Parse()
 		{
-			if (!PreParsed) throw new InvalidOperationException();
 			// Parse methods
 			ParseMethods();
 

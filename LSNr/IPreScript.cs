@@ -16,7 +16,6 @@ namespace LSNr
 		SymbolType CheckSymbol(string name);
 
 		bool FunctionExists(string name);
-		bool FunctionIsIncluded(string name);
 		Function GetFunction(string name);
 		bool TypeIsIncluded(TypeId type);
 	}

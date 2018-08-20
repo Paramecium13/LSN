@@ -14,9 +14,6 @@ namespace LSNr
 {
 	public class PreResource : BasePreScript
 	{
-		internal const string STRN = "Στρ";
-		internal const string SUBN = "SUB";
-
 		// Relative to '\src'
 		public readonly string RelativePath;
 
@@ -46,15 +43,15 @@ namespace LSNr
 		/// </summary>
 		public void Reify()
 		{
-			//try
-			//{
+			try
+			{
 				ProcessDirectives();
-			//}
-			/*catch (Exception)
+			}
+			catch (Exception)
 			{
 				//TODO: Logging
 				throw;
-			}*/
+			}
 
 			try
 			{
@@ -221,7 +218,7 @@ namespace LSNr
 		//		* Put the resulting List<Component> in the LSN_Function of the same name stored in Functions.
 		private IReadOnlyList<Token> PreParseFunctions(IReadOnlyList<Token> tokens)
 		{
-			string name = "";
+			var name = "";
 			var otherTokens = new List<Token>();
 			for (int i = 0; i < tokens.Count; i++)
 			{

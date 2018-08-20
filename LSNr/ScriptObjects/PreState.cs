@@ -12,12 +12,10 @@ namespace LSNr
 	public sealed class PreState : BasePreScriptClass
 	{
 		private readonly PreScriptClass Parent;
-		private readonly string _StateName;
-		private readonly int _Index;
 
-		public string StateName => _StateName;
+		public string StateName { get; }
 
-		public int Index => _Index;
+		public int Index { get; }
 
 		public override IScope CurrentScope { get; set; }
 
@@ -32,36 +30,26 @@ namespace LSNr
 		public PreState(PreScriptClass parent, string name, int index,PreResource resource, IReadOnlyList<Token> tokens)
 			:base(tokens,parent.Id,resource,parent.HostName)
 		{
-			Parent = parent; _StateName = name; _Index = index;
+			Parent = parent; StateName = name; Index = index;
 			HostType = parent.HostType;
 		}
 
-		public override bool FunctionExists(string name) => Resource.FunctionExists(name);
-		public override bool FunctionIsIncluded(string name) => Resource.FunctionIsIncluded(name);
-		public override Function GetFunction(string name) => Resource.GetFunction(name);
-
-		public override bool TypeExists(string name) => Parent.TypeExists(name);
-		public override LsnType GetType(string name) => Resource.GetType(name);
-
-		public override bool GenericTypeExists(string name) => Resource.GenericTypeExists(name);
-		public override GenericType GetGenericType(string name) => Resource.GetGenericType(name);
+		public override bool FunctionExists(string name)		=> Resource.FunctionExists(name);
+		public override Function GetFunction(string name)		=> Resource.GetFunction(name);
+		public override bool GenericTypeExists(string name)		=> Resource.GenericTypeExists(name);
+		public override GenericType GetGenericType(string name)	=> Resource.GetGenericType(name);
+		public override bool TypeExists(string name)			=> Parent.TypeExists(name);
+		public override LsnType GetType(string name)			=> Parent.GetType(name);
+		public override TypeId GetTypeId(string name)			=> Parent.GetTypeId(name);
+		internal override Property GetProperty(string val)		=> Parent.GetProperty(val);
+		internal override int GetPropertyIndex(string val)		=> Parent.GetPropertyIndex(val);
+		internal override Field GetField(string name)			=> Parent.GetField(name);
+		internal override bool StateExists(string name)			=> Parent.StateExists(name);
+		internal override int GetStateIndex(string name)		=> Parent.GetStateIndex(name);
 
 		// There can only be one!!!!!!!!!!!
 		public override bool IsMethodSignatureValid(FunctionSignature signature)
 			=> !Methods.ContainsKey(signature.Name) && Parent.IsMethodSignatureValid(signature);
-
-		public override TypeId GetTypeId(string name) => Parent.GetTypeId(name);
-
-		internal override Property GetProperty(string val) => Parent.GetProperty(val);
-
-		internal override int GetPropertyIndex(string val) => Parent.GetPropertyIndex(val);
-
-		internal override Field GetField(string name)
-		=> Parent.GetField(name);
-
-		internal override bool StateExists(string name) => Parent.StateExists(name);
-
-		internal override int GetStateIndex(string name) => Parent.GetStateIndex(name);
 
 		public override SymbolType CheckSymbol(string name)
 		{
@@ -72,7 +60,7 @@ namespace LSNr
 
 		internal ScriptClassState PreParse()
 		{
-			int i = 0;
+			var i = 0;
 			while (i < Tokens.Count)
 			{
 				try
@@ -105,7 +93,7 @@ namespace LSNr
 					Valid = false;
 				}
 			}
-			return new ScriptClassState(_Index, Methods, EventListeners);
+			return new ScriptClassState(Index, Methods, EventListeners);
 		}
 
 		internal bool Parse()

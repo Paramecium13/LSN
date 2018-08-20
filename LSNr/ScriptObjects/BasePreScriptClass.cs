@@ -32,7 +32,6 @@ namespace LSNr
 
 		public abstract SymbolType CheckSymbol(string name);
 		public abstract bool FunctionExists(string name);
-		public abstract bool FunctionIsIncluded(string name);
 		public abstract bool GenericTypeExists(string name);
 		public abstract Function GetFunction(string name);
 		internal abstract Field GetField(string name);

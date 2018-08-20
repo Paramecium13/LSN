@@ -101,7 +101,7 @@ namespace LSNr
 			{
 				// if (IncludedFunctions.ContainsKey(pair.Key)) throw new ApplicationException();
 				if (! IncludedFunctions.ContainsKey(pair.Key)) IncludedFunctions.Add(pair.Key, pair.Value);
-				LoadFunctionParamAndReturnTypes(pair.Value);
+				LoadFunctionParamAndReturnTypes(pair.Value.Signature);
 			}
 			foreach (var gameVal in resource.GameValues)
 			{
@@ -282,7 +282,7 @@ namespace LSNr
 				if (!LoadedExternallyDefinedFunctions.ContainsKey(pair.Key))
 				{
 					LoadedExternallyDefinedFunctions.Add(pair.Key, pair.Value);
-					LoadFunctionParamAndReturnTypes(pair.Value);
+					LoadFunctionParamAndReturnTypes(pair.Value.Signature);
 				}
 			}
 			if(resource.GameValues != null)
@@ -303,16 +303,10 @@ namespace LSNr
 		/// </summary>
 		protected readonly Dictionary<string, Function> IncludedFunctions = new Dictionary<string, Function>();
 
-		/// <summary>
-		/// 
-		/// </summary>
 		private readonly Dictionary<string, Function> LoadedExternallyDefinedFunctions = new Dictionary<string, Function>();
 
 		public bool FunctionExists(string name)
 			=> IncludedFunctions.ContainsKey(name) || LoadedExternallyDefinedFunctions.ContainsKey(name);
-
-		public bool FunctionIsIncluded(string name)
-			=> IncludedFunctions.ContainsKey(name);
 
 		public Function GetFunction(string name)
 		{
@@ -331,16 +325,6 @@ namespace LSNr
 			IncludedFunctions.Add(fn.Name, fn);
 		}
 		#endregion
-
-		protected void LoadFunctionParamAndReturnTypes(Function func)
-		{
-			if (func.ReturnType != null)
-				LoadType(GetType(func.ReturnType.Name));
-			foreach(var param in func.Parameters)
-			{
-				LoadType(GetType(param.Type.Name));
-			}
-		}
 
 		protected void LoadFunctionParamAndReturnTypes(FunctionSignature func)
 		{
@@ -365,7 +349,7 @@ namespace LSNr
 				type.Id.Load(type);
 				// Methods...
 				foreach (var func in type.Methods.Values)
-					LoadFunctionParamAndReturnTypes(func);
+					LoadFunctionParamAndReturnTypes(func.Signature);
 
 				var fType = type as IHasFieldsType;
 				var hType = type as HostInterfaceType;
