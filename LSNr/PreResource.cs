@@ -735,5 +735,8 @@ namespace LSNr
 				throw new LsnrTypeNotFoundException(Path, name);
 			return type;
 		}
+
+		public override Function GetFunction(string name)
+			=> MyFunctions.ContainsKey(name) ? MyFunctions[name] : base.GetFunction(name);
 	}
 }

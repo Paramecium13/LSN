@@ -15,6 +15,6 @@ namespace LSNr
 	[Serializable]
 	class LsnrFunctionNotFoundException : LsnrException
 	{
-		public LsnrFunctionNotFoundException(string fileName, string fnName) : base($"Function '{fnName}' not found. Are you missing an include or using?", fileName) { }
+		public LsnrFunctionNotFoundException(string fileName, string fnName) : base($"Function '{fnName}' not found. Are you missing a using?", fileName) { }
 	}
 }

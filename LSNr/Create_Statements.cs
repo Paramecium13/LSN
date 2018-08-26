@@ -454,7 +454,7 @@ namespace LSNr
 				}
 			}
 			bool useCstor = scClassType.Constructor != null;
-			
+	
 			if (useCstor && args.Length != scClassType.Constructor.Parameters.Length - 1)
 				throw new LsnrParsingException(tokens[2],
 					$"Incorrect number of arguments for constructor of script class '{scClassName}'.", script.Path);

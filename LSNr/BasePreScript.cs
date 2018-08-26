@@ -235,7 +235,7 @@ namespace LSNr
 		private readonly Dictionary<string, Function> _LoadedExternallyDefinedFunctions = new Dictionary<string, Function>();
 		protected IReadOnlyDictionary<string, Function> LoadedExternallyDefinedFunctions => _LoadedExternallyDefinedFunctions;
 
-		public Function GetFunction(string name)
+		public virtual Function GetFunction(string name)
 		{
 			if (_LoadedExternallyDefinedFunctions.ContainsKey(name)) return _LoadedExternallyDefinedFunctions[name];
 
