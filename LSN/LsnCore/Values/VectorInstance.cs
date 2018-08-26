@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using LsnCore.Types;
 using Syroot.BinaryData;
@@ -34,9 +35,9 @@ namespace LsnCore.Values
 		public VectorInstance(VectorType type, LsnValue[] values)
 			:this(type.Id,type.GenericId,values) {}
 
-		public VectorInstance(TypeId type, TypeId genericType, LsnValue[] values)
+		public VectorInstance(TypeId type, TypeId genericType, IEnumerable<LsnValue> values)
 		{
-			Type = type; GenericId = genericType; Values = values; Size = values.Length;
+			Type = type; GenericId = genericType; Values = values.ToArray(); Size = Values.Length;
 		}
 
 		public override ILsnValue Clone() => this;
@@ -55,7 +56,7 @@ namespace LsnCore.Values
 		{
 			var vals = new LsnValue[Size];
 			for (int i = 0; i < Size; i++) vals[i] = Values[i].Clone();
-			return new LsnList(LsnListGeneric.Instance.GetType(new List<TypeId>() { GenericId })
+			return new LsnList(LsnListGeneric.Instance.GetType(new TypeId[] { GenericId })
 				as LsnListType, vals);
 		}
 

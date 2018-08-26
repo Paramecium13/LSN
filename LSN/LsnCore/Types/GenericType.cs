@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LsnCore.Types
 {
 	/// <summary>
-	/// 
+	/// ...
 	/// </summary>
-	[Serializable]
 	public abstract class GenericType
 	{
-		private readonly Dictionary<string, LsnType> Types = new Dictionary<string, LsnType>();
+		protected readonly Dictionary<string, LsnType> Types = new Dictionary<string, LsnType>();
 
 		public abstract string Name { get; }
 
-		protected string GetGenericName(List<TypeId> types)
+		protected string GetGenericName(TypeId[] types)
 		{
 			var s = new StringBuilder(Name);
 			foreach(var type in types)
@@ -28,11 +24,11 @@ namespace LsnCore.Types
         }
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="types"></param>
 		/// <returns></returns>
-		public LsnType GetType(List<TypeId> types)
+		public virtual LsnType GetType(TypeId[] types)
 		{
 			var name = GetGenericName(types);
 			LsnType type = null;
@@ -44,10 +40,9 @@ namespace LsnCore.Types
 				Types.Add(name, type);
 				return type;
 			}
-			else return Types[name];
+			return Types[name];
 		}
 
-		protected abstract LsnType CreateType(List<TypeId> types);
-
+		protected abstract LsnType CreateType(TypeId[] types);
 	}
 }

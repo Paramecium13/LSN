@@ -15,13 +15,13 @@ namespace LsnCore
 		static LsnListType()
 		{
 			// Set up methods
-			var listInt = LsnListGeneric.Instance.GetType(new List<TypeId>() { int_.Id }) as LsnListType;
-			var listDouble = LsnListGeneric.Instance.GetType(new List<TypeId>() { double_.Id }) as LsnListType;
+			var listInt = LsnListGeneric.Instance.GetType(new TypeId[] { int_.Id }) as LsnListType;
+			var listDouble = LsnListGeneric.Instance.GetType(new TypeId[] { double_.Id }) as LsnListType;
 
 			listInt._Methods.Add("Sum", new BoundedMethod(listInt, int_,
 				(args) =>
 				{
-					int Σ = 0;
+					var Σ = 0;
 					var list = (LsnList)args[0].Value;
 					int length = list.Length().IntValue;
 					for (int i = 0; i < length; i++)
@@ -32,9 +32,9 @@ namespace LsnCore
 			listInt._Methods.Add("Mean", new BoundedMethod(listInt, int_,
 				(args) =>
 				{
-					int Σ = 0;
+					var Σ = 0;
 					var list = (LsnList)args[0].Value;
-					int length = list.Length().IntValue;
+					var length = list.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (list[i]).IntValue;
 					return new LsnValue(length > 0 ? Σ / length : 0);
@@ -44,9 +44,9 @@ namespace LsnCore
 			listDouble._Methods.Add("Sum", new BoundedMethod(listDouble, double_,
 				(args) =>
 				{
-					double Σ = 0;
+					var Σ = 0.0;
 					var list = (LsnList)args[0].Value;
-					int length = list.Length().IntValue;
+					var length = list.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (list[i]).DoubleValue;
 					return new LsnValue(Σ);
@@ -55,9 +55,9 @@ namespace LsnCore
 			listDouble._Methods.Add("Mean", new BoundedMethod(listDouble, double_,
 				(args) =>
 				{
-					double Σ = 0.0;
+					var Σ = 0.0;
 					var list = (LsnList)args[0].Value;
-					int length = list.Length().IntValue;
+					var length = list.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (list[i]).DoubleValue;
 					return new LsnValue(length > 0 ? Σ / length : 0);
@@ -65,7 +65,6 @@ namespace LsnCore
 			));
 		}
 
-		[NonSerialized]
 		private LsnType _Generic;
 		public LsnType GenericType {
 			get
@@ -88,18 +87,21 @@ namespace LsnCore
 			Id = new TypeId("List`" + type.Name);
 			GenericType = type.Type;
 			GenericId = type;
-			// Set up methods
+		}
+
+		internal void SetUpMethods()
+		{
 			_Methods.Add("Add", new BoundedMethod(this, null,
 				(args) =>
 				{
 					((LsnList)args[0].Value).Add(args[1]);
 					return LsnValue.Nil;
 				}, "Add",
-				new List<Parameter> { new Parameter("self",this, LsnValue.Nil, 0), new Parameter("value",type, LsnValue.Nil, 1)}
+				new List<Parameter> { new Parameter("self",this, LsnValue.Nil, 0), new Parameter("value",GenericId, LsnValue.Nil, 1)}
 			));
 			_Methods.Add("Length", new BoundedMethod(this, int_, (args) => ((LsnList)args[0].Value).Length(), "Length"));
-			//var vtype = VectorGeneric.Instance.GetType(new List<TypeId> { GenericId }) as VectorType;
-			//_Methods.Add("ToVector", new BoundedMethod(this, vtype, (args) => new LsnValue(new VectorInstance(vtype, ((LsnList)args[0].Value).GetValues())), "ToVector"));
+			var vtype = VectorGeneric.Instance.GetType(new TypeId[] { GenericId }) as VectorType;
+			_Methods.Add("ToVector", new BoundedMethod(this, vtype, (args) => new LsnValue(new VectorInstance(vtype, ((LsnList)args[0].Value).GetValues())), "ToVector"));
 			Id.Load(this);
 		}
 
@@ -110,7 +112,6 @@ namespace LsnCore
 	/// <summary>
 	/// ...
 	/// </summary>
-	[Serializable]
 	public class LsnListGeneric : GenericType
 	{
 		public override string Name => "List";
@@ -119,10 +120,23 @@ namespace LsnCore
 
 		private LsnListGeneric() { }
 
-		protected override LsnType CreateType(List<TypeId> types)
+		protected override LsnType CreateType(TypeId[] types)
 		{
-			if (types.Count != 1) throw new ArgumentException("List types must have exactly one generic parameter.");
+			if (types.Length != 1) throw new ArgumentException("List types must have exactly one generic parameter.");
 			return new LsnListType(types[0]);
+		}
+
+		public override LsnType GetType(TypeId[] types)
+		{
+			var name = GetGenericName(types);
+			LsnType type = null;
+			if (Types.TryGetValue(name, out type))
+				return type;
+			type = CreateType(types);
+			if (!Types.ContainsKey(name)) // For some reason this double check is needed to avoid adding duplicate keys.
+				Types.Add(name, type);
+			(type as LsnListType).SetUpMethods();
+			return Types[name];
 		}
 	}
 }
