@@ -689,6 +689,8 @@ namespace LSNr
 				return SymbolType.Variable;
 			if (UniqueScriptObjectTypeExists(name))
 				return SymbolType.UniqueScriptObject;
+			if (TypeExists(name))
+				return SymbolType.Type;
 
 			return SymbolType.Undefined;
 		}

@@ -4,7 +4,7 @@ using LsnCore.Types;
 namespace LSNr
 {
 	// All variable,field,etc. type symbols in this enum must come before Function.
-	public enum SymbolType { Undefined, UniqueScriptObject, Variable, GlobalVariable, Field, Property, ScriptClassMethod, HostInterfaceMethod, Function}
+	public enum SymbolType { Undefined, UniqueScriptObject, Variable, GlobalVariable, Field, Property, ScriptClassMethod, HostInterfaceMethod, Function, Type}
 
 	public interface IPreScript : ITypeContainer
 	{
