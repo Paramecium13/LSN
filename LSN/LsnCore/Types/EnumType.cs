@@ -29,7 +29,7 @@ namespace LsnCore.Types
 
 		public override LsnValue CreateDefaultValue()
 		{
-			return new LsnValue(0);
+			return new LsnValue(DefaultValue);
 		}
 	}
 }
