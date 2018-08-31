@@ -37,9 +37,10 @@ LSN will have many different statements, though currently not all of them are im
 The interpretation of these statements is implemented by the abstract Interpreter class.
 
 * Assignment: Assign a value to new variable, can mark it as mutable.
-* Reassignment: Assign a new value to an existing variable, if the variable was not declared mutable, the reifier will throw/log an exception.
+* Reassignment: Assign a new value to an existing variable; if the variable was not declared as mutable, the reifier will report an error.
 * Function/Method call: Calls a function or method without doing anything with the result.
 
+See the wiki for more information on these and other statements.
 #### Game specific statements
 The interpretation of these statements must be implemented by the game specific interpreter.
 
@@ -48,18 +49,17 @@ The interpretation of these statements must be implemented by the game specific 
 * Say: Display a message on the screen.
 
 ### Control Structures
-Control the execution of their contents, which can be statements and/or other control structures.
+Control structures are used to control the flow of script execution. They control the execution of their contents, which can be statements and/or other control structures. LSN currently supports some of the common control structures, namely If-else controls, while loops, and for loops. Additionaly, LSN offers the *choice control*, which displays a list of choices to the player and, when they make their choice, executes the code corresponding to that choice.
 
 If-elsif-else control, choice control, match control, loops...
 
 ### Expressions
-Calculate a value.
+Expressions calculate a value.
 
 ## LSN Files
 LSN source files end with the *.lsn* extension and object files end with the *.obj* extension.
 
-All object files can contain a collection of included types and functions that were not defined in it.
-This is done using the #include directive. They can also tell the interpreter to load  files at runtime, with the #using directive. The reifier will also load these resources to check type and function usage.
+LSN files also tell the interpreter to load other LSN files at runtime, with the #using directive. The reifier will also load these other files to check type and function usage.
 
-They contain struct and record definitions, functions, Host Interfaces, and Script Classes.
+LSN files contain struct and record definitions, functions, Host Interfaces, and Script Classes.
 
