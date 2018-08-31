@@ -689,6 +689,8 @@ namespace LSNr
 				return SymbolType.Variable;
 			if (UniqueScriptObjectTypeExists(name))
 				return SymbolType.UniqueScriptObject;
+			if (TypeExists(name))
+				return SymbolType.Type;
 
 			return SymbolType.Undefined;
 		}
@@ -710,7 +712,7 @@ namespace LSNr
 				if (GenericTypeExists(names[0]))
 				{
 					var generic = GetGenericType(names[0]);
-					return generic.GetType(names.Skip(1).Select(n => GetType(n)).Select(t => t.Id).ToList());
+					return generic.GetType(names.Skip(1).Select(n => GetType(n)).Select(t => t.Id).ToArray());
 				}
 
 				throw new LsnrTypeNotFoundException(Path, name);

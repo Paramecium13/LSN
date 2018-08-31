@@ -41,7 +41,7 @@ namespace LsnCore
 			{
 				var names = name.Split('`');
 				var genericTypeName = names[0];
-				var generics = names.Skip(1).Select(GetTypeId).ToList();
+				var generics = names.Skip(1).Select(GetTypeId).ToArray();
 				if (!Generics.ContainsKey(genericTypeName))
 					throw new ApplicationException();
 				var generic = Generics[genericTypeName];

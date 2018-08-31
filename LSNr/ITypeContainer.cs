@@ -43,7 +43,7 @@ namespace LSNr
 					if(tokens[i].Value == ",") i++; // else error?
 				}
 				endIndex = i + 1;
-				var ty = gType.GetType(generics.Select(t => t.Id).ToList());
+				var ty = gType.GetType(generics.Select(t => t.Id).ToArray());
 				self.GenericTypeUsed(ty.Id);
 				return ty;
 			}
@@ -85,7 +85,7 @@ namespace LSNr
 					if (tokens[i].Value == ",") i++; // else error?
 				}
 				endIndex = i + 1;
-				var tId = gType.GetType(generics).Id;
+				var tId = gType.GetType(generics.ToArray()).Id;
 				self.GenericTypeUsed(tId);
 				return tId;
 			}

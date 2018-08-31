@@ -22,7 +22,7 @@ namespace LsnCore.Expressions
 		public ListConstructor(TypeId genericTypeId)
 		{
 			GenericTypeId = genericTypeId;
-			_Type = LsnListGeneric.Instance.GetType(new List<TypeId> { genericTypeId }).Id;
+			_Type = LsnListGeneric.Instance.GetType(new TypeId[] { genericTypeId }).Id;
 		}
 
 		public ListConstructor(LsnListType listType)

@@ -10,8 +10,8 @@ namespace LsnCore
 	{
 		static VectorType()
 		{
-			var vectorInt = VectorGeneric.Instance.GetType(new List<TypeId>() { int_.Id }) as VectorType;
-			var vectorDouble = VectorGeneric.Instance.GetType(new List<TypeId>() { double_.Id }) as VectorType;
+			var vectorInt = VectorGeneric.Instance.GetType(new TypeId[] { int_.Id }) as VectorType;
+			var vectorDouble = VectorGeneric.Instance.GetType(new TypeId[] { double_.Id }) as VectorType;
 
 			vectorInt._Methods.Add("Sum", new BoundedMethod(vectorInt, int_,
 				(args) =>
@@ -80,14 +80,18 @@ namespace LsnCore
 
 			Name = name;
 			GenericId = type;
+		}
+
+		internal void SetupMethods()
+		{
 			_Methods.Add("Length", new BoundedMethod(this, int_,
 				(args) => ((VectorInstance)args[0].Value).Length(), "Length"));
-			/*_Methods.Add("ToList",
+			_Methods.Add("ToList",
 				new BoundedMethod(this,
-					LsnListGeneric.Instance.GetType(new List<TypeId>() { type }),
+					LsnListGeneric.Instance.GetType(new TypeId[] { GenericId }),
 					(args) => new LsnValue(((VectorInstance)args[0].Value).ToLsnList())
 				, "ToList")
-			);*/
+			);
 		}
 
 		/// <summary>
@@ -106,11 +110,24 @@ namespace LsnCore
 
 		private VectorGeneric() {}
 
-		protected override LsnType CreateType(List<TypeId> types)
+		protected override LsnType CreateType(TypeId[] types)
 		{
 			if (types == null) throw new ArgumentNullException(nameof(types));
-			if (types.Count != 1) throw new ArgumentException("Vector types must have exactly one generic parameter.");
+			if (types.Length != 1) throw new ArgumentException("Vector types must have exactly one generic parameter.");
 			return new VectorType(types[0],GetGenericName(types));
+		}
+
+		public override LsnType GetType(TypeId[] types)
+		{
+			var name = GetGenericName(types);
+			LsnType type = null;
+			if (Types.TryGetValue(name, out type))
+				return type;
+			type = CreateType(types);
+			if (!Types.ContainsKey(name)) // For some reason this double check is needed to avoid adding duplicate keys.
+				Types.Add(name, type);
+			(type as VectorType).SetupMethods();
+			return Types[name];
 		}
 	}
 

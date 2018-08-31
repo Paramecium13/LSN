@@ -53,7 +53,7 @@ namespace LsnCore.Serialization
 				if (GenericTypes.ContainsKey(names[0]))
 				{
 					var generic = GenericTypes[names[0]];
-					return generic.GetType(names.Skip(1).Select(n => GetType(n)).Select(t => t.Id).ToList());
+					return generic.GetType(names.Skip(1).Select(n => GetType(n)).Select(t => t.Id).ToArray());
 				}
 				throw new ApplicationException();
 			}
@@ -305,7 +305,7 @@ namespace LsnCore.Serialization
 				case ExpressionCode.ListConstructor:
 					{
 						var typeId = TypeIds[reader.ReadUInt16()];
-						var type = LsnListGeneric.Instance.GetType(new List<TypeId>(1) { typeId });
+						var type = LsnListGeneric.Instance.GetType(new TypeId[] { typeId });
 						return new ListConstructor((LsnListType)type);
 					}
 				default:
