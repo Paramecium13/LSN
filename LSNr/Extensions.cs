@@ -1,4 +1,5 @@
 ﻿using LsnCore;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,5 +67,27 @@ namespace LSNr
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IList<Tuple<TKey, TValue>> ls)
 			=> ls.ToDictionary(x => x.Item1, x => x.Item2);
+
+		public static bool TryGetValue(this JObject self, out JToken token, params string[] values)
+		{
+			for (int i = 0; i < values.Length; i++)
+			{
+				if (self.TryGetValue(values[i], out token))
+					return true;
+			}
+			token = null;
+			return false;
+		}
+
+		public static bool TryGetValue(this JObject self,  out JToken token, StringComparison stringComparison, params string[] values)
+		{
+			for (int i = 0; i < values.Length; i++)
+			{
+				if (self.TryGetValue(values[i], stringComparison, out token))
+					return true;
+			}
+			token = null;
+			return false;
+		}
 	}
 }

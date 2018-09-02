@@ -20,9 +20,9 @@ namespace LSNr
 		private const int ERROR_IN_SOURCE = -3;
 		private const int CONFIG_EXISTS = -4;
 
-		private static Config _Config;
+		private static MainFile _MainFile;
 
-		internal static Config Config => _Config;
+		internal static MainFile MainFile => _MainFile;
 
 		static int Main(string[] args)
 		{
@@ -31,13 +31,6 @@ namespace LSNr
 				return SetUp();
 			}
 
-			if(File.Exists("lsn.config"))
-			{
-				using (var strReader = new StringReader(File.ReadAllText("lsn.config")))
-					_Config = JsonSerializer.Create().Deserialize<Config>(new JsonTextReader(strReader));
-			}
-			else
-				_Config = new Config();
 
 			if(string.Equals(args[0], "build", StringComparison.OrdinalIgnoreCase))
 			{
