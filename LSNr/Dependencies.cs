@@ -1,7 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using LsnCore;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,12 +14,11 @@ namespace LSNr
 {
 	class DependenciesFile
 	{
-
-		internal readonly Dictionary<string, IReadOnlyList<string>> Dependencies;
+		internal readonly ConcurrentDictionary<string, IReadOnlyList<string>> Dependencies;
 
 		private DependenciesFile(Dictionary<string, IReadOnlyList<string>> deps)
 		{
-			Dependencies = deps;
+			Dependencies = new ConcurrentDictionary<string, IReadOnlyList<string>>(deps);
 		}
 
 		internal void Write(string path)
@@ -51,32 +52,36 @@ namespace LSNr
 
 		internal static DependenciesFile SetUp()
 		{
-			var deps = new Dictionary<string, IReadOnlyList<string>>();
-			Directory.EnumerateFiles("src", "*.lsn", SearchOption.AllDirectories)
+			var deps = Directory.EnumerateFiles("src", "*.lsn", SearchOption.AllDirectories)
 				.AsParallel()
-				.Select(path =>
-				{
-					var usings = new List<string>();
-					using (var sr = new StreamReader(File.OpenRead(path)))
-					{
-						while(!sr.EndOfStream)
-						{
-							var line = sr.ReadLine();
-							if (Regex.IsMatch(line, "#using", RegexOptions.IgnoreCase))
-							{
-								var u = Regex.Match(line, "#using\\s+\"(.+)\"").Groups
-									.OfType<object>()
-									.Select(o => o.ToString())
-									.Skip(1)
-									.First();
-								usings.Add(u);
-							}
-						}
-					}
-					return new KeyValuePair<string, string[]>(path, usings.ToArray());
-				});
+				.Select(path => new KeyValuePair<string, IReadOnlyList<string>>(path, ReadDependencies(path)))
+				.ToDictionary();
 
 			return new DependenciesFile(deps);
+		}
+
+		internal static IReadOnlyList<string> ReadDependencies(string path)
+		{
+			var usings = new List<string>();
+			using (var sr = new StreamReader(File.OpenRead(path)))
+			{
+				while (!sr.EndOfStream)
+				{
+					var line = sr.ReadLine();
+					if (Regex.IsMatch(line, "#using", RegexOptions.IgnoreCase))
+					{
+						var u = Regex.Match(line, "#using\\s+\"(.+)\"").Groups
+							.OfType<object>()
+							.Select(o => o.ToString())
+							.Skip(1)
+							.First();
+						if (!u.StartsWith(@"Lsn Core\", StringComparison.Ordinal) &&
+							!u.StartsWith(@"std\", StringComparison.Ordinal))
+							usings.Add(u);
+					}
+				}
+			}
+			return usings;
 		}
 	}
 }
