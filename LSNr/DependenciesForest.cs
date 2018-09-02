@@ -47,6 +47,24 @@ namespace LSNr
 			return Level;
 		}
 
+		public IEnumerable<DependenciesNode> Dependencies
+		{
+			get
+			{
+				foreach (var dep in _Dependencies)
+					yield return dep;
+			}
+		}
+
+		public IEnumerable<string> DependencyPaths
+		{
+			get
+			{
+				foreach (var dep in _Dependencies)
+					yield return dep.Path;
+			}
+		}
+
 		internal static ConcurrentDictionary<string, DependenciesNode> CreateForest(DependenciesFile dependencies, string[] changedFiles)
 		{
 			var deps = new ConcurrentDictionary<string, DependenciesNode>();
@@ -57,7 +75,9 @@ namespace LSNr
 					dependencies.Dependencies.TryAdd(path, DependenciesFile.ReadDependencies(path));
 			});
 
-			Parallel.ForEach(changedFiles, path =>
+			/*Parallel.ForEach(changedFiles, path =>
+			{*/
+			foreach (var path in changedFiles)
 			{
 				var node = deps[path];
 				foreach (var dependency in dependencies.Dependencies[path])
@@ -69,9 +89,9 @@ namespace LSNr
 						dependency._Dependents.Add(node);
 					}
 				}
-			});
-			foreach (var node in deps.Values)
-				node.CalculateLevel();
+			}//);
+			/*foreach (var node in deps.Values)
+				node.CalculateLevel();*/
 			return deps;
 		}
 	}

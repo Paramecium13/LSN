@@ -1,0 +1,7 @@
+{
+  "src\\test2.lsn": [],
+  "src\\lssTest.lsn": [],
+  "src\\test3.lsn": [
+    "src\\test2.lsn"
+  ]
+}

@@ -84,18 +84,18 @@ namespace LSNr
 			LsnResourceThing res = null;
 			var objPath = Program.GetObjectPath(path);
 			var srcPath = Program.GetSourcePath(path);
-			if (ObjectFileUpToDate(path,out res))
+			/*if (ObjectFileUpToDate(path,out res))
 			{
 				if (res == null)
-				{
+				{*/
 					using (var fs = new FileStream(objPath, FileMode.Open))
 					{
 						res = LsnResourceThing.Read(fs,new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()),ResourceLoader);
 					}
-				}
-			}
+				/*}
+			/}
 			else if (Program.MakeResource(path, File.ReadAllText(srcPath), objPath, out res) != 0)
-				throw new ApplicationException();
+				throw new ApplicationException();*/
 			return res;
 		}
 
@@ -120,14 +120,6 @@ namespace LSNr
 							res = LsnResourceThing.Read(fs, new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()), ResourceLoader);
 						}
 						LsnResourceThing x = null;
-						foreach (var include in res.Includes)
-						{
-							if (!ObjectFileUpToDate(include,out x))
-							{
-								upToDate = false;
-								break;
-							}
-						}
 					}
 					else upToDate = false;
 				}

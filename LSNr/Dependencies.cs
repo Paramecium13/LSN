@@ -63,7 +63,7 @@ namespace LSNr
 		internal static IReadOnlyList<string> ReadDependencies(string path)
 		{
 			var usings = new List<string>();
-			using (var sr = new StreamReader(File.OpenRead(path)))
+			using (var sr = new StreamReader(File.OpenRead(Program.GetSourcePath(path))))
 			{
 				while (!sr.EndOfStream)
 				{
@@ -76,8 +76,8 @@ namespace LSNr
 							.Skip(1)
 							.First();
 						if (!u.StartsWith(@"Lsn Core\", StringComparison.Ordinal) &&
-							!u.StartsWith(@"std\", StringComparison.Ordinal))
-							usings.Add(u);
+								!u.StartsWith(@"std\", StringComparison.Ordinal))
+							usings.Add(Program.GetSourcePath(u));
 					}
 				}
 			}

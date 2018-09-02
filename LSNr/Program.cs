@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LSNr
@@ -19,120 +20,80 @@ namespace LSNr
 		private const int FILE_NOT_FOUND = -2;
 		private const int ERROR_IN_SOURCE = -3;
 		private const int CONFIG_EXISTS = -4;
+		private const string DEP_FILE_PATH = "dependencies.json";
 
 		private static MainFile _MainFile;
 
 		internal static MainFile MainFile => _MainFile;
+		private static EventWaitHandle MyWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+		private static DependenciesFile _DependenciesFile;
 
 		static int Main(string[] args)
 		{
-			if (args.Length == 0 || string.Equals(args[0], "setup", StringComparison.OrdinalIgnoreCase)) // Set up the workspace.
+			/*if (args.Length == 0 || string.Equals(args[0], "setup", StringComparison.OrdinalIgnoreCase)) // Set up the workspace.
 			{
 				return SetUp();
-			}
-
-
-			if(string.Equals(args[0], "build", StringComparison.OrdinalIgnoreCase))
-			{
-				return Build(args);
-			}
+			}*/
+			LssParser.ExpressionParser.DefaultSetUp();
 			if (!File.Exists(args[0]))
 			{
-				Console.WriteLine($"The file {args[0]} could not be found.");
-				return FILE_NOT_FOUND;
+				return -1;
 			}
+			_MainFile = new MainFile(args[0]);
+			Directory.SetCurrentDirectory(new FileInfo(args[0]).DirectoryName);
 
-			LssParser.ExpressionParser.DefaultSetUp();
+			if (File.Exists(DEP_FILE_PATH))
+				_DependenciesFile = DependenciesFile.Read(DEP_FILE_PATH);
+			else
+				_DependenciesFile = DependenciesFile.SetUp();
 
-			string src;
-			using (var s = new StreamReader(args[0],Encoding.UTF8))
-			{
-				src = s.ReadToEnd();
-			}
-			var destination = GetObjectPath(args[0]);
+			var changedFiles = GetChangedFiles();
+			var dependenciesForest = DependenciesNode.CreateForest(_DependenciesFile, changedFiles);
 
-			// The argument that specifies the destination, or null if not present
-			var dest = args.FirstOrDefault(a => Regex.IsMatch(a, @"^\s*destination\s*=.+$", RegexOptions.IgnoreCase));
+			var tasks = new Dictionary<string, Task>();
+			foreach (var path in changedFiles)
+				tasks[path] = Task.Run(() => Reify(dependenciesForest[path], tasks));
 
-			if (dest != null)
-			{
-				destination = Regex.Match(dest, @"^\s*destination\s*=\s*(.+)\s*$", RegexOptions.IgnoreCase).Groups[1].Value;
-			}
+			MyWaitHandle.Set();
 
-			// The argument that specifies
-			if (Path.IsPathRooted(args[0]))
-			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine("Error: The file to reify must be passed as a relative path.");
-				Console.ResetColor();
-				return -5;
-			}
-			LsnResourceThing res = null;
-			return MakeResource(new string(args[0].Take(args[0].Length - 4).ToArray()),src, destination, out res);
+			var rTask = Task.WhenAll(tasks.Values);
+
+			rTask.Wait();
+
+			_DependenciesFile.Write(DEP_FILE_PATH);
+
+			if (rTask.Status == TaskStatus.Faulted)
+				return 8;
+
+			return 0;
 		}
 
-		internal static int MakeResource(string path, string src, string destination, out LsnResourceThing res)
+		private static string[] GetChangedFiles()
 		{
-			var rs = new PreResource(src,path);
-			rs.Reify();
-			if(! rs.Valid)
+			var changed = new List<string>();
+			foreach (var path in Directory.EnumerateFiles("src", "*.lsn", SearchOption.AllDirectories))
 			{
-				res = null;
-				Console.WriteLine("Invalid source.");
-				Console.ReadLine();
-				return ERROR_IN_SOURCE;
+				var objPath = GetObjectPath(path);
+				if (!File.Exists(objPath))
+					changed.Add(path);
+				else
+				{
+					var srcUpdateTime = File.GetLastWriteTimeUtc(path);
+					var objUpdateTime = File.GetLastWriteTimeUtc(objPath);
+					if (srcUpdateTime < objUpdateTime)
+						changed.Add(path);
+				}
 			}
-			res = rs.GetResource();
-			using (var fs = File.Create(destination))
-			{
-				res.Serialize(fs);
-			}
-			return 0;
+			return changed.ToArray();
 		}
 
 		private static int SetUp()
 		{
-			const string file = "lsn.config";
-            if (File.Exists(file)) return CONFIG_EXISTS;
-			var config = new Config();
-
-			using (var f = File.Create(file))
-			{
-				using (var writer = new StreamWriter(f))
-				{
-					writer.Write(/*COMMENTS + END_OF_COMMENTS + */JsonConvert.SerializeObject(config, Formatting.Indented));
-				}
-			}
+			// ...
 			Directory.CreateDirectory("src");
 			Directory.CreateDirectory("obj");
 
-			Directory.CreateDirectory(@"src\script");
-			Directory.CreateDirectory(@"src\scriptlet");
-			Directory.CreateDirectory(@"src\resource");
-			Directory.CreateDirectory(@"src\scene");
-			Directory.CreateDirectory(@"src\quest");
-
-			Directory.CreateDirectory(@"obj\script");
-			Directory.CreateDirectory(@"obj\scriptlet");
-			Directory.CreateDirectory(@"obj\resource");
-			Directory.CreateDirectory(@"obj\scene");
-			Directory.CreateDirectory(@"obj\quest");
 			return 0;
-		}
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args")]
-		private static int Build(string[] args)
-		{
-			throw new NotImplementedException();
-			/*if(args.Length > 1 && args[1].ToLower() == "all")
-			{
-
-			}
-			else // Only build the files that aren't up to date.
-			{
-
-			}
-			return 0;*/
 		}
 
 		public static string GetObjectPath(string rawPath)
@@ -141,7 +102,7 @@ namespace LSNr
 			{
 				if (Path.HasExtension(rawPath))
 					return rawPath;
-				return rawPath + Config.ObjectFileExtension;
+				return rawPath + _MainFile.ObjectFileExtension;
 			}
 			if(rawPath.StartsWith("src"))
 			{
@@ -149,19 +110,74 @@ namespace LSNr
 			}
 			if(Path.HasExtension(rawPath))
 			{
-				if(Path.GetExtension(rawPath) != Config.ObjectFileExtension)
+				if(Path.GetExtension(rawPath) != _MainFile.ObjectFileExtension)
 				{
-					rawPath = new string(rawPath.Take(rawPath.Length - Path.GetExtension(rawPath).Length).Concat(Config.ObjectFileExtension).ToArray());
+					rawPath = new string(rawPath.Take(rawPath.Length - Path.GetExtension(rawPath).Length).Concat(_MainFile.ObjectFileExtension).ToArray());
 				}
 				return Path.Combine("obj",rawPath);
 			}
 
-			return Path.Combine("obj", rawPath + Config.ObjectFileExtension);
+			return Path.Combine("obj", rawPath + _MainFile.ObjectFileExtension);
 		}
 
 		public static string GetSourcePath(string rawPath)
 		{
-			return Path.Combine("src", rawPath + ".lsn");
+			if (!rawPath.EndsWith(".lsn"))
+				rawPath += ".lsn";
+			if (!rawPath.StartsWith("src\\"))
+				rawPath = Path.Combine("src", rawPath);
+			return rawPath;
 		}
+
+		public static void Reify(DependenciesNode myNode, IReadOnlyDictionary<string,Task> tasks)
+		{
+			var deps = new HashSet<string>(myNode.DependencyPaths);
+			MyWaitHandle.WaitOne();
+			foreach (var path in deps)
+				tasks[path].Wait();
+
+			// Parse the file
+			var source = File.ReadAllText(GetSourcePath(myNode.Path));
+			if (Regex.IsMatch(source, "#using", RegexOptions.IgnoreCase))
+			{
+				var updateDepsFile = false;
+				var usings = new List<string>();
+				foreach (var match in Regex.Matches(source, "#using\\s+\"(.+)\"").Cast<Match>())
+				{
+					var u = match.Groups.OfType<object>().Select(o => o.ToString()).Skip(1).First();
+					if (!u.StartsWith(@"Lsn Core\", StringComparison.Ordinal) &&
+							!u.StartsWith(@"std\", StringComparison.Ordinal))
+						usings.Add(GetSourcePath(u));
+				}
+
+				foreach (var path in usings)
+				{
+					if (!deps.Contains(path))
+					{
+						tasks[path].Wait();
+						updateDepsFile = true;
+					}
+				}
+				if (updateDepsFile)
+					_DependenciesFile.Dependencies[myNode.Path] = usings;
+			}
+			var rs = new PreResource(source,GetSourcePath(myNode.Path));
+			rs.Reify();
+			// Save the file.
+			LsnResourceThing res;
+			if (!rs.Valid)
+			{
+				res = null;
+				Console.WriteLine("Invalid source.");
+				Console.ReadLine();
+				throw new ApplicationException();
+			}
+			res = rs.GetResource();
+			using (var fs = File.Create(GetObjectPath(myNode.Path)))
+			{
+				res.Serialize(fs);
+			}
+		}
+
 	}
 }
