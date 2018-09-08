@@ -65,3 +65,6 @@ LSN files contain struct and record definitions, functions, Host Interfaces, and
 
 ## The Main File
 The main file is a .json file that is passed as a command line argument to the reifier. It serves as a marker for an *LSN project* and contains varous settings for that project. Currently, the only setting that is implemented and used is what extension the output object files will have. An *LSN project* consists of a main file and, in the same directory, a subdirectory named 'src' that contains all the LSN source files.
+
+## Reification
+To reify LSN files, they must first be in an LSN project as defined above. Then the project's main file must be passed to the reifier. The reifier will then reify all the source files that need to be updated (i.e. those that don't have a corresponding object file and those which have been modified more recently than their object file).
