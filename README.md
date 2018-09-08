@@ -22,16 +22,16 @@ LSN is a strongly typed language and comes with several built in types and allow
 ##### Collection Types
 I'm not sure how functional the collections currently are. It should be possible to access elements of vectors and lists and modify the elements of lists. Empty lists can be constructed with a constructor expression. The syntax for initializing non-empty collections has not been decided on and thus is not implemented by the reifier.
 
-***Vector<T>*** : An immutable collection of values of the same type that appears to be passed by value but is actually passed by reference. I suppose that making a vector of references should not be allowed. It currently has the methods *Length()* and *ToList()*. *Vector<int>* and *Vector<double>* also have the methods *Sum()* and *Mean()*.
+***Vector<T>*** : An immutable collection of values of the same type that appears to be passed by value but is actually passed by reference. I suppose that making a vector of references should not be allowed. It currently has the methods *Length()* and *ToList()*. *Vector<int>* and *Vector<double>* also have the methods *Sum()* and *Mean()*. Currently, vectors can only be obtained by calling the *ToVector* method on a list or by being passed through an event or function by the game engine or as the return value of a host interface method.
 
-***List<T>*** : A mutable collection of variable length that is passed by reference. Like *Vector<T>*, all of its contents must be of the same type. It currently has the methods *Length* and *Add(value : T)*. *List<int>* and *List<double>* also have the methods *Sum()* and *Mean()*.
+***List<T>*** : A mutable collection of variable length that is passed by reference. Like *Vector<T>*, all of its contents must be of the same type. It currently has the methods *Length*, *Add(value : T)*, and *ToVector*. *List<int>* and *List<double>* also have the methods *Sum()* and *Mean()*.
 
 #### Records
-Records are user defined types that consist of named and typed members. They are immutable and effectively passed by reference, though they appear to be passed by value.
+Records are user defined types that consist of named and typed members. They are immutable and effectively passed by reference, though it doesn't matter as they are immutable.
 #### Structs
 Structs are user defined types that, like records, consist of named and typed members. They differ from records in that they are mutable and passed by value. This means that when a struct is passed to a function or method as an argument, the function recieves a new struct with the same values. The function can make changes to that struct but those changes are not made on the struct that was passed to the function.
 ### Statements
-LSN will have many different statements, though currently not all of them are implemented.
+A statement tells the interpreter to do something, such as store a value as a variable or display a message to the player. LSN will have many different statements, though currently not all of them are implemented.
 
 #### General statements
 The interpretation of these statements is implemented by the abstract Interpreter class.
@@ -57,9 +57,11 @@ If-elsif-else control, choice control, match control, loops...
 Expressions calculate a value.
 
 ## LSN Files
-LSN source files end with the *.lsn* extension and object files end with the *.obj* extension.
+LSN source files end with the *.lsn* extension and object files end with the *.obj* extension, though this last extension is configurable in the main file.
 
-LSN files also tell the interpreter to load other LSN files at runtime, with the #using directive. The reifier will also load these other files to check type and function usage.
+LSN files also tell the interpreter to load other LSN files at runtime, with the #using directive. The reifier will also load these other files to check type and function usage. However, circular dependencies are not allowed. For example, if file 'a' depends on file 'b' (i.e. has a #using directive for it), then neither file 'b' nor any file that file 'b' depends on may depend on file 'a' or any file that depends on file 'a'. In other words, the graph of file dependencies must be a [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph).
 
 LSN files contain struct and record definitions, functions, Host Interfaces, and Script Classes.
 
+## The Main File
+The main file is a .json file that is passed as a command line argument to the reifier. It serves as a marker for an *LSN project* and contains varous settings for that project. Currently, the only setting that is implemented and used is what extension the output object files will have. An *LSN project* consists of a main file and, in the same directory, a subdirectory named 'src' that contains all the LSN source files.
