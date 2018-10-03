@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace LsnCore
 {
 	/// <summary>
-	/// Loads lsn resources and unique script objects.
+	/// Loads LSN resources and unique script objects.
 	/// </summary>
 	public interface IResourceManager
 	{
@@ -22,7 +22,14 @@ namespace LsnCore
 		ScriptObject GetUniqueScriptObject(string name);
 
 		/// <summary>
-		/// Get the lsn resource that has the provided path. It may be a 'special' resource,
+		/// Get the unique script object that has the provided name, typically from the current save file...
+		/// </summary>
+		/// <param name="scriptClass"></param>
+		/// <returns></returns>
+		ScriptObject GetUniqueScriptObject(ScriptClass scriptClass);
+
+		/// <summary>
+		/// Get the LSN resource that has the provided path. It may be a 'special' resource,
 		/// such as a standard library component, where the path does not map to a file
 		/// </summary>
 		/// <param name="path"></param>
@@ -33,7 +40,7 @@ namespace LsnCore
 
 		void SaveValues(LsnValue[] values, string id);
 
-		LsnType GetType(string typeName);
+		LsnType GetLsnType(string typeName);
 
 		// Only the one of these that matches the value in Settings needs to be implemented
 		IHostInterface GetHostInterface(uint id);
@@ -59,6 +66,13 @@ namespace LsnCore
 		/// <param name="name"></param>
 		/// <returns></returns>
 		public abstract ScriptObject GetUniqueScriptObject(string name);
+
+		/// <summary>
+		/// Get the unique script object of the provided type, typically from the current save file...
+		/// </summary>
+		/// <param name="scriptClass"></param>
+		/// <returns></returns>
+		public abstract ScriptObject GetUniqueScriptObject(ScriptClass scriptClass);
 
 		/// <summary>
 		/// Get a resource that is not part of the standard library.
@@ -341,7 +355,7 @@ namespace LsnCore
 
 		public abstract void SaveValues(LsnValue[] values, string id);
 
-		public abstract LsnType GetType(string typeName);
+		public abstract LsnType GetLsnType(string typeName);
 
 		public abstract IHostInterface GetHostInterface(uint id);
 		public abstract IHostInterface GetHostInterface(string id);

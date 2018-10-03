@@ -446,7 +446,7 @@ namespace LsnCore.Serialization
 						var values = new LsnValue[nValues];
 						for (int i = 0; i < nValues; i++)
 							values[i] = ReadValue(reader);
-						var type = (VectorType)resourceManager.GetType(typeName);
+						var type = (VectorType)resourceManager.GetLsnType(typeName);
 						return new LsnValue(new VectorInstance(type, values));
 					}
 				case ConstantCode.List:
@@ -456,7 +456,7 @@ namespace LsnCore.Serialization
 						var values = new List<LsnValue>(nValues);
 						for (int i = 0; i < nValues; i++)
 							values.Add(ReadValue(reader));
-						var listType = (LsnListType)resourceManager.GetType(typeName);
+						var listType = (LsnListType)resourceManager.GetLsnType(typeName);
 						return new LsnValue(new LsnList(listType, values));
 					}
 				case ConstantCode.HostInterface:
@@ -485,7 +485,7 @@ namespace LsnCore.Serialization
 		{
 			if (reader.ReadBoolean())
 			{
-				resourceManager.GetUniqueScriptObject(reader.ReadString());
+				return resourceManager.GetUniqueScriptObject(reader.ReadString());
 			}
 			switch (Settings.ScriptObjectIdFormat)
 			{
@@ -534,7 +534,7 @@ namespace LsnCore.Serialization
 		{
 			var typeName = reader.ReadString();
 			var currentState = reader.ReadInt32();
-			var type = (ScriptClass)resourceManager.GetType(typeName);
+			var type = (ScriptClass)resourceManager.GetLsnType(typeName);
 			var properties = new LsnValue[type.NumberOfProperties];
 			for (int i = 0; i < type.NumberOfProperties; i++)
 				properties[i] = ReadValue(reader, resourceManager);

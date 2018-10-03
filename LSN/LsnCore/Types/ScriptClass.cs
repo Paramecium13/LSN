@@ -41,14 +41,17 @@ namespace LsnCore.Types
 
 		public int NumberOfFields => Fields.Count;
 
+		public readonly string Metadata;
+
 		public ScriptClass(TypeId id, TypeId host, IList<Property> properties, IReadOnlyList<Field> fields,
 			IReadOnlyDictionary<string,ScriptClassMethod> methods, IReadOnlyDictionary<string,EventListener> eventListeners,
-			IReadOnlyDictionary<int,ScriptClassState> states, int defaultStateIndex, bool unique, ScriptClassConstructor constructor = null)
+			IReadOnlyDictionary<int,ScriptClassState> states, int defaultStateIndex, bool unique, string meta, ScriptClassConstructor constructor = null)
 		{
 			Name = id.Name;
 			Id = id;
 			HostInterface = host;
 			Unique = unique;
+			Metadata = meta;
 			_Properties = properties;
 			Fields = fields;
 			ScriptObjectMethods = methods;
@@ -77,7 +80,7 @@ namespace LsnCore.Types
 		{
 			if (Fields.Any(f => f.Name == name))
 				return Fields.First(f => f.Name == name).Index;
-			else throw new ApplicationException($"The ScriptObject type {Name} does not have a field named {name}.");
+			throw new ApplicationException($"The ScriptObject type {Name} does not have a field named {name}.");
 		}
 
 		public int GetFieldIndex(string name)
@@ -90,7 +93,7 @@ namespace LsnCore.Types
 				var prop = _Properties.First(f => f.Name == name);
 				return _Properties.IndexOf(prop);
 			}
-			else throw new ApplicationException($"The ScriptObject type {Name} does not have a property named {name}.");
+			throw new ApplicationException($"The ScriptObject type {Name} does not have a property named {name}.");
 		}
 
 		public bool HasMethod(string name)
@@ -121,13 +124,9 @@ namespace LsnCore.Types
 				Constructor.Run(i, args);
 				return obj;
 			}
-			else // Copy args over to fields
-			{
-				for (int j = 0; j < fields.Length; j++)
-					fields[j] = arguments[j];
-				var obj = new ScriptObject(properties, fields, this, DefaultStateId, host);
-				return obj;
-			}
+			for (int j = 0; j < fields.Length; j++)
+				fields[j] = arguments[j];
+			return new ScriptObject(properties, fields, this, DefaultStateId, host);
 		}
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
@@ -135,6 +134,7 @@ namespace LsnCore.Types
 			writer.Write(Name);
 			writer.Write(Unique);
 			writer.Write(HostInterface?.Name ?? "");
+			writer.Write(Metadata ?? "");
 			writer.Write(DefaultStateId);
 
 			writer.Write((ushort)_Properties.Count);
@@ -169,7 +169,8 @@ namespace LsnCore.Types
 		{
 			var name = reader.ReadString();
 			var unique = reader.ReadBoolean();
-			var hostInterfaceName = reader.ReadString();
+			var hostInterfaceTypeName = reader.ReadString();
+			var meta = reader.ReadString();
 			var defaultStateId = reader.ReadInt32();
 
 			var type = typeContainer.GetTypeId(name);
@@ -215,8 +216,8 @@ namespace LsnCore.Types
 			if (reader.ReadBoolean())
 				constructor = ScriptClassConstructor.Read(reader, resourceFilePath, resourceDeserializer);
 
-			return new ScriptClass(type, typeContainer.GetTypeId(hostInterfaceName), props, fields, methods, listeners,
-				states, defaultStateId, unique, constructor);
+			return new ScriptClass(type, typeContainer.GetTypeId(hostInterfaceTypeName), props, fields, methods, listeners,
+				states, defaultStateId, unique, meta, constructor);
 		}
 	}
 }

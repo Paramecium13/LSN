@@ -103,7 +103,9 @@ namespace LSNr
 			var otherTokens = new List<Token>();
 			for(int i = 0; i < Tokens.Count; i++)
 			{
+				string metadata = null;
 				var val = Tokens[i].Value;
+				// ToDo: Check if it's a keyword.
 				if(val == "record")
 				{
 					var name = Tokens[++i].Value; // Move on to the next token, get the name.
@@ -178,11 +180,34 @@ namespace LSNr
 												  //TODO : validate name.
 					string hostName = null;
 					i++;// Move on to the next token...
+
+					if (Tokens[i].Value == "[")
+					{
+						i++;
+						if (Tokens[i].Type != TokenType.String)
+							throw LsnrParsingException.UnexpectedToken(Tokens[i], "a string literal", Path);
+						metadata = Tokens[i].Value;
+						i++;
+						if (Tokens[i].Value != "]")
+							throw LsnrParsingException.UnexpectedToken(Tokens[i], "]", Path);
+					}
 					if (Tokens[i].Value == "<")
 					{
 						i++; // 'i' points to host name.
 						hostName = Tokens[i].Value;
 						i++;
+						if (Tokens[i].Value == "[")
+						{
+							if (metadata != null)
+								throw new LsnrParsingException(Tokens[i], "a script class can only have one metadata value", Path);
+							i++;
+							if (Tokens[i].Type != TokenType.String)
+								throw LsnrParsingException.UnexpectedToken(Tokens[i], "a string literal", Path);
+							metadata = Tokens[i].Value;
+							i++;
+							if (Tokens[i].Value != "]")
+								throw LsnrParsingException.UnexpectedToken(Tokens[i], "]", Path);
+						}
 					}
 
 					if (Tokens[i].Value != "{")
@@ -202,7 +227,7 @@ namespace LSNr
 
 						if (openCount > 0) tokens.Add(Tokens[i]);
 					}
-					var sc = new PreScriptClass(name, this, hostName, unique, tokens);
+					var sc = new PreScriptClass(name, this, hostName, unique, metadata, tokens);
 					PreScriptClasses.Add(name, sc);
 				}
 				else otherTokens.Add(Tokens[i]);
@@ -438,7 +463,7 @@ namespace LSNr
 				var name = tokens[i].Value;
 				if (tokens[++i].Value != ":")
 					throw new LsnrParsingException(tokens[i], $"Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.", Path);
-                var type = this.ParseTypeId(tokens, ++i, out i);
+				var type = this.ParseTypeId(tokens, ++i, out i);
 				var defaultValue = LsnValue.Nil;
 				if (i < tokens.Count && tokens[i].Value == "=")
 				{
@@ -585,7 +610,7 @@ namespace LSNr
 			try
 			{
 				fields = ParseFields(tokens);
-            }
+			}
 			catch (LsnrException e)
 			{
 				Logging.Log("record", typeId.Name, e);
@@ -598,7 +623,7 @@ namespace LSNr
 			}
 			if (fields == null) return null;
 			var recordType = new RecordType(typeId, fields);
-            MyRecordTypes.Add(typeId.Name, recordType);
+			MyRecordTypes.Add(typeId.Name, recordType);
 			return recordType;
 		}
 

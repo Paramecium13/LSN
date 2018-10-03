@@ -40,11 +40,11 @@ namespace LSNr
 			get{ return Resource.Valid; }
 			set{ Resource.Valid = value; }
 		}
-
-		public PreScriptClass(string name, PreResource resource, string hostName, bool isUnique, IReadOnlyList<Token> tokens)
+		private readonly string Metadata;
+		public PreScriptClass(string name, PreResource resource, string hostName, bool isUnique, string metadata, IReadOnlyList<Token> tokens)
 			:base(tokens, new TypeId(name),resource,hostName)
 		{
-			Name = name; IsUnique = isUnique; //ToDo: Make the typeId contain the actual type...
+			Name = name; IsUnique = isUnique; Metadata = metadata; //ToDo: Make the typeId contain the actual type...
 		}
 
 		public override Function GetFunction(string name)		=> Resource.GetFunction(name);
@@ -274,7 +274,7 @@ namespace LSNr
 
 			// PreParse states
 			var states = PreStates.Select(p => p.PreParse()).ToDictionary((s) => s.Id);
-			var scClass = new ScriptClass(Id, HostType?.Id, Properties, Fields, Methods, EventListeners, states, DefaultStateIndex, IsUnique);
+			var scClass = new ScriptClass(Id, HostType?.Id, Properties, Fields, Methods, EventListeners, states, DefaultStateIndex, IsUnique, Metadata);
 			Id.Load(scClass);
 			return scClass;
 		}

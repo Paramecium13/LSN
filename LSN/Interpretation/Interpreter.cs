@@ -160,10 +160,7 @@ namespace LsnCore
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public ScriptObject GetUniqueScriptObject(string name)
-		{
-			return ResourceManager.GetUniqueScriptObject(name);
-		}
+		public ScriptObject GetUniqueScriptObject(string name) => ResourceManager.GetUniqueScriptObject(CurrentEnvironment.ScriptClasses[name]);
 
 		//protected abstract GlobalVariableValue GetGlobalVariableValue(string globalVarName/*, string fileName*/);
 

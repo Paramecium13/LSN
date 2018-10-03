@@ -90,8 +90,17 @@ namespace LSNr
 					}
 				}
 			}//);
-			/*foreach (var node in deps.Values)
-				node.CalculateLevel();*/
+			try
+			{
+				foreach (var node in deps.Values)
+					node.CalculateLevel();
+			}
+			catch (StackOverflowException)
+			{
+				Console.WriteLine("Cyclic dependency dettectd");
+				throw;
+			}
+			
 			return deps;
 		}
 	}

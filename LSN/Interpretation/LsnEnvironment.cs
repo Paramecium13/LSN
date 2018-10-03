@@ -23,10 +23,8 @@ namespace LsnCore
 		/// </summary>
 		public IReadOnlyDictionary<string, Function> Functions { get { return _Functions; }}
 
-		private Dictionary<string, ScriptClass> _ScriptObjectTypes = new Dictionary<string, ScriptClass>();
-		public IReadOnlyDictionary<string, ScriptClass> ScriptObjectTypes => _ScriptObjectTypes;
-
-		private readonly IReadOnlyList<string> Resources;
+		private Dictionary<string, ScriptClass> _ScriptClasses = new Dictionary<string, ScriptClass>();
+		public IReadOnlyDictionary<string, ScriptClass> ScriptClasses => _ScriptClasses;
 
 		private readonly HashSet<string> LoadedResources = new HashSet<string>();
 
@@ -45,21 +43,12 @@ namespace LsnCore
 			Load(script, resourceManager);
 		}
 
-		/// <summary>
-		/// Only used in LSNr!!!
-		/// </summary>
-		/// <param name="resources"></param>
-		public LsnEnvironment(IEnumerable<string> resources)
-		{
-			Resources = resources.ToList();
-		}
-
 		private void Load(LsnScriptBase script, IResourceManager fileManager)
 		{
 			foreach (var pair in script.Functions)
 				_Functions.Add(pair.Key, pair.Value);
 			foreach (var pair in script.ScriptClassTypes)
-				_ScriptObjectTypes.Add(pair.Key, pair.Value);
+				_ScriptClasses.Add(pair.Key, pair.Value);
 			foreach (var res in script.Usings)
 			{
 				if (!LoadedResources.Contains(res))
