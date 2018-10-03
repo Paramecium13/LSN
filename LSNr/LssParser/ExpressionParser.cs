@@ -46,7 +46,7 @@ namespace LSNr.LssParser
 			}
 
 			if (CurrentTokens.Count != 1)
-				throw new ApplicationException();
+				throw LsnrParsingException.UnexpectedToken(CurrentTokens[1],"end of expression",Script.Path);
 
 			return Substitutions[CurrentTokens[0]];
 		}

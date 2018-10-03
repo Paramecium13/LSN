@@ -33,7 +33,8 @@ namespace LSNr.LssParser
 			CreateExpression(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
 			IExpression left, right;
-			if (index == 0) throw new ApplicationException();
+			if (index == 0)
+				throw new ApplicationException();
 
 			left = null;
 			right = null;

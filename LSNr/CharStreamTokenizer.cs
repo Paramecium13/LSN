@@ -46,7 +46,7 @@ namespace LSNr
 			//"my","common","all"
 			//"int","double","num","complex","bool","string","watched","rule","when",,"attachedto","attatched""override"
 			"script","class","scriptclass","attach","detach","host","interface","hostinterface",
-			"script","property","state","auto","setstate","on","event","abstract","virtual"
+			"property","state","auto","setstate","on","event","abstract","virtual"
 
 		};
 

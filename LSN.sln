@@ -9,17 +9,22 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSNr", "LSNr\LSNr.csproj", 
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug (no catch)|Any CPU = Debug (no catch)|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		LssTest|Any CPU = LssTest|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C1269507-B8FD-4668-8D5A-0819DEAAFE89}.Debug (no catch)|Any CPU.ActiveCfg = Debug (no catch)|Any CPU
+		{C1269507-B8FD-4668-8D5A-0819DEAAFE89}.Debug (no catch)|Any CPU.Build.0 = Debug (no catch)|Any CPU
 		{C1269507-B8FD-4668-8D5A-0819DEAAFE89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C1269507-B8FD-4668-8D5A-0819DEAAFE89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1269507-B8FD-4668-8D5A-0819DEAAFE89}.LssTest|Any CPU.ActiveCfg = LssTest|Any CPU
 		{C1269507-B8FD-4668-8D5A-0819DEAAFE89}.LssTest|Any CPU.Build.0 = LssTest|Any CPU
 		{C1269507-B8FD-4668-8D5A-0819DEAAFE89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1269507-B8FD-4668-8D5A-0819DEAAFE89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0A445AC-01AA-4568-B15A-765B5C590CF7}.Debug (no catch)|Any CPU.ActiveCfg = Debug (no catch)|Any CPU
+		{E0A445AC-01AA-4568-B15A-765B5C590CF7}.Debug (no catch)|Any CPU.Build.0 = Debug (no catch)|Any CPU
 		{E0A445AC-01AA-4568-B15A-765B5C590CF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E0A445AC-01AA-4568-B15A-765B5C590CF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0A445AC-01AA-4568-B15A-765B5C590CF7}.LssTest|Any CPU.ActiveCfg = LssTest|Any CPU

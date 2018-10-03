@@ -46,7 +46,15 @@ namespace LSNr.LssParser
 			}
 
 			// Is this a method, a host interface method, a script class method, a property, or a field?
-			var hiType		= leftExpr.Type.Type	as HostInterfaceType;
+			HostInterfaceType hiType;
+			try
+			{
+				hiType		= leftExpr.Type.Type	as HostInterfaceType;
+			}
+			catch (Exception)
+			{
+				throw;
+			}
 			var scType		= leftExpr.Type.Type	as ScriptClass;
 			var fieldType	= leftExpr.Type.Type	as IHasFieldsType;
 

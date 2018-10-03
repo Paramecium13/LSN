@@ -88,7 +88,7 @@ namespace LSNr
 			{
 				if (res == null)
 				{*/
-					using (var fs = new FileStream(objPath, FileMode.Open))
+					using (var fs = File.OpenRead(objPath))
 					{
 						res = LsnResourceThing.Read(fs,new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()),ResourceLoader);
 					}

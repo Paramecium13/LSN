@@ -198,7 +198,7 @@ namespace LSNr
 					int asIndex = tokens.IndexOf("as");
 					int firstIndex = Math.Min(withIndex, asIndex);
 					int secondIndex = Math.Max(withIndex, asIndex);
-                    message = Express(tokens.Take(firstIndex),script);
+					message = Express(tokens.Take(firstIndex),script);
 					var expr2 = Express(tokens.Skip(firstIndex).Take(secondIndex - firstIndex),script);
 					var expr3 = Express(tokens.Skip(secondIndex), script);
 					if(firstIndex == withIndex) { graphic = expr2; title = expr3; }

@@ -86,7 +86,7 @@ namespace LSNr.LssParser
 					break;
 				case TokenType.Keyword:
 					if (str == "host")
-						expr = new HostInterfaceAccessExpression();
+						expr = new HostInterfaceAccessExpression(((PreScriptClassFunction)script).Parent.HostType.Id);
 					else if (str == "this")
 						expr = new VariableExpression(0);
 					else

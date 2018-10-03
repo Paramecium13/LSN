@@ -31,7 +31,7 @@ namespace LSNr
 				var p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
-                script.CurrentScope = script.CurrentScope.Pop(components);
+				script.CurrentScope = script.CurrentScope.Pop(components);
 				return new IfControl(cnd, components);
 			}
 			if (h == "elsif")
@@ -170,7 +170,7 @@ namespace LSNr
 				var str = Express(head.Take(n - 1), script);
 
 				return new Choice(str, components);
-            }
+			}
 			return null;
 		}
 
@@ -206,7 +206,7 @@ namespace LSNr
 				return expr;
 			}
 			return LssParser.ExpressionParser.Parse(list.ToArray(), script, substitutions);
-        }
+		}
 
 		public static IExpression SingleTokenExpress(Token token, IPreScript script, IExpressionContainer container = null, IList<Variable> variables = null)
 		{
@@ -250,8 +250,6 @@ namespace LSNr
 						return new LsnValue(new StringValue(token.Value));
 					case TokenType.Substitution:
 						throw new ApplicationException();
-					default:
-						throw new Exception("Unexpected Case");
 				}
 			}
 

@@ -43,6 +43,9 @@ namespace LSNr
 		/// </summary>
 		public void Reify()
 		{
+#if NO_CATCH
+			ProcessDirectives();
+#else
 			try
 			{
 				ProcessDirectives();
@@ -62,7 +65,7 @@ namespace LSNr
 				//TODO: Logging
 				throw;
 			}
-
+#endif
 			PreParseGameValues(PreParseFunctions(PreParseTypes()));
 			ParseRecordsAndStructs();
 			ParseHostInterfaces();
@@ -71,6 +74,9 @@ namespace LSNr
 
 			foreach (var pre in PreScriptClasses.Values)
 			{
+#if NO_CATCH
+				Valid &= pre.Parse();
+#else
 				try
 				{
 					Valid &= pre.Parse();
@@ -85,6 +91,7 @@ namespace LSNr
 					Logging.Log("script object", pre.Id.Name, e, Path);
 					Valid = false;
 				}
+#endif
 			}
 			ParseFunctions();
 		}
