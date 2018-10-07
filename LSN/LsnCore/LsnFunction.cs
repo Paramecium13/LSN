@@ -14,7 +14,7 @@ namespace LsnCore
 	/// <summary>
 	/// A function written in LSN.
 	/// </summary>
-	public class LsnFunction : Function, ICodeBlock
+	public class LsnFunction : Function, ICodeBlock, IProcedure
 	{
 		/// <summary>
 		/// This should only be set from within LSNr, where function bodies are parsed.
@@ -66,5 +66,5 @@ namespace LsnCore
 			resourceDeserializer.RegisterFunction(fn,reader.ReadBytes(codeSize));
 			return fn;
 		}
-    }
+	}
 }

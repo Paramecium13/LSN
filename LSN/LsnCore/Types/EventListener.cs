@@ -15,13 +15,20 @@ namespace LsnCore.Types
 		Statement[] Code { set; }
 	}
 
-	public sealed class EventListener : ICodeBlock
+	public interface IProcedure
+	{
+		Statement[] Code { get; }
+		int StackSize { get; }
+		string ResourceFilePath { get; }
+	}
+
+	public sealed class EventListener : ICodeBlock, IProcedure
 	{
 		public readonly EventDefinition Definition;
 
-		private readonly string ResourceFilePath;
+		public string ResourceFilePath { get; }
 
-		internal int StackSize;
+		public int StackSize { get; set; }
 		public Statement[] Code { get; set; }
 
 		public readonly int Priority;

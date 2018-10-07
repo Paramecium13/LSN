@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace LsnCore.Types
 {
-	public class ScriptClassMethod : Method, ICodeBlock
+	public class ScriptClassMethod : Method, ICodeBlock, IProcedure
 	{
 		public override bool HandlesScope => false;
 
@@ -114,7 +114,7 @@ namespace LsnCore.Types
 			=> new ScriptClassVirtualMethod(TypeId, ReturnType, Parameters.ToList(), ResourceFilePath, Name);
 	}
 
-	public class ScriptClassVirtualMethod : Method
+	public class ScriptClassVirtualMethod : Method, IProcedure
 	{
 		public override bool HandlesScope => false;
 

@@ -83,11 +83,11 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ILsnFileManager.cs" />
-    <Compile Include="Interpretation\IActor.cs" />
     <Compile Include="Interpretation\IInterpreter.cs" />
     <Compile Include="Interpretation\Interpreter.cs" />
     <Compile Include="Interpretation\IResourceManager.cs" />
     <Compile Include="Interpretation\LsnEnvironment.cs" />
+    <Compile Include="Interpretation\LsnStack.cs" />
     <Compile Include="LsnCore\BoundedFunction.cs" />
     <Compile Include="LsnCore\BoundedMethod.cs" />
     <Compile Include="LsnCore\Component.cs" />

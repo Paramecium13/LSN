@@ -10,11 +10,11 @@ using LsnCore.Values;
 
 namespace LsnCore.Types
 {
-	public class ScriptClassConstructor: ICodeBlock
+	public class ScriptClassConstructor: ICodeBlock, IProcedure
 	{
 		public Statement[] Code { get; set; }
-		public int StackSize;
-		private readonly string ResourceFilePath;
+		public int StackSize { get; set; }
+		public string ResourceFilePath { get; }
 		public readonly Parameter[] Parameters;
 
 		public ScriptClassConstructor(string resourceFilePath, Parameter[] parameters)
