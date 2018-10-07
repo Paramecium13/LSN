@@ -33,10 +33,7 @@ namespace LsnCore.Expressions
 			var args = new LsnValue[Args.Length];
 			for (int x = 0; x < Args.Length; x++)
 				args[x] = Args[x].Eval(i);
-			if (!Method.HandlesScope) i.EnterFunctionScope(Method.ResourceFilePath, Method.StackSize);
-			var val = Method.Eval(args, i);
-			if (!Method.HandlesScope) i.ExitFunctionScope();
-			return val;
+			return Method.Eval(args, i);
 		}
 
 		public override IExpression Fold() => this;

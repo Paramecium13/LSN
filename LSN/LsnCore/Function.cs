@@ -31,12 +31,6 @@ namespace LsnCore
 			Signature = signature;
 		}
 
-		/// <summary>
-		/// Does this function handle the scope and stack by itself (i.e. without any calls to the interpreter)?
-		/// Typically true for bound functions and methods.
-		/// </summary>
-		public abstract bool HandlesScope { get; }
-
 		protected string _ResourceFilePath;
 		public string ResourceFilePath { get { return _ResourceFilePath; } protected set { _ResourceFilePath = value; } }
 

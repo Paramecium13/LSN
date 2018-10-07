@@ -5,8 +5,6 @@ namespace LsnCore
 {
 	public class BoundedMethod : Method
 	{
-		public override bool HandlesScope => false;
-
 		private readonly Func<LsnValue[], LsnValue> Bound;
 
 		/// <summary>
@@ -25,6 +23,5 @@ namespace LsnCore
 
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 			=> Bound(args);
-		
 	}
 }

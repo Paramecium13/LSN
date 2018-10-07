@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Values;
+using LsnCore.Types;
 
 namespace LsnCore
 {
@@ -15,46 +16,19 @@ namespace LsnCore
 
 		public LsnValue ReturnValue { get; set; }
 
-		//protected List<ILsnValue> LsnObjects = new List<ILsnValue>();
-
-		private readonly static ConcurrentDictionary<int, ConcurrentStack<LsnValue[]>> StackFrameStore = new ConcurrentDictionary<int, ConcurrentStack<LsnValue[]>>();
-
-		private LsnValue[] CurrentStackFrame;
-
-		private readonly Stack<LsnValue[]> StackFrames = new Stack<LsnValue[]>();
-
-		// Where the current environment is pushed when a new function scope is entered.
-		private readonly Stack<LsnEnvironment> EnvStack = new Stack<LsnEnvironment>();
-
-		// The current environment.
-		private LsnEnvironment CurrentEnvironment;
-
 		public int NextStatement { get; set; }
-		private static Stack<int> NextStatementStack = new Stack<int>();
+
+		private readonly LsnStack Stack = new LsnStack();
 
 		private readonly List<Tuple<string, int>> _Choices = new List<Tuple<string, int>>();
 		protected IReadOnlyList<Tuple<string, int>> Choices => _Choices;
 
-		protected Interpreter()
+		protected Interpreter() { }
+
+		public virtual void RunProcedure(IProcedure procedure)
 		{
-			EnvStack.Push(null);
-			NextStatementStack.Push(-4);
-			StackFrames.Push(new LsnValue[0]);
-		}
-
-		public void Run(Statements.Statement[] code, string resourceFilePath, int stackSize, LsnValue[] parameters)
-		{
-			if (code == null)
-				throw new ArgumentNullException(nameof(code));
-			if (resourceFilePath == null)
-				throw new ArgumentNullException(nameof(resourceFilePath));
-
-			EnterFunctionScope(resourceFilePath, stackSize);
-
-			if(parameters != null)
-				for (int i = 0; i < parameters.Length; i++)
-					CurrentStackFrame[i] = parameters[i];
-
+			Stack.EnterProcedure(NextStatement, procedure);
+			var code = procedure.Code;
 			NextStatement = 0;
 			var currentStatement = NextStatement++;
 			var codeSize = code.Length;
@@ -64,49 +38,23 @@ namespace LsnCore
 				v = code[currentStatement].Interpret(this);
 				currentStatement = NextStatement++;
 			}
+			NextStatement = Stack.ExitProcedure();
 		}
 
-		public virtual void EnterFunctionScope(string resourceFilePath, int scopeSize)
+		public virtual void RunProcedure(IProcedure procedure, LsnValue[] args)
 		{
-			NextStatementStack.Push(NextStatement);
-			if(CurrentEnvironment != null)
-				EnvStack.Push(CurrentEnvironment);
-			try
+			Stack.EnterProcedure(NextStatement, procedure, args);
+			var code = procedure.Code;
+			NextStatement = 0;
+			var currentStatement = NextStatement++;
+			var codeSize = code.Length;
+			var v = InterpretValue.Base;
+			while (currentStatement < codeSize && v != InterpretValue.Return)
 			{
-				CurrentEnvironment = ResourceManager.GetResource(resourceFilePath).GetEnvironment(ResourceManager);
+				v = code[currentStatement].Interpret(this);
+				currentStatement = NextStatement++;
 			}
-			catch (Exception e)
-			{
-				throw new ApplicationException("ResourceManager exception", e);
-			}
-			if(CurrentStackFrame != null)
-				StackFrames.Push(CurrentStackFrame);
-			CurrentStackFrame = RequestStack(scopeSize);
-		}
-
-		private static LsnValue[] RequestStack(int scopeSize)
-		{
-			LsnValue[] x = null;
-			var i = NearestPower(scopeSize);
-			if (StackFrameStore.ContainsKey(i))
-			{
-				if (!StackFrameStore[i].TryPop(out x))
-					return new LsnValue[i];
-				return x;
-			}
-			StackFrameStore.TryAdd(i, new ConcurrentStack<LsnValue[]>());
-			return new LsnValue[i];
-		}
-
-		/// <summary>
-		/// Exits the scope of the current function.
-		/// </summary>
-		public virtual void ExitFunctionScope()
-		{
-			RecycleStack(CurrentStackFrame);
-			CurrentStackFrame = StackFrames.Pop();
-			CurrentEnvironment = EnvStack.Pop();
-			NextStatement = NextStatementStack.Pop();
+			NextStatement = Stack.ExitProcedure();
 		}
 
 		/// <summary>
@@ -115,7 +63,7 @@ namespace LsnCore
 		/// <param name="name"></param>
 		/// <returns></returns>
 		public virtual Function GetFunction(string name)
-			=> CurrentEnvironment.Functions[name];
+			=> Stack.GetFunction(name);
 
 		/// <summary>
 		/// Get the variable at the provided index.
@@ -123,7 +71,7 @@ namespace LsnCore
 		/// <param name="index"></param>
 		/// <returns></returns>
 		public LsnValue GetVariable(int index)
-			=> CurrentStackFrame[index];
+			=> Stack.GetVariable(index);
 
 		/// <summary>
 		/// Set the value of the variable at the provided index.
@@ -133,23 +81,7 @@ namespace LsnCore
 		/// <returns></returns>
 		public void SetVariable(int index, LsnValue value)
 		{
-			CurrentStackFrame[index] = value;
-		}
-
-		private static void RecycleStack(LsnValue[] stack)
-		{
-			Task.Run(() =>
-			{
-				for (int i = 0; i < stack.Length; i++)
-					stack[i] = LsnValue.Nil;
-				if (StackFrameStore.ContainsKey(stack.Length))
-					StackFrameStore[stack.Length].Push(stack);
-				else
-				{
-					StackFrameStore.TryAdd(stack.Length, new ConcurrentStack<LsnValue[]>());
-					StackFrameStore[stack.Length].Push(stack);
-				}
-			});
+			Stack.SetVariable(index, value);
 		}
 
 		private static int NearestPower(int i)
@@ -160,7 +92,7 @@ namespace LsnCore
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public ScriptObject GetUniqueScriptObject(string name) => ResourceManager.GetUniqueScriptObject(CurrentEnvironment.ScriptClasses[name]);
+		public ScriptObject GetUniqueScriptObject(string name) => ResourceManager.GetUniqueScriptObject(Stack.CurrentEnvironment.ScriptClasses[name]);
 
 		//protected abstract GlobalVariableValue GetGlobalVariableValue(string globalVarName/*, string fileName*/);
 
@@ -232,8 +164,8 @@ namespace LsnCore
 		public void SaveVariables(ushort[] indexes, string saveId)
 		{
 			var values = new LsnValue[indexes.Length];
-			for(int i = 0; i < indexes.Length; i++)
-				values[i] = CurrentStackFrame[indexes[i]];
+			for (int i = 0; i < indexes.Length; i++)
+				values[i] = Stack.GetVariable(indexes[i]);
 			ResourceManager.SaveValues(values, saveId);
 		}
 
@@ -241,7 +173,7 @@ namespace LsnCore
 		{
 			var values = ResourceManager.LoadValues(saveId);
 			for (int i = 0; i < indexes.Length; i++)
-				CurrentStackFrame[indexes[i]] = values[i];
+				Stack.SetVariable(indexes[i], values[i]);
 		}
 
 		protected Random Rng = new Random();

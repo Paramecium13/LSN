@@ -1,4 +1,5 @@
-﻿using LsnCore.Values;
+﻿using LsnCore.Types;
+using LsnCore.Values;
 using System;
 using System.Collections.Generic;
 
@@ -16,24 +17,8 @@ namespace LsnCore
 		/// </summary>
 		int NextStatement { get; set; }
 
-		/// <summary>
-		/// Execute the provided code...
-		/// </summary>
-		/// <param name="code">The code to execute</param>
-		/// <param name="resourceFilePath">The path of the resource file that contains this code</param>
-		/// <param name="stackSize">The size of the stack</param>
-		/// <param name="parameters">The parameters that are passed to the code</param>
-		void Run(Statements.Statement[] code, string resourceFilePath, int stackSize, LsnValue[] parameters);
-
-		/// <summary>
-		/// Enters a new scope for interpreting a function. Previously defined variables are inaccessable.
-		/// </summary>
-		void EnterFunctionScope(string resourceFilePath, int scopeSize);
-
-		/// <summary>
-		/// Exits the scope of the current function.
-		/// </summary>
-		void ExitFunctionScope();
+		void RunProcedure(IProcedure procedure);
+		void RunProcedure(IProcedure procedure, LsnValue[] args);
 
 		/// <summary>
 		/// Get the variable at the provided index.

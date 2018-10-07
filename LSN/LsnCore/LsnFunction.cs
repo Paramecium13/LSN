@@ -21,8 +21,6 @@ namespace LsnCore
 		/// </summary>
 		public Statement[] Code { get; set; }
 
-		public override bool HandlesScope { get { return true; } }
-
 		public LsnFunction(List<Parameter> parameters, LsnType returnType, string name,string resourceFilePath)
 			:base(new FunctionSignature(parameters, name, returnType?.Id))
 		{
@@ -37,8 +35,7 @@ namespace LsnCore
 
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{
-			i.Run(Code, ResourceFilePath, StackSize, args);
-			i.ExitFunctionScope();
+			i.RunProcedure(this, args);
 			return i.ReturnValue;
 		}
 

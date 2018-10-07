@@ -10,8 +10,6 @@ namespace LsnCore
 	{
 		private Func<LsnValue[], LsnValue> Bound;
 
-		public override bool HandlesScope { get { return false; } }
-
 		public BoundedFunction(Func<LsnValue[], LsnValue> bound, List<Parameter> parameters, LsnType returnType, string name)
 			:base(new FunctionSignature(parameters,name,returnType?.Id))
 		{
@@ -31,8 +29,6 @@ namespace LsnCore
 	public class BoundedFunctionWithInterpreter : Function
 	{
 		private Func<IInterpreter, LsnValue[], LsnValue> Bound;
-
-		public override bool HandlesScope { get { return false; } }
 
 		public BoundedFunctionWithInterpreter(Func<IInterpreter, LsnValue[], LsnValue> bound, List<Parameter> parameters, TypeId returnType, string name)
 			: base(new FunctionSignature(parameters, name, returnType))

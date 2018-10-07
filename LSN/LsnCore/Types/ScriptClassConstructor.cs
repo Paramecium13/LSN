@@ -29,7 +29,7 @@ namespace LsnCore.Types
 
 		internal void Run(IInterpreter i, LsnValue[] args)
 		{
-			i.Run(Code, ResourceFilePath, StackSize, args);
+			i.RunProcedure(this, args);
 		}
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)

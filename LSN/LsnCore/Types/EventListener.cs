@@ -40,7 +40,7 @@ namespace LsnCore.Types
 
 		public void Run(LsnValue[] args, IInterpreter i)
 		{
-			i.Run(Code, ResourceFilePath, StackSize, args);
+			i.RunProcedure(this, args);
 		}
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)

@@ -11,8 +11,6 @@ namespace LsnCore.Types
 {
 	public class ScriptClassMethod : Method, ICodeBlock, IProcedure
 	{
-		public override bool HandlesScope => false;
-
 		public readonly bool IsVirtual;
 
 		public readonly bool IsAbstract;
@@ -59,8 +57,7 @@ namespace LsnCore.Types
 
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{
-			i.Run(Code, ResourceFilePath, StackSize, args);
-			i.ExitFunctionScope();
+			i.RunProcedure(this, args);
 			return i.ReturnValue;
 		}
 
@@ -116,8 +113,6 @@ namespace LsnCore.Types
 
 	public class ScriptClassVirtualMethod : Method, IProcedure
 	{
-		public override bool HandlesScope => false;
-
 		public Statement[] Code { get; set; } // Assigned in LSNr.
 
 		internal ScriptClassVirtualMethod(TypeId type, TypeId returnType, IList<Parameter> parameters, string resourceFilePath, string name)
@@ -130,6 +125,5 @@ namespace LsnCore.Types
 
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 			=> (args[0].Value as ScriptObject).GetMethod(Name).Eval(args, i);
-
 	}
 }

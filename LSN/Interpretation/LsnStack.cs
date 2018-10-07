@@ -12,11 +12,11 @@ namespace LsnCore
 	{
 		protected readonly IResourceManager ResourceManager;
 
-		private LsnValue[] Values;
+		private LsnValue[] Values = new LsnValue[8];
 		private int Count;		// == Offset + Current Frame Size
 		private int Offset;
 		private readonly Stack<FrameInfo> Frames = new Stack<FrameInfo>();
-		private LsnEnvironment CurrentEnvironment => Frames.Peek().Environment;
+		internal LsnEnvironment CurrentEnvironment => Frames.Peek().Environment;
 
 		public LsnValue GetVariable(int index) => Values[Offset + index];
 		public void SetVariable(int index, LsnValue value)

@@ -29,8 +29,6 @@ namespace LsnCore.Expressions
 			var args = new LsnValue[Args.Length];
 			for (int x = 0; x < Args.Length; x++)
 				args[x] = Args[x].Eval(i);
-			//var args = Args.Select(a => a.Eval(i)).ToArray();
-
 			return Fn.Eval(args, i);
 		}
 
