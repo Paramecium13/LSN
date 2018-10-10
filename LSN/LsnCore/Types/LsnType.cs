@@ -8,11 +8,6 @@ using System.Threading.Tasks;
 
 namespace LsnCore
 {
-	//public delegate LsnValue BinOp(LsnValue left, LsnValue right);
-
-	//public enum Operator { Add, Subtract, Multiply, Divide, Mod, Power, LessThan, GreaterThan, Equals, NotEquals, LTE, GTE}
-
-	[Serializable]
 	public abstract class LsnType
 	{
 		public static LsnType int_ { get; } = new LsnBoundedType<int>("int", () => new LsnValue(0), "Integer");
@@ -23,8 +18,8 @@ namespace LsnCore
 
 		static LsnType()
 		{
-			/*SetUpOperators();*/ SetUpMethods();
-        }
+			SetUpMethods();
+		}
 
 		private static void SetUpMethods()
 		{
@@ -140,12 +135,6 @@ namespace LsnCore
 			}
 		}
 
-		/*private readonly Dictionary<Tuple<Operator, TypeId>, Tuple<BinOp, TypeId>> _Operators
-			= new Dictionary<Tuple<Operator, TypeId>, Tuple<BinOp, TypeId>>();*/
-
-		/*public IReadOnlyDictionary<Tuple<Operator, TypeId>, Tuple<BinOp, TypeId>> Operators
-			{ get { return _Operators; } }*/
-
 		public bool IsName(string name) => Name == name || Aliases.Contains(name);
 
 		public bool Subsumes(LsnType type)
@@ -154,6 +143,5 @@ namespace LsnCore
 		}
 
 		public abstract LsnValue CreateDefaultValue();
-
 	}
 }
