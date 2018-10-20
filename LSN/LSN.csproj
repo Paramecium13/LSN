@@ -7,7 +7,7 @@
     <ProjectGuid>{C1269507-B8FD-4668-8D5A-0819DEAAFE89}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LSN</RootNamespace>
+    <RootNamespace>LsnCore</RootNamespace>
     <AssemblyName>LSN</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -118,6 +118,7 @@
     <Compile Include="LsnCore\Expressions\IExpression.cs" />
     <Compile Include="LsnCore\Expressions\UniqueScriptObjectAccessExpression.cs" />
     <Compile Include="LsnCore\Expressions\VariableExpression.cs" />
+    <Compile Include="LsnCore\Foo.cs" />
     <Compile Include="LsnCore\Function.cs" />
     <Compile Include="LsnCore\FunctionSignature.cs" />
     <Compile Include="LsnCore\GameValue.cs" />
@@ -193,6 +194,10 @@
     <Compile Include="LsnScriptBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LsnCore\Serialization\ResourceSerializer.cs" />
+    <Compile Include="Utilities\ArraySlice.cs" />
+    <Compile Include="Utilities\ListSlice.cs" />
+    <Compile Include="Utilities\Slice.cs" />
+    <Compile Include="Utilities\SubSlice.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
