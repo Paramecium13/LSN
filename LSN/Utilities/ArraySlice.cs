@@ -41,5 +41,11 @@ namespace LsnCore.Utilities
 		public override int IndexOf(T value, int start, int count)
 			=> Array.FindIndex(m_array, Start + start, Math.Min(count, Count), ((T x) => x.Equals(value)));
 
+		public ISlice<T> CreateSubSlice(int start, int count)
+		{
+			if(start + count >= Count)
+				throw new ArgumentOutOfRangeException();
+			return new ArraySlice(m_array, Start + start, count);
+		}
 	}
 }
