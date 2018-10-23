@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Utilities
 {
-	public abstract class Slice<T> : IReadOnlyList<T>
+	public abstract class Slice<T> : ISearchableReadOnlyList<T>
 	{
 		public abstract T this[int index] { get; }
 
@@ -46,7 +46,7 @@ namespace LsnCore.Utilities
 		public static Slice<T> Create(IReadOnlyList<T> list, int start, int count)
 			=> new ListSliceIR<T>(list, start, count);
 
-		public static Slice<T> Create(Slice<T> slice, int start, int count)
+		public static Slice<T> Create(ISearchableReadOnlyList<T> slice, int start, int count)
 			=> new SubSlice<T>(slice, start, count);
 
 		public static Slice<T> Create(ArraySegment<T> segment)

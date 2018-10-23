@@ -18,9 +18,9 @@ namespace LsnCore.Utilities
 			}
 		}
 
-		protected readonly Slice<T> m_slice;
+		protected readonly ISearchableReadOnlyList<T> m_slice;
 
-		public SubSlice(Slice<T> slice, int start, int count):base(start,count)
+		public SubSlice(ISearchableReadOnlyList<T> slice, int start, int count):base(start,count)
 		{
 			if (start + count > slice.Count)
 				throw new ArgumentOutOfRangeException(nameof(count));
