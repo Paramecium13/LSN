@@ -47,7 +47,7 @@ namespace LsnCore.Utilities
 		public override int IndexOf(T value, int start, int count)
 			=> m_list.FindIndex(Start + start, Math.Min(count, Count), ((T x) => x.Equals(value)));
 
-		public ISlice<T> CreateSubSlice(int start, int count)
+		public override ISlice<T> CreateSubSlice(int start, int count)
 		{
 			if(start + count >= Count)
 				throw new ArgumentOutOfRangeException();
@@ -79,7 +79,7 @@ namespace LsnCore.Utilities
 			return -1;
 		}
 
-		public ISlice<T> CreateSubSlice(int start, int count)
+		public override ISlice<T> CreateSubSlice(int start, int count)
 		{
 			if(start + count >= Count)
 				throw new ArgumentOutOfRangeException();
@@ -136,7 +136,7 @@ namespace LsnCore.Utilities
 			return -1;
 		}
 
-		public ISlice<T> CreateSubSlice(int start, int count)
+		public override ISlice<T> CreateSubSlice(int start, int count)
 		{
 			if(start + count >= Count)
 				throw new ArgumentOutOfRangeException();
