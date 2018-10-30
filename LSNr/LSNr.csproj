@@ -128,6 +128,9 @@
     <Compile Include="Optimization\ComponentFlattener.cs" />
     <Compile Include="PreStatement.cs" />
     <Compile Include="ReaderBase.cs" />
+    <Compile Include="ReaderRules\IReaderStatementRule.cs" />
+    <Compile Include="ReaderRules\ResourceReaderRules.cs" />
+    <Compile Include="ResourceReader.cs" />
     <Compile Include="ScriptObjects\BasePreScriptClass.cs" />
     <Compile Include="CharStreamTokenizer.cs" />
     <Compile Include="Create.cs" />
@@ -175,6 +178,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

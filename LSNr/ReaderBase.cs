@@ -17,8 +17,22 @@ namespace LSNr
 
 		protected ReaderBase(ISearchableReadOnlyList<Token> tokens) { Tokens = tokens; }
 
+		/// <summary>
+		/// When a group of tokens ending with a semicolon has been read.
+		/// </summary>
+		/// <param name="tokens">The tokens before the semicolon.</param>
 		protected abstract void OnReadStatement(ISearchableReadOnlyList<Token> tokens);
+
+		/// <summary>
+		/// When a body (tokens enclosed in braces) has been read.
+		/// </summary>
+		/// <param name="headTokens">The tokens before the opening brace, e.g. a function signature...</param>
+		/// <param name="bodyTokens">The tokens between the braces.</param>
 		protected abstract void OnReadBody(ISearchableReadOnlyList<Token> headTokens, ISearchableReadOnlyList<Token> bodyTokens);
+
+		/// <summary>
+		/// When reading adjacent semicolons, or (maybe?) a semicolon after a closing brace.
+		/// </summary>
 		protected abstract void OnReadAdjSemiColon();
 
 		protected void ReadTokens()
@@ -65,7 +79,6 @@ namespace LSNr
 				reader.CurrentHeadCount++;
 			}
 		}
-
 
 		class BodyReadToken : IReadToken
 		{
