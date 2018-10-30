@@ -1,11 +1,13 @@
 /*Scenes: called in scripts; no return value; 'performed' by actors, which bind to some engine dependent representation that can do
-stuff like walk/move, turn, navigate (using some kind of pathfinding),etc. */
+stuff like walk/move, turn, navigate (using some kind of pathfinding),etc. 
+Not implemented and may never be.
+*/
 sc DuelToTheDeath(actor1: Actor, actor2 : Actor)
 {
 	actor1 WALK FORWARDS;
 	actor2 TURN LEFT;
 	actor2 WALK FORWARDS 5;
-	sim
+	sim	// do the following blocks simultaneously
 	{
 		{
 			actor1 NAVIGATE TO 10, 15;

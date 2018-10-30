@@ -2,6 +2,7 @@
 using LsnCore.ControlStructures;
 using LsnCore.Expressions;
 using LsnCore.Statements;
+using LSNr.LssParser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,10 +69,20 @@ namespace LSNr
 			if(h == "when")
 			{ /* when [expression (condition)] : [expression] -> [block] */
 				// It's a conditional choice (inside a choice block).
-				var endOfCondition = head.ToList().IndexOf(":");
-				var cnd = Express(head.Skip(1).Take(endOfCondition - 1),script);
-				var endOfStr = head.IndexOf("->");
-				var str = Express(head.Skip(endOfCondition).Take(endOfStr - endOfCondition), script);
+				var res = ExpressionParser.MultiParse(head.ToArray(), script);
+				// {"when", condition, :, title, ->}
+				// validate
+				if (res.tokens.Length != 5 || res.tokens[1].Type != TokenType.Substitution || res.tokens[3].Type != TokenType.Substitution)
+					throw new LsnrParsingException(head[0], "Improperly formatted conditional choice.", script.Path);
+				if (res.tokens[4].Value != "->")
+					//throw new LsnrParsingException(head[0], "Improperly formatted conditional choice: must end in '->'.", script.Path);
+					throw LsnrParsingException.UnexpectedToken(res.tokens[4], "->", script.Path);
+				if(res.tokens[2].Value != ":")
+					throw LsnrParsingException.UnexpectedToken(res.tokens[2], ":", script.Path);
+				var cnd = res.substitutions[res.tokens[1]]; // Check if bool?
+				var str = res.substitutions[res.tokens[3]]; // Check if string?
+				if (str.Type != LsnType.string_.Id)
+					throw new LsnrParsingException(head[0], "Improperly formatted conditional choice: The title must be an expression of type string.", script.Path);
 				var p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);

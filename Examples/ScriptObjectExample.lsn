@@ -17,8 +17,19 @@ ScriptClass StandardDoor < IStandardDoor
 	property DestX : int;
 	property DestY : int;
 	
+	// alternative to 'StartState'
+	new()
+	{
+		if(InitiallyLocked){
+			SetState LockedState;
+		} else {
+			SetState UnlockedState;
+		}
+	}
+	
 	auto state StartState
 	{
+		// Start functions are not implemented...
 		fn Start()
 		{
 			if(InitiallyLocked){
