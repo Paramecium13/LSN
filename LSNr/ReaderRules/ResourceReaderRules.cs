@@ -15,13 +15,13 @@ namespace LSNr.ReaderRules
 
 		void RegisterUsing(string file);
 
-		void RegisterStructType(string name, ISearchableReadOnlyList<Token> tokens);
-		void RegisterRecordType(string name, ISearchableReadOnlyList<Token> tokens);
-		void RegisterScriptClass(string name, string hostname, bool unique, string metadata, ISearchableReadOnlyList<Token> tokens);
-		void RegisterHostInterface(string name, ISearchableReadOnlyList<Token> tokens);
+		void RegisterStructType(string name, ISlice<Token> tokens);
+		void RegisterRecordType(string name, ISlice<Token> tokens);
+		void RegisterScriptClass(string name, string hostname, bool unique, string metadata, ISlice<Token> tokens);
+		void RegisterHostInterface(string name, ISlice<Token> tokens);
 		List<Parameter> ParseParameters(IReadOnlyList<Token> tokens);
 
-		void RegisterFunction(LsnFunction function, ISearchableReadOnlyList<Token> body);
+		void RegisterFunction(LsnFunction function, ISlice<Token> body);
 	}
 
 	public abstract class ResourceReaderStatementRule : IReaderStatementRule
@@ -30,22 +30,22 @@ namespace LSNr.ReaderRules
 
 		protected ResourceReaderStatementRule(IPreResource pre) { PreResource = pre; }
 
-		public abstract bool Check(ISearchableReadOnlyList<Token> tokens);
-		public abstract void Apply(ISearchableReadOnlyList<Token> tokens);
+		public abstract bool Check(ISlice<Token> tokens);
+		public abstract void Apply(ISlice<Token> tokens);
 	}
 
 	class ResourceUsingStatementRule : ResourceReaderStatementRule
 	{
 		public ResourceUsingStatementRule(IPreResource pre) : base(pre) { }
 
-		public override void Apply(ISearchableReadOnlyList<Token> tokens)
+		public override void Apply(ISlice<Token> tokens)
 		{
 			if (tokens.Count != 2 || tokens[0].Type != TokenType.String)
 				throw new LsnrParsingException(tokens[0], "Invalid \'using\' statement.", PreResource.Path);
 			PreResource.RegisterUsing(tokens[1].Value);
 		}
 
-		public override bool Check(ISearchableReadOnlyList<Token> tokens)
+		public override bool Check(ISlice<Token> tokens)
 			=> tokens[0].Value == "using";
 	}
 
@@ -55,18 +55,18 @@ namespace LSNr.ReaderRules
 
 		protected ResourceReaderBodyRule(IPreResource pre) { PreResource = pre; }
 
-		public abstract bool Check(ISearchableReadOnlyList<Token> head);
-		public abstract void Apply(ISearchableReadOnlyList<Token> head, ISearchableReadOnlyList<Token> body);
+		public abstract bool Check(ISlice<Token> head);
+		public abstract void Apply(ISlice<Token> head, ISlice<Token> body);
 	}
 
 	sealed class ResourceReaderFunctionRule : ResourceReaderBodyRule
 	{
 		public ResourceReaderFunctionRule(IPreResource pre) : base(pre) { }
 
-		public override bool Check(ISearchableReadOnlyList<Token> head)
+		public override bool Check(ISlice<Token> head)
 			=> head[0].Value == "fn";
 
-		public override void Apply(ISearchableReadOnlyList<Token> head, ISearchableReadOnlyList<Token> body)
+		public override void Apply(ISlice<Token> head, ISlice<Token> body)
 		{
 			var i = 0;
 			var fnToken = head[i];
@@ -112,10 +112,10 @@ namespace LSNr.ReaderRules
 	{
 		internal ResourceReaderStructRule(IPreResource pre) : base(pre) { }
 
-		public override bool Check(ISearchableReadOnlyList<Token> head)
+		public override bool Check(ISlice<Token> head)
 			=> head[0].Value == "struct";
 
-		public override void Apply(ISearchableReadOnlyList<Token> head, ISearchableReadOnlyList<Token> body)
+		public override void Apply(ISlice<Token> head, ISlice<Token> body)
 		{
 			if (head.Count != 2)
 				throw new LsnrParsingException(head[0], "Invalid struct...", PreResource.Path);
@@ -127,10 +127,10 @@ namespace LSNr.ReaderRules
 	{
 		internal ResourceReaderRecordRule(IPreResource pre) : base(pre) { }
 
-		public override bool Check(ISearchableReadOnlyList<Token> head)
+		public override bool Check(ISlice<Token> head)
 			=> head[0].Value == "record";
 
-		public override void Apply(ISearchableReadOnlyList<Token> head, ISearchableReadOnlyList<Token> body)
+		public override void Apply(ISlice<Token> head, ISlice<Token> body)
 		{
 			if (head.Count != 2)
 				throw new LsnrParsingException(head[0], "Invalid record...", PreResource.Path);
@@ -142,10 +142,10 @@ namespace LSNr.ReaderRules
 	{
 		internal ResourceReaderHostInterfaceRule(IPreResource pre) : base(pre) { }
 
-		public override bool Check(ISearchableReadOnlyList<Token> head)
+		public override bool Check(ISlice<Token> head)
 			=> head[0].Value == "hostinterface" || (head[0].Value == "host" && head.Count > 1 && head[1].Value == "interface");
 
-		public override void Apply(ISearchableReadOnlyList<Token> head, ISearchableReadOnlyList<Token> body)
+		public override void Apply(ISlice<Token> head, ISlice<Token> body)
 		{
 			if (head.Count < 2)
 				throw new LsnrParsingException(head[0], "Invalid Host Interface.", PreResource.Path);
@@ -160,11 +160,11 @@ namespace LSNr.ReaderRules
 	{
 		internal ResourceReaderScriptClassRule(IPreResource pre) : base(pre) { }
 
-		public override bool Check(ISearchableReadOnlyList<Token> head)
+		public override bool Check(ISlice<Token> head)
 			=> head[0].Value == "scriptclass" || (head[0].Value == "script" && head.Count > 1 && head[1].Value == "class") ||
 				(head[0].Value == "unique" && head.Count > 1 && ((head[1].Value == "scriptclass") || (head.Count > 2 && head[2].Value == "class")));
 
-		public override void Apply(ISearchableReadOnlyList<Token> head, ISearchableReadOnlyList<Token> body)
+		public override void Apply(ISlice<Token> head, ISlice<Token> body)
 		{
 			throw new NotImplementedException();
 		}

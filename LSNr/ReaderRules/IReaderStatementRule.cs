@@ -10,16 +10,16 @@ namespace LSNr.ReaderRules
 {
 	public interface IReaderStatementRule
 	{
-		bool Check(ISearchableReadOnlyList<Token> tokens);
+		bool Check(ISlice<Token> tokens);
 
-		void Apply(ISearchableReadOnlyList<Token> tokens);
+		void Apply(ISlice<Token> tokens);
 	}
 
 	public interface IReaderBodyRule
 	{
-		bool Check(ISearchableReadOnlyList<Token> head);
+		bool Check(ISlice<Token> head);
 
-		void Apply(ISearchableReadOnlyList<Token> head, ISearchableReadOnlyList<Token> body);
+		void Apply(ISlice<Token> head, ISlice<Token> body);
 	}
 }
 

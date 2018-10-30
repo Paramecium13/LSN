@@ -2,6 +2,7 @@
 using LsnCore.Expressions;
 using LsnCore.Statements;
 using LsnCore.Types;
+using LsnCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace LSNr
 		/// <param name="tokens"> The tokens of the statement, not including the ';'.</param>
 		/// <param name="script"> The script.</param>
 		/// <returns></returns>
-		public static Statement State(List<Token> tokens, IPreScript script)
+		public static Statement State(ISlice<Token> tokens, IPreScript script)
 		{
 			var v = tokens[0].Value.ToLower();
 			int n = tokens.Count;
@@ -31,9 +32,9 @@ namespace LSNr
 								return Reassignment(tokens, script);
 			if (v == "break")	return new BreakStatement();
 			if (v == "next")	return new NextStatement();
-			if (v == "return")	return new ReturnStatement(n > 1 ? Express(tokens.Skip(1), script) : null);
+			if (v == "return")	return new ReturnStatement(n > 1 ? Express(tokens.CreateSubSlice(1, n-1), script) : null);
 			if (v == "say")
-				return Say(tokens.Skip(1).ToList(),script);
+				return Say(tokens.CreateSubSlice(1, n-1),script);
 			if (v == "goto")
 				return GotoStatement(tokens,script);
 			if (v == "setstate")
@@ -57,7 +58,7 @@ namespace LSNr
 				return GotoStatement(tokens, script);
 
 			if (v == "attach")
-				return AttachStatement(tokens.ToArray(), script);
+				return AttachStatement(tokens, script);
 
 			if (tokens.Any(t => t.Value == "="))
 			{
@@ -101,13 +102,13 @@ namespace LSNr
 		/// <param name="tokens"></param>
 		/// <param name="script"></param>
 		/// <returns></returns>
-		private static Statement Assignment(List<Token> tokens, IPreScript script)
+		private static Statement Assignment(ISlice<Token> tokens, IPreScript script)
 		{
-			bool mut = tokens.Any(t => t.Value/*.ToLower()*/ == "mut");
-			bool mutable = script.Mutable || mut;
-			ushort nameindex = mut ? (ushort)2 : (ushort)1; // The index of the name.
-			string name = tokens[nameindex].Value;
-			IExpression value = Express(tokens.Skip(nameindex + 2).ToList(), script);
+			var mut = tokens.Any(t => t.Value/*.ToLower()*/ == "mut");
+			var mutable = script.Mutable || mut;
+			var nameindex = mut ? (ushort)2 : (ushort)1; // The index of the name.
+			var name = tokens[nameindex].Value;
+			var value = Express(tokens.Skip(nameindex + 2).ToList(), script);
 			//LsnType type = value.Type.Type;
 			var symType = script.CheckSymbol(name);
 			switch (symType)
@@ -120,8 +121,10 @@ namespace LSNr
 				case SymbolType.ScriptClassMethod:
 				case SymbolType.HostInterfaceMethod:
 				case SymbolType.Function:
-					throw new LsnrParsingException(tokens[nameindex],$"Cannot name a new variable '{name}'. That name is already used for a {symType.ToString()}.",script.Path);
+					throw new LsnrParsingException(tokens[nameindex], $"Cannot name a new variable '{name}'. That name is already used for a {symType.ToString()}.", script.Path);
 				case SymbolType.Undefined:
+					break;
+				default:
 					break;
 			}
 			var variable = script.CurrentScope.CreateVariable(name, mutable, value);
@@ -136,7 +139,7 @@ namespace LSNr
 		/// <param name="tokens"> The tokens.</param>
 		/// <param name="script"> The script.</param>
 		/// <returns></returns>
-		private static Statement Reassignment(List<Token> tokens, IPreScript script)
+		private static Statement Reassignment(ISlice<Token> tokens, IPreScript script)
 		{
 			var sy = script.CheckSymbol(tokens[0].Value);
 			var expr = Express(tokens.Skip(2).ToList(), script);
@@ -186,40 +189,38 @@ namespace LSNr
 		/// <param name="tokens"> The tokens of the statement; without the 'say' and ';' tokens.</param>
 		/// <param name="script"></param>
 		/// <returns></returns>
-		private static SayStatement Say(List<Token> tokens, IPreScript script)
+		private static SayStatement Say(ISlice<Token> tokens, IPreScript script)
 		{
 			IExpression message, graphic = LsnValue.Nil, title = LsnValue.Nil;
-			if(tokens.HasToken("with") || tokens.HasToken("withgraphic"))
+			var asIndex = tokens.IndexOf("as");
+			var withIndex = tokens.IndexOf("with");
+			if (withIndex < 0) withIndex = tokens.IndexOf("withgraphic");
+			if(withIndex > 0)
 			{
-				int withIndex = tokens.IndexOf("with");
-				if (withIndex < 0) withIndex = tokens.IndexOf("withgraphic");
-				if (tokens.HasToken("as"))
+				if (asIndex > 0)
 				{
-					int asIndex = tokens.IndexOf("as");
-					int firstIndex = Math.Min(withIndex, asIndex);
-					int secondIndex = Math.Max(withIndex, asIndex);
-					message = Express(tokens.Take(firstIndex),script);
-					var expr2 = Express(tokens.Skip(firstIndex).Take(secondIndex - firstIndex),script);
-					var expr3 = Express(tokens.Skip(secondIndex), script);
-					if(firstIndex == withIndex) { graphic = expr2; title = expr3; }
+					var firstIndex = Math.Min(withIndex, asIndex);
+					var secondIndex = Math.Max(withIndex, asIndex);
+					message = Express(tokens.CreateSliceTaking(firstIndex), script);
+					var expr2 = Express(tokens.CreateSliceBetween(firstIndex, secondIndex),script);
+					var expr3 = Express(tokens.CreateSliceAt(secondIndex), script);
+					if (firstIndex == withIndex) { graphic = expr2; title = expr3; }
 					else{ title = expr2; graphic = expr3; }
 				}
 				else
 				{
-					message = Express(tokens.Take(withIndex), script);
-					graphic = Express(tokens.Skip(withIndex), script);
+					message = Express(tokens.CreateSliceTaking(withIndex), script);
+					graphic = Express(tokens.CreateSliceAt(withIndex), script);
 				}
 			}
-			else if(tokens.HasToken("as"))
+			else if(asIndex > 0)
 			{
-				int asIndex = tokens.IndexOf("as");
-				message = Express(tokens.Take(asIndex), script);
-				title = Express(tokens.Skip(asIndex),script);
+				message = Express(tokens.CreateSliceTaking(asIndex), script);
+				title = Express(tokens.CreateSliceAt(asIndex),script);
 			}
 			else // No title or graphic
-			{
 				message = Express(tokens,script);
-			}
+
 			return new SayStatement(message,graphic,title);
 		}
 
@@ -234,69 +235,93 @@ namespace LSNr
 		private static IExpression GetExpression(IEnumerable<Token> tokens, string str, out int indexOfString, IPreScript script)
 		{
 			indexOfString = tokens.Select(t => t.Value.ToLower()).ToList().IndexOf(str);
-			List<Token> exprTokens = tokens.Take(indexOfString - 1).ToList();
+			var exprTokens = tokens.Take(indexOfString - 1).ToList();
 			return Express(exprTokens, script);
 		}
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="tokens"></param>
 		/// <param name="script"></param>
 		/// <returns></returns>
-		private static GiveStatement Give(List<Token> tokens, IPreScript script)
+		private static GiveStatement Give(ISlice<Token> tokens, IPreScript script)
 		{
 			if (tokens.Count < 2) throw new NotImplementedException();
-			if (tokens.Any(t => t.Value == "item"))
-			{
-				return GiveItem(tokens, script);
-			}
-			else if (tokens.Any(t => t.Value == "gold"))
-			{
+			if (tokens.Any(t => t.Value == "gold"))
 				return GiveGold(tokens, script);
-			}
-			/*else if (tokens.Any(t => t.Value.ToLower() == "armor" || t.Value.ToLower() == "armour"))
-			{
-				return GiveArmor(tokens, script);
-			}
-			else if (tokens.Any(t => t.Value.ToLower() == "weapon"))
-			{
-				return GiveWeapon(tokens, script);
-			}
-			*/
-			else
-				return null;
+			return GiveItem(tokens, script);
 		}
 
-		private static GiveItemStatement GiveItem(List<Token> tokens, IPreScript script)
+		private static GiveItemStatement GiveItem(ISlice<Token> tokens, IPreScript script)
 		{
-			int index1, index2;
-			IExpression Amount;
-
-			if (tokens[2].Value == "item")
-			{
-				Amount = new LsnValue(1);
-				index1 = 2;
-			}
-			else
-				Amount = GetExpression(tokens.Skip(1), "item", out index1, script);
-			IExpression Id;
+			//		give [amount] [item] id [to receiver];
+			// (a)	give 10 item cat [to bob];
+			// (b)	give item cat [to bob];
+			// (c)	give cat [to bob];
+			// (d)	give 10 cat [to bob]
+			IExpression amount; var amountIndex = 0;
+			IExpression id; int idIndex;
 			IExpression receiver = LsnValue.Nil;
-			var idTokens = tokens.Skip(index1 + 1);
-			if (idTokens.Any(t => t.Value == "to"))
-			{
-				Id = GetExpression(idTokens, "to", out index2, script);
-				receiver = Express(idTokens.Skip(index2 + 1), script);
+
+			var res = LssParser.ExpressionParser.MultiParse(tokens, script);
+			var len = res.tokens.Length;
+			var expTokens = Slice<Token>.Create(res.tokens, 0, len);
+			if(expTokens[1].Type == TokenType.Substitution)
+			{ // It's not type (b)
+				if (len == 2 || len > 2 && expTokens[2].Value == "to")
+					idIndex = 1; // It's type (c)
+				else
+				{ // It's type (a) or (d)
+					amountIndex = 1;
+					if (expTokens[2].Value == "item")
+						idIndex = 3; // It's type (a)
+					else idIndex = 2; // It's type (d)
+				}
 			}
-			else
+			else idIndex = 2; // It's type (b)
+
+			if (amountIndex != 0)
 			{
-				Id = Express(idTokens, script);
+				if (expTokens[amountIndex].Type != TokenType.Substitution)
+					throw new LsnrParsingException(expTokens[1], "Improperly formatted give item statement.", script.Path);
+				amount = res.substitutions[expTokens[amountIndex]];
+				if (amount.Type != LsnType.int_.Id)
+					throw new LsnrParsingException(tokens[0], "Improperly formatted give item statement: amount must be an int expression.", script.Path);
 			}
-			return new GiveItemStatement(Id, Amount, receiver);
+			else amount = new LsnValue(1);
+
+			if (expTokens[idIndex].Type != TokenType.Substitution)
+				throw new LsnrParsingException(expTokens[1], "Improperly formatted give item statement.", script.Path);
+			id = res.substitutions[expTokens[idIndex]];
+
+			var toIndex = idIndex + 1;
+			if(len > toIndex)
+			{
+				if(expTokens[toIndex].Value != "to")
+				{
+					if (expTokens[toIndex].Type == TokenType.Substitution)
+						throw new LsnrParsingException(tokens[0], "Improperly formatted give item statement: expected 'to' or ';' received expression.", script.Path);
+					throw LsnrParsingException.UnexpectedToken(expTokens[toIndex],"'to' or ';'",script.Path);
+				}
+				if (len == toIndex + 1)
+					throw new LsnrParsingException(expTokens[toIndex], "Improperly formatted give item statement: unexpected end of statement.", script.Path);
+				if (len != toIndex + 2)
+				{
+					if (expTokens[toIndex + 2].Type == TokenType.Substitution)
+						throw new LsnrParsingException(tokens[0], "Improperly formatted give item statement: expected ';' received expression.", script.Path);
+					throw LsnrParsingException.UnexpectedToken(expTokens[toIndex + 2], ";", script.Path);
+				}
+				if (expTokens[toIndex + 1].Type != TokenType.Substitution)
+					throw LsnrParsingException.UnexpectedToken(expTokens[toIndex + 1], "an expression", script.Path);
+				receiver = res.substitutions[expTokens[toIndex + 1]];
+			}
+			return new GiveItemStatement(id, amount, receiver);
 		}
 
-		private static GiveGoldStatement GiveGold(List<Token> tokens, IPreScript script)
+		private static GiveGoldStatement GiveGold(ISlice<Token> tokens, IPreScript script)
 		{
+			// ToDo: Change to like GiveItem(...).
 			IExpression Amount;
 			IExpression receiver = LsnValue.Nil;
 
@@ -358,7 +383,7 @@ namespace LSNr
 			return new GoToStatement(expr0, expr1, expr2, actor);
 		}
 
-		private static Statement AttachStatement(Token[] tokens, IPreScript script)
+		private static Statement AttachStatement(ISlice<Token> tokens, IPreScript script)
 		{
 			if (tokens[1].Value.ToLower() != "new")
 				throw LsnrParsingException.UnexpectedToken(tokens[1], "'new'", script.Path);
@@ -380,7 +405,7 @@ namespace LSNr
 				int pCount = 1;
 				do
 				{
-					if (++i >= tokens.Length)
+					if (++i >= tokens.Count)
 						throw new LsnrParsingException(tokens[i - 1], "Mismatched parenthesis.", script.Path);
 					var t = tokens[i];
 					var x = t.Value;
@@ -453,8 +478,8 @@ namespace LSNr
 					propExps[j] = expr;
 				}
 			}
-			bool useCstor = scClassType.Constructor != null;
-	
+			var useCstor = scClassType.Constructor != null;
+
 			if (useCstor && args.Length != scClassType.Constructor.Parameters.Length - 1)
 				throw new LsnrParsingException(tokens[2],
 					$"Incorrect number of arguments for constructor of script class '{scClassName}'.", script.Path);
@@ -474,7 +499,7 @@ namespace LSNr
 				{
 					var name = ls[0].Value;
 					int index;
-					IExpression expr = Express(ls.Skip(2), script);
+					var expr = Express(ls.Skip(2), script);
 					if (useCstor)
 					{
 						var param = scClassType.Constructor.Parameters.FirstOrDefault(p => p.Name == name);
@@ -509,7 +534,7 @@ namespace LSNr
 					if (useCstor && !scClassType.Constructor.Parameters[j + 1].Type.Subsumes(expr.Type.Type))
 						throw LsnrParsingException.TypeMismatch(args[j][0], scClassType.Constructor.Parameters[j + 1].Type.Name,
 							expr.Type.Name, script.Path);
-					else if (!scClassType.Fields[j].Type.Subsumes(expr.Type.Type))
+					if (!scClassType.Fields[j].Type.Subsumes(expr.Type.Type))
 						throw LsnrParsingException.TypeMismatch(args[j][0], scClassType.Fields[j].Name, expr.Type.Name, script.Path);
 					argExps[j] = expr;
 				}

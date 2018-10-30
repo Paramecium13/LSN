@@ -371,8 +371,8 @@ namespace LSNr
 		{
 			foreach(var pair in MyFunctions)
 			{
-				//try
-				//{
+				try
+				{
 					var preFn = new PreFunction(this);
 					foreach (var param in pair.Value.Parameters)
 						preFn.CurrentScope.CreateVariable(param);
@@ -387,7 +387,7 @@ namespace LSNr
 					}
 					else
 						Valid = false;
-				/*}
+				}
 				catch (LsnrException e)
 				{
 					Logging.Log("function", pair.Key, e);
@@ -397,7 +397,7 @@ namespace LSNr
 				{
 					Logging.Log("function", pair.Key, e, Path);
 					Valid = false;
-				}*/
+				}
 			}
 		}
 

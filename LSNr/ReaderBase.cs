@@ -4,7 +4,7 @@ namespace LSNr
 {
 	abstract class ReaderBase
 	{
-		private readonly ISearchableReadOnlyList<Token> Tokens;
+		private readonly ISlice<Token> Tokens;
 
 		int TokenIndex;
 		int CurrentHeadStart;
@@ -15,20 +15,20 @@ namespace LSNr
 
 		IReadToken TokenReader = DefaultReadToken.Instance;
 
-		protected ReaderBase(ISearchableReadOnlyList<Token> tokens) { Tokens = tokens; }
+		protected ReaderBase(ISlice<Token> tokens) { Tokens = tokens; }
 
 		/// <summary>
 		/// When a group of tokens ending with a semicolon has been read.
 		/// </summary>
 		/// <param name="tokens">The tokens before the semicolon.</param>
-		protected abstract void OnReadStatement(ISearchableReadOnlyList<Token> tokens);
+		protected abstract void OnReadStatement(ISlice<Token> tokens);
 
 		/// <summary>
 		/// When a body (tokens enclosed in braces) has been read.
 		/// </summary>
 		/// <param name="headTokens">The tokens before the opening brace, e.g. a function signature...</param>
 		/// <param name="bodyTokens">The tokens between the braces.</param>
-		protected abstract void OnReadBody(ISearchableReadOnlyList<Token> headTokens, ISearchableReadOnlyList<Token> bodyTokens);
+		protected abstract void OnReadBody(ISlice<Token> headTokens, ISlice<Token> bodyTokens);
 
 		/// <summary>
 		/// When reading adjacent semicolons, or (maybe?) a semicolon after a closing brace.
@@ -41,7 +41,7 @@ namespace LSNr
 				TokenReader.Read(Tokens[TokenIndex], this);
 		}
 
-		ISearchableReadOnlyList<Token> GetHead() => Slice<Token>.Create(Tokens, CurrentHeadStart, CurrentHeadCount);
+		ISlice<Token> GetHead() => Slice<Token>.Create(Tokens, CurrentHeadStart, CurrentHeadCount);
 
 		interface IReadToken
 		{

@@ -49,7 +49,7 @@ namespace LsnCore.Utilities
 
 		public override ISlice<T> CreateSubSlice(int start, int count)
 		{
-			if(start + count >= Count)
+			if(start + count > Count)
 				throw new ArgumentOutOfRangeException();
 			return new ListSlice<T>(m_list, Start + start, count);
 		}
@@ -81,7 +81,7 @@ namespace LsnCore.Utilities
 
 		public override ISlice<T> CreateSubSlice(int start, int count)
 		{
-			if(start + count >= Count)
+			if(start + count > Count)
 				throw new ArgumentOutOfRangeException();
 			return new ListSliceI<T>(m_list, Start + start, count);
 		}
@@ -138,7 +138,7 @@ namespace LsnCore.Utilities
 
 		public override ISlice<T> CreateSubSlice(int start, int count)
 		{
-			if(start + count >= Count)
+			if(start + count > Count)
 				throw new ArgumentOutOfRangeException();
 			return new ListSliceIR<T>(m_list, Start + start, count);
 		}

@@ -2,6 +2,7 @@
 
 using LsnCore.ControlStructures;
 using LsnCore.Statements;
+using LsnCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,11 @@ namespace LSNr
 	{
 		private readonly IReadOnlyList<Token> Tokens;
 		private int i = 0;
-		private List<Token> TempTokens = new List<Token>();
+		private ISlice<Token> TempTokens
+			=> Slice<Token>.Create(Tokens, TempStart, TempCount);
+		private int TempStart;
+		private int TempCount;
+
 		internal List<Component> Components = new List<Component>();
 		private IPreScript Script;
 
@@ -28,8 +33,7 @@ namespace LSNr
 		{
 			for(; i< Tokens.Count; i++)
 			{
-				var token = Tokens[i];
-				string t = token.Value;
+				var t = Tokens[i].Value;
 				if (t == "{")
 				{
 					ParseControl();
@@ -41,42 +45,39 @@ namespace LSNr
 						Components.Add(comp);
 					else
 						Console.Write("");
-					TempTokens.Clear();
+					TempCount = 0;
+					TempStart = i+1;
 				}
-				else
-				{
-					TempTokens.Add(token);
-				}
+				else TempCount++;
 			}
 		}
 
 		private void ParseControl()
 		{
-			int openCount = 0;
-			int closeCount = 0;
+			var balance = 0;
 			var bodyTokens = new List<Token>();
+			var start = i;
+			var count = 0;
 			do
 			{
 				var token = Tokens[i];
 				string t = token.Value;
 				if (t == "{")
-				{
-					openCount++;
-				}
+					balance++;
 				else if(t == "}")
-				{
-					closeCount++;
-				}
-				bodyTokens.Add(token); // If this happens when closeCount == openCount, it will add the ending '}'
+					balance--;
+				count++;
 				i++;
-			} while (openCount != closeCount);
-			var x = bodyTokens.Skip(1).Reverse().Skip(1).Reverse().ToList(); // Well that's one way to do it...
+			} while (balance != 0);
+			var x = Slice<Token>.Create(Tokens, start + 1, count - 1);// Skips opening and closing braces...
 			var comp = Create.ControlStructure(TempTokens, x, Script);
 			if (comp != null)
 				Components.Add(comp);
 			else
 				Console.Write("");
-			TempTokens.Clear();i--;
+			TempCount = 0;
+			TempStart = i;
+			i--; // This is b/c the for loop in Parse() will increment i.
 		}
 
 		public static List<Component> Consolidate(List<Component> components)
@@ -117,6 +118,5 @@ namespace LSNr
 			}
 			return c;
 		}
-
 	}
 }

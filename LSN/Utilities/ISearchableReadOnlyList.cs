@@ -12,9 +12,24 @@ namespace LsnCore.Utilities
 
 		int IndexOf(T value, int start, int count);
 	}
-	
+
 	public interface ISlice<T> :  ISearchableReadOnlyList<T>
 	{
 		ISlice<T> CreateSubSlice(int start, int count);
+	}
+
+	public static class SliceExtensions
+	{
+		public static ISlice<T> CreateSliceAt<T>(this ISlice<T> self, int index)
+			=> self.CreateSubSlice(index, self.Count - index);
+
+		public static ISlice<T> CreateSliceTaking<T>(this ISlice<T> self, int count)
+			=> self.CreateSubSlice(0, count);
+
+		public static ISlice<T> CreateSliceSkipTake<T>(this ISlice<T> self, int skip, int take)
+			=> self.CreateSubSlice(skip, take);
+
+		public static ISlice<T> CreateSliceBetween<T>(this ISlice<T> self, int index1, int index2)
+			=> self.CreateSubSlice(index1, index2 - index1);
 	}
 }

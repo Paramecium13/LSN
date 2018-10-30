@@ -82,7 +82,7 @@ ScriptClass StandardDoor < IStandardActivator
 			//actor goto DestMap` DestX` DestY;
 			OpenCount = OpenCount + 1;
 			return;
-		}    
+		}
 	}
 	
 	/*on Activate(actor : IActor)

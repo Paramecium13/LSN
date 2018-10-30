@@ -1,4 +1,5 @@
 ﻿using LsnCore.Expressions;
+using LsnCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +17,13 @@ namespace LSNr.LssParser
 		private readonly Dictionary<Token, IExpression> Substitutions;
 #if DEBUG
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		private readonly Token[] InitialTokens;
+		private readonly IReadOnlyList<Token> InitialTokens;
 #endif
 		private List<Token> CurrentTokens;
 		private int SubCount;
 		private readonly IPreScript Script;
 
-		private ExpressionParser(Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
+		private ExpressionParser(IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
 #if DEBUG
 			InitialTokens = tokens;
@@ -137,11 +138,11 @@ namespace LSNr.LssParser
 				.ToArray();
 		}
 
-		public static IExpression Parse(Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions = null)
+		public static IExpression Parse(IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions = null)
 			=> new ExpressionParser(tokens,script,substitutions).Parse();
 
 		public static (Token[] tokens, IReadOnlyDictionary<Token, IExpression> substitutions)
-			MultiParse(Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions = null)
+			MultiParse(IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions = null)
 			=> new ExpressionParser(tokens, script, substitutions).MultiParse();
 	}
 }

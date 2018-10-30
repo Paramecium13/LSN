@@ -2,6 +2,7 @@
 using LsnCore.ControlStructures;
 using LsnCore.Expressions;
 using LsnCore.Statements;
+using LsnCore.Utilities;
 using LSNr.LssParser;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Linq;
 namespace LSNr
 {
 	/// <summary>
-	/// 
+	/// ...
 	/// </summary>
 	static partial class Create
 	{
@@ -21,7 +22,7 @@ namespace LSNr
 		/// <param name="body"> The body tokens.</param>
 		/// <param name="script"> The script.</param>
 		/// <returns></returns>
-		public static ControlStructure ControlStructure(List<Token> head, List<Token> body, IPreScript script)
+		public static ControlStructure ControlStructure(ISlice<Token> head, ISlice<Token> body, IPreScript script)
 		{
 			var h = head[0].Value;
 			var n = head.Count;
@@ -178,7 +179,8 @@ namespace LSNr
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
 				//var endOfStr = head.IndexOf("->");
-				var str = Express(head.Take(n - 1), script);
+
+				var str = Express(head.CreateSubSlice(0, n - 1), script);
 
 				return new Choice(str, components);
 			}
@@ -197,12 +199,8 @@ namespace LSNr
 		/// <param name="script"> The script.</param>
 		/// <param name="substitutions">todo: describe substitutions parameter on Express</param>
 		/// <returns></returns>
-		public static IExpression Express(List<Token> list, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions = null)
+		public static IExpression Express(IReadOnlyList<Token> list, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions = null)
 		{
-			if (list[0].Value/*.ToLower()*/ == "get")
-			{
-				return CreateGet(list,script);
-			}
 			if(list.Count == 1)
 			{
 				var token = list[0];
@@ -216,7 +214,7 @@ namespace LSNr
 				}
 				return expr;
 			}
-			return LssParser.ExpressionParser.Parse(list.ToArray(), script, substitutions);
+			return ExpressionParser.Parse(list, script, substitutions);
 		}
 
 		public static IExpression SingleTokenExpress(Token token, IPreScript script, IExpressionContainer container = null, IList<Variable> variables = null)
@@ -285,13 +283,6 @@ namespace LSNr
 			throw new LsnrParsingException(token, $"Cannot parse token '{token.Value}' as an expression.", script.Path);
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "tokens")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "script")]
-		private static Expression CreateGet(List<Token> tokens, IPreScript script)
-		{
-			throw new NotImplementedException();
-		}
-		
 		public static (Token[][] argTokens, int indexOfNextToken) CreateArgList(int indexOfOpen, IReadOnlyList<Token> tokens, IPreScript script)
 		{
 			var argTokens = new List<Token[]>();

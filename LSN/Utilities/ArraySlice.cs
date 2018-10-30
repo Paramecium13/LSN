@@ -43,7 +43,7 @@ namespace LsnCore.Utilities
 
 		public override ISlice<T> CreateSubSlice(int start, int count)
 		{
-			if(start + count >= Count)
+			if(start + count > Count)
 				throw new ArgumentOutOfRangeException();
 			return new ArraySlice<T>(m_array, Start + start, count);
 		}
