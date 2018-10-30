@@ -1,11 +1,13 @@
-/* Some quest I made up to help come up with the syntax and logic for quests.*/
+/*	Some quest I made up to help come up with the syntax and logic for quests. Not currently implemented but may be in the future.
+	'inline' elements are also not implemented.
+*/
 
 inline BNTFACE "RescuePrincess_BanditLeaderFace";
 inline PRSFACE "RescuePrincess_PrincessFace";
 quest RescuePrincess
 {
 	Title: "Rescue The Princess";
-	banditsKilled: mut int;
+	mut banditsKilled: int;
 	fn Start()
 	{
 		SetStage(GoToTower); //Calls the stage’s Start() method.
