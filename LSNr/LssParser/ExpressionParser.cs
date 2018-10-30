@@ -9,20 +9,24 @@ namespace LSNr.LssParser
 {
 	public class ExpressionParser
 	{
-		private static Tuple<uint, IExpressionRule[]>[] Rules;
+		private static IExpressionRule[][] Rules;
 
 		private const string SUB = "Ƨ";
 
 		private readonly Dictionary<Token, IExpression> Substitutions;
+#if DEBUG
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
 		private readonly Token[] InitialTokens;
+#endif
 		private List<Token> CurrentTokens;
 		private int SubCount;
 		private readonly IPreScript Script;
 
 		private ExpressionParser(Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
+#if DEBUG
 			InitialTokens = tokens;
+#endif
 			CurrentTokens = new List<Token>(tokens);
 			Script = script;
 			Substitutions = new Dictionary<Token, IExpression>();
@@ -40,7 +44,7 @@ namespace LSNr.LssParser
 		{
 			foreach (var level in Rules)
 			{
-				ApplyRuleLevel(level.Item2);
+				ApplyRuleLevel(level);
 				if (CurrentTokens.Count == 1 && CurrentTokens[0].Value.StartsWith(SUB, StringComparison.InvariantCulture))
 					break;
 			}
@@ -49,6 +53,24 @@ namespace LSNr.LssParser
 				throw LsnrParsingException.UnexpectedToken(CurrentTokens[1],"end of expression",Script.Path);
 
 			return Substitutions[CurrentTokens[0]];
+		}
+
+		private (Token[] tokens, IReadOnlyDictionary<Token, IExpression> substitutions)
+			MultiParse()
+		{
+			foreach (var level in Rules)
+			{
+				ApplyRuleLevel(level);
+				if (CurrentTokens.Count == 1) break;
+			}
+
+			return
+			(
+				CurrentTokens.ToArray(),
+				Substitutions
+					.Where(p => CurrentTokens.Contains(p.Key))
+					.ToDictionary(p => p.Key, p => p.Value)
+			);
 		}
 
 		private void ApplyRuleLevel(IExpressionRule[] rules)
@@ -111,10 +133,15 @@ namespace LSNr.LssParser
 				.GroupBy(r => r.Priority)
 				.Select(g => new Tuple<uint, IExpressionRule[]>(g.Key, g.ToArray()))
 				.OrderByDescending(g => g.Item1)
+				.Select(g => g.Item2)
 				.ToArray();
 		}
 
 		public static IExpression Parse(Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions = null)
 			=> new ExpressionParser(tokens,script,substitutions).Parse();
+
+		public static (Token[] tokens, IReadOnlyDictionary<Token, IExpression> substitutions)
+			MultiParse(Token[] tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions = null)
+			=> new ExpressionParser(tokens, script, substitutions).MultiParse();
 	}
 }
