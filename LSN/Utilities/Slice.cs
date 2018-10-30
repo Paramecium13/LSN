@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Utilities
 {
-	public abstract class Slice<T> : ISearchableReadOnlyList<T>
+	public abstract class Slice<T> : ISlice<T>
 	{
 		public abstract T this[int index] { get; }
 
@@ -33,6 +33,8 @@ namespace LsnCore.Utilities
 		public abstract int IndexOf(T value);
 
 		public abstract int IndexOf(T value, int start, int count);
+
+		public abstract ISlice<T> CreateSubSlice(int start, int count);
 
 		public static Slice<T> Create(T[] array, int start, int count)
 			=> new ArraySlice<T>(array, start, count);

@@ -38,5 +38,12 @@ namespace LsnCore.Utilities
 
 		public override int IndexOf(T value, int start, int count)
 			=> m_slice.IndexOf(value, Start + start, Math.Min(Count, count));
+
+		public override ISlice<T> CreateSubSlice(int start, int count)
+		{
+			if(start + count >= Count)
+				throw new ArgumentOutOfRangeException();
+			return new SubSlice(m_slice, Start + start, count);
+		}
 	}
 }

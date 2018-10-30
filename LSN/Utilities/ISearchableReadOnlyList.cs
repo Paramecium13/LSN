@@ -12,4 +12,9 @@ namespace LsnCore.Utilities
 
 		int IndexOf(T value, int start, int count);
 	}
+	
+	public interface ISlice<T> :  ISearchableReadOnlyList<T>
+	{
+		ISlice<T> CreateSubSlice(int start, int count);
+	}
 }
