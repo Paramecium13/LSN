@@ -45,7 +45,7 @@ namespace LsnCore.Utilities
 		{
 			if(start + count >= Count)
 				throw new ArgumentOutOfRangeException();
-			return new ArraySlice(m_array, Start + start, count);
+			return new ArraySlice<T>(m_array, Start + start, count);
 		}
 	}
 }

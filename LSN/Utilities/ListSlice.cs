@@ -51,7 +51,7 @@ namespace LsnCore.Utilities
 		{
 			if(start + count >= Count)
 				throw new ArgumentOutOfRangeException();
-			return new ListSlice(m_list, Start + start, count);
+			return new ListSlice<T>(m_list, Start + start, count);
 		}
 	}
 
@@ -83,7 +83,7 @@ namespace LsnCore.Utilities
 		{
 			if(start + count >= Count)
 				throw new ArgumentOutOfRangeException();
-			return new ListSliceI(m_list, Start + start, count);
+			return new ListSliceI<T>(m_list, Start + start, count);
 		}
 	}
 
@@ -140,7 +140,7 @@ namespace LsnCore.Utilities
 		{
 			if(start + count >= Count)
 				throw new ArgumentOutOfRangeException();
-			return new ListSliceIR(m_list, Start + start, count);
+			return new ListSliceIR<T>(m_list, Start + start, count);
 		}
 	}
 }

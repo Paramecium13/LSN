@@ -43,7 +43,7 @@ namespace LsnCore.Utilities
 		{
 			if(start + count >= Count)
 				throw new ArgumentOutOfRangeException();
-			return new SubSlice(m_slice, Start + start, count);
+			return new SubSlice<T>(m_slice, Start + start, count);
 		}
 	}
 }
