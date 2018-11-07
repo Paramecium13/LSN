@@ -23,6 +23,12 @@ bld/
 [Oo]bj/
 *.dll
 *.exe
+Newtonsoft.Json.xml
+*.exe.CodeAnalysisLog.xml
+*.exe.config
+*.lastcodeanalysissucceeded
+*.exe.manifest
+Syroot.BinaryData.xml
 
 # Visual Studio 2015 cache/options directory
 .vs/
