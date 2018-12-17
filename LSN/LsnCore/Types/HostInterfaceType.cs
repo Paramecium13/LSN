@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Types
 {
-	[Serializable]
 	public sealed class HostInterfaceType : LsnType
 	{
 		// Method definitions

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
 
-
 namespace LSNr
 {
 	public class PreHostInterface : IPreScript
@@ -15,7 +14,7 @@ namespace LSNr
 
 		public readonly TypeId HostInterfaceId;
 
-		private readonly BasePreScript Parent;
+		private readonly IPreScript Parent;
 
 		private readonly IReadOnlyList<Token> Tokens; // The tokens between (and not including) the opening and closing braces.
 
@@ -35,7 +34,7 @@ namespace LSNr
 
 		public string Path => Parent.Path;
 
-		internal PreHostInterface(string name, BasePreScript parent, IReadOnlyList<Token> tokens)
+		internal PreHostInterface(string name, IPreScript parent, IReadOnlyList<Token> tokens)
 		{
 			Name = name; HostInterfaceId = new TypeId(name);  Parent = parent; Tokens = tokens;
 		}

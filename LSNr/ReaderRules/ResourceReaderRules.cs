@@ -104,7 +104,7 @@ namespace LSNr.ReaderRules
 				throw LsnrParsingException.UnexpectedToken(head[i], "}", PreResource.Path);
 
 			var fn = new LsnFunction(paramaters, returnType, name, PreResource.Path);
-			throw new NotImplementedException();
+			PreResource.RegisterFunction(fn, body);
 		}
 	}
 
@@ -166,7 +166,40 @@ namespace LSNr.ReaderRules
 
 		public override void Apply(ISlice<Token> head, ISlice<Token> body)
 		{
-			throw new NotImplementedException();
+			var i = 0;
+			var unique = false;
+			string host = null;
+			string meta = null;
+			if (head[i].Value == "unique")
+			{
+				unique = true;
+				i++;
+			}
+			if (head[i].Value == "scriptclass") i++;
+			else i += 2;
+			if (i >= head.Count) throw new LsnrParsingException(head[head.Count - 1], "...", PreResource.Path);
+			var name = head[i++].Value;
+			if (i < head.Count && head[i].Value == "[")
+			{							// name		[	meta	]	 <
+										// -1		i	+1		+2	 +3
+				if (++i >= head.Count)	// -2		-1	 i		+1	 +2
+					throw new LsnrParsingException(head[head.Count - 1], "", PreResource.Path);
+				if (head[i].Type != TokenType.String)
+					throw LsnrParsingException.UnexpectedToken(head[i], "a string literal", PreResource.Path);
+				meta = head[i].Value;
+				if (++i >= head.Count)  //	-3		-2	 -1		i	 +1
+					throw new LsnrParsingException(head[i - 1], "...", PreResource.Path);
+				if (head[i].Value != "]") throw LsnrParsingException.UnexpectedToken(head[i], "]", PreResource.Path);
+				++i;					//	-4		-3	 -2		-1	  i
+			}
+			if (i < head.Count)
+			{
+				if (head[i].Value != "<") throw LsnrParsingException.UnexpectedToken(head[i], "<", PreResource.Path);
+				if (++i >= head.Count) throw new LsnrParsingException(head[i - 1], "...", PreResource.Path);
+				host = head[i].Value;
+				if (++i != head.Count) throw LsnrParsingException.UnexpectedToken(head[i], "{", PreResource.Path);
+			}
+			PreResource.RegisterScriptClass(name, host, unique, meta, body);
 		}
 	}
 }

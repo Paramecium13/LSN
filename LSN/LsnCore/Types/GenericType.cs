@@ -21,7 +21,7 @@ namespace LsnCore.Types
 				s.Append(type.Name);
 			}
 			return s.ToString();
-        }
+		}
 
 		/// <summary>
 		/// ...

@@ -127,10 +127,12 @@
     <Compile Include="MainFile.cs" />
     <Compile Include="Optimization\ComponentFlattener.cs" />
     <Compile Include="PreStatement.cs" />
-    <Compile Include="ReaderBase.cs" />
     <Compile Include="ReaderRules\IReaderStatementRule.cs" />
+    <Compile Include="ReaderRules\ReaderBase.cs" />
+    <Compile Include="ReaderRules\ResourceBuilder.cs" />
     <Compile Include="ReaderRules\ResourceReaderRules.cs" />
-    <Compile Include="ResourceReader.cs" />
+    <Compile Include="ReaderRules\ResourceReader.cs" />
+    <Compile Include="ReaderRules\ScriptPartMap.cs" />
     <Compile Include="ScriptObjects\BasePreScriptClass.cs" />
     <Compile Include="CharStreamTokenizer.cs" />
     <Compile Include="Create.cs" />
