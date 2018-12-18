@@ -27,7 +27,10 @@ namespace LSNr
 			_BodyRules = new ResourceReaderBodyRule[]
 			{
 				new ResourceReaderFunctionRule(PreResource),
-
+				new ResourceReaderStructRule(PreResource),
+				new ResourceReaderRecordRule(PreResource),
+				new ResourceReaderHostInterfaceRule(PreResource),
+				new ResourceReaderScriptClassRule(PreResource)
 			};
 		}
 
