@@ -232,10 +232,11 @@ namespace LSNr.ReaderRules
 					}
 				}
 				var fn = new LsnFunction(parameters, returnType, fnSrc.Key, Path);
+				MyFunctions.AddPart(fnSrc.Key, fn, fnSrc.Value.Body);
 			}
 		}
 
-		Tuple<string, TypeId>[] ParseFields(Token[] tokens)
+		Tuple<string, TypeId>[] ParseFields(ISlice<Token> tokens)
 		{
 			if (tokens.Length < 3) // struct Circle { Radius : double}
 			{
@@ -266,9 +267,9 @@ namespace LSNr.ReaderRules
 
 		void ParseStructs()
 		{
-			foreach (var src in MyStructs)
+			foreach (var (name, id, src) in MyStructs)
 			{
-
+				var fields = ParseFields(src.ToArray())
 			}
 		}
 
