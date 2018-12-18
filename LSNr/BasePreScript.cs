@@ -322,13 +322,7 @@ namespace LSNr
 		public virtual GenericType GetGenericType(string name) => LoadedGenerics.FirstOrDefault(t => t.Name == name);
 		public virtual TypeId GetTypeId(string name) => GetType(name).Id;
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "index")]
-		public TypeId GetTypeId(ushort index)
-		{
-			throw new NotImplementedException();
-		}
-
+		
 		public abstract void GenericTypeUsed(TypeId typeId);
 
 		/*public virtual void AddType(LsnType type)

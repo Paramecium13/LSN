@@ -10,6 +10,15 @@ using LsnCore.Utilities;
 
 namespace LSNr.ReaderRules
 {
+	class FunctionSource
+	{
+		internal readonly ISlice<Token> Args;
+		internal readonly ISlice<Token> ReturnType;
+		internal readonly ISlice<Token> Body;
+		internal FunctionSource(ISlice<Token> args, ISlice<Token> ret, ISlice<Token> body)
+			{ Args = args; ReturnType = ret; Body = body;}
+	}
+
 	class ResourceBuilder : IPreResource, IPreScript
 	{
 		readonly List<string> Usings = new List<string>();
@@ -22,6 +31,8 @@ namespace LSNr.ReaderRules
 		readonly Dictionary<string, ScriptClass>		LoadedScriptClasses		= new Dictionary<string, ScriptClass>();
 
 		readonly List<TypeId> UsedGenerics = new List<TypeId>();
+
+		readonly Dictionary<string, FunctionSource> FunctionSources = new Dictionary<string, FunctionSource>();
 
 		readonly Dictionary<string, TypeId> MyTypes = new Dictionary<string, TypeId>();
 
@@ -41,6 +52,11 @@ namespace LSNr.ReaderRules
 		public IScope CurrentScope { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 		public bool Mutable => false;
 		public bool Valid { get; set; }
+
+		internal ResourceBuilder(string path)
+		{
+			Path = path;
+		}
 
 		public void RegisterUsing(string file)
 		{
@@ -156,7 +172,7 @@ namespace LSNr.ReaderRules
 
 		public void RegisterFunction(string name, ISlice<Token> args, ISlice<Token> returnType, ISlice<Token> body)
 		{
-			//MyFunctions.AddPart(function.Name, function, body);
+			FunctionSources.Add(name, new FunctionSource(args, returnType, body));
 		}
 
 		public void RegisterRecordType(string name, ISlice<Token> tokens)
@@ -181,6 +197,53 @@ namespace LSNr.ReaderRules
 		public void RegisterHostInterface(string name, ISlice<Token> tokens)
 		{
 			throw new NotImplementedException();
+		}
+
+		void ParseFunctionSignatures()
+		{
+			foreach (var fnSrc in FunctionSources)
+			{
+				var parameters = ParseParameters(fnSrc.Value.Args);
+				TypeId returnType = null;
+				if(fnSrc.Value.ReturnType != null)
+				{
+					try { returnType = this.ParseTypeId(fnSrc.Value.ReturnType, 0, out int i); if (i < 0) throw new ApplicationException(); }
+					catch (Exception e)
+					{
+						throw new LsnrParsingException(fnSrc.Value.ReturnType[0],$"Error parsing return type for function '{fnSrc.Key}'.",e,Path);
+					}
+				}
+				var fn = new LsnFunction(parameters, returnType, fnSrc.Key, Path);
+			}
+		}
+
+		Tuple<string, TypeId>[] ParseFields(Token[] tokens)
+		{
+			if (tokens.Length < 3) // struct Circle { Radius : double}
+			{
+				throw new LsnrParsingException(tokens[0], "too few tokens.", Path);
+			}
+			var fields = new List<Tuple<string, TypeId>>();
+			for (int i = 0; i < tokens.Length; i++)
+			{
+				var fName = tokens[i++].Value; // Get the name of the field, move on to the next token.
+				if (i >= tokens.Length) // Make sure the definition does not end..
+					throw new LsnrParsingException(tokens[i - 1], "unexpected end of declaration, expected ':'.", Path);
+				if (tokens[i++].Value != ":") // Make sure the next token is ':', move on to the next token.
+					throw LsnrParsingException.UnexpectedToken(tokens[i - 1], ":", Path);
+				if (i >= tokens.Length) // Make sure the definition does not end.
+					throw new LsnrParsingException(tokens[i - 1], "unexpected end of declaration, expected type.", Path);
+				var tId = this.ParseTypeId(tokens, i, out i);
+				fields.Add(new Tuple<string, TypeId>(fName, tId));
+				if (i + 1 < tokens.Length && tokens[i].Value == ",") // Check if the definition ends, move on to the next token
+																	 // and check that it is ','.
+				{
+					// Move on to the next token, which should be the name of the next field.
+					continue; // Move on to the next field.
+				}
+				break;
+			}
+			return fields.ToArray();
 		}
 
 		void ParseStructs()
@@ -223,7 +286,7 @@ namespace LSNr.ReaderRules
 			return SymbolType.Undefined;
 		}
 
-		private static readonly Func<string, LsnResourceThing> ResourceLoader =
+		static readonly Func<string, LsnResourceThing> ResourceLoader =
 			(path) =>
 			{
 				if (path.StartsWith(@"Lsn Core\", StringComparison.Ordinal))

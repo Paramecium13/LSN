@@ -16,15 +16,23 @@ namespace LSNr
 
 		private readonly ResourceReaderBodyRule[] BodyRules;
 
-		ResourceReader(string src, string path, ISlice<Token> tokens) : base(tokens)
+		ResourceReader(string path, ISlice<Token> tokens) : base(tokens)
 		{
+			PreResource = new ResourceBuilder(path);
+			StatementRules = new ResourceReaderStatementRule[] {
+				new ResourceUsingStatementRule(PreResource)
+			};
+			BodyRules = new ResourceReaderBodyRule[]
+			{
+				new ResourceReaderFunctionRule(PreResource),
 
+			};
 		}
 
 		public static ResourceReader OpenResource(string src, string path)
 		{
 			var tokens = new CharStreamTokenizer().Tokenize(src);
-			return new ResourceReader(src, path, Slice<Token>.Create(tokens, 0, tokens.Count));
+			return new ResourceReader(path, Slice<Token>.Create(tokens, 0, tokens.Count));
 		}
 
 		protected override void OnReadAdjSemiColon(){}
