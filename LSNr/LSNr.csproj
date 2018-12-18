@@ -132,6 +132,7 @@
     <Compile Include="ReaderRules\ResourceBuilder.cs" />
     <Compile Include="ReaderRules\ResourceReaderRules.cs" />
     <Compile Include="ReaderRules\ResourceReader.cs" />
+    <Compile Include="ReaderRules\RuledReader.cs" />
     <Compile Include="ReaderRules\ScriptPartMap.cs" />
     <Compile Include="ScriptObjects\BasePreScriptClass.cs" />
     <Compile Include="CharStreamTokenizer.cs" />

@@ -8,21 +8,23 @@ using LSNr.ReaderRules;
 
 namespace LSNr
 {
-	class ResourceReader : ReaderBase
+	class ResourceReader : RuledReader<ResourceReaderStatementRule, ResourceReaderBodyRule>
 	{
-		private readonly IPreResource PreResource;
+		readonly IPreResource PreResource;
 
-		private readonly ResourceReaderStatementRule[] StatementRules;
+		readonly ResourceReaderStatementRule[] _StatementRules;
+		protected override IEnumerable<ResourceReaderStatementRule> StatementRules => _StatementRules;
 
-		private readonly ResourceReaderBodyRule[] BodyRules;
+		readonly ResourceReaderBodyRule[] _BodyRules;
+		protected override IEnumerable<ResourceReaderBodyRule> BodyRules => _BodyRules;
 
 		ResourceReader(string path, ISlice<Token> tokens) : base(tokens)
 		{
 			PreResource = new ResourceBuilder(path);
-			StatementRules = new ResourceReaderStatementRule[] {
+			_StatementRules = new ResourceReaderStatementRule[] {
 				new ResourceUsingStatementRule(PreResource)
 			};
-			BodyRules = new ResourceReaderBodyRule[]
+			_BodyRules = new ResourceReaderBodyRule[]
 			{
 				new ResourceReaderFunctionRule(PreResource),
 
@@ -36,15 +38,5 @@ namespace LSNr
 		}
 
 		protected override void OnReadAdjSemiColon(){}
-
-		protected override void OnReadBody(ISlice<Token> headTokens, ISlice<Token> bodyTokens)
-		{
-			throw new NotImplementedException();
-		}
-
-		protected override void OnReadStatement(ISlice<Token> tokens)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }
