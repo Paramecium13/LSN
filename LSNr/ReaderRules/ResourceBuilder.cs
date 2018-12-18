@@ -10,23 +10,37 @@ using LsnCore.Utilities;
 
 namespace LSNr.ReaderRules
 {
-	class ResourceBuilder : IPreResource
+	class ResourceBuilder : IPreResource, IPreScript
 	{
 		readonly List<string> Usings = new List<string>();
 
 		readonly Dictionary<string, LsnType>			LoadedTypes				= LsnType.GetBaseTypes().ToDictionary(t => t.Name);
+		readonly Dictionary<string, GenericType>		LoadedGenerics			= LsnType.GetBaseGenerics().ToDictionary(t => t.Name);
 		readonly Dictionary<string, Function>			LoadedFunctions			= new Dictionary<string, Function>();
 		readonly Dictionary<string, GameValue>			LoadedGameValues		= new Dictionary<string, GameValue>();
 		readonly Dictionary<string, HostInterfaceType>	LoadedHostInterfaces	= new Dictionary<string, HostInterfaceType>();
 		readonly Dictionary<string, ScriptClass>		LoadedScriptClasses		= new Dictionary<string, ScriptClass>();
 
+		readonly List<TypeId> UsedGenerics = new List<TypeId>();
+
+		readonly Dictionary<string, TypeId> MyTypes = new Dictionary<string, TypeId>();
+
 		readonly ScriptPartMap<LsnFunction, ISlice<Token>>			MyFunctions			= new ScriptPartMap<LsnFunction, ISlice<Token>>();
-		readonly ScriptPartMap<ScriptClass, ISlice<Token>>			MyScriptClasses		= new ScriptPartMap<ScriptClass, ISlice<Token>>();
-		readonly ScriptPartMap<HostInterfaceType, PreHostInterface>	MyHostInterfaces	= new ScriptPartMap<HostInterfaceType, PreHostInterface>();
 		readonly ScriptPartMap<TypeId, ISlice<Token>>				MyStructs			= new ScriptPartMap<TypeId, ISlice<Token>>();
 		readonly ScriptPartMap<TypeId, ISlice<Token>>				MyRecords			= new ScriptPartMap<TypeId, ISlice<Token>>();
+		//readonly ScriptPartMap<ScriptClass, ISlice<Token>>			MyScriptClasses		= new ScriptPartMap<ScriptClass, ISlice<Token>>();
+		//readonly ScriptPartMap<HostInterfaceType, PreHostInterface>	MyHostInterfaces	= new ScriptPartMap<HostInterfaceType, PreHostInterface>();
+
+		readonly List<StructType>			GeneratedStructTypes	= new List<StructType>();
+		readonly List<RecordType>			GeneratedRecordTypes	= new List<RecordType>();
+		//readonly List<ScriptClass>			GeneratedScriptClasses	= new List<ScriptClass>();
+		//readonly List<HostInterfaceType>	GeneratedHostInterfaces	= new List<HostInterfaceType>();
 
 		public string Path { get; private set; }
+
+		public IScope CurrentScope { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		public bool Mutable => false;
+		public bool Valid { get; set; }
 
 		public void RegisterUsing(string file)
 		{
@@ -140,21 +154,23 @@ namespace LSNr.ReaderRules
 			throw new NotImplementedException();
 		}
 
-		public void RegisterFunction(LsnFunction function, ISlice<Token> body)
+		public void RegisterFunction(string name, ISlice<Token> args, ISlice<Token> returnType, ISlice<Token> body)
 		{
-			MyFunctions.AddPart(function.Name, function, body);
-		}
-
-		public Function GetFunction(string name) => MyFunctions.HasPart(name) ? MyFunctions.GetPart(name) : LoadedFunctions[name];
-
-		public void RegisterHostInterface(string name, ISlice<Token> tokens)
-		{
-			throw new NotImplementedException();
+			//MyFunctions.AddPart(function.Name, function, body);
 		}
 
 		public void RegisterRecordType(string name, ISlice<Token> tokens)
 		{
-			throw new NotImplementedException();
+			var id = new TypeId(name);
+			MyRecords.AddPart(name, id, tokens);
+			MyTypes.Add(name, id);
+		}
+
+		public void RegisterStructType(string name, ISlice<Token> tokens)
+		{
+			var id = new TypeId(name);
+			MyStructs.AddPart(name, id, tokens);
+			MyTypes.Add(name, id);
 		}
 
 		public void RegisterScriptClass(string name, string hostname, bool unique, string metadata, ISlice<Token> tokens)
@@ -162,40 +178,49 @@ namespace LSNr.ReaderRules
 			throw new NotImplementedException();
 		}
 
-		public void RegisterStructType(string name, ISlice<Token> tokens)
+		public void RegisterHostInterface(string name, ISlice<Token> tokens)
 		{
 			throw new NotImplementedException();
 		}
 
-
-		public bool TypeExists(string name)
+		void ParseStructs()
 		{
-			throw new NotImplementedException();
+
 		}
 
-		public bool GenericTypeExists(string name)
+		void ParseRecords()
 		{
-			throw new NotImplementedException();
+
 		}
+
+		public Function GetFunction(string name) => MyFunctions.HasPart(name) ? MyFunctions.GetPart(name) : LoadedFunctions[name];
+
+		public bool TypeExists(string name) => LoadedTypes.ContainsKey(name) || MyTypes.ContainsKey(name);
+
+		public bool GenericTypeExists(string name) => LoadedGenerics.ContainsKey(name);
 
 		public void GenericTypeUsed(TypeId typeId)
 		{
-			throw new NotImplementedException();
+			if (!UsedGenerics.Contains(typeId))
+				UsedGenerics.Add(typeId);
 		}
 
-		public GenericType GetGenericType(string name)
-		{
-			throw new NotImplementedException();
-		}
+		public GenericType GetGenericType(string name) => LoadedGenerics[name];
 
-		public LsnType GetType(string name)
-		{
-			throw new NotImplementedException();
-		}
+		public LsnType GetType(string name) => LoadedTypes.ContainsKey(name) ? LoadedTypes[name] : MyTypes[name].Type;
 
-		public TypeId GetTypeId(string name)
+		public TypeId GetTypeId(string name) => LoadedTypes.ContainsKey(name) ? LoadedTypes[name].Id : MyTypes[name];
+
+		public SymbolType CheckSymbol(string name)
 		{
-			throw new NotImplementedException();
+			if (MyFunctions.HasPart(name) || LoadedFunctions.ContainsKey(name))
+				return SymbolType.Function;
+			if (LoadedTypes.ContainsKey(name) && ((LoadedTypes[name] as ScriptClass)?.Unique ?? false))// check MyScriptClasses
+				return SymbolType.UniqueScriptObject;
+			if (TypeExists(name))
+				return SymbolType.Type;
+
+			return SymbolType.Undefined;
 		}
 
 		private static readonly Func<string, LsnResourceThing> ResourceLoader =

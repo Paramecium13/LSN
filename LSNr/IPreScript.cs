@@ -10,7 +10,7 @@ namespace LSNr
 	{
 		IScope CurrentScope { get; set; }
 		bool Mutable { get; }
-        bool Valid { get; set; }
+		bool Valid { get; set; }
 		string Path { get; }
 
 		SymbolType CheckSymbol(string name);

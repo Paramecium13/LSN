@@ -54,4 +54,17 @@ namespace LsnCore.Utilities
 		public static Slice<T> Create(ArraySegment<T> segment)
 			=> new ArraySlice<T>(segment.Array, segment.Offset, segment.Count);
 	}
+
+	public static class SliceExtensions
+	{
+
+		public static Slice<T> ToSlice<T>(this List<T> self)
+			=> new ListSlice<T>(self, 0, self.Count);
+
+		public static Slice<T> ToSlice<T>(this T[] self)
+			=> new ArraySlice<T>(self, 0, self.Length);
+
+		public static Slice<T> ToSlice<T>(this ArraySegment<T> segment)
+			=> new ArraySlice<T>(segment.Array, segment.Offset, segment.Count);
+	}
 }

@@ -717,8 +717,6 @@ namespace LSNr
 		{
 			if (MyFunctions.ContainsKey(name) || LoadedExternallyDefinedFunctions.ContainsKey(name))
 				return SymbolType.Function;
-			if (CurrentScope.VariableExists(name))
-				return SymbolType.Variable;
 			if (UniqueScriptObjectTypeExists(name))
 				return SymbolType.UniqueScriptObject;
 			if (TypeExists(name))

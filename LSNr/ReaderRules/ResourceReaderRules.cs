@@ -21,7 +21,7 @@ namespace LSNr.ReaderRules
 		void RegisterHostInterface(string name, ISlice<Token> tokens);
 		List<Parameter> ParseParameters(IReadOnlyList<Token> tokens);
 
-		void RegisterFunction(LsnFunction function, ISlice<Token> body);
+		void RegisterFunction(string name, ISlice<Token> args, ISlice<Token> returnType, ISlice<Token> body);
 	}
 
 	public abstract class ResourceReaderStatementRule : IReaderStatementRule
@@ -77,34 +77,31 @@ namespace LSNr.ReaderRules
 			var paramTokens = new List<Token>();
 			while (head[++i].Value != ")") // This starts with the token after '('.
 				paramTokens.Add(head[i]);
-			var paramaters = PreResource.ParseParameters(paramTokens);
 			// At this point, the current token (i.e. tokens[i].Value) is ')'.
-			TypeId returnType = null;
+			ISlice<Token> returnType = null;
 			if (head[++i].Value == "->")
 			{
-				if (head[++i].Value == "(")
-				{ // The current token is the token after '->'.
+				i++; // The current token is the token after '->'.
+				if (head[i].Value == "(")
+				{
 					if (head[++i].Value != ")")
 						throw LsnrParsingException.UnexpectedToken(head[i], ")", PreResource.Path);
 				}
 				else
-				{ // The current token is the token after '->'.
-					try
+				{
+					var start = i++; var count = 1;
+					while (head[i++].Value != "{")
 					{
-						returnType = PreResource.ParseTypeId(head, i, out i);
+						if (i >= head.Count) throw new LsnrParsingException(fnToken, "error parsing return type.", PreResource.Path);
+						count++;
 					}
-					catch (Exception e)
-					{
-						throw new LsnrParsingException(fnToken, "error parsing return type.", e, PreResource.Path);
-					}
-					if (i < 0) throw new LsnrParsingException(fnToken, "error parsing return type.", PreResource.Path);
+					returnType = head.CreateSubSlice(start, count);
 				}
 			}
 			if (head[i].Value != "{")
-				throw LsnrParsingException.UnexpectedToken(head[i], "}", PreResource.Path);
+				throw LsnrParsingException.UnexpectedToken(head[i], "{", PreResource.Path);
 
-			var fn = new LsnFunction(paramaters, returnType, name, PreResource.Path);
-			PreResource.RegisterFunction(fn, body);
+			PreResource.RegisterFunction(name,paramTokens.ToSlice(),returnType, body);
 		}
 	}
 
@@ -197,7 +194,9 @@ namespace LSNr.ReaderRules
 				if (head[i].Value != "<") throw LsnrParsingException.UnexpectedToken(head[i], "<", PreResource.Path);
 				if (++i >= head.Count) throw new LsnrParsingException(head[i - 1], "...", PreResource.Path);
 				host = head[i].Value;
-				if (++i != head.Count) throw LsnrParsingException.UnexpectedToken(head[i], "{", PreResource.Path);
+				if (++i == head.Count) throw new LsnrParsingException(head[i - 1], "...", PreResource.Path);
+				if (head[i].Value != "{")
+					throw LsnrParsingException.UnexpectedToken(head[i], "{", PreResource.Path);
 			}
 			PreResource.RegisterScriptClass(name, host, unique, meta, body);
 		}

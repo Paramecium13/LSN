@@ -10,9 +10,9 @@ namespace LSNr
 {
 	public class PreFunction : IPreScript
 	{
-		private readonly PreResource Resource;
+		private readonly IPreScript Resource;
 
-		internal PreFunction(PreResource resource)
+		internal PreFunction(IPreScript resource)
 		{
 			Resource = resource;
 		}

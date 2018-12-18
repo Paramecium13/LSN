@@ -319,12 +319,7 @@ namespace LSNr
 		public virtual bool GenericTypeExists(string name)
 			=> LoadedGenerics.Any(t => t.Name == name);
 
-		public virtual GenericType GetGenericType(string name)
-		{
-			var type = LoadedGenerics.FirstOrDefault(t => t.Name == name);
-			return type;
-		}
-
+		public virtual GenericType GetGenericType(string name) => LoadedGenerics.FirstOrDefault(t => t.Name == name);
 		public virtual TypeId GetTypeId(string name) => GetType(name).Id;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
