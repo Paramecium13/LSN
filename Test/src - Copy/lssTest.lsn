@@ -1,0 +1,155 @@
+﻿#using "std\Math"
+
+
+fn ToCat(dog:Dog) -> Cat
+{
+	return new Cat(dog.Age, dog.Name);
+	//return new Cat(Age:dog.Age,Name:dog.Name);
+}
+
+fn PathDistance(path:Vector<Point>)-> double
+{
+	let mut sum = 0.0;
+	let mut point = path[0];
+	for(i = 1` i < path.Length()` i = i + 1)
+	{
+		sum = sum + Distance(point,path[i]);
+		point = path[i];
+	}
+	return sum;
+}
+
+fn Distance(a:Point,b:Point)-> double
+{
+	return Hypot(a.X-b.X,a.Y-b.Y);
+}
+
+record Cat {Age:int, Name:string}
+
+record Dog {Age: int, Name:string}
+
+fn Bark(dog : Dog)
+{
+	say dog . Name + ": Woof!";
+}
+
+fn Meow(cat : Cat)
+{
+	say cat . Name + ": Meow!";
+}
+
+
+ScriptClass StandardDoor < IStandardActivator
+{
+	property InitiallyLocked : bool;
+	property KeyId : string;
+	property DestMap : string;
+	property DestX : int;
+	property DestY : int;
+	
+	mut OpenCount: int;
+	
+	auto state StartState
+	{
+		fn Start()
+		{
+			if(InitiallyLocked){
+				SetState LockedState;
+			} else {
+				SetState UnlockedState;
+			}
+		}
+	}
+	
+	state LockedState
+	{		
+		on Activate(actor : IActor)
+		{
+			// If the player has the key, unlock the door.
+			if(actor.HasItem(KeyId))
+			{
+				SetState UnlockedState;
+			}
+			return;
+		}
+	}
+	
+	state UnlockedState
+	{	
+		on Activate(actor : IActor)
+		{
+			// Open the door.
+			//actor goto DestMap` DestX` DestY;
+			OpenCount = OpenCount + 1;
+			return;
+		}
+	}
+	
+	/*on Activate(actor : IActor)
+	{
+		if ( actor.HasItem(KeyId) ) 
+		{
+			actor goto DestMap ` DestX`DestY;
+		}
+	}*/
+	
+}
+
+HostInterface IEnemy
+{
+	fn GetHP() -> int;
+	fn Kill();
+}
+
+
+HostInterface IActor
+{
+	fn HasItem(itemId : string ) -> bool;
+	// Other stuff...
+}
+
+
+fn Sum(x:int, y:int)-> int
+{
+	return x + y;
+}
+
+record Circle
+{
+	X : double,
+	Y : double,
+	Radius : double
+}
+
+HostInterface IStandardActivator
+{
+	event Activate(actor : IActor);
+}
+
+fn IsInCircle(circ:Circle,x:double,y:double)
+{
+	return (x-circ.X)^2 + (y-circ.Y)^2 <= circ.Radius;
+}
+
+fn GetArea(circ:Circle)->double
+{
+	say "Can't find π";
+}
+
+record Point
+{
+	X : double,
+	Y : double
+}
+
+
+
+// for( i = 0 ` a ` a)
+
+
+
+fn ToDog(cat:Cat) -> Dog
+{
+	//return new Dog(Age:cat.Age, Name:cat.Name);
+	return new Dog(cat.Age, cat.Name);
+}

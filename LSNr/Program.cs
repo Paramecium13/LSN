@@ -53,7 +53,7 @@ namespace LSNr
 			var tasks = new Dictionary<string, Task>();
 			foreach (var path in changedFiles)
 				tasks[path] = Task.Run(() => Reify(dependenciesForest[path], tasks));
-
+			DependencyWaiter = new DependencyWaiter(tasks);
 			MyWaitHandle.Set();
 
 			var rTask = Task.WhenAll(tasks.Values);
@@ -129,7 +129,7 @@ namespace LSNr
 			return rawPath;
 		}
 
-		public static void Reify(DependenciesNode myNode, IReadOnlyDictionary<string,Task> tasks)
+		public static void ReifyB(DependenciesNode myNode, IReadOnlyDictionary<string, Task> tasks)
 		{
 			var deps = new HashSet<string>(myNode.DependencyPaths);
 			MyWaitHandle.WaitOne();
@@ -161,7 +161,7 @@ namespace LSNr
 				if (updateDepsFile)
 					_DependenciesFile.Dependencies[myNode.Path] = usings;
 			}
-			var rs = new PreResource(source,GetSourcePath(myNode.Path));
+			var rs = new PreResource(source, GetSourcePath(myNode.Path));
 			rs.Reify();
 			// Save the file.
 			LsnResourceThing res;
@@ -179,5 +179,29 @@ namespace LSNr
 			}
 		}
 
+		private static DependencyWaiter DependencyWaiter;
+
+		public static void Reify(DependenciesNode myNode, IReadOnlyDictionary<string, Task> tasks)
+		{
+			var deps = new HashSet<string>(myNode.DependencyPaths);
+			MyWaitHandle.WaitOne();
+			foreach (var path in deps)
+				tasks[path].Wait();
+
+			// Parse the file
+			var rs = ResourceReader.OpenResource(File.ReadAllText(GetSourcePath(myNode.Path)), myNode.Path, DependencyWaiter);
+			var res = rs.Read();
+			if (!rs.Valid)
+			{
+				res = null;
+				Console.WriteLine("Invalid source.");
+				Console.ReadLine();
+				throw new ApplicationException();
+			}
+			using (var fs = File.Create(GetObjectPath(myNode.Path)))
+			{
+				res.Serialize(fs);
+			}
+		}
 	}
 }

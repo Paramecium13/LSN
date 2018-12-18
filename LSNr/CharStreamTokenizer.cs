@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LsnCore.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -133,12 +134,12 @@ namespace LSNr
 			TokenOutput = (t) => Tokens.Add(t);
 		}
 
-		internal IReadOnlyList<Token> Tokenize(string src)
+		internal ISlice<Token> Tokenize(string src)
 		{
-			int lngth = src.Length;
+			var lngth = src.Length;
 			for (int i = 0; i < lngth; i++)
 				ReadChar(src[i]);
-			return Tokens;
+			return Tokens.ToSlice();
 		}
 
 		protected void ReadChar(char c)

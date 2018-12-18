@@ -1,0 +1,45 @@
+﻿using "test2";
+
+
+fn foo(a:int, b:double)
+{
+	let c = a - b;
+	if(a < b)
+	{
+		let mut d = a * 3;
+		say "Hello";
+		if(d < b)
+		{
+			let mut e = d + a;
+			say "Hello"*e;
+		}
+	}
+	let mut f = a /(b+1);
+}
+
+
+fn GetNames(dogs : Vector<Dog>) -> Vector<string>
+{
+	let names = new List<string>();
+	for(i = 0` i < dogs.Length()` i = i + 1)
+	{
+		names.Add(dogs[i].Name);
+	}
+}
+
+
+fn FnTestA()-> int
+{
+	TestA.ValueChange();
+	let value = TestA.GetValue();
+	if(value > 100)
+	{
+		TestA.ChangeB();
+	}
+	elsif(value < -100)
+	{
+		TestA.ChangeA()
+	}
+}
+
+

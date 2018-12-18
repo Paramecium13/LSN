@@ -13,6 +13,8 @@ namespace LSNr.ReaderRules
 	{
 		string Path { get; }
 
+		bool Valid { get; }
+
 		void RegisterUsing(string file);
 
 		void RegisterStructType(string name, ISlice<Token> tokens);
@@ -38,7 +40,9 @@ namespace LSNr.ReaderRules
 
 	class ResourceUsingStatementRule : ResourceReaderStatementRule
 	{
-		public ResourceUsingStatementRule(IPreResource pre) : base(pre) { }
+		readonly DependencyWaiter Waiter;
+		public ResourceUsingStatementRule(IPreResource pre, DependencyWaiter waiter) : base(pre)
+		{ Waiter = waiter; }
 
 		public override void Apply(ISlice<Token> tokens)
 		{

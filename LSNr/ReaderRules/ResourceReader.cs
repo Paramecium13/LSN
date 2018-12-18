@@ -19,11 +19,13 @@ namespace LSNr
 		readonly ResourceReaderBodyRule[] _BodyRules;
 		protected override IEnumerable<ResourceReaderBodyRule> BodyRules => _BodyRules;
 
-		ResourceReader(string path, ISlice<Token> tokens) : base(tokens)
+		internal bool Valid => PreResource.Valid;
+
+		ResourceReader(string path, ISlice<Token> tokens, DependencyWaiter waiter) : base(tokens)
 		{
 			PreResource = new ResourceBuilder(path);
 			_StatementRules = new ResourceReaderStatementRule[] {
-				new ResourceUsingStatementRule(PreResource)
+				new ResourceUsingStatementRule(PreResource, waiter)
 			};
 			_BodyRules = new ResourceReaderBodyRule[]
 			{
@@ -35,13 +37,14 @@ namespace LSNr
 			};
 		}
 
-		internal LsnResourceThing Read => PreResource.Parse();
-
-		public static ResourceReader OpenResource(string src, string path)
+		internal LsnResourceThing Read()
 		{
-			var tokens = new CharStreamTokenizer().Tokenize(src);
-			return new ResourceReader(path, Slice<Token>.Create(tokens, 0, tokens.Count));
+			ReadTokens();
+			return PreResource.Parse();
 		}
+
+		public static ResourceReader OpenResource(string src, string path, DependencyWaiter waiter)
+			=> new ResourceReader(path, new CharStreamTokenizer().Tokenize(src), waiter);
 
 		protected override void OnReadAdjSemiColon(){}
 	}

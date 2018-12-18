@@ -7,6 +7,37 @@ using System.Threading.Tasks;
 
 namespace LSNr
 {
+	class DependencyWaiter
+	{
+		readonly IReadOnlyDictionary<string, Task> Tasks;
+
+		readonly Dictionary<string, HashSet<string>> Usings = new Dictionary<string, HashSet<string>>();
+
+		internal DependencyWaiter(IReadOnlyDictionary<string, Task> tasks)
+		{
+			Tasks = tasks;
+			foreach (var path in Tasks.Keys)
+				Usings.Add(path, new HashSet<string>());
+		}
+
+		void AddDependency(string user, string used, string firstUsed)
+		{
+			if (user == used) throw new ApplicationException($"Circular dependency from '{user}' to '{firstUsed}'!!!");
+			Usings[user].Add(used);
+			foreach (var item in Usings[used])
+				AddDependency(user, item, firstUsed);
+		}
+
+		internal void WaitOn(string waitingPath, string pathToWaitOn)
+		{
+			lock (this)
+			{
+				AddDependency(waitingPath, pathToWaitOn, pathToWaitOn);
+			}
+			Tasks[pathToWaitOn].Wait();
+		}
+	}
+
 	class DependenciesNode
 	{
 		public readonly string Path;
