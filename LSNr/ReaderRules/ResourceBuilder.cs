@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
 using LsnCore.Utilities;
+using LSNr.Optimization;
 
 namespace LSNr.ReaderRules
 {
@@ -71,14 +72,15 @@ namespace LSNr.ReaderRules
 			// ParseHostInterfaces();
 			// PreParseScriptClasses();
 
-			// ParseFunctions();
+			ParseFunctions();
 
 			return GenerateResource();
 		}
 
 		public void RegisterUsing(string file)
 		{
-			Usings.Add(file);
+			//Usings.Add(file);
+			Use(file);
 		}
 		#region Load
 		readonly HashSet<string> LoadedResources = new HashSet<string>();
@@ -187,7 +189,7 @@ namespace LSNr.ReaderRules
 		{
 			throw new NotImplementedException();
 		}
-
+		#region Register
 		public void RegisterFunction(string name, ISlice<Token> args, ISlice<Token> returnType, ISlice<Token> body)
 		{
 			FunctionSources.Add(name, new FunctionSource(args, returnType, body));
@@ -216,7 +218,8 @@ namespace LSNr.ReaderRules
 		{
 			throw new NotImplementedException();
 		}
-
+		#endregion
+		#region PreParse
 		void ParseFunctionSignatures()
 		{
 			foreach (var fnSrc in FunctionSources)
@@ -269,13 +272,55 @@ namespace LSNr.ReaderRules
 		{
 			foreach (var (name, id, src) in MyStructs)
 			{
-				var fields = ParseFields(src.ToArray())
+				var fields = ParseFields(src);
+				var str = new StructType(id, fields); // also loads the type into the id
+				GeneratedStructTypes.Add(str);
 			}
 		}
 
 		void ParseRecords()
 		{
+			foreach (var (name, id, src) in MyRecords)
+			{
+				var fields = ParseFields(src);
+				var rec = new RecordType(id, fields); // also loads the type into the id
+				GeneratedRecordTypes.Add(rec);
+			}
+		}
+		#endregion
 
+		void ParseFunctions()
+		{
+			foreach (var (name, fn, src) in MyFunctions)
+			{
+				try
+				{
+					var preFn = new PreFunction(this);
+					foreach (var param in fn.Parameters)
+						preFn.CurrentScope.CreateVariable(param);
+					var parser = new Parser(src, preFn);
+					parser.Parse();
+					preFn.CurrentScope.Pop(parser.Components);
+					if (preFn.Valid)
+					{
+						var cmps = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
+						fn.Code = new ComponentFlattener().Flatten(cmps);
+						fn.StackSize = (preFn.CurrentScope as VariableTable)?.MaxSize ?? -1;
+					}
+					else
+						Valid = false;
+				}
+				catch (LsnrException e)
+				{
+					Logging.Log("function", name, e);
+					Valid = false;
+				}
+				catch (Exception e)
+				{
+					Logging.Log("function", name, e, Path);
+					Valid = false;
+				}
+			}
 		}
 
 		public Function GetFunction(string name) => MyFunctions.HasPart(name) ? MyFunctions.GetPart(name) : LoadedFunctions[name];
@@ -308,9 +353,34 @@ namespace LSNr.ReaderRules
 			return SymbolType.Undefined;
 		}
 
+		TypeId[] GetTypeIds()
+		{
+			return new List<TypeId> { new TypeId("void") }
+				.Union(LoadedTypes.Values.Select(t => t.Id))
+				.Union(MyTypes.Values)
+				// I don't think I need these; they should already be in MyTypes.
+				/*.Union(MyRecords.SelectFromParts(p=>p))
+				.Union(MyStructs.SelectFromParts(p =>p))
+				//.Union(MyHostInterfaces.SelectFromParts(p => p))
+				//.Union(MyScriptClasses.SelectFromParts(p => p))*/
+				.Union(UsedGenerics)
+				.Distinct()
+				.ToArray();
+		}
+
 		LsnResourceThing GenerateResource()
 		{
-			throw new NotImplementedException;
+			return new LsnResourceThing(GetTypeIds()) {
+				Functions = MyFunctions.ToDictionary(e => e.name, e => e.Part as Function),
+				GameValues = new Dictionary<string, GameValue>(),
+				HostInterfaces = new Dictionary<string, HostInterfaceType>(),
+				Includes = new List<string>(),
+				RecordTypes = GeneratedRecordTypes.ToDictionary(r => r.Name),
+				ScriptClassTypes = new Dictionary<string,ScriptClass>(),
+				StructTypes = GeneratedStructTypes.ToDictionary(s => s.Name),
+				Usings = Usings
+			};
+			throw new NotImplementedException();
 		}
 
 		static readonly Func<string, LsnResourceThing> ResourceLoader =
@@ -321,7 +391,7 @@ namespace LSNr.ReaderRules
 				if (path.StartsWith(@"std\", StringComparison.Ordinal))
 					return ResourceManager.GetStandardLibraryResource(new string(path.Skip(4).ToArray()));
 				var objPath = Program.GetObjectPath(path);
-				using (var stream = File.OpenRead(objPath))
+				using (var stream = File.OpenRead(objPath)) //ToDo: Replace with a call to a static method...
 				{
 					return LsnResourceThing.Read(stream, new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()), ResourceLoader);
 				}
