@@ -58,6 +58,24 @@ namespace LSNr.ReaderRules
 			Path = path;
 		}
 
+		/// <summary>
+		/// Called after all stuff has been registered.
+		/// </summary>
+		public LsnResourceThing Parse()
+		{
+			ParseFunctionSignatures();
+
+			ParseRecords();
+			ParseStructs();
+
+			// ParseHostInterfaces();
+			// PreParseScriptClasses();
+
+			// ParseFunctions();
+
+			return GenerateResource();
+		}
+
 		public void RegisterUsing(string file)
 		{
 			Usings.Add(file);
@@ -248,7 +266,10 @@ namespace LSNr.ReaderRules
 
 		void ParseStructs()
 		{
+			foreach (var src in MyStructs)
+			{
 
+			}
 		}
 
 		void ParseRecords()
@@ -284,6 +305,11 @@ namespace LSNr.ReaderRules
 				return SymbolType.Type;
 
 			return SymbolType.Undefined;
+		}
+
+		LsnResourceThing GenerateResource()
+		{
+			throw new NotImplementedException;
 		}
 
 		static readonly Func<string, LsnResourceThing> ResourceLoader =

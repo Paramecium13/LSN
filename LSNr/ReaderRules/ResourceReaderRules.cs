@@ -22,6 +22,8 @@ namespace LSNr.ReaderRules
 		List<Parameter> ParseParameters(IReadOnlyList<Token> tokens);
 
 		void RegisterFunction(string name, ISlice<Token> args, ISlice<Token> returnType, ISlice<Token> body);
+
+		LsnResourceThing Parse();
 	}
 
 	public abstract class ResourceReaderStatementRule : IReaderStatementRule

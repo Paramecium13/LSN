@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using LsnCore.Utilities;
 
 namespace LSNr.ReaderRules
 {
-	class ScriptPartMap<TPart, TSrc>
+	class ScriptPartMap<TPart, TSrc> : IEnumerable<(string name, TPart Part, TSrc Source)>
 	{
 		private class Entry
 		{
@@ -38,5 +39,18 @@ namespace LSNr.ReaderRules
 			foreach (var entry in Map.Values)
 				yield return entry.Part;
 		}
+
+		public IEnumerator<(string name, TPart Part, TSrc Source)> GetEnumerator()
+		{
+			foreach (var pair in Map) yield return (pair.Key, pair.Value.Part, pair.Value.Source);
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			foreach (var pair in Map) yield return (pair.Key, pair.Value.Part, pair.Value.Source);
+		}
+
+		public IEnumerable<T> SelectFromParts<T>(Func<TPart, T> fn) 
+			=> fn != null ? Map.Values.Select(e => fn(e.Part)) : throw new ArgumentNullException(nameof(fn));
 	}
 }

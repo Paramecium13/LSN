@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LsnCore;
 using LsnCore.Utilities;
 using LSNr.ReaderRules;
 
@@ -33,6 +34,8 @@ namespace LSNr
 				new ResourceReaderScriptClassRule(PreResource)
 			};
 		}
+
+		internal LsnResourceThing Read => PreResource.Parse();
 
 		public static ResourceReader OpenResource(string src, string path)
 		{
