@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
+using LSNr.ReaderRules;
 
 namespace LSNr
 {
@@ -96,24 +97,14 @@ namespace LSNr
 
 		private List<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
 		{
-			var paramaters = new List<Parameter>();
-			ushort index = 0;
-			for (int i = 0; i < tokens.Count; i++)
+			switch (Parent)
 			{
-				string name = tokens[i].Value;
-				if (tokens[++i].Value != ":")
-					throw new LsnrParsingException(Tokens[i-1], $"Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.", Path);
-				var type = this.ParseTypeId(tokens, ++i, out i);
-				LsnValue defaultValue = LsnValue.Nil;
-				if (i < tokens.Count && tokens[i].Value == "=")
-				{
-					Console.Write($"Error line {tokens[i].LineNumber}: Cannot have default values for host interface methods or events.");
-				}
-				paramaters.Add(new Parameter(name, type, defaultValue, index++));
-				if (i < tokens.Count && tokens[i].Value != ",")
-					throw new LsnrParsingException(tokens[i], $"Expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.", Path);
+				case ResourceBuilder resourceBuilder:
+					return resourceBuilder.ParseParameters(tokens);
+				case PreResource pre: return pre.ParseParameters(tokens);
+				default:
+					throw new NotImplementedException();
 			}
-			return paramaters;
 		}
 
 		/// <summary>

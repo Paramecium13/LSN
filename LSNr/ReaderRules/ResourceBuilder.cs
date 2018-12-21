@@ -24,12 +24,12 @@ namespace LSNr.ReaderRules
 	{
 		readonly List<string> Usings = new List<string>();
 
-		readonly Dictionary<string, LsnType> LoadedTypes = LsnType.GetBaseTypes().ToDictionary(t => t.Name);
-		readonly Dictionary<string, GenericType> LoadedGenerics = LsnType.GetBaseGenerics().ToDictionary(t => t.Name);
-		readonly Dictionary<string, Function> LoadedFunctions = new Dictionary<string, Function>();
-		readonly Dictionary<string, GameValue> LoadedGameValues = new Dictionary<string, GameValue>();
-		readonly Dictionary<string, HostInterfaceType> LoadedHostInterfaces = new Dictionary<string, HostInterfaceType>();
-		readonly Dictionary<string, ScriptClass> LoadedScriptClasses = new Dictionary<string, ScriptClass>();
+		readonly Dictionary<string, LsnType>			LoadedTypes				= LsnType.GetBaseTypes().ToDictionary(t => t.Name);
+		readonly Dictionary<string, GenericType>		LoadedGenerics			= LsnType.GetBaseGenerics().ToDictionary(t => t.Name);
+		readonly Dictionary<string, Function>			LoadedFunctions			= new Dictionary<string, Function>();
+		readonly Dictionary<string, GameValue>			LoadedGameValues		= new Dictionary<string, GameValue>();
+		readonly Dictionary<string, HostInterfaceType>	LoadedHostInterfaces	= new Dictionary<string, HostInterfaceType>();
+		readonly Dictionary<string, ScriptClass>		LoadedScriptClasses		= new Dictionary<string, ScriptClass>();
 
 		readonly List<TypeId> UsedGenerics = new List<TypeId>();
 
@@ -37,20 +37,20 @@ namespace LSNr.ReaderRules
 
 		readonly Dictionary<string, TypeId> MyTypes = new Dictionary<string, TypeId>();
 
-		readonly ScriptPartMap<LsnFunction, ISlice<Token>> MyFunctions = new ScriptPartMap<LsnFunction, ISlice<Token>>();
-		readonly ScriptPartMap<TypeId, ISlice<Token>> MyStructs = new ScriptPartMap<TypeId, ISlice<Token>>();
-		readonly ScriptPartMap<TypeId, ISlice<Token>> MyRecords = new ScriptPartMap<TypeId, ISlice<Token>>();
+		readonly ScriptPartMap<LsnFunction, ISlice<Token>>	MyFunctions	= new ScriptPartMap<LsnFunction, ISlice<Token>>();
+		readonly ScriptPartMap<TypeId, ISlice<Token>>		MyStructs	= new ScriptPartMap<TypeId, ISlice<Token>>();
+		readonly ScriptPartMap<TypeId, ISlice<Token>>		MyRecords	= new ScriptPartMap<TypeId, ISlice<Token>>();
 		//readonly ScriptPartMap<ScriptClass, ISlice<Token>>			MyScriptClasses		= new ScriptPartMap<ScriptClass, ISlice<Token>>();
-		//readonly ScriptPartMap<HostInterfaceType, PreHostInterface>	MyHostInterfaces	= new ScriptPartMap<HostInterfaceType, PreHostInterface>();
+		readonly Dictionary<string, PreHostInterface>		MyHostInterfaces	= new Dictionary<string, PreHostInterface>();
 
-		readonly List<StructType> GeneratedStructTypes = new List<StructType>();
-		readonly List<RecordType> GeneratedRecordTypes = new List<RecordType>();
+		readonly List<StructType>			GeneratedStructTypes = new List<StructType>();
+		readonly List<RecordType>			GeneratedRecordTypes = new List<RecordType>();
 		//readonly List<ScriptClass>			GeneratedScriptClasses	= new List<ScriptClass>();
-		//readonly List<HostInterfaceType>	GeneratedHostInterfaces	= new List<HostInterfaceType>();
+		readonly List<HostInterfaceType>	GeneratedHostInterfaces	= new List<HostInterfaceType>();
 
 		public string Path { get; private set; }
 
-		public IScope CurrentScope { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		public IScope CurrentScope { get => throw new InvalidOperationException(); set => throw new InvalidOperationException(); }
 		public bool Mutable => false;
 		public bool Valid { get; set; } = true;
 
@@ -68,8 +68,8 @@ namespace LSNr.ReaderRules
 
 			ParseRecords();
 			ParseStructs();
-
-			// ParseHostInterfaces();
+			foreach (var pre in MyHostInterfaces.Values)
+				GeneratedHostInterfaces.Add(pre.Parse());
 			// PreParseScriptClasses();
 
 			ParseFunctions();
@@ -268,7 +268,9 @@ namespace LSNr.ReaderRules
 
 		public void RegisterHostInterface(string name, ISlice<Token> tokens)
 		{
-			throw new NotImplementedException();
+			var pre = new PreHostInterface(name, this, tokens);
+			MyHostInterfaces.Add(name, pre);
+			MyTypes.Add(name, pre.HostInterfaceId);
 		}
 		#endregion
 		#region PreParse
@@ -377,7 +379,6 @@ namespace LSNr.ReaderRules
 
 		public Function GetFunction(string name) => MyFunctions.HasPart(name) ? MyFunctions.GetPart(name) : LoadedFunctions[name];
 
-		// Generics!!!
 		public bool TypeExists(string name)
 		{
 			if (name.Contains('`'))
@@ -399,7 +400,6 @@ namespace LSNr.ReaderRules
 
 		public GenericType GetGenericType(string name) => LoadedGenerics[name];
 
-		// Generics!!!
 		public LsnType GetType(string name) {
 			if (name.Contains('`'))
 			{
@@ -444,20 +444,17 @@ namespace LSNr.ReaderRules
 				.ToArray();
 		}
 
-		LsnResourceThing GenerateResource()
+		LsnResourceThing GenerateResource() => new LsnResourceThing(GetTypeIds())
 		{
-			return new LsnResourceThing(GetTypeIds()) {
-				Functions = MyFunctions.ToDictionary(e => e.name, e => e.Part as Function),
-				GameValues = new Dictionary<string, GameValue>(),
-				HostInterfaces = new Dictionary<string, HostInterfaceType>(),
-				Includes = new List<string>(),
-				RecordTypes = GeneratedRecordTypes.ToDictionary(r => r.Name),
-				ScriptClassTypes = new Dictionary<string,ScriptClass>(),
-				StructTypes = GeneratedStructTypes.ToDictionary(s => s.Name),
-				Usings = Usings
-			};
-			throw new NotImplementedException();
-		}
+			Functions = MyFunctions.ToDictionary(e => e.name, e => e.Part as Function),
+			GameValues = new Dictionary<string, GameValue>(),
+			HostInterfaces = GeneratedHostInterfaces.ToDictionary(h => h.Name),
+			Includes = new List<string>(),
+			RecordTypes = GeneratedRecordTypes.ToDictionary(r => r.Name),
+			ScriptClassTypes = new Dictionary<string, ScriptClass>(),
+			StructTypes = GeneratedStructTypes.ToDictionary(s => s.Name),
+			Usings = Usings
+		};
 
 		static readonly Func<string, LsnResourceThing> ResourceLoader =
 			(path) =>

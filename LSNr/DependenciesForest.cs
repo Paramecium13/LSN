@@ -99,7 +99,7 @@ namespace LSNr
 		internal static ConcurrentDictionary<string, DependenciesNode> CreateForest(DependenciesFile dependencies, string[] changedFiles)
 		{
 			var deps = new ConcurrentDictionary<string, DependenciesNode>();
-			Parallel.ForEach(changedFiles, path =>
+			Parallel.ForEach(changedFiles, path => //ToDo: this should look at all files, not just changed ones.
 			{
 				deps.TryAdd(path, new DependenciesNode(path));
 				if (!dependencies.Dependencies.ContainsKey(path))
@@ -112,7 +112,7 @@ namespace LSNr
 			{
 				var node = deps[path];
 				foreach (var dependency in dependencies.Dependencies[path])
-					node._Dependencies.Add(deps[dependency]);
+					if(deps.ContainsKey(dependency)) node._Dependencies.Add(deps[dependency]);
 				foreach (var dependency in node._Dependencies)
 				{
 					lock (dependency._Dependents)

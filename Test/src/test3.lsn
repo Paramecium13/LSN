@@ -1,6 +1,19 @@
 ﻿using "test2";
 
 
+fn TryStakeVampire(vampire : IEnemy)
+{
+	if(vampire.GetHP() < 25)
+	{
+		say "You drive a wooden stake into the vampire's heart!";
+		vampire.Kill();
+	}
+	else
+	{
+		say "The vampire is too strong. You have to weaken it more.";
+	}
+}
+
 fn foo(a:int, b:double)
 {
 	let c = a - b;

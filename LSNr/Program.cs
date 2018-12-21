@@ -80,7 +80,7 @@ namespace LSNr
 				{
 					var srcUpdateTime = File.GetLastWriteTimeUtc(path);
 					var objUpdateTime = File.GetLastWriteTimeUtc(objPath);
-					if (srcUpdateTime < objUpdateTime)
+					if (srcUpdateTime >= objUpdateTime)
 						changed.Add(path);
 				}
 			}

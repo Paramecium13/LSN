@@ -36,6 +36,19 @@ fn Meow(cat : Cat)
 }
 
 
+HostInterface IEnemy
+{
+	fn GetHP() -> int;
+	fn Kill();
+}
+
+
+HostInterface IActor
+{
+	fn HasItem(itemId : string ) -> bool;
+	// Other stuff...
+}
+
 fn Sum(x:int, y:int)-> int
 {
 	return x + y;
@@ -48,6 +61,10 @@ record Circle
 	Radius : double
 }
 
+HostInterface IStandardActivator
+{
+	event Activate(actor : IActor);
+}
 fn IsInCircle(circ:Circle,x:double,y:double)
 {
 	return (x-circ.X)^2 + (y-circ.Y)^2 <= circ.Radius;

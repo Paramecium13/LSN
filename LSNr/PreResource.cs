@@ -461,7 +461,7 @@ namespace LSNr
 		/// </summary>
 		/// <param name="tokens"></param>
 		/// <returns></returns>
-		private List<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
+		public List<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
 		{
 			var paramaters = new List<Parameter>();
 			ushort index = 0;
