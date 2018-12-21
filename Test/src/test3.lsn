@@ -1,18 +1,5 @@
-﻿#using "test2"
+﻿using "test2";
 
-
-fn TryStakeVampire(vampire : IEnemy)
-{
-	if(vampire.GetHP() < 25)
-	{
-		say "You drive a wooden stake into the vampire's heart!";
-		vampire.Kill();
-	}
-	else
-	{
-		say "The vampire is too strong. You have to weaken it more.";
-	}
-}
 
 fn foo(a:int, b:double)
 {
@@ -41,7 +28,7 @@ fn GetNames(dogs : Vector<Dog>) -> Vector<string>
 }
 
 
-fn FnTestA()-> int
+/*fn FnTestA()-> int
 {
 	TestA.ValueChange();
 	let value = TestA.GetValue();
@@ -53,51 +40,6 @@ fn FnTestA()-> int
 	{
 		TestA.ChangeA()
 	}
-}
+}*/
 
 
-
-unique ScriptClass TestA
-{
-	mut Value : int;
-	
-	fn abstract ValueChange()->();
-	
-	fn ChangeA()
-	{
-		setstate StateA;
-	}
-	
-	fn ChangeB()
-	{
-		setstate StateB;
-	}
-	
-	fn GetValue() -> int
-	{
-		return Value;
-	}
-	
-	auto state StateA
-	{
-		
-		fn ValueChange()->()
-		{
-			Value = Value + 5;
-		}
-		
-	}
-	
-	state StateB
-	{
-		
-		
-		fn ValueChange()->()
-		{
-			Value = Value - 3;
-		}
-		
-	}
-	
-	
-}

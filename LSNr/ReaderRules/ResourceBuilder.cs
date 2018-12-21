@@ -24,12 +24,12 @@ namespace LSNr.ReaderRules
 	{
 		readonly List<string> Usings = new List<string>();
 
-		readonly Dictionary<string, LsnType>			LoadedTypes				= LsnType.GetBaseTypes().ToDictionary(t => t.Name);
-		readonly Dictionary<string, GenericType>		LoadedGenerics			= LsnType.GetBaseGenerics().ToDictionary(t => t.Name);
-		readonly Dictionary<string, Function>			LoadedFunctions			= new Dictionary<string, Function>();
-		readonly Dictionary<string, GameValue>			LoadedGameValues		= new Dictionary<string, GameValue>();
-		readonly Dictionary<string, HostInterfaceType>	LoadedHostInterfaces	= new Dictionary<string, HostInterfaceType>();
-		readonly Dictionary<string, ScriptClass>		LoadedScriptClasses		= new Dictionary<string, ScriptClass>();
+		readonly Dictionary<string, LsnType> LoadedTypes = LsnType.GetBaseTypes().ToDictionary(t => t.Name);
+		readonly Dictionary<string, GenericType> LoadedGenerics = LsnType.GetBaseGenerics().ToDictionary(t => t.Name);
+		readonly Dictionary<string, Function> LoadedFunctions = new Dictionary<string, Function>();
+		readonly Dictionary<string, GameValue> LoadedGameValues = new Dictionary<string, GameValue>();
+		readonly Dictionary<string, HostInterfaceType> LoadedHostInterfaces = new Dictionary<string, HostInterfaceType>();
+		readonly Dictionary<string, ScriptClass> LoadedScriptClasses = new Dictionary<string, ScriptClass>();
 
 		readonly List<TypeId> UsedGenerics = new List<TypeId>();
 
@@ -37,14 +37,14 @@ namespace LSNr.ReaderRules
 
 		readonly Dictionary<string, TypeId> MyTypes = new Dictionary<string, TypeId>();
 
-		readonly ScriptPartMap<LsnFunction, ISlice<Token>>			MyFunctions			= new ScriptPartMap<LsnFunction, ISlice<Token>>();
-		readonly ScriptPartMap<TypeId, ISlice<Token>>				MyStructs			= new ScriptPartMap<TypeId, ISlice<Token>>();
-		readonly ScriptPartMap<TypeId, ISlice<Token>>				MyRecords			= new ScriptPartMap<TypeId, ISlice<Token>>();
+		readonly ScriptPartMap<LsnFunction, ISlice<Token>> MyFunctions = new ScriptPartMap<LsnFunction, ISlice<Token>>();
+		readonly ScriptPartMap<TypeId, ISlice<Token>> MyStructs = new ScriptPartMap<TypeId, ISlice<Token>>();
+		readonly ScriptPartMap<TypeId, ISlice<Token>> MyRecords = new ScriptPartMap<TypeId, ISlice<Token>>();
 		//readonly ScriptPartMap<ScriptClass, ISlice<Token>>			MyScriptClasses		= new ScriptPartMap<ScriptClass, ISlice<Token>>();
 		//readonly ScriptPartMap<HostInterfaceType, PreHostInterface>	MyHostInterfaces	= new ScriptPartMap<HostInterfaceType, PreHostInterface>();
 
-		readonly List<StructType>			GeneratedStructTypes	= new List<StructType>();
-		readonly List<RecordType>			GeneratedRecordTypes	= new List<RecordType>();
+		readonly List<StructType> GeneratedStructTypes = new List<StructType>();
+		readonly List<RecordType> GeneratedRecordTypes = new List<RecordType>();
 		//readonly List<ScriptClass>			GeneratedScriptClasses	= new List<ScriptClass>();
 		//readonly List<HostInterfaceType>	GeneratedHostInterfaces	= new List<HostInterfaceType>();
 
@@ -52,7 +52,7 @@ namespace LSNr.ReaderRules
 
 		public IScope CurrentScope { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 		public bool Mutable => false;
-		public bool Valid { get; set; }
+		public bool Valid { get; set; } = true;
 
 		internal ResourceBuilder(string path)
 		{
@@ -94,12 +94,12 @@ namespace LSNr.ReaderRules
 		{
 			foreach (var u in resource.Usings)
 			{
-				if(!LoadedResources.Contains(u)) Use(u);
+				if (!LoadedResources.Contains(u)) Use(u);
 			}
 
 			foreach (var recType in resource.StructTypes.Values)
 			{
-				LoadedTypes.Add(recType.Name,recType);
+				LoadedTypes.Add(recType.Name, recType);
 				recType.Id.Load(recType);
 			}
 			foreach (var stType in resource.RecordTypes.Values)
@@ -145,11 +145,17 @@ namespace LSNr.ReaderRules
 		{
 			if (func.ReturnType != null)
 			{
+				// Generics!!!
+				if (!TypeExists(func.ReturnType.Name))
+					throw new LsnrTypeNotFoundException(Path, func.ReturnType.Name);
 				func.ReturnType.Load(GetType(func.ReturnType.Name));
 				LoadType(func.ReturnType.Type);
 			}
 			foreach (var param in func.Parameters)
 			{
+				// Generics!!!
+				if (!TypeExists(param.Type.Name))
+					throw new LsnrTypeNotFoundException(Path, param.Type.Name);
 				param.Type.Load(GetType(param.Type.Name));
 				LoadType(param.Type.Type);
 			}
@@ -187,7 +193,53 @@ namespace LSNr.ReaderRules
 
 		public List<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
 		{
-			throw new NotImplementedException();
+			var paramaters = new List<Parameter>();
+			ushort index = 0;
+			for (int i = 0; i < tokens.Count; i++)
+			{
+				var name = tokens[i].Value;
+				if (tokens[++i].Value != ":")
+					throw new LsnrParsingException(tokens[i], $"Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.", Path);
+				var type = this.ParseTypeId(tokens, ++i, out i);
+				var defaultValue = LsnValue.Nil;
+				if (i < tokens.Count && tokens[i].Value == "=")
+				{
+					if (tokens[++i].Type == TokenType.String)
+					{
+						if (type != LsnType.string_.Id)
+							throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type string to a parameter of type {type.Name}", Path);
+						defaultValue = new LsnValue(new StringValue(tokens[i].Value));
+						if (i + 1 < tokens.Count) i++;
+					}
+					else if (tokens[i].Type == TokenType.Integer)
+					{
+						if (type != LsnType.int_.Id)
+						{
+							if (type == LsnType.double_.Id)
+							{
+								defaultValue = new LsnValue(tokens[i].IntValue);
+							}
+							else
+								throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type int to a parameter of type {type.Name}", Path);
+						}
+						else defaultValue = new LsnValue(tokens[i].IntValue);
+						if (i + 1 < tokens.Count) i++;
+					}
+					else if (tokens[i].Type == TokenType.Float)
+					{
+						if (type != LsnType.double_.Id)
+							throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type double to a parameter of type {type.Name}", Path);
+						defaultValue = new LsnValue(tokens[i].DoubleValue);
+						if (i + 1 < tokens.Count) i++;
+					}
+					// Bools and other stuff...
+					else throw new LsnrParsingException(tokens[i], $"Error in parsing default value for parameter {name}.", Path);
+				}
+				paramaters.Add(new Parameter(name, type, defaultValue, index++));
+				if (i < tokens.Count && tokens[i].Value != ",")
+					throw new LsnrParsingException(tokens[i], $"expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.", Path);
+			}
+			return paramaters;
 		}
 		#region Register
 		public void RegisterFunction(string name, ISlice<Token> args, ISlice<Token> returnType, ISlice<Token> body)
@@ -226,12 +278,12 @@ namespace LSNr.ReaderRules
 			{
 				var parameters = ParseParameters(fnSrc.Value.Args);
 				TypeId returnType = null;
-				if(fnSrc.Value.ReturnType != null)
+				if (fnSrc.Value.ReturnType != null)
 				{
 					try { returnType = this.ParseTypeId(fnSrc.Value.ReturnType, 0, out int i); if (i < 0) throw new ApplicationException(); }
 					catch (Exception e)
 					{
-						throw new LsnrParsingException(fnSrc.Value.ReturnType[0],$"Error parsing return type for function '{fnSrc.Key}'.",e,Path);
+						throw new LsnrParsingException(fnSrc.Value.ReturnType[0], $"Error parsing return type for function '{fnSrc.Key}'.", e, Path);
 					}
 				}
 				var fn = new LsnFunction(parameters, returnType, fnSrc.Key, Path);
@@ -325,7 +377,17 @@ namespace LSNr.ReaderRules
 
 		public Function GetFunction(string name) => MyFunctions.HasPart(name) ? MyFunctions.GetPart(name) : LoadedFunctions[name];
 
-		public bool TypeExists(string name) => LoadedTypes.ContainsKey(name) || MyTypes.ContainsKey(name);
+		// Generics!!!
+		public bool TypeExists(string name)
+		{
+			if (name.Contains('`'))
+			{
+				var names = name.Split('`');
+				if (GenericTypeExists(names[0])) return true;
+				return false;
+			}
+			return LoadedTypes.ContainsKey(name) || MyTypes.ContainsKey(name);
+		}
 
 		public bool GenericTypeExists(string name) => LoadedGenerics.ContainsKey(name);
 
@@ -337,7 +399,21 @@ namespace LSNr.ReaderRules
 
 		public GenericType GetGenericType(string name) => LoadedGenerics[name];
 
-		public LsnType GetType(string name) => LoadedTypes.ContainsKey(name) ? LoadedTypes[name] : MyTypes[name].Type;
+		// Generics!!!
+		public LsnType GetType(string name) {
+			if (name.Contains('`'))
+			{
+				var names = name.Split('`');
+				if (GenericTypeExists(names[0]))
+				{
+					var generic = GetGenericType(names[0]);
+					return generic.GetType(names.Skip(1).Select(GetType).Select(t => t.Id).ToArray());
+				}
+
+				throw new LsnrTypeNotFoundException(Path, name);
+			}
+			return LoadedTypes.ContainsKey(name) ? LoadedTypes[name] : MyTypes[name].Type;
+		}
 
 		public TypeId GetTypeId(string name) => LoadedTypes.ContainsKey(name) ? LoadedTypes[name].Id : MyTypes[name];
 

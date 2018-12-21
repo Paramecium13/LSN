@@ -1,32 +1,29 @@
 ﻿#using "std\Math"
-
-
-fn ToCat(dog:Dog) -> Cat
-{
-	return new Cat(dog.Age, dog.Name);
-	//return new Cat(Age:dog.Age,Name:dog.Name);
-}
-
-fn PathDistance(path:Vector<Point>)-> double
-{
-	let mut sum = 0.0;
-	let mut point = path[0];
-	for(i = 1` i < path.Length()` i = i + 1)
-	{
-		sum = sum + Distance(point,path[i]);
-		point = path[i];
-	}
-	return sum;
-}
-
-fn Distance(a:Point,b:Point)-> double
-{
-	return Hypot(a.X-b.X,a.Y-b.Y);
-}
+#using "std\Random"
 
 record Cat {Age:int, Name:string}
 
 record Dog {Age: int, Name:string}
+
+fn Test(x : double) -> int
+{
+	if (PercentChance(Random))
+	{
+		return RandomInt(0,99);
+	}
+	if(StandardNormal() <= CappedNormal(10.0) || RandomDouble(0.0,100.0) < 50.0)
+	{
+		return 100;
+	}
+	if(Normal(50.0,10.2) > x)
+	{
+		return 101;
+	}
+	if(CappedNormal(50.0,10.2,50.0) < x)
+	{
+		return 102;
+	}
+}
 
 fn Bark(dog : Dog)
 {
@@ -82,7 +79,7 @@ ScriptClass StandardDoor < IStandardActivator
 			//actor goto DestMap` DestX` DestY;
 			OpenCount = OpenCount + 1;
 			return;
-		}
+		}    
 	}
 	
 	/*on Activate(actor : IActor)
@@ -125,7 +122,6 @@ HostInterface IStandardActivator
 {
 	event Activate(actor : IActor);
 }
-
 fn IsInCircle(circ:Circle,x:double,y:double)
 {
 	return (x-circ.X)^2 + (y-circ.Y)^2 <= circ.Radius;
@@ -142,14 +138,40 @@ record Point
 	Y : double
 }
 
+fn Distance(a:Point,b:Point)-> double
+{
+	return Hypot(a.X-b.X,a.Y-b.Y);
+}
 
 
 // for( i = 0 ` a ` a)
 
 
 
+
+fn ToCat(dog:Dog) -> Cat
+{
+	//return new Cat(Age:dog.Age,Name:dog.Name);
+	return new Cat(dog.Age, dog.Name);
+}
+
 fn ToDog(cat:Cat) -> Dog
 {
 	//return new Dog(Age:cat.Age, Name:cat.Name);
 	return new Dog(cat.Age, cat.Name);
 }
+
+
+fn PathDistance(path:Vector<Point>)-> double
+{
+	let mut sum = 0.0;
+	let mut point = path[0];
+	for(i = 1` i < path.Length()` i = i + 1)
+	{
+		sum = sum + Distance(point,path[i]);
+		point = path[i];
+	}
+	return sum;
+}
+
+

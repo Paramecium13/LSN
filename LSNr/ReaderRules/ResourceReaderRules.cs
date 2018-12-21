@@ -46,7 +46,7 @@ namespace LSNr.ReaderRules
 
 		public override void Apply(ISlice<Token> tokens)
 		{
-			if (tokens.Count != 2 || tokens[0].Type != TokenType.String)
+			if (tokens.Count > 3 || tokens[1].Type != TokenType.String)
 				throw new LsnrParsingException(tokens[0], "Invalid \'using\' statement.", PreResource.Path);
 			PreResource.RegisterUsing(tokens[1].Value);
 		}
@@ -96,8 +96,9 @@ namespace LSNr.ReaderRules
 				else
 				{
 					var start = i++; var count = 1;
-					while (head[i++].Value != "{")
+					while (head[i].Value != "{")
 					{
+						i++;
 						if (i >= head.Count) throw new LsnrParsingException(fnToken, "error parsing return type.", PreResource.Path);
 						count++;
 					}
@@ -120,7 +121,7 @@ namespace LSNr.ReaderRules
 
 		public override void Apply(ISlice<Token> head, ISlice<Token> body)
 		{
-			if (head.Count != 2)
+			if (head.Count > 3 || head.Count < 2)
 				throw new LsnrParsingException(head[0], "Invalid struct...", PreResource.Path);
 			PreResource.RegisterStructType(head[1].Value, body);
 		}
@@ -135,7 +136,7 @@ namespace LSNr.ReaderRules
 
 		public override void Apply(ISlice<Token> head, ISlice<Token> body)
 		{
-			if (head.Count != 2)
+			if (head.Count > 3 || head.Count < 2)
 				throw new LsnrParsingException(head[0], "Invalid record...", PreResource.Path);
 			PreResource.RegisterRecordType(head[1].Value, body);
 		}

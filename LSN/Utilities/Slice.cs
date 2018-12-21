@@ -21,7 +21,7 @@ namespace LsnCore.Utilities
 		{
 			if (start < 0)
 				throw new ArgumentOutOfRangeException(nameof(start));
-			if (length <= 0)
+			if (length < 0)
 				throw new ArgumentOutOfRangeException(nameof(length));
 			Count = length;
 			Start = start;

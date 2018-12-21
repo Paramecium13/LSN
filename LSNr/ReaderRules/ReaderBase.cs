@@ -41,6 +41,8 @@ namespace LSNr
 				TokenReader.Read(Tokens[TokenIndex], this);
 		}
 
+		ISlice<Token> GetHeadB() => Slice<Token>.Create(Tokens, CurrentHeadStart, CurrentBodyStart-CurrentHeadStart);
+
 		ISlice<Token> GetHead() => Slice<Token>.Create(Tokens, CurrentHeadStart, CurrentHeadCount);
 
 		interface IReadToken
@@ -54,6 +56,7 @@ namespace LSNr
 			DefaultReadToken() { }
 			public void Read(Token token, ReaderBase reader)
 			{
+				reader.CurrentHeadCount++;
 				if(token.Type == TokenType.SyntaxSymbol)
 				{
 					switch (token.Value)
@@ -76,7 +79,6 @@ namespace LSNr
 							break;
 					}
 				}
-				reader.CurrentHeadCount++;
 			}
 		}
 
@@ -95,16 +97,18 @@ namespace LSNr
 							break;
 						case "}":
 							//...
+							reader.Balance--;
 							if (reader.Balance == 0)
 							{
-								reader.OnReadBody(Slice<Token>.Create(reader.Tokens, reader.CurrentBodyStart, reader.CurrentBodyCount), reader.GetHead());
+								var head = reader.GetHeadB();
+								reader.OnReadBody(head, Slice<Token>.Create(reader.Tokens, reader.CurrentBodyStart, reader.CurrentBodyCount));
 								reader.CurrentHeadStart = reader.TokenIndex + 1;
 								reader.CurrentHeadCount = -1;
+								reader.CurrentBodyCount = 0;
 								// I don't need to change body[start/count] or balance b/c these will be changed before it switches to this state.
 								reader.TokenReader = DefaultReadToken.Instance;
 								return;
 							}
-							reader.Balance--;
 							break;
 						default:
 							break;

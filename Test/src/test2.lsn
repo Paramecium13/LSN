@@ -1,5 +1,5 @@
-﻿#using "std\Math"
-#using "std\Random"
+﻿using "std\\Math";
+using "std\\Random";
 
 record Cat {Age:int, Name:string}
 
@@ -36,76 +36,6 @@ fn Meow(cat : Cat)
 }
 
 
-ScriptClass StandardDoor < IStandardActivator
-{
-	property InitiallyLocked : bool;
-	property KeyId : string;
-	property DestMap : string;
-	property DestX : int;
-	property DestY : int;
-	
-	mut OpenCount: int;
-	
-	auto state StartState
-	{
-		fn Start()
-		{
-			if(InitiallyLocked){
-				SetState LockedState;
-			} else {
-				SetState UnlockedState;
-			}
-		}
-	}
-	
-	state LockedState
-	{		
-		on Activate(actor : IActor)
-		{
-			// If the player has the key, unlock the door.
-			if(actor.HasItem(KeyId))
-			{
-				SetState UnlockedState;
-			}
-			return;
-		}
-	}
-	
-	state UnlockedState
-	{	
-		on Activate(actor : IActor)
-		{
-			// Open the door.
-			//actor goto DestMap` DestX` DestY;
-			OpenCount = OpenCount + 1;
-			return;
-		}    
-	}
-	
-	/*on Activate(actor : IActor)
-	{
-		if ( actor.HasItem(KeyId) ) 
-		{
-			actor goto DestMap ` DestX`DestY;
-		}
-	}*/
-	
-}
-
-HostInterface IEnemy
-{
-	fn GetHP() -> int;
-	fn Kill();
-}
-
-
-HostInterface IActor
-{
-	fn HasItem(itemId : string ) -> bool;
-	// Other stuff...
-}
-
-
 fn Sum(x:int, y:int)-> int
 {
 	return x + y;
@@ -118,10 +48,6 @@ record Circle
 	Radius : double
 }
 
-HostInterface IStandardActivator
-{
-	event Activate(actor : IActor);
-}
 fn IsInCircle(circ:Circle,x:double,y:double)
 {
 	return (x-circ.X)^2 + (y-circ.Y)^2 <= circ.Radius;
