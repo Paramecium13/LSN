@@ -30,6 +30,10 @@ fn foo(a:int, b:double)
 	let mut f = a /(b+1);
 }
 
+fn bar(val: int)-> Range
+{
+	return -val..val;
+}
 
 fn GetNames(dogs : Vector<Dog>) -> Vector<string>
 {

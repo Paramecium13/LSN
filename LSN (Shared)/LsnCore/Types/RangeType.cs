@@ -26,7 +26,7 @@ namespace LsnCore.Types
 
 		private RangeType()
 		{
-			Name = "IntRange";
+			Name = "Range";
 			Id = new TypeId(this);
 		}
 	}

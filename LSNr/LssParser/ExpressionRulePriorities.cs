@@ -24,6 +24,8 @@ namespace LSNr.LssParser
 
 		public const uint AddSub		= 3000;
 
+		public const uint Range			= 2500;
+
 		public const uint Comparative	= 2000;
 
 		public const uint Logical		= 1000;

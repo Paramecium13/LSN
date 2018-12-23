@@ -94,12 +94,14 @@ namespace LsnCore
 		/// <returns></returns>
 		public static List<LsnType> GetBaseTypes()
 		{
-			var types = new List<LsnType>();
-			types.Add(int_);
-			types.Add(double_);
-			types.Add(string_);
-			types.Add(Bool_);
-			return types;
+			return new List<LsnType>
+			{
+				int_,
+				double_,
+				string_,
+				Bool_,
+				RangeType.Instance
+			};
 		}
 
 		public static List<GenericType> GetBaseGenerics() => new List<GenericType>

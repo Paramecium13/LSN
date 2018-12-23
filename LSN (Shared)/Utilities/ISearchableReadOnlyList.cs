@@ -37,6 +37,9 @@ namespace LsnCore.Utilities
 		public static Slice<T> ToSlice<T>(this List<T> self)
 			=> new ListSlice<T>(self, 0, self.Count);
 
+		public static Slice<T> ToSlice<T>(this IReadOnlyList<T> self)
+			=> new ListSliceIR<T>(self, 0, self.Count);
+
 		public static Slice<T> ToSlice<T>(this T[] self)
 			=> new ArraySlice<T>(self, 0, self.Length);
 

@@ -518,7 +518,6 @@ namespace LSNr
 					if(c == '.')
 					{
 						Push(c);
-						Push(c);
 						TokenType = TokenizerTokenType.Operator;
 						Pop();
 					}
