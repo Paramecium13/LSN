@@ -1,4 +1,4 @@
-﻿#using "std\Math"
+﻿using "std\\Math";
 
 
 fn ToCat(dog:Dog) -> Cat

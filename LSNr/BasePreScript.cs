@@ -119,7 +119,6 @@ namespace LSNr
 						{
 							res = LsnResourceThing.Read(fs, new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()), ResourceLoader);
 						}
-						LsnResourceThing x = null;
 					}
 					else upToDate = false;
 				}

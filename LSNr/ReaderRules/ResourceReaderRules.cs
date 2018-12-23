@@ -196,7 +196,7 @@ namespace LSNr.ReaderRules
 				if (head[i].Value != "]") throw LsnrParsingException.UnexpectedToken(head[i], "]", PreResource.Path);
 				++i;					//	-4		-3	 -2		-1	  i
 			}
-			if (i < head.Count)
+			if (i + 1 < head.Count)
 			{
 				if (head[i].Value != "<") throw LsnrParsingException.UnexpectedToken(head[i], "<", PreResource.Path);
 				if (++i >= head.Count) throw new LsnrParsingException(head[i - 1], "...", PreResource.Path);

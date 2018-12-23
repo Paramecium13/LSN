@@ -27,7 +27,7 @@ namespace LSNr
 			set { Resource.Valid = value; }
 		}
 
-		public PreState(PreScriptClass parent, string name, int index,PreResource resource, IReadOnlyList<Token> tokens)
+		public PreState(PreScriptClass parent, string name, int index, IPreScript resource, IReadOnlyList<Token> tokens)
 			:base(tokens,parent.Id,resource,parent.HostName)
 		{
 			Parent = parent; StateName = name; Index = index;

@@ -37,16 +37,16 @@ namespace LSNr.ReaderRules
 
 		readonly Dictionary<string, TypeId> MyTypes = new Dictionary<string, TypeId>();
 
-		readonly ScriptPartMap<LsnFunction, ISlice<Token>>	MyFunctions	= new ScriptPartMap<LsnFunction, ISlice<Token>>();
-		readonly ScriptPartMap<TypeId, ISlice<Token>>		MyStructs	= new ScriptPartMap<TypeId, ISlice<Token>>();
-		readonly ScriptPartMap<TypeId, ISlice<Token>>		MyRecords	= new ScriptPartMap<TypeId, ISlice<Token>>();
-		//readonly ScriptPartMap<ScriptClass, ISlice<Token>>			MyScriptClasses		= new ScriptPartMap<ScriptClass, ISlice<Token>>();
+		readonly ScriptPartMap<LsnFunction, ISlice<Token>>	MyFunctions			= new ScriptPartMap<LsnFunction, ISlice<Token>>();
+		readonly ScriptPartMap<TypeId, ISlice<Token>>		MyStructs			= new ScriptPartMap<TypeId, ISlice<Token>>();
+		readonly ScriptPartMap<TypeId, ISlice<Token>>		MyRecords			= new ScriptPartMap<TypeId, ISlice<Token>>();
+		readonly Dictionary<string,PreScriptClass>			MyScriptClasses		= new Dictionary<string, PreScriptClass>();
 		readonly Dictionary<string, PreHostInterface>		MyHostInterfaces	= new Dictionary<string, PreHostInterface>();
 
-		readonly List<StructType>			GeneratedStructTypes = new List<StructType>();
-		readonly List<RecordType>			GeneratedRecordTypes = new List<RecordType>();
-		//readonly List<ScriptClass>			GeneratedScriptClasses	= new List<ScriptClass>();
-		readonly List<HostInterfaceType>	GeneratedHostInterfaces	= new List<HostInterfaceType>();
+		readonly List<StructType>						GeneratedStructTypes = new List<StructType>();
+		readonly List<RecordType>						GeneratedRecordTypes = new List<RecordType>();
+		readonly Dictionary<string, ScriptClass>		GeneratedScriptClasses	= new Dictionary<string, ScriptClass>();
+		readonly Dictionary<string, HostInterfaceType>	GeneratedHostInterfaces	= new Dictionary<string, HostInterfaceType>();
 
 		public string Path { get; private set; }
 
@@ -69,10 +69,21 @@ namespace LSNr.ReaderRules
 			ParseRecords();
 			ParseStructs();
 			foreach (var pre in MyHostInterfaces.Values)
-				GeneratedHostInterfaces.Add(pre.Parse());
-			// PreParseScriptClasses();
+				GeneratedHostInterfaces.Add(pre.HostInterfaceId.Name,pre.Parse());
+			foreach (var pre in MyScriptClasses.Values)
+			{
+				if (pre.HostName != null)
+				{
+					if (!TypeExists(pre.HostName))
+						throw new LsnrTypeNotFoundException(Path, pre.HostName);
+					pre.HostType = GeneratedHostInterfaces[pre.HostName];
+				}
+				GeneratedScriptClasses.Add(pre.Name, pre.PreParse());
+			}
 
 			ParseFunctions();
+			foreach (var pre in MyScriptClasses.Values)
+				pre.Parse();
 
 			return GenerateResource();
 		}
@@ -263,7 +274,9 @@ namespace LSNr.ReaderRules
 
 		public void RegisterScriptClass(string name, string hostname, bool unique, string metadata, ISlice<Token> tokens)
 		{
-			throw new NotImplementedException();
+			var pre = new PreScriptClass(name, this, hostname, unique, metadata, tokens);
+			MyTypes.Add(name, pre.Id);
+			MyScriptClasses.Add(name, pre);
 		}
 
 		public void RegisterHostInterface(string name, ISlice<Token> tokens)
@@ -421,7 +434,8 @@ namespace LSNr.ReaderRules
 		{
 			if (MyFunctions.HasPart(name) || LoadedFunctions.ContainsKey(name))
 				return SymbolType.Function;
-			if (LoadedTypes.ContainsKey(name) && ((LoadedTypes[name] as ScriptClass)?.Unique ?? false))// check MyScriptClasses
+			if ((LoadedTypes.ContainsKey(name) && ((LoadedTypes[name] as ScriptClass)?.Unique ?? false))
+				|| (GeneratedScriptClasses.ContainsKey(name) && GeneratedScriptClasses[name].Unique))// check MyScriptClasses
 				return SymbolType.UniqueScriptObject;
 			if (TypeExists(name))
 				return SymbolType.Type;
@@ -448,10 +462,10 @@ namespace LSNr.ReaderRules
 		{
 			Functions = MyFunctions.ToDictionary(e => e.name, e => e.Part as Function),
 			GameValues = new Dictionary<string, GameValue>(),
-			HostInterfaces = GeneratedHostInterfaces.ToDictionary(h => h.Name),
+			HostInterfaces = GeneratedHostInterfaces,
 			Includes = new List<string>(),
 			RecordTypes = GeneratedRecordTypes.ToDictionary(r => r.Name),
-			ScriptClassTypes = new Dictionary<string, ScriptClass>(),
+			ScriptClassTypes = GeneratedScriptClasses,
 			StructTypes = GeneratedStructTypes.ToDictionary(s => s.Name),
 			Usings = Usings
 		};

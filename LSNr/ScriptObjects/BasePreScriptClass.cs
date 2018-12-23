@@ -20,7 +20,7 @@ namespace LSNr
 		// The Id of the ScriptObject this is for.
 		internal readonly TypeId Id;
 		protected readonly IReadOnlyList<Token> Tokens;
-		protected readonly PreResource Resource;
+		protected readonly IPreScript Resource;
 
 		internal readonly string HostName;
 		internal HostInterfaceType HostType;
@@ -44,7 +44,7 @@ namespace LSNr
 		internal abstract bool StateExists(string name);
 		internal abstract int GetStateIndex(string name);
 
-		protected BasePreScriptClass(IReadOnlyList<Token> tokens, TypeId id, PreResource resource, string hostName)
+		protected BasePreScriptClass(IReadOnlyList<Token> tokens, TypeId id, IPreScript resource, string hostName)
 		{
 			Tokens = tokens; Id = id; Resource = resource; HostName = hostName;
 		}
@@ -169,7 +169,7 @@ namespace LSNr
 				throw LsnrParsingException.UnexpectedToken(Tokens[i], isAbstract ? "-> or ;" : "-> or {", Path);
 			i++; // 'i' points to the thing after ';' or the end of the body.
 
-			return new ScriptClassMethod(Id, returnType, parameters, Resource.RelativePath, isVirtual, isAbstract, name);
+			return new ScriptClassMethod(Id, returnType, parameters, new string(Resource.Path.Skip(4).ToArray()), isVirtual, isAbstract, name);
 		}
 
 		/// <summary>
@@ -226,7 +226,7 @@ namespace LSNr
 			EventListenerBodies.Add(name, tokens);
 
 			// Use def, which contains a self parameter, instead of hostDef, which doesn't.
-			return new EventListener(def, Resource.RelativePath);
+			return new EventListener(def, new string(Resource.Path.Skip(4).ToArray()));
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]

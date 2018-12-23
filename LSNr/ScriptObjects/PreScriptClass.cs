@@ -41,7 +41,7 @@ namespace LSNr
 			set{ Resource.Valid = value; }
 		}
 		private readonly string Metadata;
-		public PreScriptClass(string name, PreResource resource, string hostName, bool isUnique, string metadata, IReadOnlyList<Token> tokens)
+		public PreScriptClass(string name, IPreScript resource, string hostName, bool isUnique, string metadata, IReadOnlyList<Token> tokens)
 			:base(tokens, new TypeId(name),resource,hostName)
 		{
 			Name = name; IsUnique = isUnique; Metadata = metadata; //ToDo: Make the typeId contain the actual type...
