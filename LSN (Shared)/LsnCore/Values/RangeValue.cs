@@ -24,7 +24,9 @@ namespace LsnCore.Values
 
 		public void Serialize(BinaryDataWriter writer)
 		{
-			throw new NotImplementedException();
+			writer.Write((byte)ConstantCode.Range);
+			writer.Write(Start);
+			writer.Write(End);
 		}
 	}
 }

@@ -308,6 +308,12 @@ namespace LsnCore.Serialization
 						var type = LsnListGeneric.Instance.GetType(new TypeId[] { typeId });
 						return new ListConstructor((LsnListType)type);
 					}
+				case ExpressionCode.RangeExpression:
+					{
+						var start = ReadExpression(reader);
+						var end = ReadExpression(reader);
+						return new RangeExpression(start, end);
+					}
 				default:
 					throw new ApplicationException();
 			}
@@ -352,6 +358,12 @@ namespace LsnCore.Serialization
 						for (int i = 0; i < nFields; i++)
 							fields[i] = ReadValue(reader);
 						return new RecordValue(fields);
+					}
+				case ConstantCode.Range:
+					{
+						var start = reader.ReadInt32();
+						var end = reader.ReadInt32();
+						return new RangeValue(start, end);
 					}
 				case ConstantCode.Vector:
 				default:

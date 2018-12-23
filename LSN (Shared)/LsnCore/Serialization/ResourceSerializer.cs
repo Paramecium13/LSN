@@ -56,7 +56,8 @@ namespace LsnCore
 		HostInterfaceMethodCall,
 		RecordConstructor,
 		StructConstructor,
-		ListConstructor
+		ListConstructor,
+		RangeExpression
 	}
 
 	internal enum ConstantCode:byte
@@ -68,7 +69,8 @@ namespace LsnCore
 		Vector,
 		List,
 		HostInterface,
-		ScriptObject
+		ScriptObject,
+		Range
 	}
 
 	public class ResourceSerializer
