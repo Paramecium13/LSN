@@ -335,8 +335,10 @@ namespace LsnCore
 		/// <summary>
 		/// The golden ratio
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "φ")]
 		public readonly static double φ = (1 + Math.Sqrt(5)) / 2;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "γ")]
 		public readonly static double γ = 0.57721566490153286060651209008240243104215933593992;
 
 		public readonly static double Sqrt2Pi = Math.Sqrt(2 * Math.PI);

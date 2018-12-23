@@ -108,6 +108,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\ICollectionValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\IEventInstance.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\IHostInterface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\ILsnEnumerable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\ILSN_Value.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\IWritableCollectionValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\LSN_List.cs" />

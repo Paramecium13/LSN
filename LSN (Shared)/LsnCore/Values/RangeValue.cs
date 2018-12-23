@@ -6,12 +6,27 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Values
 {
-	public class RangeValue : ILsnValue
+	public class RangeEnumerator : ILsnEnumerator
+	{
+		RangeValue Range;
+		int current;
+		public LsnValue Current => new LsnValue(current);
+
+		public RangeEnumerator(RangeValue range)
+		{
+			Range = range;
+			current = range.Start - 1;
+		}
+
+		public bool MoveNext() => ++current <= Range.End;
+	}
+
+	public class RangeValue : ILsnValue, ILsnEnumerable
 	{
 		public readonly int Start;
 		public readonly int End;
 
-		public TypeId Type => Types.RangeType.Instance.Id;
+		public TypeId Type => RangeType.Instance.Id;
 
 		public bool BoolValue => true;
 
@@ -28,5 +43,7 @@ namespace LsnCore.Values
 			writer.Write(Start);
 			writer.Write(End);
 		}
+
+		public ILsnEnumerator GetLsnEnumerator() => new RangeEnumerator(this);
 	}
 }

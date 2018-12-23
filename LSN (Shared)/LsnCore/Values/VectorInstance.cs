@@ -79,5 +79,7 @@ namespace LsnCore.Values
 			writer.Write((byte)ExpressionCode.TabledConstant);
 			writer.Write(resourceSerializer.TableConstant(this));
 		}
+
+		public ILsnEnumerator GetLsnEnumerator() => new LsnCollectionEnumerator(this);
 	}
 }

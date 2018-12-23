@@ -109,5 +109,7 @@ namespace LsnCore.Values
 			for (int i = 0; i < Values.Count; i++)
 				Values[i].Serialize(writer);
 		}
+
+		public ILsnEnumerator GetLsnEnumerator() => new LsnCollectionEnumerator(this);
 	}
 }
