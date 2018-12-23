@@ -18,6 +18,8 @@ namespace LsnCore.Expressions
 
 		public VariableExpression(int index, TypeId type, Variable variable)
 		{
+			Index = index;
+			Type = type;
 			Variable = variable;
 		}
 #endif

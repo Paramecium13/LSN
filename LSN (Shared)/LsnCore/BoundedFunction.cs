@@ -13,13 +13,19 @@ namespace LsnCore
 		public BoundedFunction(Func<LsnValue[], LsnValue> bound, List<Parameter> parameters, LsnType returnType, string name)
 			:base(new FunctionSignature(parameters,name,returnType?.Id))
 		{
+#if CORE
 			Bound = bound ?? throw new ArgumentNullException(nameof(bound));
+#endif
 		}
 
 		public BoundedFunction(Func<LsnValue[], LsnValue> bound, List<Parameter> parameters, TypeId returnType, string name)
 			: base(new FunctionSignature(parameters, name, returnType))
 		{
-			Bound = bound ?? throw new ArgumentNullException(nameof(bound));
+#if CORE
+			if (bound == null)
+				throw new ArgumentNullException(nameof(bound));
+			Bound = bound;
+#endif
 		}
 #if CORE
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
@@ -49,7 +55,11 @@ namespace LsnCore
 		public BoundedFunctionWithInterpreter(Func<object, LsnValue[], LsnValue> bound, List<Parameter> parameters, TypeId returnType, string name)
 			: base(new FunctionSignature(parameters, name, returnType))
 		{
-			Bound = bound ?? throw new ArgumentNullException(nameof(bound));
+#if CORE
+			if (bound == null)
+				throw new ArgumentNullException(nameof(bound));
+			Bound = bound;
+#endif
 		}
 	}
 #endif
