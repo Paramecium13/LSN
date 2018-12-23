@@ -92,6 +92,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\LsnReferenceType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\LsnType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\Property.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\RangeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\RecordType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\ScriptClass.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\ScriptClassConstructor.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\LSN_List.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\LSN_Reference.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\LSN_Value.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\RangeValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\RecordValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\ScriptObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\StructValue.cs" />
