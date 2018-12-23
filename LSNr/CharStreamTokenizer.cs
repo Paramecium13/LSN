@@ -82,6 +82,8 @@ namespace LSNr
 			SybolAt,
 			SymbolSlash,
 			SymbolExclamation,
+			SymbolNumberDot,
+			SymbolNonNumDot,
 			/// <summary>
 			/// The last symbol state.
 			/// </summary>
@@ -207,9 +209,9 @@ namespace LSNr
 					}
 					else if (c == '.')
 					{
-						Push('.');
+						Push(c);
+						State = TokenizerState.SymbolNonNumDot;
 						TokenType = TokenizerTokenType.SyntaxSymbol;
-						Pop();
 					}
 					else
 					{
@@ -226,20 +228,19 @@ namespace LSNr
 					else if (c == '.')
 					{
 						Pop();
-						Push('.');
+						Push(c);
 						TokenType = TokenizerTokenType.SyntaxSymbol;
-						Pop();
+						State = TokenizerState.SymbolNonNumDot;
 					}
 					else Push(c);
 					break;
 				case TokenizerState.Number:
-					if (Char.IsDigit(c))
+					if (char.IsDigit(c))
 						Push(c);
 					else if (c == '.')
 					{
 						Push(c);
-						State = TokenizerState.Decimal;
-						TokenType = TokenizerTokenType.Float;
+						State = TokenizerState.SymbolNumberDot;
 					}
 					else if (char.IsWhiteSpace(c))
 					{
@@ -496,6 +497,36 @@ namespace LSNr
 						Pop();
 					}
 					else Pop();
+					break;
+				case TokenizerState.SymbolNumberDot:
+					if (c == '.')
+					{
+						Push('.');
+						TokenType = TokenizerTokenType.Operator;
+						Pop();
+					}
+					else if (char.IsDigit(c))
+					{
+						Push(c);
+						State = TokenizerState.Decimal;
+						TokenType = TokenizerTokenType.Float;
+					}
+					else
+						throw new ApplicationException();
+					break;
+				case TokenizerState.SymbolNonNumDot:
+					if(c == '.')
+					{
+						Push(c);
+						Push(c);
+						TokenType = TokenizerTokenType.Operator;
+						Pop();
+					}
+					else
+					{
+						Pop();
+						BaseReadChar(c);
+					}
 					break;
 				case TokenizerState.SymbolMinus:
 					if (c == '=')
