@@ -16,14 +16,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\BoundedFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\BoundedMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Component.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\CaseStructure.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\Choice.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\ChoicesBlockControl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\ControlStructure.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\ForLoop.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\IfElseControl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\MatchStructure.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\WhileLoop.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\BinaryExpression.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\CollectionValueAccessExpression.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\Expression.cs" />

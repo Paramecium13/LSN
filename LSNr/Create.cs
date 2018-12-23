@@ -2,6 +2,7 @@
 using LsnCore.ControlStructures;
 using LsnCore.Expressions;
 using LsnCore.Statements;
+using LsnCore.Types;
 using LsnCore.Utilities;
 using LSNr.LssParser;
 using System;
@@ -172,6 +173,39 @@ namespace LSNr
 
 				return new ForLoop(vr.Index, val, con, components, post);
 			}
+			if(h == "foreach")
+			{
+				var i = 1;
+				if (head.Length < 4 || head[i].Type != TokenType.Identifier)
+					throw new LsnrParsingException(head[0], "Incorrectly formatted for loop.", script.Path);
+				var vName = head[i].Value;
+				if (script.CurrentScope.HasVariable(vName))
+					throw new LsnrParsingException(head[1], $"A variable named '{vName}' already exists. Cannot reuse it in for loop even if it is marked as 'mut'", script.Path);
+				if (head[++i].Value != "in") // i == 2
+					throw LsnrParsingException.UnexpectedToken(head[i], "in", script.Path);
+				i++; // i == 3; points to expression.
+				var expr = Express(head.Skip(3), script);
+
+				var varExpr = expr as VariableExpression;
+				var collType = expr.Type.Type as ICollectionType;
+				var rangExpr = expr as RangeExpression;
+				if(collType != null)
+				{
+
+					if (varExpr != null)
+					{
+
+					}
+					else
+					{
+
+					}
+				}
+
+				script.CurrentScope = script.CurrentScope.CreateChild();
+
+
+			}
 			if(n > 1 && head.Last().Value == "->")
 			{
 				// It's a choice (inside a choice block).
@@ -240,10 +274,10 @@ namespace LSNr
 				case SymbolType.GlobalVariable:
 					throw new NotImplementedException();
 				case SymbolType.Field:
-					return new FieldAccessExpression(new VariableExpression(0, preScrFn.Parent.Id), preScrFn.Parent.GetField(val));
+					return new FieldAccessExpression(preScrFn.CurrentScope.GetVariable("self").AccessExpression,preScrFn.Parent.GetField(val));
 				case SymbolType.Property:
 					var preScr = preScrFn.Parent;
-					return new PropertyAccessExpression(new VariableExpression(0, preScr.Id), preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
+					return new PropertyAccessExpression(preScrFn.CurrentScope.GetVariable("self").AccessExpression, preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
 				default:
 					break;
 			}
@@ -267,11 +301,11 @@ namespace LSNr
 			if (val == "false")
 				return LsnBoolValue.GetBoolValue(false);
 
-			if (val == "this")
+			if (val == "self")
 			{
 				if (preScrFn == null)
 					throw new LsnrParsingException(token, "Cannot use 'this' outside a script object method or event listener.", script.Path);
-				return new VariableExpression(0, preScrFn.Parent.Id);
+				return script.CurrentScope.GetVariable("self").AccessExpression;
 			}
 			if (val == "host")
 			{

@@ -1,6 +1,7 @@
 ﻿using LsnCore;
 using LsnCore.Expressions;
 using LsnCore.Statements;
+using LsnCore.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,7 +63,7 @@ namespace LSNr
 				Index = -1; // This is a constant.
 			}
 			else
-				_AccessExpression = new VariableExpression(Index, Type.Id);
+				_AccessExpression = new VariableExpression(Index, Type.Id, this);
 		}
 
 		/// <summary>
@@ -75,17 +76,31 @@ namespace LSNr
 			Type = param.Type.Type;
 			Mutable = false;
 			Index = param.Index;
-			_AccessExpression = new VariableExpression(Index, param.Type);
+			_AccessExpression = new VariableExpression(Index, param.Type, this);
 		}
 
+		public Variable(string name, LsnType type, int index)
+		{
+			Name = name;
+			Type = type;
+			Mutable = false;
+			Index = index; _AccessExpression = new VariableExpression(Index, type.Id, this);
+		}
+
+		public Variable(string name, Variable indexVariable, Variable collectionVariable)
+		{
+			Name = name;
+			Type = (collectionVariable.Type as ICollectionType).ContentsType;
+			Mutable = false;
+			Index = -1;
+			_AccessExpression = 
+				new CollectionValueAccessExpression(collectionVariable.AccessExpression, indexVariable.AccessExpression, Type.Id);
+		}
 		/// <summary>
 		/// Is it constant?
 		/// </summary>
 		/// <returns></returns>
-		public bool Const()
-		{
-			return (!Mutable && (InitialValue?.IsReifyTimeConst() ?? false));
-		}
+		public bool Const() => (!Mutable && (InitialValue?.IsReifyTimeConst() ?? false));
 
 		public void AddUser(IExpressionContainer user) // Include an indication of its position...
 		{

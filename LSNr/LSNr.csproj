@@ -108,6 +108,14 @@
     <Compile Include="DependenciesForest.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Logging.cs" />
+    <Compile Include="LsnCore\ControlStructures\CaseStructure.cs" />
+    <Compile Include="LsnCore\ControlStructures\Choice.cs" />
+    <Compile Include="LsnCore\ControlStructures\ChoicesBlockControl.cs" />
+    <Compile Include="LsnCore\ControlStructures\ControlStructure.cs" />
+    <Compile Include="LsnCore\ControlStructures\ForLoop.cs" />
+    <Compile Include="LsnCore\ControlStructures\IfElseControl.cs" />
+    <Compile Include="LsnCore\ControlStructures\MatchStructure.cs" />
+    <Compile Include="LsnCore\ControlStructures\WhileLoop.cs" />
     <Compile Include="LsnrException.cs" />
     <Compile Include="LsnrParsingException.cs" />
     <Compile Include="LsnrTypeNotFoundException.cs" />
