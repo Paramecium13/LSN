@@ -28,12 +28,14 @@ namespace LsnCore
 	/// </summary>
 	public abstract class Component : IExpressionContainer
 	{
+#if CORE
 		/// <summary>
 		/// The return value is false when the script, function or loop should stop (e.g. break or return.).
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
 		public abstract InterpretValue Interpret(IInterpreter i);
+#endif
 
 		public abstract void Replace(IExpression oldExpr, IExpression newExpr);
 	}

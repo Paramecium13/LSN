@@ -20,8 +20,9 @@ namespace LsnCore
 		{
 			Bound = bound;
 		}
-
+#if CORE
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 			=> Bound(args);
+#endif
 	}
 }

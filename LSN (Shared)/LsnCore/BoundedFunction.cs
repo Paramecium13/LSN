@@ -21,11 +21,13 @@ namespace LsnCore
 		{
 			Bound = bound ?? throw new ArgumentNullException(nameof(bound));
 		}
-
+#if CORE
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 			=> Bound(args);
+#endif
 	}
 
+#if CORE
 	public class BoundedFunctionWithInterpreter : Function
 	{
 		private Func<IInterpreter, LsnValue[], LsnValue> Bound;
@@ -40,3 +42,5 @@ namespace LsnCore
 			=> Bound(i,args);
 	}
 }
+
+#endif

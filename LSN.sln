@@ -7,7 +7,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSN", "LSN\LSN.csproj", "{C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSNr", "LSNr\LSNr.csproj", "{E0A445AC-01AA-4568-B15A-765B5C590CF7}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "LSN (Shared)", "LSN (Shared)\LSN (Shared).shproj", "{1579E78F-3443-4832-8802-B297FF0E9A36}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		LSN (Shared)\LSN (Shared).projitems*{1579e78f-3443-4832-8802-b297ff0e9a36}*SharedItemsImports = 13
+		LSN (Shared)\LSN (Shared).projitems*{c1269507-b8fd-4668-8d5a-0819deaafe89}*SharedItemsImports = 4
+		LSN (Shared)\LSN (Shared).projitems*{e0a445ac-01aa-4568-b15a-765b5c590cf7}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (no catch)|Any CPU = Debug (no catch)|Any CPU
 		Debug|Any CPU = Debug|Any CPU

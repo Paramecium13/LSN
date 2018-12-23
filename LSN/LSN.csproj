@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS CORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
@@ -80,128 +80,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="ILsnFileManager.cs" />
     <Compile Include="Interpretation\IInterpreter.cs" />
     <Compile Include="Interpretation\Interpreter.cs" />
     <Compile Include="Interpretation\IResourceManager.cs" />
     <Compile Include="Interpretation\LsnEnvironment.cs" />
     <Compile Include="Interpretation\LsnStack.cs" />
-    <Compile Include="LsnCore\BoundedFunction.cs" />
-    <Compile Include="LsnCore\BoundedMethod.cs" />
-    <Compile Include="LsnCore\Component.cs" />
-    <Compile Include="LsnCore\ControlStructures\CaseStructure.cs" />
-    <Compile Include="LsnCore\ControlStructures\Choice.cs" />
-    <Compile Include="LsnCore\ControlStructures\ChoicesBlockControl.cs" />
-    <Compile Include="LsnCore\ControlStructures\ControlStructure.cs" />
-    <Compile Include="LsnCore\ControlStructures\ForLoop.cs" />
-    <Compile Include="LsnCore\ControlStructures\IfElseControl.cs" />
-    <Compile Include="LsnCore\ControlStructures\MatchStructure.cs" />
-    <Compile Include="LsnCore\ControlStructures\WhileLoop.cs" />
-    <Compile Include="LsnCore\Expressions\BinaryExpression.cs" />
-    <Compile Include="LsnCore\Expressions\CollectionValueAccessExpression.cs" />
-    <Compile Include="LsnCore\Expressions\GlobalVariableAccessExpression.cs" />
-    <Compile Include="LsnCore\Expressions\HostIntefaceMethodCall.cs" />
-    <Compile Include="LsnCore\Expressions\HostInterfaceAccessExpression.cs" />
-    <Compile Include="LsnCore\Expressions\IExpressionContainer.cs" />
-    <Compile Include="LsnCore\Expressions\ListConstructor.cs" />
-    <Compile Include="LsnCore\Expressions\NotExpression.cs" />
-    <Compile Include="LsnCore\Expressions\PropertyAccessExpression.cs" />
-    <Compile Include="LsnCore\Expressions\StructConstructor.cs" />
-    <Compile Include="LsnCore\Expressions\ScriptObjectMethodCall.cs" />
-    <Compile Include="LsnCore\Expressions\RecordConstructor.cs" />
-    <Compile Include="LsnCore\Expressions\Expression.cs" />
-    <Compile Include="LsnCore\Expressions\FieldAccessExpression.cs" />
-    <Compile Include="LsnCore\Expressions\FunctionCall.cs" />
-    <Compile Include="LsnCore\Expressions\GetExpression.cs" />
-    <Compile Include="LsnCore\Expressions\IExpression.cs" />
-    <Compile Include="LsnCore\Expressions\UniqueScriptObjectAccessExpression.cs" />
-    <Compile Include="LsnCore\Expressions\VariableExpression.cs" />
-    <Compile Include="LsnCore\Function.cs" />
-    <Compile Include="LsnCore\FunctionSignature.cs" />
-    <Compile Include="LsnCore\GameValue.cs" />
-    <Compile Include="LsnCore\GlobalVariableDef.cs" />
-    <Compile Include="LsnCore\GlobalVariableValue.cs" />
-    <Compile Include="LsnCore\GlobalVariableValueWatched.cs" />
-    <Compile Include="LsnCore\HostInterfaceMethod.cs" />
-    <Compile Include="LsnCore\LsnFunction.cs" />
-    <Compile Include="LsnCore\Serialization\ResourceDeserializer.cs" />
-    <Compile Include="LsnCore\Settings.cs" />
-    <Compile Include="LsnCore\Statements\AttachStatement.cs" />
-    <Compile Include="LsnCore\Statements\ChangeGlobalVariableStatement.cs" />
-    <Compile Include="LsnCore\Statements\CollectionValueReassignmentStatement.cs" />
-    <Compile Include="LsnCore\Statements\DetachStatement.cs" />
-    <Compile Include="LsnCore\Statements\DisplayChoicesStatement.cs" />
-    <Compile Include="LsnCore\Statements\ExpressionStatement.cs" />
-    <Compile Include="LsnCore\Statements\FieldAssignmentStatement.cs" />
-    <Compile Include="LsnCore\Statements\GoToStatement.cs" />
-    <Compile Include="LsnCore\Statements\JumpStatements.cs" />
-    <Compile Include="LsnCore\Statements\RegisterChoiceStatement.cs" />
-    <Compile Include="LsnCore\Statements\SaveStatement.cs" />
-    <Compile Include="LsnCore\Statements\SetStateStatement.cs" />
-    <Compile Include="LsnCore\Types\EnumType.cs" />
-    <Compile Include="LsnCore\Types\EventDefinition.cs" />
-    <Compile Include="LsnCore\Types\EventListener.cs" />
-    <Compile Include="LsnCore\Types\Field.cs" />
-    <Compile Include="LsnCore\Types\HostInterfaceType.cs" />
-    <Compile Include="LsnCore\Types\Property.cs" />
-    <Compile Include="LsnCore\Types\ScriptClassConstructor.cs" />
-    <Compile Include="LsnCore\Types\ScriptClassMethod.cs" />
-    <Compile Include="LsnCore\Types\ScriptClassState.cs" />
-    <Compile Include="LsnCore\Types\ScriptClass.cs" />
-    <Compile Include="LsnCore\Types\TypeId.cs" />
-    <Compile Include="LsnCore\LsnValue.cs" />
-    <Compile Include="LsnCore\Values\EventInstance.cs" />
-    <Compile Include="LsnCore\Values\ExternalizedEventInstance.cs" />
-    <Compile Include="LsnCore\Values\IEventInstance.cs" />
-    <Compile Include="LsnCore\Values\IHostInterface.cs" />
-    <Compile Include="LsnCore\Values\LSN_List.cs" />
-    <Compile Include="LsnCore\LsnMath.cs" />
-    <Compile Include="LsnCore\LsnMethod.cs" />
-    <Compile Include="LsnCore\LsnReferenceValue.cs" />
-    <Compile Include="LsnCore\Method.cs" />
-    <Compile Include="LsnCore\Expressions\MethodCall.cs" />
-    <Compile Include="LsnCore\Statements\AssignmentStatement.cs" />
-    <Compile Include="LsnCore\Statements\GiveStatement.cs" />
-    <Compile Include="LsnCore\Statements\ReturnStatement.cs" />
-    <Compile Include="LsnCore\Statements\SayStatement.cs" />
-    <Compile Include="LsnCore\Statements\SimpleStatements.cs" />
-    <Compile Include="LsnCore\Statements\Statement.cs" />
-    <Compile Include="LsnCore\Types\BoolType.cs" />
-    <Compile Include="LsnCore\Types\GenericType.cs" />
-    <Compile Include="LsnCore\Types\IHasFields.cs" />
-    <Compile Include="LsnCore\Types\ICollectionType.cs" />
-    <Compile Include="LsnCore\Types\LsnBoundedType.cs" />
-    <Compile Include="LsnCore\Types\LsnListType.cs" />
-    <Compile Include="LsnCore\Types\LsnReferenceType.cs" />
-    <Compile Include="LsnCore\Types\RecordType.cs" />
-    <Compile Include="LsnCore\Types\LsnType.cs" />
-    <Compile Include="LsnCore\Types\StructType.cs" />
-    <Compile Include="LsnCore\Types\VectorType.cs" />
-    <Compile Include="LsnCore\Values\BoundedValue.cs" />
-    <Compile Include="LsnCore\Values\ICollectionValue.cs" />
-    <Compile Include="LsnCore\Values\ILSN_Value.cs" />
-    <Compile Include="LsnCore\Values\IWritableCollectionValue.cs" />
-    <Compile Include="LsnCore\Values\LSN_Reference.cs" />
-    <Compile Include="LsnCore\Values\LSN_Value.cs" />
-    <Compile Include="LsnCore\Values\StructValue.cs" />
-    <Compile Include="LsnCore\Values\ScriptObject.cs" />
-    <Compile Include="LsnCore\Values\RecordValue.cs" />
-    <Compile Include="LsnCore\Values\VectorInstance.cs" />
-    <Compile Include="LsnResourceThing.cs" />
-    <Compile Include="LsnScriptBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LsnCore\Serialization\ResourceSerializer.cs" />
-    <Compile Include="Utilities\ArraySlice.cs" />
-    <Compile Include="Utilities\ISearchableReadOnlyList.cs" />
-    <Compile Include="Utilities\ListSlice.cs" />
-    <Compile Include="Utilities\Slice.cs" />
-    <Compile Include="Utilities\SubSlice.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <Import Project="..\LSN (Shared)\LSN (Shared).projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

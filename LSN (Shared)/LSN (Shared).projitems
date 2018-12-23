@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>1579e78f-3443-4832-8802-b297ff0e9a36</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>LSN__Shared_</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GlobalSuppressions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ILsnFileManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\BoundedFunction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\BoundedMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Component.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\CaseStructure.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\Choice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\ChoicesBlockControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\ControlStructure.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\ForLoop.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\IfElseControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\MatchStructure.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\ControlStructures\WhileLoop.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\BinaryExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\CollectionValueAccessExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\Expression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\FieldAccessExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\FunctionCall.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\GetExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\GlobalVariableAccessExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\HostIntefaceMethodCall.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\HostInterfaceAccessExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\IExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\IExpressionContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\ListConstructor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\MethodCall.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\NotExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\PropertyAccessExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\RecordConstructor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\ScriptObjectMethodCall.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\StructConstructor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\UniqueScriptObjectAccessExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\VariableExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Function.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\FunctionSignature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\GameValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\GlobalVariableDef.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\GlobalVariableValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\GlobalVariableValueWatched.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\HostInterfaceMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnFunction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnMath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnReferenceValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Method.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Serialization\ResourceDeserializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Serialization\ResourceSerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Settings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\AssignmentStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\AttachStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\ChangeGlobalVariableStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\CollectionValueReassignmentStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\DetachStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\DisplayChoicesStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\ExpressionStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\FieldAssignmentStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\GiveStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\GoToStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\JumpStatements.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\RegisterChoiceStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\ReturnStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\SaveStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\SayStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\SetStateStatement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\SimpleStatements.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\Statement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\BoolType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\EnumType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\EventDefinition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\EventListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\Field.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\GenericType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\HostInterfaceType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\ICollectionType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\IHasFields.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\LsnBoundedType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\LsnListType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\LsnReferenceType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\LsnType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\Property.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\RecordType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\ScriptClass.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\ScriptClassConstructor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\ScriptClassMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\ScriptClassState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\StructType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\TypeId.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\VectorType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\BoundedValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\EventInstance.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\ExternalizedEventInstance.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\ICollectionValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\IEventInstance.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\IHostInterface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\ILSN_Value.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\IWritableCollectionValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\LSN_List.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\LSN_Reference.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\LSN_Value.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\RecordValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\ScriptObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\StructValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\VectorInstance.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnEnvironment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnResourceThing.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnScriptBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\ArraySlice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\ISearchableReadOnlyList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\ListSlice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Slice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\SubSlice.cs" />
+  </ItemGroup>
+</Project>

@@ -10,7 +10,9 @@ namespace LsnCore.Expressions
 	{
 		TypeId Type { get; }
 
+#if CORE
 		LsnValue Eval(IInterpreter i);
+#endif
 		IExpression Fold();
 		bool IsReifyTimeConst();
 
