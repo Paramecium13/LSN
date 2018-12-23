@@ -36,10 +36,12 @@ namespace LsnCore.Expressions
 
 		public bool Equals(IExpression other) => this == other;
 
+#if CORE
 		public LsnValue Eval(IInterpreter i)
 		{
 			return (HostInterface.Eval(i).Value as IHostInterface).CallMethod(Name, Arguments.Select(a => a.Eval(i)).ToArray());
 		}
+#endif
 
 		public IExpression Fold()
 		{

@@ -20,8 +20,10 @@ namespace LsnCore.Expressions
 			Index = index;
 		}
 
+#if CORE
 		public override LsnValue Eval(IInterpreter i)
 			=> i.GetVariable(Index);
+#endif
 
 		public override IExpression Fold() => this;
 

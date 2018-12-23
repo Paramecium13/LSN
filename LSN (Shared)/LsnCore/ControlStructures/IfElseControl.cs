@@ -21,6 +21,7 @@ namespace LsnCore.ControlStructures
 			Condition = condition; Body = body;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			if (Condition.Eval(i).BoolValue)
@@ -44,7 +45,8 @@ namespace LsnCore.ControlStructures
 							return InterpretValue.Return;
 						default:
 							break;
-					}*/
+					}
+*/
 				}
 				return InterpretValue.Base;
 			}
@@ -113,7 +115,7 @@ namespace LsnCore.ControlStructures
 			}
 			throw new NotImplementedException();
 		}
-
+#endif
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if (Condition.Equals(oldExpr)) Condition = newExpr;
@@ -131,10 +133,12 @@ namespace LsnCore.ControlStructures
 			Body = body;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			throw new NotImplementedException();
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
@@ -153,10 +157,12 @@ namespace LsnCore.ControlStructures
 			Body = body;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			throw new NotImplementedException();
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
@@ -174,10 +180,12 @@ namespace LsnCore.ControlStructures
 			Body = body;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			throw new NotImplementedException();
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{}

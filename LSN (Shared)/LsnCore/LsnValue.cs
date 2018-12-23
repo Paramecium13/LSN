@@ -14,8 +14,7 @@ namespace LsnCore
 #pragma warning disable CS1718 // Comparison made to same variable
 #pragma warning disable RECS0088 // Comparing equal expression for equality is usually useless
 
-	[Serializable]
-	public unsafe struct LsnValue : IExpression, IEquatable<LsnValue>
+	public /*unsafe*/ struct LsnValue : IExpression, IEquatable<LsnValue>
 	{
 		/// <summary>
 		/// Nil
@@ -45,10 +44,10 @@ namespace LsnCore
 		/// </summary>
 		private readonly TypeId Id;
 
-		/// <summary>
+		/*/// <summary>
 		/// Unused
 		/// </summary>
-		public int IntValueB => Data.ToInt32Bitwise();
+		public int IntValueB => Data.ToInt32Bitwise();*/
 
 		/// <summary>
 		/// 
@@ -104,14 +103,14 @@ namespace LsnCore
 			Value = v;
 			Id = null;
 		}
-
+#if CORE
 		/// <summary>
 		/// ...
 		/// </summary>
 		/// <param name="i"></param>
 		/// <returns></returns>
 		public LsnValue Eval(IInterpreter i) => this;
-
+#endif
 		/// <summary>
 		/// ...
 		/// </summary>

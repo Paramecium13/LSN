@@ -29,11 +29,13 @@ namespace LsnCore.Expressions
 			Parameters = parameters; Name = name;
 		}
 
+#if CORE
 		public override LsnValue Eval(IInterpreter i)
 		{
 			var parameters = Parameters.Select(p => p.Eval(i)).ToArray();
 			return (parameters[0].Value as ScriptObject).GetMethod(Name).Eval(parameters, i);
 		}
+#endif
 
 		public override IExpression Fold()
 			=> new ScriptObjectVirtualMethodCall(Parameters.Select(p => p.Fold()).ToArray(), Name, Type);

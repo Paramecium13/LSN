@@ -22,12 +22,14 @@ namespace LsnCore.Statements
 			ScriptClass = scriptClass; PropertyExpressions = properties; ConstructorArguments = args; HostExpression = host;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			var obj = (ScriptClass.Type as ScriptClass).Construct(PropertyExpressions.Select(e => e.Eval(i)).ToArray(),
 				ConstructorArguments.Select(e => e.Eval(i)).ToArray(), i, HostExpression.Eval(i).Value as IHostInterface);
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

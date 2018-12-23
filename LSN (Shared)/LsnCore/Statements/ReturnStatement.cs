@@ -21,11 +21,13 @@ namespace LsnCore.Statements
 			Value = e;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			if(Value != null) i.ReturnValue = Value.Eval(i);
 			return InterpretValue.Return;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

@@ -55,11 +55,13 @@ namespace LsnCore.Types
 			return CreateScriptObjectMethodCall(argsArray);
 		}
 
+#if CORE
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{
 			i.RunProcedure(this, args);
 			return i.ReturnValue;
 		}
+#endif
 
 		//enum Flags : byte { none = 0, IsVirtual = 1, IsAbstract = 2 }
 
@@ -122,8 +124,9 @@ namespace LsnCore.Types
 				throw new ApplicationException("");
 			ResourceFilePath = resourceFilePath;
 		}
-
+#if CORE
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 			=> (args[0].Value as ScriptObject).GetMethod(Name).Eval(args, i);
+#endif
 	}
 }

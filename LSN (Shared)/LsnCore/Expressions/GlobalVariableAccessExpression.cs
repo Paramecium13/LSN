@@ -32,7 +32,9 @@ namespace LsnCore.Expressions
 			return gl.GlobalVarName == GlobalVarName;
 		}
 
+#if CORE
 		public LsnValue Eval(IInterpreter i) => throw new NotImplementedException();//i.GetGlobalVariable(GlobalVarName/*, GlobalVarFileName*/);
+#endif
 
 		public IExpression Fold() => this;
 

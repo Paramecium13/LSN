@@ -40,11 +40,13 @@ namespace LsnCore.Statements
 				yield return expr;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.GiveItemTo(Id.Eval(i), Amount.Eval(i).IntValue, Receiver.Eval(i));
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
@@ -83,11 +85,13 @@ namespace LsnCore.Statements
 			}
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.GiveGoldTo(Amount.Eval(i).IntValue, Receiver.Eval(i));
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

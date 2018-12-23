@@ -25,11 +25,13 @@ namespace LsnCore.Statements
 			Message = mssg; Graphic = graphic; Title = title;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.Say(((StringValue)Message.Eval(i).Value).Value, Graphic?.Eval(i) ?? LsnValue.Nil, Title?.Eval(i).Value?.ToString());
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

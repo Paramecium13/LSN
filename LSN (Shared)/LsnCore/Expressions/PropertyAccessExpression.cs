@@ -37,8 +37,10 @@ namespace LsnCore.Expressions
 			return Index == o.Index && ScriptObject.Equals(o.ScriptObject);
 		}
 
+#if CORE
 		public LsnValue Eval(IInterpreter i)
 			=> (ScriptObject.Eval(i).Value as ScriptObject).GetPropertyValue(Index);
+#endif
 
 		public IExpression Fold() => this;
 

@@ -31,10 +31,12 @@ namespace LsnCore.Expressions
 			return true;
 		}
 
+#if CORE
 		public LsnValue Eval(IInterpreter i)
 		{
 			return (i.GetVariable(0).Value as ScriptObject).GetHost();
 		}
+#endif
 
 		public IExpression Fold() => this;
 

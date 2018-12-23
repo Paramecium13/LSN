@@ -18,11 +18,13 @@ namespace LsnCore.Statements
 			State = state;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			(i.GetVariable(0).Value as ScriptObject).SetState(State);
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{}

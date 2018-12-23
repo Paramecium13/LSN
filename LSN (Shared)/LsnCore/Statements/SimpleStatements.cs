@@ -18,10 +18,12 @@ namespace LsnCore.Statements
 			throw new NotImplementedException();
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			throw new InvalidOperationException();
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 
@@ -41,10 +43,12 @@ namespace LsnCore.Statements
 			throw new NotImplementedException();
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			throw new InvalidOperationException();
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 

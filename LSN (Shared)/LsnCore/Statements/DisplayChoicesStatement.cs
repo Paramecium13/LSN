@@ -10,12 +10,14 @@ namespace LsnCore.Statements
 {
 	public sealed class DisplayChoicesStatement : Statement
 	{
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.NextStatement = i.DisplayChoices();
 			i.ClearChoices();
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 

@@ -11,12 +11,13 @@ namespace LsnCore.Statements
 {
 	public class DetachStatement : Statement
 	{
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			(i.GetVariable(0).Value as ScriptObject).Detach();
 			return InterpretValue.Base;
 		}
-
+#endif
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)

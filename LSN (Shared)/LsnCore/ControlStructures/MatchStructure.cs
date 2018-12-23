@@ -33,6 +33,7 @@ namespace LsnCore.ControlStructures
 		}
 
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			LsnValue value = i.GetVariable(VariableIndex);
@@ -42,6 +43,7 @@ namespace LsnCore.ControlStructures
 			}
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 	}

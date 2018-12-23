@@ -1,1 +1,1 @@
-(?s)([^\r\n]*?Interpret\s*\(\s*IInterpreter.*?\).*?(?:\{[^\{\}]*?\})+?)
+(?s)^([^\r\n]*?(?:(?:Eval)|(?:Run)|(?:Interpret))\s*\(.*?\s*IInterpreter.*?\).*?(?:\{[^\{\}]*?\})+?)

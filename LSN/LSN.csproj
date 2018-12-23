@@ -82,8 +82,6 @@
   <ItemGroup>
     <Compile Include="Interpretation\IInterpreter.cs" />
     <Compile Include="Interpretation\Interpreter.cs" />
-    <Compile Include="Interpretation\IResourceManager.cs" />
-    <Compile Include="Interpretation\LsnEnvironment.cs" />
     <Compile Include="Interpretation\LsnStack.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

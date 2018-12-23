@@ -238,7 +238,7 @@ namespace LsnCore
 				Functions = functions.ToDictionary((f) => f.Name)
 			};
 		}
-
+#if CORE
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		private static LsnResourceThing LoadRandom()
 		{
@@ -287,7 +287,51 @@ namespace LsnCore
 			};
 
 		}
+#else
+		private static LsnResourceThing LoadRandom()
+		{
+			var functions = new Function[]
+			{
+				new BoundedFunctionWithInterpreter(null, new List<Parameter>(), LsnType.double_.Id, "Random"),
+				new BoundedFunctionWithInterpreter(null,new List<Parameter> {new Parameter("seed",LsnType.int_,new LsnValue(0),0)},null, "SetRandomSeed"),
+				new BoundedFunctionWithInterpreter(null,
+					new List<Parameter> {new Parameter("min",LsnType.int_,new LsnValue(0),0), new Parameter("max",LsnType.int_,new LsnValue(int.MaxValue),1)},
+					LsnType.int_.Id, "RandomInt"),
+				new BoundedFunctionWithInterpreter(null,
+					new List<Parameter> {new Parameter("min",LsnType.double_,new LsnValue(0.0),0), new Parameter("max",LsnType.double_,new LsnValue(1.0),1)},
+					LsnType.double_.Id, "RandomDouble"),
+				new BoundedFunctionWithInterpreter(null,
+					new List<Parameter>(), LsnType.double_.Id, "StandardNormal"),
+				new BoundedFunctionWithInterpreter(null,
+					new List<Parameter> {new Parameter("cap",LsnType.double_, new LsnValue(4.0),0)},
+					LsnType.double_.Id, "CappedStandardNormal"),
+				new BoundedFunctionWithInterpreter(null,
+					new List<Parameter> {new Parameter("mean",LsnType.double_,new LsnValue(0.0),0), new Parameter("standardDeviation",LsnType.double_,new LsnValue(1.0),1)},
+					LsnType.double_.Id, "Normal"),
+				new BoundedFunctionWithInterpreter(null,
+					new List<Parameter> { new Parameter("mean", LsnType.double_, new LsnValue(0.0), 0),
+						new Parameter("standardDeviation", LsnType.double_, new LsnValue(1.0), 1),
+						new Parameter("cap",LsnType.double_, new LsnValue(4.0),2)},
+					LsnType.double_.Id, "CappedNormal"),
 
+				new BoundedFunctionWithInterpreter(null,
+					new List<Parameter> {new Parameter("percent",LsnType.double_,new LsnValue(50.0),0)},
+					LsnType.double_.Id, "PercentChance"),
+
+
+			};
+			return new LsnResourceThing(new TypeId[0] /*{ LsnType.int_.Id, LsnType.double_.Id }*/)
+			{
+				HostInterfaces = new Dictionary<string, HostInterfaceType>(),
+				StructTypes = new Dictionary<string, StructType>(),
+				ScriptClassTypes = new Dictionary<string, ScriptClass>(),
+				//Types = new List<LsnType>(),
+				Usings = new List<string>(),
+				Functions = functions.ToDictionary((f) => f.Name)
+			};
+
+		}
+#endif
 		/// <summary>
 		/// The golden ratio
 		/// </summary>

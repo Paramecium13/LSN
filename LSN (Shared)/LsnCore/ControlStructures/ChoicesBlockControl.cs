@@ -21,6 +21,7 @@ namespace LsnCore.ControlStructures
 			}
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			throw new InvalidOperationException();
@@ -28,6 +29,7 @@ namespace LsnCore.ControlStructures
 			int index = i.Choice(choices.Select(c => c.Title.Eval(i).ToString()).ToList());
 			return choices[index].Interpret(i);*/
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{}

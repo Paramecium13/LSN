@@ -33,6 +33,7 @@ namespace LsnCore.Expressions
 			Type = type; Args = args;
 		}
 
+#if CORE
 		public override LsnValue Eval(IInterpreter i)
 		{
 			int length = Args.Length;
@@ -43,6 +44,7 @@ namespace LsnCore.Expressions
 			}
 			return new LsnValue(new StructValue(values));//....
 		}
+#endif
 
 		public override IExpression Fold()
 		{

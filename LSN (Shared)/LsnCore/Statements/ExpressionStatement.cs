@@ -17,11 +17,13 @@ namespace LsnCore.Statements
 			Expression = expression;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			Expression.Eval(i);
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

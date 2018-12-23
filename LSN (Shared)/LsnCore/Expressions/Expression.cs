@@ -21,7 +21,9 @@ namespace LsnCore.Expressions
 
 		public abstract IExpression Fold();
 
+#if CORE
 		public abstract LsnValue Eval(IInterpreter i);
+#endif
 		public virtual void Replace(IExpression oldExpr, IExpression newExpr) { }
 		public virtual bool Equals(IExpression other) => this == other;
 		public abstract void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer);

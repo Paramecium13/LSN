@@ -29,10 +29,12 @@ namespace LsnCore.Expressions
 			return Value.Equals(n.Value);
 		}
 
+#if CORE
 		public LsnValue Eval(IInterpreter i)
 		{
 			return LsnBoolValue.GetBoolValue(!Value.Eval(i).BoolValue);
 		}
+#endif
 
 		public IExpression Fold()
 		{

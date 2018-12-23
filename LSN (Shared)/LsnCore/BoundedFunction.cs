@@ -41,6 +41,16 @@ namespace LsnCore
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 			=> Bound(i,args);
 	}
-}
+#else
+	public class BoundedFunctionWithInterpreter : Function
+	{
+		private Func<object, LsnValue[], LsnValue> Bound;
 
+		public BoundedFunctionWithInterpreter(Func<object, LsnValue[], LsnValue> bound, List<Parameter> parameters, TypeId returnType, string name)
+			: base(new FunctionSignature(parameters, name, returnType))
+		{
+			Bound = bound ?? throw new ArgumentNullException(nameof(bound));
+		}
+	}
 #endif
+}

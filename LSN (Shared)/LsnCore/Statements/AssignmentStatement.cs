@@ -26,11 +26,13 @@ namespace LsnCore.Statements
 				yield return expr;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.SetVariable(Index, Value.Eval(i));
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

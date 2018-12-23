@@ -38,10 +38,12 @@ namespace LsnCore.Types
 			Definition = definition; ResourceFilePath = resourceFilePath; Priority = priority;
 		}
 
+#if CORE
 		public void Run(LsnValue[] args, IInterpreter i)
 		{
 			i.RunProcedure(this, args);
 		}
+#endif
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{

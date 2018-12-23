@@ -27,10 +27,12 @@ namespace LsnCore.Types
 			Code = code; StackSize = stackSize; ResourceFilePath = resourceFilePath; Parameters = parameters;
 		}
 
+#if CORE
 		internal void Run(IInterpreter i, LsnValue[] args)
 		{
 			i.RunProcedure(this, args);
 		}
+#endif
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{

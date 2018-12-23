@@ -18,9 +18,10 @@ namespace LsnCore.ControlStructures
 			Value = value; Components = components;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 			=> throw new NotImplementedException();
-
+#endif
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if (oldExpr.Equals(Value)) Value = newExpr;

@@ -24,6 +24,7 @@ namespace LsnCore.Expressions
 			Type = fn.ReturnType;
 		}
 
+#if CORE
 		public override LsnValue Eval(IInterpreter i)
 		{
 			var args = new LsnValue[Args.Length];
@@ -31,6 +32,7 @@ namespace LsnCore.Expressions
 				args[x] = Args[x].Eval(i);
 			return Fn.Eval(args, i);
 		}
+#endif
 
 		public override IExpression Fold()
 		{

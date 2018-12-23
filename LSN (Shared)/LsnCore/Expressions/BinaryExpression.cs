@@ -58,6 +58,7 @@ namespace LsnCore.Expressions
 			}
 		}
 
+#if CORE
 		public override LsnValue Eval(IInterpreter i)
 		{
 			var left = _Left.Eval(i);
@@ -185,6 +186,7 @@ namespace LsnCore.Expressions
 					throw new InvalidOperationException(ArgumentTypes.ToString());
 			}
 		}
+#endif
 
 		public override IExpression Fold()
 		{

@@ -21,12 +21,14 @@ namespace LsnCore.Statements
 			Condition = condition; ChoiceText = choiceText;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			if(Condition.Eval(i).BoolValue)
 				i.RegisterChoice((ChoiceText.Eval(i).Value as StringValue).Value, Target);
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

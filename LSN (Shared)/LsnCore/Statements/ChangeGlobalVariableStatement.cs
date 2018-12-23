@@ -19,11 +19,13 @@ namespace LsnCore.Statements
 			GlobalVarName = name; Value = value;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			//i.SetGlobalVariable(Value.Eval(i), GlobalVarName);
 			throw new NotImplementedException();
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

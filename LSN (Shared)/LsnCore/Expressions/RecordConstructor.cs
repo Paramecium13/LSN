@@ -28,6 +28,7 @@ namespace LsnCore.Expressions
 			Args = args.ToArray();
 		}
 
+#if CORE
 		public override LsnValue Eval(IInterpreter i)
 		//=> new StructValue(_Type, ArgsB.Select(e => e.Eval(i)).ToArray());
 		{
@@ -39,6 +40,7 @@ namespace LsnCore.Expressions
 			}
 			return new LsnValue(new RecordValue(values));
 		}
+#endif
 
 		public override IExpression Fold()
 		{

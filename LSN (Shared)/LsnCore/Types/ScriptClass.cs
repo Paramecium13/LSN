@@ -112,6 +112,7 @@ namespace LsnCore.Types
 
 		public ScriptClassState GetState(int id) => _States[id];
 
+#if CORE
 		internal ScriptObject Construct(LsnValue[] properties, LsnValue[] arguments, IInterpreter i, IHostInterface host = null)
 		{
 			var fields = new LsnValue[FieldsB.Count];
@@ -128,6 +129,7 @@ namespace LsnCore.Types
 				fields[j] = arguments[j];
 			return new ScriptObject(properties, fields, this, DefaultStateId, host);
 		}
+#endif
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{

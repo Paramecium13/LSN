@@ -43,10 +43,12 @@ namespace LsnCore.Expressions
 			return e.Collection == Collection && e.Index == Index;
 		}
 
+#if CORE
 		public override LsnValue Eval(IInterpreter i)
 		{
 			return (Collection.Eval(i).Value as ICollectionValue).GetValue(Index.Eval(i).IntValue);
 		}
+#endif
 
 		public override IExpression Fold()
 		{

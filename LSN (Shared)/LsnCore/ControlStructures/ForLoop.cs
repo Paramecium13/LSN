@@ -28,10 +28,12 @@ namespace LsnCore.ControlStructures
 			Index = index; VarValue = val; Condition = con; Body = body; Post = post;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			throw new InvalidOperationException();
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

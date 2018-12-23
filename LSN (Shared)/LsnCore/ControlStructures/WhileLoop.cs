@@ -20,10 +20,12 @@ namespace LsnCore.ControlStructures
 			Condition = condition; Body = body;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			throw new InvalidOperationException();
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

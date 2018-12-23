@@ -95,6 +95,7 @@ namespace LsnCore.Statements
 			throw new ArgumentException();
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			switch (MyForm)
@@ -116,6 +117,7 @@ namespace LsnCore.Statements
 			}
 			throw new NotImplementedException();
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

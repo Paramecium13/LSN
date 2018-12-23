@@ -41,7 +41,9 @@ namespace LsnCore
 			return new FunctionCall(this, argsArray);
 		}
 
+#if CORE
 		public abstract LsnValue Eval(LsnValue[] args, IInterpreter i);
+#endif
 	}
 
 	/// <summary>

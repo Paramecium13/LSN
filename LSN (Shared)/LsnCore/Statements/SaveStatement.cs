@@ -18,11 +18,13 @@ namespace LsnCore.Statements
 			VariableIndexes = variableIndexes; SaveId = saveId;
 		}
 
-		public override InterpretValue Interpret(IInterpreter i)
+#if CORE
+	public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.SaveVariables(VariableIndexes, SaveId);
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{}
@@ -51,11 +53,13 @@ namespace LsnCore.Statements
 			VariableIndexes = variableIndexes; SaveId = saveId;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.LoadVariables(VariableIndexes, SaveId);
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{ }

@@ -19,8 +19,10 @@ namespace LsnCore.Expressions
 			Name = name; Type = type;
 		}
 
+#if CORE
 		public override LsnValue Eval(IInterpreter i)
 			=> new LsnValue(i.GetUniqueScriptObject(Name));
+#endif
 
 		public override IExpression Fold() => this;
 

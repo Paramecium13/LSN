@@ -16,11 +16,13 @@ namespace LsnCore.Statements
 	public sealed class JumpStatement : Statement, IHasTargetStatement
 	{
 		public int Target { get; set; } = -1;
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			i.NextStatement = Target;
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 
@@ -48,12 +50,14 @@ namespace LsnCore.Statements
 			Condition = condition;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			if (Condition.Eval(i).BoolValue)
 				i.NextStatement = Target;
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

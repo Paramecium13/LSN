@@ -33,11 +33,13 @@ namespace LsnCore
 			ResourceFilePath = resourceFilePath;
 		}
 
+#if CORE
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 		{
 			i.RunProcedure(this, args);
 			return i.ReturnValue;
 		}
+#endif
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{

@@ -32,11 +32,13 @@ namespace LsnCore.Statements
 			FieldedValue = fieldedValue; Index = index; ValueToAssign = value;
 		}
 
+#if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
 			(FieldedValue.Eval(i).Value as IHasMutableFieldsValue).SetFieldValue(Index, ValueToAssign.Eval(i));
 			return InterpretValue.Base;
 		}
+#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

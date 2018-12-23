@@ -36,10 +36,12 @@ namespace LsnCore.Expressions
 			return this == other;
 		}
 
+#if CORE
 		public LsnValue Eval(IInterpreter i)
 		{
 			return new LsnValue(new LsnList(Type));
 		}
+#endif
 
 		public IExpression Fold() => this;
 
