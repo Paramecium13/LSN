@@ -258,7 +258,7 @@ namespace LSNr
 
 					var components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
 					method.Code = new ComponentFlattener().Flatten(components);
-					method.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
+					method.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize ?? -1;
 				}
 				catch (LsnrException e)
 				{
@@ -295,7 +295,7 @@ namespace LSNr
 					parser.Parse();
 					pre.CurrentScope.Pop(parser.Components);
 					eventListener.Code = new ComponentFlattener().Flatten(Parser.Consolidate(parser.Components).Where(c => c != null).ToList());
-					eventListener.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
+					eventListener.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize /*For the 'self' arg.*/?? -1;
 				}
 				catch (LsnrException e)
 				{
