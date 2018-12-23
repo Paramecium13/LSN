@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using LsnCore.Types;
+#if LSNR
+using LSNr;
+#endif
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
@@ -10,11 +13,14 @@ namespace LsnCore.Expressions
 
 		public override bool IsPure => true;
 
-		public VariableExpression(int index, TypeId type)
-		{
-			Index = index; Type = type;
-		}
+#if LSNR
+		public readonly Variable Variable;
 
+		public VariableExpression(int index, TypeId type, Variable variable)
+		{
+			Variable = variable;
+		}
+#endif
 		public VariableExpression(int index)
 		{
 			Index = index;

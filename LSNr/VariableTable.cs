@@ -93,6 +93,23 @@ namespace LSNr
 			return v;
 		}
 
+
+		public Variable CreateVariable(string name, LsnType type)
+		{
+			var v = new Variable(name, type, NextOffset);
+			Variables.Add(v);
+			if (v.Const())
+				ConstCount++;
+			return v;
+		}
+
+		public Variable CreateIteratorVariable(string name, Variable index, Variable collection)
+		{
+			var v = new Variable(name, index, collection);
+			Variables.Add(v);
+			return v;
+		}
+
 		private const int MaxUsersForReplacement = 2;
 
 		public IScope Pop(List<Component> components)
@@ -176,5 +193,6 @@ namespace LSNr
 			Children.Add(child);
 			return child;
 		}
+
 	}
 }

@@ -167,7 +167,7 @@ namespace LSNr
 					return assign;
 				case SymbolType.Field: // This is inside a script object...
 					var preScObjFn = script as PreScriptClassFunction;
-					return new FieldAssignmentStatement(new VariableExpression(0, preScObjFn.Parent.Id),
+					return new FieldAssignmentStatement(preScObjFn.CurrentScope.GetVariable("self").AccessExpression,
 						preScObjFn.Parent.GetField(tokens[0].Value).Index,expr);
 				case SymbolType.GlobalVariable:
 					throw new NotImplementedException("");

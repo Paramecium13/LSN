@@ -33,7 +33,7 @@ namespace LSNr.LssParser
 				case TokenType.Keyword:
 					var str = token.Value;
 					var preScFn = script as PreScriptClassFunction;
-					if (str == "this")
+					if (str == "self")
 					{
 						if (script is PreFunction || preScFn != null)
 							return true;
@@ -87,8 +87,8 @@ namespace LSNr.LssParser
 				case TokenType.Keyword:
 					if (str == "host")
 						expr = new HostInterfaceAccessExpression(((PreScriptClassFunction)script).Parent.HostType.Id);
-					else if (str == "this")
-						expr = new VariableExpression(0);
+					else if (str == "self")
+						expr = script.CurrentScope.GetVariable("self").AccessExpression;
 					else
 						throw new ApplicationException();
 					break;

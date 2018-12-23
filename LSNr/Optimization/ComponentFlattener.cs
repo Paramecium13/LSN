@@ -24,6 +24,9 @@ namespace LSNr.Optimization
 		{
 			Walk(components);
 
+			if (NextLabel != null)
+				PreStatements.Add(new PreStatement(new ReturnStatement(null)) { Label = NextLabel });
+
 			foreach (var jmp in PreStatements.Where(s => s.Target != null))
 				(jmp.Statement as IHasTargetStatement).Target = FindLabel(jmp.Target);
 
@@ -230,6 +233,39 @@ namespace LSNr.Optimization
 				NextLabel = null;
 			}
 			PreStatements.Add(preSt);
+		}
+
+		protected override void WalkForInRangeLoop(ForInRangeLoop fr)
+		{
+			var index = ForLoopCount++;
+			var cndLabel = "For" + index.ToString();
+			var endLabel = "EndFor" + index.ToString();
+
+			IExpression expr = new FieldAccessExpression(fr.Range.AccessExpression, 0); // Range.Start
+			var assignPreSt = new PreStatement(new AssignmentStatement(fr.Iterator.Index,expr));
+			if (NextLabel != null)
+			{
+				assignPreSt.Label = NextLabel;
+				NextLabel = null;
+			}
+			PreStatements.Add(assignPreSt);
+			var condExpr = new BinaryExpression(fr.Iterator.AccessExpression,
+				new FieldAccessExpression(fr.Range.AccessExpression, 0),
+				BinaryOperation.GreaterThan, BinaryOperationArgsType.Int_Int);
+			var cond = new PreStatement(new ConditionalJumpStatement(condExpr))
+			{
+				Target = endLabel, Label = cndLabel
+			};
+			PreStatements.Add(cond);
+
+			InnerMostLoopStartLabels.Push(cndLabel);
+			InnerMostLoopEndLabels.Push(endLabel);
+
+			Walk(fr.Body);
+
+			var jumpBack = new PreStatement(new JumpStatement()) { Target = cndLabel };
+			PreStatements.Add(jumpBack);
+			NextLabel = endLabel;
 		}
 	}
 }

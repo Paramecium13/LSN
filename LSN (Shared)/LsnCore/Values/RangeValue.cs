@@ -21,7 +21,7 @@ namespace LsnCore.Values
 		public bool MoveNext() => ++current <= Range.End;
 	}
 
-	public class RangeValue : ILsnValue, ILsnEnumerable
+	public class RangeValue : ILsnValue, ILsnEnumerable, IHasFieldsValue
 	{
 		public readonly int Start;
 		public readonly int End;
@@ -45,5 +45,16 @@ namespace LsnCore.Values
 		}
 
 		public ILsnEnumerator GetLsnEnumerator() => new RangeEnumerator(this);
+
+		public LsnValue GetFieldValue(int index)
+		{
+			switch (index)
+			{
+				case 0: return new LsnValue(Start);
+				case 1: return new LsnValue(End);
+				default:
+					throw new InvalidOperationException();
+			}
+		}
 	}
 }

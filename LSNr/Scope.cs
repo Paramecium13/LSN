@@ -75,5 +75,15 @@ namespace LSNr
 		}
 
 		public IScope CreateChild() => new Scope(this);
+
+		public Variable CreateVariable(string name, LsnType type)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Variable CreateIteratorVariable(string name, Variable collection, Variable index)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

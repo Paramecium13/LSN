@@ -44,7 +44,7 @@ namespace LSNr.LssParser
 			var str = token.Value;
 			IExpression expr;
 			var preScriptClass = ((PreScriptClassFunction)script).Parent;
-			var self = new VariableExpression(0);
+			var self = script.CurrentScope.GetVariable("self").AccessExpression;
 			switch (script.CheckSymbol(str))
 			{
 				case SymbolType.Field:

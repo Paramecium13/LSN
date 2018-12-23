@@ -28,40 +28,44 @@ namespace LSNr.Optimization
 
 		private void Walk(ControlStructure c)
 		{
-			if (c is CaseStructure cs)
+			switch (c)
 			{
-				WalkCaseStructure(cs);
-				return;
+				case CaseStructure cs:
+					WalkCaseStructure(cs);
+					return;
+				case Choice ch:
+					WalkChioce(ch);
+					return;
+				case ChoicesBlockControl cbc:
+					WalkCbc(cbc);
+					return;
+				case ForLoop fl:
+					WalkForLoop(fl);
+					return;
+				case IfElseControl ife:
+					WalkIfElse(ife);
+					return;
+				case MatchStructure ms:
+					WalkMatchStructure(ms);
+					return;
+				case WhileLoop wl:
+					WalkWhileLoop(wl);
+					return;
+				case ForInRangeLoop fr:
+					WalkForInRangeLoop(fr);
+					return;
+				default:
+					throw new NotImplementedException();
 			}
-			if (c is Choice ch)
-			{
-				WalkChioce(ch);
-				return;
-			}
-			if (c is ChoicesBlockControl cbc)
-			{
-				WalkCbc(cbc);
-				return;
-			}
-			if (c is ForLoop fl)
-			{
-				WalkForLoop(fl);
-				return;
-			}
-			if (c is IfElseControl ife)
-			{
-				WalkIfElse(ife);
-				return;
-			}
-			if (c is MatchStructure ms)
-			{
-				WalkMatchStructure(ms);
-				return;
-			}
-			if (c is WhileLoop wl)
-				WalkWhileLoop(wl);
-			throw new NotImplementedException();
 		}
+
+		protected virtual void WalkForInRangeLoop(ForInRangeLoop fr)
+		{
+			View(fr);
+			Walk(fr.Body);
+		}
+
+		protected virtual void View(ForInRangeLoop fr) { }
 
 		protected virtual void WalkCaseStructure(CaseStructure c)
 		{
