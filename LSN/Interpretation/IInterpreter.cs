@@ -114,6 +114,7 @@ namespace LsnCore
 		/// <param name="min">The minimum value, inclusive.</param>
 		/// <param name="max">The maximum value, exclusive.</param>
 		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "int")]
 		int RngGetInt(int min, int max);
 
 		/// <summary>

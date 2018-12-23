@@ -59,11 +59,11 @@ namespace LsnCore
 		/// </summary>
 		public double DoubleValue => Data;
 
-		/// <summary>
-		/// 
-		/// </summary>
+#if LSNR
 		public TypeId Type => Id;
-
+#else
+		public TypeId Type => throw new NotImplementedException();
+#endif
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public LsnValue(double value)
 		{

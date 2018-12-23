@@ -7,7 +7,6 @@ using LsnCore.Expressions;
 
 namespace LsnCore.ControlStructures
 {
-	[Serializable]
 	public class ChoicesBlockControl : ControlStructure
 	{
 		public readonly List<Choice> Choices = new List<Choice>();
