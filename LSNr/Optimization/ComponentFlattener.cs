@@ -240,8 +240,17 @@ namespace LSNr.Optimization
 			var index = ForLoopCount++;
 			var cndLabel = "For" + index.ToString();
 			var endLabel = "EndFor" + index.ToString();
-
-			IExpression expr = new FieldAccessExpression(fr.Range.AccessExpression, 0); // Range.Start
+			IExpression expr = fr.Start;
+			if(fr.Statement != null)
+			{
+				var p = new PreStatement(fr.Statement);
+				if (NextLabel != null)
+				{
+					p.Label = NextLabel;
+					NextLabel = null;
+				}
+				PreStatements.Add(p);
+			}
 			var assignPreSt = new PreStatement(new AssignmentStatement(fr.Iterator.Index,expr));
 			if (NextLabel != null)
 			{
@@ -249,8 +258,7 @@ namespace LSNr.Optimization
 				NextLabel = null;
 			}
 			PreStatements.Add(assignPreSt);
-			var condExpr = new BinaryExpression(fr.Iterator.AccessExpression,
-				new FieldAccessExpression(fr.Range.AccessExpression, 0),
+			var condExpr = new BinaryExpression(fr.Iterator.AccessExpression, fr.End,
 				BinaryOperation.GreaterThan, BinaryOperationArgsType.Int_Int);
 			var cond = new PreStatement(new ConditionalJumpStatement(condExpr))
 			{

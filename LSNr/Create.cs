@@ -4,6 +4,7 @@ using LsnCore.Expressions;
 using LsnCore.Statements;
 using LsnCore.Types;
 using LsnCore.Utilities;
+using LsnCore.Values;
 using LSNr.LssParser;
 using System;
 using System.Collections.Generic;
@@ -184,25 +185,73 @@ namespace LSNr
 				if (head[++i].Value != "in") // i == 2
 					throw LsnrParsingException.UnexpectedToken(head[i], "in", script.Path);
 				i++; // i == 3; points to expression.
-				var expr = Express(head.Skip(3), script);
-
-				var varExpr = expr as VariableExpression;
-				var collType = expr.Type.Type as ICollectionType;
-				var rangExpr = expr as RangeExpression;
-				if(collType != null)
+				var expr = Express(head.Skip(3), script).Fold();
+				if (expr.Type.Type is ICollectionType collType)
 				{
-
-					if (varExpr != null)
-					{
-
-					}
-					else
-					{
-
-					}
+					throw new NotImplementedException();
 				}
+				else if (expr.Type.Type == RangeType.Instance)
+				{
+					script.CurrentScope = script.CurrentScope.CreateChild();
+					Variable index = script.CurrentScope.CreateVariable(vName,LsnType.int_);
+					var p = new Parser(body, script);
+					p.Parse();
+					var components = Parser.Consolidate(p.Components);
+					script.CurrentScope = script.CurrentScope.Pop(components);
+					var loop = new ForInRangeLoop(index, components);
+					switch (expr)
+					{
+						case RangeExpression rExp:
+							if (rExp.Start is LsnValue v1)
+							{
+								loop.Start = v1;
+								// statement for end...
+								var endVar = script.CurrentScope.CreateVariable("# " + vName, LsnType.int_);
+								endVar.MarkAsUsed();
+								var st1 = new AssignmentStatement(endVar.Index, rExp.End);
+								endVar.Assignment = st1;
+								loop.Statement = st1;
+								endVar.AddUser(st1);
+							}
+							else if (rExp.End is LsnValue v2)
+							{
+								loop.End = v2;
+								// statement for start...
+								var stVar = script.CurrentScope.CreateVariable("# " + vName, LsnType.int_);
+								stVar.MarkAsUsed();
+								var st2 = new AssignmentStatement(stVar.Index, rExp.Start);
+								stVar.Assignment = st2;
+								loop.Statement = st2;
+								stVar.AddUser(st2);
+							}
+							break;
+						case LsnValue val:
+							var range = val.Value as RangeValue;
+							loop.Start = new LsnValue(range.Start);
+							loop.End = new LsnValue(range.End);
+							break;
+						case VariableExpression v:
+							loop.Start = new FieldAccessExpression(v, 0);
+							loop.End = new FieldAccessExpression(v, 1);
+							v.Variable.AddUser(loop.Start);
+							v.Variable.AddUser(loop.End);
+							break;
+						default:
+							var rVar = script.CurrentScope.CreateVariable("# " + vName, RangeType.Instance);
+							rVar.MarkAsUsed();
+							var st = new AssignmentStatement(rVar.Index, expr);
+							rVar.AddUser(st);
+							rVar.Assignment = st;
+							loop.Statement = st;
 
-				script.CurrentScope = script.CurrentScope.CreateChild();
+							loop.Start = new FieldAccessExpression(rVar.AccessExpression, 0);
+							loop.End = new FieldAccessExpression(rVar.AccessExpression, 1);
+							break;
+					}
+					return loop;
+				}
+				else throw new LsnrParsingException(head[3], "...", script.Path);
+
 
 
 			}

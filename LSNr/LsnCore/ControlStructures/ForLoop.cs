@@ -1,5 +1,6 @@
 ﻿using LsnCore.Expressions;
 using LsnCore.Statements;
+using LsnCore.Values;
 using LSNr;
 using System;
 using System.Collections.Generic;
@@ -57,14 +58,22 @@ namespace LsnCore.ControlStructures
 	}
 	public class ForInRangeLoop : ControlStructure
 	{
-		public Variable Iterator;
-		public Variable Range;
+		internal readonly Variable			Iterator;
+
 
 		public readonly List<Component> Body;
 
-		public ForInRangeLoop(Variable index, Variable range, IEnumerable<Component> body)
+		internal IExpression Start { get; set; }
+
+		internal IExpression End { get; set; }
+
+		// note to flattener:
+		// if not null, place this before all other statements from this component.
+		internal Statement Statement { get; set; }
+
+		internal ForInRangeLoop(Variable index, IEnumerable<Component> body)
 		{
-			Iterator = index; Range = range; Body = body.ToList();
+			Iterator = index; Body = body.ToList();
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)

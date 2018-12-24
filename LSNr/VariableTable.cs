@@ -128,8 +128,8 @@ namespace LSNr
 					foreach (var child in Children)
 						child.ParentVariableRemoved(i);
 				}
-				else if ((!variable.Mutable || !variable.Reassigned) && variable.Assignment != null && variable.InitialValue.IsPure
-					&& variable.Users.Count <= MaxUsersForReplacement)
+				else if ((!variable.Mutable || !variable.Reassigned) && variable.Assignment != null && 
+					(variable.InitialValue?.IsPure ?? false) && variable.Users.Count <= MaxUsersForReplacement)
 				{ // Only do this if the initial assignment is a pure expression.
 					components.Remove(variable.Assignment);
 					deadVars.Add(variable);
@@ -151,8 +151,8 @@ namespace LSNr
 			// Check again for removable variables
 			foreach (var variable in Variables)
 			{
-				if ((!variable.Mutable || !variable.Reassigned) && variable.Assignment != null && variable.InitialValue.IsPure
-					&& variable.Users.Count <= MaxUsersForReplacement)
+				if ((!variable.Mutable || !variable.Reassigned) && variable.Assignment != null &&
+					(variable.InitialValue?.IsPure ?? false) && variable.Users.Count <= MaxUsersForReplacement)
 				{ // Only do this if the initial assignment is a pure expression.
 					components.Remove(variable.Assignment);
 					deadVars.Add(variable);

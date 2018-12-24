@@ -35,6 +35,14 @@ fn bar(val: int)-> Range
 	return -val..val;
 }
 
+fn HelloRanges(val:int)
+{
+	foreach i in bar(val)
+	{
+		say i;
+	}
+}
+
 fn GetNames(dogs : Vector<Dog>) -> Vector<string>
 {
 	let names = new List<string>();
