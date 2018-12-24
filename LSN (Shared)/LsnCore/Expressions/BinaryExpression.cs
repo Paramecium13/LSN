@@ -71,12 +71,12 @@ namespace LsnCore.Expressions
 #if CORE
 		public override LsnValue Eval(IInterpreter i)
 		{
-			var left = _Left.Eval(i);
+			var left = Left.Eval(i);
 			LsnValue right;
 			switch (ArgumentTypes)
 			{
 				case BinaryOperationArgsType.Int_Int:
-					right = _Right.Eval(i);
+					right = Right.Eval(i);
 					switch (Operation)
 					{
 						case BinaryOperation.Sum:					return LsnValue.IntSum(left, right);
@@ -98,7 +98,7 @@ namespace LsnCore.Expressions
 							throw new InvalidOperationException(Operation.ToString());
 					}
 				case BinaryOperationArgsType.Int_Double:
-					right = _Right.Eval(i);
+					right = Right.Eval(i);
 					switch (Operation)
 					{
 						case BinaryOperation.Sum:					return LsnValue.DoubleSum(left, right);
@@ -117,7 +117,7 @@ namespace LsnCore.Expressions
 							throw new InvalidOperationException(Operation.ToString());
 					}
 				case BinaryOperationArgsType.Double_Double:
-					right = _Right.Eval(i);switch (Operation)
+					right = Right.Eval(i);switch (Operation)
 					{
 						case BinaryOperation.Sum:					return LsnValue.DoubleSum(left, right);
 						case BinaryOperation.Difference:			return LsnValue.DoubleDiff(left, right);
@@ -135,7 +135,7 @@ namespace LsnCore.Expressions
 							throw new InvalidOperationException(Operation.ToString());
 					}
 				case BinaryOperationArgsType.Double_Int:
-					right = _Right.Eval(i);
+					right = Right.Eval(i);
 					switch (Operation)
 					{
 						case BinaryOperation.Sum:					return LsnValue.DoubleSum(left, right);
@@ -154,7 +154,7 @@ namespace LsnCore.Expressions
 							throw new InvalidOperationException(Operation.ToString());
 					}
 				case BinaryOperationArgsType.String_String:
-					right = _Right.Eval(i);
+					right = Right.Eval(i);
 					var lefts  = (left .Value as StringValue)?.Value;
 					var rights = (right.Value as StringValue)?.Value;
 					switch (Operation)
@@ -171,7 +171,7 @@ namespace LsnCore.Expressions
 							throw new InvalidOperationException();
 					}
 				case BinaryOperationArgsType.String_Int:
-					right = _Right.Eval(i);
+					right = Right.Eval(i);
 					lefts = (left.Value as StringValue)?.Value ?? "";
 					var righti = right.IntValue;
 					switch (Operation)
@@ -184,11 +184,11 @@ namespace LsnCore.Expressions
 				case BinaryOperationArgsType.Bool_Bool:
 					switch (Operation)
 					{
-						case BinaryOperation.Equal:			return new LsnValue(left.BoolValue == _Right.Eval(i).BoolValue);
-						case BinaryOperation.NotEqual:		return new LsnValue(left.BoolValue != _Right.Eval(i).BoolValue);
-						case BinaryOperation.And:			return new LsnValue(left.BoolValue && _Right.Eval(i).BoolValue);
-						case BinaryOperation.Or:			return new LsnValue(left.BoolValue || _Right.Eval(i).BoolValue);
-						case BinaryOperation.Xor:			return new LsnValue(left.BoolValue ^  _Right.Eval(i).BoolValue);
+						case BinaryOperation.Equal:			return new LsnValue(left.BoolValue == Right.Eval(i).BoolValue);
+						case BinaryOperation.NotEqual:		return new LsnValue(left.BoolValue != Right.Eval(i).BoolValue);
+						case BinaryOperation.And:			return new LsnValue(left.BoolValue && Right.Eval(i).BoolValue);
+						case BinaryOperation.Or:			return new LsnValue(left.BoolValue || Right.Eval(i).BoolValue);
+						case BinaryOperation.Xor:			return new LsnValue(left.BoolValue ^  Right.Eval(i).BoolValue);
 						default:
 							throw new InvalidOperationException();
 					}
