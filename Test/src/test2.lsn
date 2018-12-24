@@ -23,6 +23,7 @@ fn Test(x : double) -> int
 	{
 		return 102;
 	}
+	return 0;
 }
 
 fn Bark(dog : Dog)
@@ -122,7 +123,7 @@ HostInterface IStandardActivator
 {
 	event Activate(actor : IActor);
 }
-fn IsInCircle(circ:Circle,x:double,y:double)
+fn IsInCircle(circ:Circle,x:double,y:double)->bool
 {
 	return (x-circ.X)^2 + (y-circ.Y)^2 <= circ.Radius;
 }
@@ -130,6 +131,7 @@ fn IsInCircle(circ:Circle,x:double,y:double)
 fn GetArea(circ:Circle)->double
 {
 	say "Can't find π";
+	return -1;
 }
 
 record Point

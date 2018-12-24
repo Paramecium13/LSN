@@ -33,6 +33,13 @@ namespace LSNr.Optimization
 			return PreStatements.Select(p => p.Statement).ToArray();
 		}
 
+		private string PopNextLabel()
+		{
+			var tmp = NextLabel;
+			NextLabel = null;
+			return tmp;
+		}
+
 		private int FindLabel(string label)
 		{
 			for(int i = 0; i < PreStatements.Count; i++)
@@ -49,20 +56,14 @@ namespace LSNr.Optimization
 			{
 				Target = endifLabel
 			};
-
-			if (NextLabel != null)
-			{
-				preSt.Label = NextLabel;
-				NextLabel = null;
-			}
+			preSt.Label = PopNextLabel();
 			PreStatements.Add(preSt);
 
 			Walk(f.Body);
 			NextLabel = endifLabel;
 			for (int i = 0; i < f.Elsifs.Count; i++)
-			{
 				WalkElsif(f.Elsifs[i]);
-			}
+			
 			if(f.ElseBlock != null) Walk(f.ElseBlock);
 		}
 
@@ -73,12 +74,7 @@ namespace LSNr.Optimization
 			{
 				Target = endifLabel
 			};
-
-			if (NextLabel != null)
-			{
-				preSt.Label = NextLabel;
-				NextLabel = null;
-			}
+			preSt.Label = PopNextLabel();
 			PreStatements.Add(preSt);
 
 			Walk(e.Body);
@@ -94,11 +90,7 @@ namespace LSNr.Optimization
 
 			var preSt = new PreStatement(new ConditionalJumpStatement(new NotExpression(wl.Condition)))
 			{ Target = endLabel, Label = cndLabel };
-			if (NextLabel != null)
-			{
-				preSt.Label = NextLabel;
-				NextLabel = null;
-			}
+			preSt.Label = PopNextLabel();
 			PreStatements.Add(preSt);
 
 			InnerMostLoopStartLabels.Push(cndLabel);
@@ -106,11 +98,7 @@ namespace LSNr.Optimization
 
 			Walk(wl.Body);
 			var loopPreSt = new PreStatement(new JumpStatement()){Target = cndLabel};
-			if (NextLabel != null)
-			{
-				loopPreSt.Label = NextLabel;
-				NextLabel = null;
-			}
+			loopPreSt.Label = PopNextLabel();
 			PreStatements.Add(loopPreSt);
 
 			NextLabel = endLabel;
@@ -127,11 +115,7 @@ namespace LSNr.Optimization
 			var endLabel = "EndFor" + index.ToString();
 
 			var assignPreSt = new PreStatement(new AssignmentStatement(f.Index, f.VarValue));
-			if (NextLabel != null)
-			{
-				assignPreSt.Label = NextLabel;
-				NextLabel = null;
-			}
+			assignPreSt.Label = PopNextLabel();
 			PreStatements.Add(assignPreSt);
 
 			var cndPreSt = new PreStatement(new ConditionalJumpStatement(new NotExpression(f.Condition)))
@@ -145,13 +129,8 @@ namespace LSNr.Optimization
 
 			// Increment
 			var postPreSt = new PreStatement(f.Post);
-			if (NextLabel != null)
-			{
-				postPreSt.Label = NextLabel;
-				NextLabel = null;
-			}
+			postPreSt.Label = PopNextLabel();
 			PreStatements.Add(postPreSt);
-
 			PreStatements.Add(new PreStatement(new JumpStatement()) { Target = cndLabel });
 
 			NextLabel = endLabel;
@@ -174,9 +153,9 @@ namespace LSNr.Optimization
 				var chTarget = "Choice" + index + "Target" + i;
 				var regPreSt = new PreStatement(new RegisterChoiceStatement(ch.Condition ?? LsnBoolValue.GetBoolValue(true), ch.Title))
 				{Target = chTarget};
-				if (i == 0 && NextLabel != null)
+				if (i == 0)
 				{
-					regPreSt.Label = NextLabel; NextLabel = null;
+					regPreSt.Label = PopNextLabel();
 				}
 
 				PreStatements.Add(regPreSt);
@@ -198,7 +177,6 @@ namespace LSNr.Optimization
 				}
 				PreStatements.Add(jEndPreSt);
 			}
-
 			NextLabel = endLabel;
 		}
 
@@ -222,9 +200,7 @@ namespace LSNr.Optimization
 				};
 			}
 			else
-			{
 				preSt = new PreStatement(s);
-			}
 			/*if (ExitLabelStack.Count > 0)
 				preSt.Label = ExitLabelStack.Pop();*/
 			if(NextLabel != null)
@@ -244,19 +220,11 @@ namespace LSNr.Optimization
 			if(fr.Statement != null)
 			{
 				var p = new PreStatement(fr.Statement);
-				if (NextLabel != null)
-				{
-					p.Label = NextLabel;
-					NextLabel = null;
-				}
+				p.Label = PopNextLabel();
 				PreStatements.Add(p);
 			}
 			var assignPreSt = new PreStatement(new AssignmentStatement(fr.Iterator.Index,expr));
-			if (NextLabel != null)
-			{
-				assignPreSt.Label = NextLabel;
-				NextLabel = null;
-			}
+			assignPreSt.Label = PopNextLabel();
 			PreStatements.Add(assignPreSt);
 			var condExpr = new BinaryExpression(fr.Iterator.AccessExpression, fr.End,
 				BinaryOperation.GreaterThan, BinaryOperationArgsType.Int_Int);

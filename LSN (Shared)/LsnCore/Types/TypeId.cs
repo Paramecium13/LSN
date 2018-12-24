@@ -38,6 +38,8 @@ namespace LsnCore.Types
 		public override int GetHashCode()
 			=> Name.GetHashCode();
 
+		public override string ToString()
+			=> Name;
 
 		public bool Equals(TypeId other)
 			=> Name == other?.Name;

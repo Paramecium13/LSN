@@ -132,8 +132,8 @@ namespace LSNr
 		public void ChangeIndex(int newIndex)
 		{
 			if (newIndex == Index) return;
-			var v = _AccessExpression as VariableExpression;
-			if (v != null) v.Index = newIndex;
+			if(_AccessExpression is VariableExpression v)
+				v.Index = newIndex;
 		}
 
 		public void MarkAsUsed()

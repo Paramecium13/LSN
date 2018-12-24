@@ -50,6 +50,7 @@ fn GetNames(dogs : Vector<Dog>) -> Vector<string>
 	{
 		names.Add(dogs[i].Name);
 	}
+	return names.ToVector();
 }
 
 
@@ -65,6 +66,7 @@ fn FnTestA()-> int
 	{
 		TestA.ChangeA()
 	}
+	return 0;
 }
 
 

@@ -141,6 +141,7 @@ namespace LsnCore
 
 		public bool Subsumes(LsnType type)
 		{
+			if (this == double_ && type == int_) return true;
 			return Equals(type) || SubsumesList.Contains(type);
 		}
 

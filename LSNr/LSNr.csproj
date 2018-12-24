@@ -104,6 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasePreScript.cs" />
+    <Compile Include="CodeGen.cs" />
     <Compile Include="Dependencies.cs" />
     <Compile Include="DependenciesForest.cs" />
     <Compile Include="GlobalSuppressions.cs" />

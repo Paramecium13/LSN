@@ -185,7 +185,7 @@ namespace LSNr
 				if (head[++i].Value != "in") // i == 2
 					throw LsnrParsingException.UnexpectedToken(head[i], "in", script.Path);
 				i++; // i == 3; points to expression.
-				var expr = Express(head.Skip(3), script).Fold();
+				var expr = Express(head.Skip(3), script);
 				if (expr.Type.Type is ICollectionType collType)
 				{
 					throw new NotImplementedException();
@@ -297,7 +297,7 @@ namespace LSNr
 				}
 				return expr;
 			}
-			return ExpressionParser.Parse(list, script, substitutions);
+			return ExpressionParser.Parse(list, script, substitutions).Fold();
 		}
 
 		public static IExpression SingleTokenExpress(Token token, IPreScript script, IExpressionContainer container = null, IList<Variable> variables = null)

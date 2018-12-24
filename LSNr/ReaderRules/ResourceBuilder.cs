@@ -365,14 +365,12 @@ namespace LSNr.ReaderRules
 					var preFn = new PreFunction(this);
 					foreach (var param in fn.Parameters)
 						preFn.CurrentScope.CreateVariable(param);
-					var parser = new Parser(src, preFn);
-					parser.Parse();
-					preFn.CurrentScope.Pop(parser.Components);
+					var cg = new CodeGen(preFn, fn.ReturnType, $"function '{name}'");
+					cg.Generate(src);
 					if (preFn.Valid)
 					{
-						var cmps = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
-						fn.Code = new ComponentFlattener().Flatten(cmps);
-						fn.StackSize = (preFn.CurrentScope as VariableTable)?.MaxSize ?? -1;
+						fn.Code = cg.Code;
+						fn.StackSize = cg.StackSize;
 					}
 					else
 						Valid = false;

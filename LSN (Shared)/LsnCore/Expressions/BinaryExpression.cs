@@ -16,46 +16,56 @@ namespace LsnCore.Expressions
 
 	public sealed class BinaryExpression : Expression
 	{
-		private IExpression _Left;
-
 		/// <summary>
 		/// The left hand side of this expression.
 		/// </summary>
-		public IExpression Left { get { return _Left; } set { _Left = value; } }
-
-		private IExpression _Right;
+		public IExpression Left { get; set; }
 
 		/// <summary>
 		/// The right hand side of this expression.
 		/// </summary>
-		public IExpression Right { get { return _Right; } set { _Right = value; } }
+		public IExpression Right { get; set; }
 
-		public override bool IsPure => _Left.IsPure && _Right.IsPure;
+		public override bool IsPure => Left.IsPure && Right.IsPure;
 
 		public readonly BinaryOperation Operation;
 		public readonly BinaryOperationArgsType ArgumentTypes;
 
 		public BinaryExpression(IExpression left,IExpression right, BinaryOperation operation, BinaryOperationArgsType argTypes)
 		{
-			_Left = left; _Right = right; Operation = operation; ArgumentTypes = argTypes;
-			switch (argTypes)
+			Left = left; Right = right; Operation = operation; ArgumentTypes = argTypes;
+			switch (operation)
 			{
-				case BinaryOperationArgsType.Int_Int:
-					Type = LsnType.int_.Id;
-					break;
-				case BinaryOperationArgsType.Int_Double:
-				case BinaryOperationArgsType.Double_Double:
-				case BinaryOperationArgsType.Double_Int:
-					Type = LsnType.double_.Id;
-					break;
-				case BinaryOperationArgsType.String_String:
-				case BinaryOperationArgsType.String_Int:
-					Type = LsnType.string_.Id;
-					break;
-				case BinaryOperationArgsType.Bool_Bool:
+				case BinaryOperation.LessThan:
+				case BinaryOperation.LessThanOrEqual:
+				case BinaryOperation.GreaterThan:
+				case BinaryOperation.GreaterThanOrEqual:
+				case BinaryOperation.Equal:
+				case BinaryOperation.NotEqual:
 					Type = LsnType.Bool_.Id;
 					break;
+				default:
+					switch (argTypes)
+					{
+						case BinaryOperationArgsType.Int_Int:
+							Type = LsnType.int_.Id;
+							break;
+						case BinaryOperationArgsType.Int_Double:
+						case BinaryOperationArgsType.Double_Double:
+						case BinaryOperationArgsType.Double_Int:
+							Type = LsnType.double_.Id;
+							break;
+						case BinaryOperationArgsType.String_String:
+						case BinaryOperationArgsType.String_Int:
+							Type = LsnType.string_.Id;
+							break;
+						case BinaryOperationArgsType.Bool_Bool:
+							Type = LsnType.Bool_.Id;
+							break;
+					}
+					break;
 			}
+			
 		}
 
 #if CORE
@@ -196,10 +206,10 @@ namespace LsnCore.Expressions
 			var rVal = typeof(LsnValue).IsAssignableFrom(Right.GetType());
 			if (lVal)
 			{
-				var left = (LsnValue)_Left;
+				var left = (LsnValue)Left;
 				if (lVal && rVal)
 				{
-					var right = (LsnValue)_Right;
+					var right = (LsnValue)Right;
 					switch (ArgumentTypes)
 					{
 						case BinaryOperationArgsType.Int_Int:
@@ -325,16 +335,16 @@ namespace LsnCore.Expressions
 							case BinaryOperationArgsType.Int_Int:
 							case BinaryOperationArgsType.Int_Double:
 								if (left.IntValue == 0)
-									return _Right;
+									return Right;
 								return this;
 							case BinaryOperationArgsType.Double_Double:
 							case BinaryOperationArgsType.Double_Int:
 								if (left.DoubleValue < double.Epsilon)
-									return _Right;
+									return Right;
 								return this;
 							case BinaryOperationArgsType.String_String:
 								if (string.IsNullOrEmpty((left.Value as StringValue).Value))
-									return _Right;
+									return Right;
 								return this;
 							default:
 								break;
@@ -351,14 +361,14 @@ namespace LsnCore.Expressions
 								if (leftI == 0)
 									return new LsnValue(0);
 								if (leftI == 1)
-									return _Right;
+									return Right;
 								break;
 							case BinaryOperationArgsType.Double_Double:
 							case BinaryOperationArgsType.Double_Int:
 								if (Math.Abs(left.DoubleValue) < double.Epsilon)
 									return new LsnValue(0.0);
 								if (Math.Abs(left.DoubleValue - 1) < double.Epsilon)
-									return _Right;
+									return Right;
 								return this;
 							default:
 								break;
@@ -411,7 +421,7 @@ namespace LsnCore.Expressions
 						{
 							if(!left.BoolValue)
 								return new LsnValue(false);
-							return _Right;
+							return Right;
 						}
 						break;
 					case BinaryOperation.Or:
@@ -419,7 +429,7 @@ namespace LsnCore.Expressions
 						{
 							if (left.BoolValue)
 								return new LsnValue(true);
-							return _Right;
+							return Right;
 						}
 						break;
 					default:
@@ -472,15 +482,15 @@ namespace LsnCore.Expressions
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
-			if (_Left.Equals(oldExpr))
-				_Left = newExpr;
+			if (Left.Equals(oldExpr))
+				Left = newExpr;
 			else
-				_Left.Replace(oldExpr, newExpr);
+				Left.Replace(oldExpr, newExpr);
 
-			if (_Right.Equals(oldExpr))
-				_Right = newExpr;
+			if (Right.Equals(oldExpr))
+				Right = newExpr;
 			else
-				_Right.Replace(oldExpr, newExpr);
+				Right.Replace(oldExpr, newExpr);
 		}
 
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
@@ -540,11 +550,11 @@ namespace LsnCore.Expressions
 
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
-			yield return _Left;
-			foreach (var expr in _Left.SelectMany(e => e))
+			yield return Left;
+			foreach (var expr in Left.SelectMany(e => e))
 				yield return expr;
-			yield return _Right;
-			foreach (var expr in _Right.SelectMany(e => e))
+			yield return Right;
+			foreach (var expr in Right.SelectMany(e => e))
 				yield return expr;
 		}
 	}
