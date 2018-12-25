@@ -239,7 +239,6 @@ namespace LSNr
 						Push(c);
 					else if (c == '.')
 					{
-						Push(c);
 						State = TokenizerState.SymbolNumberDot;
 					}
 					else if (char.IsWhiteSpace(c))
@@ -501,12 +500,15 @@ namespace LSNr
 				case TokenizerState.SymbolNumberDot:
 					if (c == '.')
 					{
-						Push('.');
+						Pop();
+						Push(c);
+						Push(c);
 						TokenType = TokenizerTokenType.Operator;
 						Pop();
 					}
 					else if (char.IsDigit(c))
 					{
+						Push('.');
 						Push(c);
 						State = TokenizerState.Decimal;
 						TokenType = TokenizerTokenType.Float;
@@ -730,7 +732,17 @@ namespace LSNr
 					break;
 				case TokenizerTokenType.SyntaxSymbol:
 					token = new Token(str, LineNumber, LSNr.TokenType.SyntaxSymbol);
-					CanBeNegativeSign = true;
+					switch (str)
+					{
+						case ",":
+						case "`":
+						case ";":
+						case ":":
+							CanBeNegativeSign = true;
+							break;
+						default:
+							break;
+					}
 					break;
 				default:
 					throw new ApplicationException();

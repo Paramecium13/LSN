@@ -168,7 +168,7 @@ fn PathDistance(path:Vector<Point>)-> double
 {
 	let mut sum = 0.0;
 	let mut point = path[0];
-	for(i = 1` i < path.Length()` i = i + 1)
+	foreach i in 1..path.Length()-1
 	{
 		sum = sum + Distance(point,path[i]);
 		point = path[i];
