@@ -134,12 +134,13 @@ namespace LsnCore
 			protected set
 			{
 				_Id = value;
+				_Id.Load(this);
 			}
 		}
 
 		public bool IsName(string name) => Name == name || Aliases.Contains(name);
 
-		public bool Subsumes(LsnType type)
+		public virtual bool Subsumes(LsnType type)
 		{
 			if (this == double_ && type == int_) return true;
 			return Equals(type) || SubsumesList.Contains(type);

@@ -23,8 +23,6 @@ namespace LsnCore.Types
 			_Methods.Add("GetName",new BoundedMethod(this, LsnType.string_, (a) => new LsnValue(new StringValue(ItoSDict[a[0].IntValue])), "GetName", null));
 			_Methods.Add("ToInt", new BoundedMethod(this, LsnType.int_, (a) => a[0], "ToInt"));
 			_Methods.Add("GetValue", new BoundedMethod(this, LsnType.int_, (a) => a[0], "GetValue"));
-
-			Id.Load(this);
 		}
 
 		public override LsnValue CreateDefaultValue()

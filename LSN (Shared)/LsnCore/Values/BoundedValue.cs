@@ -59,7 +59,6 @@ namespace LsnCore
 	/// <summary>
 	/// LSN value that contains a string, is effectively passed by reference.
 	/// </summary>
-	[Serializable]
 	public class StringValue : IBoundValue<string>
 	{
 		private static readonly TypeId id = LsnType.string_.Id;
