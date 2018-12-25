@@ -461,7 +461,6 @@ namespace LSNr.ReaderRules
 			Functions = MyFunctions.ToDictionary(e => e.name, e => e.Part as Function),
 			GameValues = new Dictionary<string, GameValue>(),
 			HostInterfaces = GeneratedHostInterfaces,
-			Includes = new List<string>(),
 			RecordTypes = GeneratedRecordTypes.ToDictionary(r => r.Name),
 			ScriptClassTypes = GeneratedScriptClasses,
 			StructTypes = GeneratedStructTypes.ToDictionary(s => s.Name),
