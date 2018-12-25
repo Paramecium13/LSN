@@ -10,7 +10,7 @@ using LsnCore.Statements;
 namespace LSNr
 {
 	/// <summary>
-	/// Used internally to keep track of scopes.
+	/// Previously used internally to keep track of scopes.
 	/// </summary>
 	public class Scope : IScope
 	{
@@ -81,7 +81,7 @@ namespace LSNr
 			throw new NotImplementedException();
 		}
 
-		public Variable CreateIteratorVariable(string name, Variable collection, Variable index)
+		public Variable CreateIteratorVariable(string name, IExpression collection, Variable index)
 		{
 			throw new NotImplementedException();
 		}

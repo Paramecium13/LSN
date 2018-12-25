@@ -287,7 +287,7 @@ namespace LSNr.Optimization
 			initPreSt.Label = PopNextLabel();
 			PreStatements.Add(initPreSt);
 			// if (collection is empty) jmp end
-			var length = new MethodCall(fc.Collection.Type.Methods["Length"], new IExpression[] { fc.Collection.AccessExpression });
+			var length = new MethodCall(fc.Collection.Type.Type.Methods["Length"], new IExpression[] { fc.Collection });
 			var stCond = new BinaryExpression(length, new LsnValue(0), BinaryOperation.Equal, BinaryOperationArgsType.Int_Int);
 			var preCheck = new PreStatement(new ConditionalJumpStatement(stCond)) { Target = endLabel };
 

@@ -46,9 +46,9 @@ fn HelloRanges(val:int)
 fn GetNames(dogs : Vector<Dog>) -> Vector<string>
 {
 	let names = new List<string>();
-	for(i = 0` i < dogs.Length()` i = i + 1)
+	foreach dog in dogs
 	{
-		names.Add(dogs[i].Name);
+		names.Add(dog.Name);
 	}
 	return names.ToVector();
 }
