@@ -688,7 +688,6 @@ namespace LSNr
 			return new LsnResourceThing(GetTypeIds())
 			{
 				Functions = MyFunctions.ToDictionary(p=> p.Key, p => (Function)p.Value),
-				Includes = new List<string>(),
 				StructTypes = MyStructTypes,
 				RecordTypes = MyRecordTypes,
 				Usings = Usings,

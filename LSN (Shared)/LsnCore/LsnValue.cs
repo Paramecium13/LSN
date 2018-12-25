@@ -33,16 +33,11 @@ namespace LsnCore
 		public bool BoolValue =>
 			Data == Data ? Math.Abs(Data) > double.Epsilon : Value?.BoolValue ?? false;
 
-
 		/// <summary>
-		/// ...
+		/// The numeric data.
 		/// </summary>
-		private readonly double Data;
+		readonly double Data;
 
-		/// <summary>
-		/// ...
-		/// </summary>
-		private readonly TypeId Id;
 
 		/*/// <summary>
 		/// Unused
@@ -50,16 +45,20 @@ namespace LsnCore
 		public int IntValueB => Data.ToInt32Bitwise();*/
 
 		/// <summary>
-		/// 
+		/// The signed 32-bit integer value
 		/// </summary>
 		public int IntValue => (int)Data;
 
 		/// <summary>
-		/// 
+		/// The double precision floating point value
 		/// </summary>
 		public double DoubleValue => Data;
 
 #if LSNR
+		/// <summary>
+		/// ...
+		/// </summary>
+		private readonly TypeId Id;
 		public TypeId Type => Id;
 #else
 		public TypeId Type => throw new NotImplementedException();
@@ -69,7 +68,9 @@ namespace LsnCore
 		{
 			Data = value;
 			Value = null;
+#if LSNR
 			Id = LsnType.double_.Id;
+#endif
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -77,7 +78,9 @@ namespace LsnCore
 		{
 			Data = value;
 			Value = null;
+#if LSNR
 			Id = LsnType.int_.Id;
+#endif
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -85,7 +88,9 @@ namespace LsnCore
 		{
 			Data = double.NaN;
 			Value = value;
+#if LSNR
 			Id = value.Type;
+#endif
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -93,15 +98,19 @@ namespace LsnCore
 		{
 			Data = value ? 0 : 1;
 			Value = null;
+#if LSNR
 			Id = LsnType.Bool_.Id;
+#endif
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private LsnValue(double d, ILsnValue v)
+		LsnValue(double d, ILsnValue v)
 		{
 			Data = d;
 			Value = v;
+#if LSNR
 			Id = null;
+#endif
 		}
 #if CORE
 		/// <summary>
@@ -178,7 +187,7 @@ namespace LsnCore
 		}
 
 		/// <summary>
-		/// ...
+		/// Integer addition
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -188,7 +197,7 @@ namespace LsnCore
 			=> new LsnValue(a.IntValue + b.IntValue);
 
 		/// <summary>
-		/// 
+		/// Integer subtraction
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -198,7 +207,7 @@ namespace LsnCore
 			=> new LsnValue(a.IntValue - b.IntValue);
 
 		/// <summary>
-		/// 
+		/// Integer multiplication
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -209,7 +218,7 @@ namespace LsnCore
 
 
 		/// <summary>
-		/// 
+		/// Integer division
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -219,7 +228,7 @@ namespace LsnCore
 			=> new LsnValue(a.IntValue / b.IntValue);
 
 		/// <summary>
-		/// 
+		/// Integer modulus
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -229,7 +238,7 @@ namespace LsnCore
 			=> new LsnValue(a.IntValue % b.IntValue);
 
 		/// <summary>
-		/// 
+		/// Integer exponentiation
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -239,7 +248,7 @@ namespace LsnCore
 			=> new LsnValue(Math.Pow(a.IntValue, b.IntValue));
 
 		/// <summary>
-		/// 
+		/// Floating point addition
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -249,7 +258,7 @@ namespace LsnCore
 			=> new LsnValue(a.Data + b.Data);
 
 		/// <summary>
-		/// 
+		/// Floating point subtraction
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -259,7 +268,7 @@ namespace LsnCore
 			=> new LsnValue(a.Data - b.Data);
 
 		/// <summary>
-		/// 
+		/// Floating point multiplication
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -269,7 +278,7 @@ namespace LsnCore
 			=> new LsnValue(a.Data * b.Data);
 
 		/// <summary>
-		/// 
+		/// Floating point division
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -279,7 +288,7 @@ namespace LsnCore
 			=> new LsnValue(a.Data / b.Data);
 
 		/// <summary>
-		/// 
+		/// Floating point modulus
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -289,7 +298,7 @@ namespace LsnCore
 			=> new LsnValue(a.Data % b.Data);
 
 		/// <summary>
-		/// 
+		/// Floating point exponentiation
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>

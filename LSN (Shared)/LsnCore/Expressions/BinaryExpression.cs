@@ -34,6 +34,7 @@ namespace LsnCore.Expressions
 		public BinaryExpression(IExpression left,IExpression right, BinaryOperation operation, BinaryOperationArgsType argTypes)
 		{
 			Left = left; Right = right; Operation = operation; ArgumentTypes = argTypes;
+#if LSNR
 			switch (operation)
 			{
 				case BinaryOperation.LessThan:
@@ -62,10 +63,12 @@ namespace LsnCore.Expressions
 						case BinaryOperationArgsType.Bool_Bool:
 							Type = LsnType.Bool_.Id;
 							break;
+						default:
+							throw new Exception("Unexpected Case");
 					}
 					break;
 			}
-			
+#endif
 		}
 
 #if CORE

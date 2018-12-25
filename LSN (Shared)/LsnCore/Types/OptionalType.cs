@@ -4,6 +4,12 @@ using System.Text;
 
 namespace LsnCore.Types
 {
+	public sealed class NullType : LsnType
+	{
+		public override LsnValue CreateDefaultValue()
+			=> LsnValue.Nil;
+	}
+
 	public sealed class OptionalType : LsnType
 	{
 		public readonly TypeId Contents;

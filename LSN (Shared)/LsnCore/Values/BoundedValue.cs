@@ -15,51 +15,11 @@ namespace LsnCore
 	{
 		T Value { get; }
 	}
-/*
-	/// <summary>
-	/// LSN value that contains a 32 bit integer.
-	/// </summary>
-	[Serializable]
-	public struct IntValue : IBoundValue<int>
-	{
-		public static TypeId id = LsnType.int_.Id;
-		
-		public TypeId Type { get { return id; } }
-		public int Value { get; private set; }
-		public bool BoolValue { get { return true; } }
-
-		public bool IsPure => true;
-
-		public IntValue(int val)
-		{
-			Value = val;
-		}
-
-		public ILsnValue Clone() => new IntValue(Value);
-
-		public ILsnValue Eval(IInterpreter i) => this;
-		public IExpression Fold() => this;
-		public bool IsReifyTimeConst() => true;
-
-		public void Replace(IExpression oldExpr, IExpression newExpr){}
-
-		public bool Equals(IExpression other)
-		{
-			var e = other as IBoundValue<int>;
-			if (e == null) return false;
-			return e.Value == Value;
-		}
-
-		public static explicit operator int(IntValue v) => v.Value;
-		public static explicit operator double(IntValue v) => v.Value;
-
-		public static explicit operator DoubleValue(IntValue v) => new DoubleValue(v.Value);
-	}*/
 
 	/// <summary>
 	/// LSN value that contains a string, is effectively passed by reference.
 	/// </summary>
-	public class StringValue : IBoundValue<string>
+	public sealed class StringValue : IBoundValue<string>
 	{
 		private static readonly TypeId id = LsnType.string_.Id;
 
@@ -120,86 +80,15 @@ namespace LsnCore
 			writer.Write(resourceSerializer.TableConstant(this));
 		}
 	}
-	/*
-	/// <summary>
-	/// LSN value that contains a Double.
-	/// </summary>
-	[Serializable]
-	public struct DoubleValue : IBoundValue<double>
-	{
-		public static TypeId id = LsnType.double_.Id;
-
-		public TypeId Type { get { return id; } }
-
-		public double Value { get; private set; }
-		public bool BoolValue { get { return true; } }
-
-		public bool IsPure => true;
-
-		public DoubleValue(double val)
-		{
-			Value = val;
-		}
-		public ILsnValue Clone() => new DoubleValue(Value);
-
-		public ILsnValue Eval(IInterpreter i) => this;
-		public IExpression Fold() => this;
-		public bool IsReifyTimeConst() => true;
-
-
-		public static explicit operator double(DoubleValue v) => v.Value;
-
-		public static explicit operator DoubleValue(double v) => new DoubleValue(v);
-
-		public void Replace(IExpression oldExpr, IExpression newExpr) { }
-
-		public bool Equals(IExpression other)
-		{
-			var e = other as IBoundValue<double>;
-			if (e == null) return false;
-			return e.Value == Value;
-		}
-	}*/
 
 	/// <summary>
-	/// 
+	/// ...
 	/// </summary>
-	[Serializable]
 	public static class LsnBoolValue
 	{
-		private static LsnValue True = new LsnValue(1);
-		private static LsnValue False = LsnValue.Nil;
+		static readonly LsnValue True = new LsnValue(1);
+		static readonly LsnValue False = LsnValue.Nil;
 		public static LsnValue GetBoolValue(bool val)
 			=> val? True : False;
-
-		/*public bool IsPure => true;
-
-		public static TypeId id = LsnType.Bool_.Id;
-
-
-		public TypeId Type { get { return id; } }
-
-		public bool Value { get; private set; }
-		public bool BoolValue { get { return Value; } }
-
-		private LsnBoolValue(bool val)
-		{
-			Value = val;
-		}
-
-		public ILsnValue Clone() => this;
-		public ILsnValue Eval(IInterpreter i) => this;
-		public IExpression Fold() => this;
-		public bool IsReifyTimeConst() => true;
-
-
-		public void Replace(IExpression oldExpr, IExpression newExpr) { }
-
-		public bool Equals(IExpression other)
-		{
-			var e = other as IBoundValue<bool>;
-			if (e == null) return false;
-			return e.Value == Value;
-		}*/
 	}
 }

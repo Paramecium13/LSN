@@ -94,10 +94,6 @@ namespace LsnCore
 				writer.Write((byte)1);
 				writer.Write((ulong)0);
 
-				writer.Write((ushort)Includes.Count); // Includes
-				foreach (var inc in Includes)
-					writer.Write(inc);
-
 				writer.Write((ushort)Usings.Count); // Usings
 				foreach (var u in Usings)
 					writer.Write(u);
@@ -196,11 +192,6 @@ namespace LsnCore
 				if (features != 0)
 					throw new ApplicationException();
 
-				var nIncludes = reader.ReadUInt16();
-				var includes = new List<string>(nIncludes);
-				for (int i = 0; i < nIncludes; i++)
-					includes.Add(reader.ReadString());
-
 				var nUsings = reader.ReadUInt16();
 				var usings = new List<string>(nUsings);
 				for (int i = 0; i < nUsings; i++)
@@ -219,7 +210,6 @@ namespace LsnCore
 				var typeIds = resourceDeserializer.LoadTypeIds(reader);
 				res = new LsnResourceThing(typeIds)
 				{
-					Includes = includes,
 					Usings = usings
 				};
 				var typeIdContainer = new TypeIdContainer(typeIds);
