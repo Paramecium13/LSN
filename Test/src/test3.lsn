@@ -37,7 +37,7 @@ fn bar(val: int)-> Range
 
 fn HelloRanges(val:int)
 {
-	foreach i in bar(val)
+	for i in bar(val)
 	{
 		say i;
 	}
@@ -46,7 +46,7 @@ fn HelloRanges(val:int)
 fn GetNames(dogs : Vector<Dog>) -> Vector<string>
 {
 	let names = new List<string>();
-	foreach dog in dogs
+	for dog in dogs
 	{
 		names.Add(dog.Name);
 	}

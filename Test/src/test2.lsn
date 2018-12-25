@@ -145,12 +145,6 @@ fn Distance(a:Point,b:Point)-> double
 	return Hypot(a.X-b.X,a.Y-b.Y);
 }
 
-
-// for( i = 0 ` a ` a)
-
-
-
-
 fn ToCat(dog:Dog) -> Cat
 {
 	//return new Cat(Age:dog.Age,Name:dog.Name);
@@ -168,7 +162,7 @@ fn PathDistance(path:Vector<Point>)-> double
 {
 	let mut sum = 0.0;
 	let mut point = path[0];
-	foreach i in 1..path.Length()-1
+	for i in 1..path.Length()-1
 	{
 		sum = sum + Distance(point,path[i]);
 		point = path[i];
