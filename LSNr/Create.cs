@@ -76,7 +76,7 @@ namespace LSNr
 				// {"when", condition, :, title, ->}
 				// validate
 				if (res.tokens.Length != 5 || res.tokens[1].Type != TokenType.Substitution || res.tokens[3].Type != TokenType.Substitution)
-					throw new LsnrParsingException(head[0], "Improperly formatted conditional choice.", script.Path);
+					throw new LsnrParsingException(head[0], "Improperly formatted conditional choice.\r\n Proper format: when 'cond' : 'label' -> {...", script.Path);
 				if (res.tokens[4].Value != "->")
 					//throw new LsnrParsingException(head[0], "Improperly formatted conditional choice: must end in '->'.", script.Path);
 					throw LsnrParsingException.UnexpectedToken(res.tokens[4], "->", script.Path);

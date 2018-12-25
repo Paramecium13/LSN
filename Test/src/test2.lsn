@@ -5,6 +5,18 @@ record Cat {Age:int, Name:string}
 
 record Dog {Age: int, Name:string}
 
+fn Conv(a : int, b : int)
+{
+	choice
+	{
+		"bye" -> {
+			say "bye";
+		}
+		when (a > b) : "x" -> { say "big";}
+		"hello" -> { say "world";}
+	}
+}
+
 fn Test(x : double) -> int
 {
 	if (PercentChance(Random))
