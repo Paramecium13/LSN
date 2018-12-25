@@ -103,7 +103,7 @@ namespace LSNr
 			return v;
 		}
 
-		public Variable CreateIteratorVariable(string name, Variable index, Variable collection)
+		public Variable CreateIteratorVariable(string name, Variable index, IExpression collection)
 		{
 			var v = new Variable(name, index, collection);
 			Variables.Add(v);

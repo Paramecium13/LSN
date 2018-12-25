@@ -87,14 +87,14 @@ namespace LSNr
 			Index = index; _AccessExpression = new VariableExpression(Index, type.Id, this);
 		}
 
-		public Variable(string name, Variable indexVariable, Variable collectionVariable)
+		public Variable(string name, Variable indexVariable, IExpression collection)
 		{
 			Name = name;
-			Type = (collectionVariable.Type as ICollectionType).ContentsType;
+			Type = (collection.Type.Type as ICollectionType).ContentsType;
 			Mutable = false;
 			Index = -1;
 			_AccessExpression = 
-				new CollectionValueAccessExpression(collectionVariable.AccessExpression, indexVariable.AccessExpression, Type.Id);
+				new CollectionValueAccessExpression(collection, indexVariable.AccessExpression, Type.Id);
 		}
 		/// <summary>
 		/// Is it constant?

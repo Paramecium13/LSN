@@ -188,7 +188,29 @@ namespace LSNr
 				var expr = Express(head.Skip(3), script);
 				if (expr.Type.Type is ICollectionType collType)
 				{
-					throw new NotImplementedException();
+					script.CurrentScope = script.CurrentScope.CreateChild();
+					var index = script.CurrentScope.CreateVariable(vName + " index", LsnType.int_);
+					IExpression collection;
+					AssignmentStatement state = null;
+					if (ForInCollectionLoop.CheckCollectionVariable(expr))
+						collection = expr;
+					else
+					{
+						var collVar = script.CurrentScope.CreateVariable(vName + " collection", expr.Type.Type);
+						collection = collVar.AccessExpression;
+						state = new AssignmentStatement(collVar.Index, expr);
+						collVar.Assignment = state;
+						collVar.AddUser(state);
+						collVar.MarkAsUsed();
+					}
+					var iterator = script.CurrentScope.CreateIteratorVariable(vName, collection, index);
+					iterator.MarkAsUsed();
+					var p = new Parser(body, script);
+					p.Parse();
+					var components = Parser.Consolidate(p.Components);
+					script.CurrentScope = script.CurrentScope.Pop(components);
+					return new ForInCollectionLoop(index, iterator, collection, components)
+					{ Statement = state};
 				}
 				else if (expr.Type.Type == RangeType.Instance)
 				{
@@ -204,7 +226,7 @@ namespace LSNr
 						case RangeExpression rExp:
 							if (rExp.Start is LsnValue v1)
 							{
-								loop.Start = new LsnValue(v1.IntValue - 1);
+								loop.Start = new LsnValue(v1.IntValue);
 								// statement for end...
 								var endVar = script.CurrentScope.CreateVariable("# " + vName, LsnType.int_);
 								endVar.MarkAsUsed();
@@ -217,18 +239,17 @@ namespace LSNr
 							else if (rExp.End is LsnValue v2)
 							{
 								loop.End = v2;
-								loop.Start = new BinaryExpression(rExp.Start,new LsnValue(1), BinaryOperation.Difference, BinaryOperationArgsType.Int_Int);
+								loop.Start = rExp.Start;
 							}
 							else goto default;
 							break;
 						case LsnValue val:
 							var range = val.Value as RangeValue;
-							loop.Start = new LsnValue(range.Start - 1);
+							loop.Start = new LsnValue(range.Start);
 							loop.End = new LsnValue(range.End);
 							break;
 						case VariableExpression v:
-							loop.Start = new BinaryExpression(new FieldAccessExpression(v, 0), new LsnValue(1),
-								BinaryOperation.Difference, BinaryOperationArgsType.Int_Int);
+							loop.Start = new FieldAccessExpression(v, 0);
 							loop.End = new FieldAccessExpression(v, 1);
 							v.Variable.AddUser(loop.Start);
 							v.Variable.AddUser(loop.End);
@@ -241,8 +262,7 @@ namespace LSNr
 							rVar.Assignment = st;
 							loop.Statement = st;
 							
-							loop.Start = new BinaryExpression(new FieldAccessExpression(rVar.AccessExpression, 0), new LsnValue(1),
-								BinaryOperation.Difference, BinaryOperationArgsType.Int_Int);
+							loop.Start = new FieldAccessExpression(rVar.AccessExpression, 0);
 							loop.End = new FieldAccessExpression(rVar.AccessExpression, 1);
 							rVar.AddUser(loop.Start);
 							rVar.AddUser(loop.End);

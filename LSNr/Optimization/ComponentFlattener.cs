@@ -14,7 +14,7 @@ namespace LSNr.Optimization
 	{
 		private readonly List<PreStatement> PreStatements = new List<PreStatement>();
 
-		private readonly Stack<string> InnerMostLoopStartLabels = new Stack<string>();
+		private readonly Stack<string> InnerMostLoopContinueLabels = new Stack<string>();
 
 		private readonly Stack<string> InnerMostLoopEndLabels = new Stack<string>();
 
@@ -93,7 +93,7 @@ namespace LSNr.Optimization
 			preSt.Label = PopNextLabel();
 			PreStatements.Add(preSt);
 
-			InnerMostLoopStartLabels.Push(cndLabel);
+			InnerMostLoopContinueLabels.Push(cndLabel);
 			InnerMostLoopEndLabels.Push(endLabel);
 
 			Walk(wl.Body);
@@ -103,7 +103,7 @@ namespace LSNr.Optimization
 
 			NextLabel = endLabel;
 
-			InnerMostLoopStartLabels.Pop();
+			InnerMostLoopContinueLabels.Pop();
 			InnerMostLoopEndLabels.Pop();
 		}
 
@@ -122,7 +122,7 @@ namespace LSNr.Optimization
 			{ Label = cndLabel, Target = endLabel };    // Jump to EndLabel if cnd is false
 			PreStatements.Add(cndPreSt);
 
-			InnerMostLoopStartLabels.Push(cndLabel);
+			InnerMostLoopContinueLabels.Push(cndLabel);
 			InnerMostLoopEndLabels.Push(endLabel);
 
 			Walk(f.Body);
@@ -135,7 +135,7 @@ namespace LSNr.Optimization
 
 			NextLabel = endLabel;
 
-			InnerMostLoopStartLabels.Pop();
+			InnerMostLoopContinueLabels.Pop();
 			InnerMostLoopEndLabels.Pop();
 		}
 
@@ -196,7 +196,7 @@ namespace LSNr.Optimization
 			{
 				preSt = new PreStatement(new JumpStatement())
 				{
-					Target = InnerMostLoopStartLabels.Peek()
+					Target = InnerMostLoopContinueLabels.Peek()
 				};
 			}
 			else
@@ -213,6 +213,8 @@ namespace LSNr.Optimization
 		
 		protected override void WalkForInRangeLoop(ForInRangeLoop fr)
 		{
+			if (fr.Start is LsnValue start && fr.End is LsnValue end && start.IntValue > end.IntValue)
+				return;
 			var index = ForLoopCount++;
 			var startLabel = "For" + index.ToString();
 			var endLabel = "EndFor" + index.ToString();
@@ -228,16 +230,17 @@ namespace LSNr.Optimization
 			initPreSt.Label = PopNextLabel();
 			PreStatements.Add(initPreSt);
 					// [label?] init var
-			var startCondExpr = new BinaryExpression(fr.Iterator.AccessExpression, fr.End,
-				BinaryOperation.GreaterThan, BinaryOperationArgsType.Int_Int);
-			var startCond = new PreStatement(new ConditionalJumpStatement(startCondExpr))
-			{
-				Target = endLabel
-			};
-			PreStatements.Add(startCond);
+			if (!(fr.Start is LsnValue start1 && fr.End is LsnValue end1 && start1.IntValue <= end1.IntValue))
+			{	
+				// Don't make a pre check if the range is constant.
+				var startCondExpr = new BinaryExpression(fr.Iterator.AccessExpression, fr.End,
+					BinaryOperation.GreaterThan, BinaryOperationArgsType.Int_Int);
+				var startCond = new PreStatement(new ConditionalJumpStatement(startCondExpr)) { Target = endLabel };
+				PreStatements.Add(startCond);
 					// if(not in range) jmp [end]
+			}
 
-			InnerMostLoopStartLabels.Push(startLabel);
+			InnerMostLoopContinueLabels.Push(continueLabel);
 			InnerMostLoopEndLabels.Push(endLabel);
 
 			NextLabel = startLabel;
@@ -269,7 +272,7 @@ namespace LSNr.Optimization
 		protected override void WalkForInCollectionLoop(ForInCollectionLoop fc)
 		{
 			var index = ForLoopCount++;
-			var cndLabel = "For" + index.ToString();
+			var startLabel = "For" + index.ToString();
 			var endLabel = "EndFor" + index.ToString();
 			var continueLabel = "ContinueFor" + index.ToString();
 
@@ -284,12 +287,33 @@ namespace LSNr.Optimization
 			initPreSt.Label = PopNextLabel();
 			PreStatements.Add(initPreSt);
 			// if (collection is empty) jmp end
-			
-			// [start] Body
-			// index++
-			// if (index < collection.length) jmp [start]
-			// [end] ...
+			var length = new MethodCall(fc.Collection.Type.Methods["Length"], new IExpression[] { fc.Collection.AccessExpression });
+			var stCond = new BinaryExpression(length, new LsnValue(0), BinaryOperation.Equal, BinaryOperationArgsType.Int_Int);
+			var preCheck = new PreStatement(new ConditionalJumpStatement(stCond)) { Target = endLabel };
 
+			// 
+			InnerMostLoopContinueLabels.Push(continueLabel);
+			InnerMostLoopEndLabels.Push(endLabel);
+
+			NextLabel = startLabel;
+			// [start] Body
+			Walk(fc.Body);
+			//if(NextLabel == null) add NOP.
+			
+			// index++
+			var incrStatement = new AssignmentStatement(fc.Index.Index,
+				new BinaryExpression(fc.Index.AccessExpression, new LsnValue(1), BinaryOperation.Sum,
+				BinaryOperationArgsType.Int_Int));
+			PreStatements.Add(new PreStatement(incrStatement) { Label = continueLabel });
+
+			// if (index < collection.length) jmp [start]
+			var condExpr = new BinaryExpression(fc.Index.AccessExpression, length,
+				BinaryOperation.LessThan, BinaryOperationArgsType.Int_Int);
+			var jumpBack = new PreStatement(new ConditionalJumpStatement(condExpr)) { Target = startLabel };
+			PreStatements.Add(jumpBack);
+			
+			// [end] ...
+			NextLabel = endLabel;
 		}
 	}
 }

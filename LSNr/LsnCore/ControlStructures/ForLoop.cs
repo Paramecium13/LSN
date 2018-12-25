@@ -39,17 +39,16 @@ namespace LsnCore.ControlStructures
 
 	public class ForInCollectionLoop : ControlStructure
 	{
-		public Variable Index;
-		public Variable Iterator;
-		public Variable Collection;
+		public Variable Index { get; private set; }
+		public IExpression Collection { get; private set; }
 
-		public IExpression IndexExpr;
+		public Statement Statement { get; set; }
 
 		public readonly List<Component> Body;
 
-		public ForInCollectionLoop(Variable index, Variable iterator, Variable collection, IEnumerable<Component> body)
+		public ForInCollectionLoop(Variable index, Variable iterator, IExpression collection, IEnumerable<Component> body)
 		{
-			Index = index; Iterator = iterator; Collection = collection; Body = body.ToList();
+			Index = index; Collection = collection; Body = body.ToList();
 		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
@@ -57,7 +56,34 @@ namespace LsnCore.ControlStructures
 			foreach (var item in Body)
 				item.Replace(oldExpr, newExpr);
 		}
+
+		/// <summary>
+		/// Can this expression be used as is or does it need to be stored in a variable
+		/// </summary>
+		/// <returns></returns>
+		internal static bool CheckCollectionVariable(IExpression expr, int recCount = 0)
+		{
+			if (recCount > 8) return false;
+			switch (expr)
+			{
+				case FieldAccessExpression f:
+					return CheckCollectionVariable(f.Value, recCount + 1);
+				case VariableExpression varExp:
+				case GlobalVariableAccessExpression gVar:
+				case UniqueScriptObjectAccessExpression unique:
+				case LsnValue val:
+					return true;
+				case PropertyAccessExpression prop:
+					return CheckCollectionVariable(prop.ScriptObject, recCount + 1);
+				case CollectionValueAccessExpression coll:
+					return CheckCollectionVariable(coll.Index, recCount + 1)
+						&& CheckCollectionVariable(coll.Collection, recCount + 1);
+				default:
+					return false;
+			}
+		}
 	}
+
 	public class ForInRangeLoop : ControlStructure
 	{
 		internal readonly Variable		Iterator;

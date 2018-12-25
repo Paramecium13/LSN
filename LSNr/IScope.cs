@@ -10,7 +10,7 @@ namespace LSNr
 		Variable CreateVariable(string name, bool mutable, IExpression init);
 		Variable CreateVariable(string name, LsnType type);
 		Variable CreateVariable(Parameter param);
-		Variable CreateIteratorVariable(string name, Variable collection, Variable index);
+		Variable CreateIteratorVariable(string name, IExpression collection, Variable index);
 		Variable GetVariable(string name);
 		bool HasVariable(string name);
 		bool VariableExists(string name);

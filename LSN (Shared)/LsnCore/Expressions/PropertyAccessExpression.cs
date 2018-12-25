@@ -12,7 +12,11 @@ namespace LsnCore.Expressions
 {
 	public sealed class PropertyAccessExpression : IExpression
 	{
-		private IExpression ScriptObject;
+#if LSNR
+		internal
+#endif
+		IExpression ScriptObject;
+
 		internal readonly int Index;
 
 		public bool IsPure => false;
