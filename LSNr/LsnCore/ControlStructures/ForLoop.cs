@@ -43,6 +43,8 @@ namespace LsnCore.ControlStructures
 		public Variable Iterator;
 		public Variable Collection;
 
+		public IExpression IndexExpr;
+
 		public readonly List<Component> Body;
 
 		public ForInCollectionLoop(Variable index, Variable iterator, Variable collection, IEnumerable<Component> body)
@@ -58,9 +60,7 @@ namespace LsnCore.ControlStructures
 	}
 	public class ForInRangeLoop : ControlStructure
 	{
-		internal readonly Variable			Iterator;
-
-
+		internal readonly Variable		Iterator;
 		public readonly List<Component> Body;
 
 		internal IExpression Start { get; set; }
@@ -70,6 +70,7 @@ namespace LsnCore.ControlStructures
 		// note to flattener:
 		// if not null, place this before all other statements from this component.
 		internal Statement Statement { get; set; }
+		// note from flattener: It has been done.
 
 		internal ForInRangeLoop(Variable index, IEnumerable<Component> body)
 		{

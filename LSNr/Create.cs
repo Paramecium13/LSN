@@ -204,7 +204,7 @@ namespace LSNr
 						case RangeExpression rExp:
 							if (rExp.Start is LsnValue v1)
 							{
-								loop.Start = v1;
+								loop.Start = new LsnValue(v1.IntValue - 1);
 								// statement for end...
 								var endVar = script.CurrentScope.CreateVariable("# " + vName, LsnType.int_);
 								endVar.MarkAsUsed();
@@ -212,26 +212,23 @@ namespace LSNr
 								endVar.Assignment = st1;
 								loop.Statement = st1;
 								endVar.AddUser(st1);
+								loop.End = endVar.AccessExpression;
 							}
 							else if (rExp.End is LsnValue v2)
 							{
 								loop.End = v2;
-								// statement for start...
-								var stVar = script.CurrentScope.CreateVariable("# " + vName, LsnType.int_);
-								stVar.MarkAsUsed();
-								var st2 = new AssignmentStatement(stVar.Index, rExp.Start);
-								stVar.Assignment = st2;
-								loop.Statement = st2;
-								stVar.AddUser(st2);
+								loop.Start = new BinaryExpression(rExp.Start,new LsnValue(1), BinaryOperation.Difference, BinaryOperationArgsType.Int_Int);
 							}
+							else goto default;
 							break;
 						case LsnValue val:
 							var range = val.Value as RangeValue;
-							loop.Start = new LsnValue(range.Start);
+							loop.Start = new LsnValue(range.Start - 1);
 							loop.End = new LsnValue(range.End);
 							break;
 						case VariableExpression v:
-							loop.Start = new FieldAccessExpression(v, 0);
+							loop.Start = new BinaryExpression(new FieldAccessExpression(v, 0), new LsnValue(1),
+								BinaryOperation.Difference, BinaryOperationArgsType.Int_Int);
 							loop.End = new FieldAccessExpression(v, 1);
 							v.Variable.AddUser(loop.Start);
 							v.Variable.AddUser(loop.End);
@@ -243,17 +240,17 @@ namespace LSNr
 							rVar.AddUser(st);
 							rVar.Assignment = st;
 							loop.Statement = st;
-
-							loop.Start = new FieldAccessExpression(rVar.AccessExpression, 0);
+							
+							loop.Start = new BinaryExpression(new FieldAccessExpression(rVar.AccessExpression, 0), new LsnValue(1),
+								BinaryOperation.Difference, BinaryOperationArgsType.Int_Int);
 							loop.End = new FieldAccessExpression(rVar.AccessExpression, 1);
+							rVar.AddUser(loop.Start);
+							rVar.AddUser(loop.End);
 							break;
 					}
 					return loop;
 				}
 				else throw new LsnrParsingException(head[3], "...", script.Path);
-
-
-
 			}
 			if(n > 1 && head.Last().Value == "->")
 			{

@@ -54,10 +54,21 @@ namespace LSNr.Optimization
 				case ForInRangeLoop fr:
 					WalkForInRangeLoop(fr);
 					return;
+				case ForInCollectionLoop fc:
+					WalkForInCollectionLoop(fc);
+					return;
 				default:
 					throw new NotImplementedException();
 			}
 		}
+
+		protected virtual void WalkForInCollectionLoop(ForInCollectionLoop fc)
+		{
+			View(fc);
+			Walk(fc.Body);
+		}
+
+		protected virtual void View(ForInCollectionLoop fc) {}
 
 		protected virtual void WalkForInRangeLoop(ForInRangeLoop fr)
 		{
@@ -139,9 +150,6 @@ namespace LSNr.Optimization
 
 		protected virtual void View(WhileLoop wl) { }
 
-		protected virtual void View(Statement s)
-		{
-
-		}
+		protected virtual void View(Statement s){}
 	}
 }
