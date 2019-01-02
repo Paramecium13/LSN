@@ -84,7 +84,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\LsnListType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\LsnReferenceType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\LsnType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\OptionalType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\OptionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\Property.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\RangeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\RecordType.cs" />

@@ -110,7 +110,7 @@ HostInterface IEnemy
 	fn GetHP() -> int;
 	fn Kill();
 	
-	fn GetFriends() -> Optional<Vector<IEnemy>>;
+	fn GetFriends() -> Option<Vector<IEnemy>>;
 }
 
 

@@ -28,6 +28,11 @@ namespace LSNr
 		{
 			var h = head[0].Value;
 			var n = head.Count;
+			if(h == "if" && (n > 1 && head[1].Value == "let"))
+			{
+
+				return null;
+			}
 			if (h == "if")
 			{
 				var cnd = Express(head.Skip(1).ToList(), script);

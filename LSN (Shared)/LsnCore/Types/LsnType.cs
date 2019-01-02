@@ -109,7 +109,7 @@ namespace LsnCore
 			{
 				VectorGeneric.Instance,
 				LsnListGeneric.Instance,
-				OptionalGeneric.Instance
+				OptionGeneric.Instance
 			};
 
 		public virtual bool IsBounded { get { return false; } }

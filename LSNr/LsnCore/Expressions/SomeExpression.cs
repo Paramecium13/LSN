@@ -15,7 +15,7 @@ namespace LsnCore.Expressions
 		internal SomeExpression(IExpression contents)
 		{
 			Contents = contents;
-			Type = OptionalGeneric.Instance.GetType(new TypeId[] { Contents.Type }).Id;
+			Type = OptionGeneric.Instance.GetType(new TypeId[] { Contents.Type }).Id;
 		}
 
 		public override bool IsPure => Contents.IsPure;

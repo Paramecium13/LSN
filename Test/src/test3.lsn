@@ -77,7 +77,7 @@ unique ScriptClass TestA
 	
 	fn abstract ValueChange()->();
 	
-	fn abstract Foo()->Optional<string>;
+	fn abstract Foo()->Option<string>;
 	
 	fn ChangeA()
 	{
@@ -102,7 +102,7 @@ unique ScriptClass TestA
 			Value = Value + 5;
 		}
 		
-		fn Foo() -> Optional<string>
+		fn Foo() -> Option<string>
 		{
 			return none;
 		}
@@ -118,7 +118,7 @@ unique ScriptClass TestA
 			Value = Value - 3;
 		}
 		
-		fn Foo() -> Optional<string>
+		fn Foo() -> Option<string>
 		{
 			let mut str = some("foo");
 			if(Value < 100){

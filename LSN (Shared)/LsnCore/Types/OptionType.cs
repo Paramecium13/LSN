@@ -18,14 +18,14 @@ namespace LsnCore.Types
 			=> LsnValue.Nil;
 	}
 
-	public sealed class OptionalType : LsnType
+	public sealed class OptionType : LsnType
 	{
 		public readonly TypeId Contents;
 
-		public OptionalType(TypeId contents)
+		public OptionType(TypeId contents)
 		{
 			Contents = contents;
-			Id = new TypeId("Optional`" + contents.Name);
+			Id = new TypeId("Option`" + contents.Name);
 		}
 
 		public override LsnValue CreateDefaultValue() => LsnValue.Nil;
@@ -34,17 +34,17 @@ namespace LsnCore.Types
 			type == NullType.Instance || Contents.Type.Subsumes(type) ? true : base.Subsumes(type);
 	}
 
-	public sealed class OptionalGeneric : GenericType
+	public sealed class OptionGeneric : GenericType
 	{
-		public static readonly OptionalGeneric Instance = new OptionalGeneric();
+		public static readonly OptionGeneric Instance = new OptionGeneric();
 
-		public override string Name => "Optional";
+		public override string Name => "Option";
 
 		protected override LsnType CreateType(TypeId[] types)
 		{
 			if (types.Length != 1)
-				throw new ArgumentException("Optional types must have exactly one generic parameter.");
-			return new OptionalType(types[0]);
+				throw new ArgumentException("Option types must have exactly one generic parameter.");
+			return new OptionType(types[0]);
 		}
 	}
 }
