@@ -24,6 +24,16 @@ namespace LSNr.LssParser
 				case TokenType.Integer:
 				case TokenType.String:
 					return true;
+				case TokenType.Keyword:
+					switch (token.Value)
+					{
+						case "true":
+						case "false":
+						case "none":
+							return true;
+						default:
+							return false;
+					}
 				default:
 					return false;
 			}
@@ -44,6 +54,15 @@ namespace LSNr.LssParser
 					return (new LsnValue(token.IntValue), index + 1, 0);
 				case TokenType.String:
 					return (new LsnValue(new StringValue(token.Value)), index + 1, 0);
+				case TokenType.Keyword:
+					switch (token.Value)
+					{
+						case "true"	: return (LsnBoolValue.GetBoolValue(true) , index + 1, 0);
+						case "false": return (LsnBoolValue.GetBoolValue(false), index + 1, 0);
+						case "none"	: return (LsnValue.Nil, index + 1, 0);
+						default:
+							throw new ApplicationException();
+					}
 				default:
 					throw new ApplicationException();
 			}
