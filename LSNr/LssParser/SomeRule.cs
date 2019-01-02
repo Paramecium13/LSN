@@ -50,7 +50,6 @@ namespace LSNr.LssParser
 			// ^index	^index+1			^j
 
 			return (new SomeExpression(ExpressionParser.Parse(ls.ToArray(), script, substitutions)), j + 1, 0);
-			throw new NotImplementedException();
 		}
 	}
 }

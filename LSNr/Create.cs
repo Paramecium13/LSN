@@ -28,10 +28,41 @@ namespace LSNr
 		{
 			var h = head[0].Value;
 			var n = head.Count;
-			if(h == "if" && (n > 1 && head[1].Value == "let"))
+			if (h == "if" && (n > 1 && head[1].Value == "let"))
 			{
+				// if  let  x  =  ...    {
+				// 0   1    2  3  [4,n)  n
+				if (n < 5 || head[3].Value != "=")
+					throw new LsnrParsingException(head[1], "improperly formatted 'if let' structure.", script.Path);
+				if (head[2].Value == "mut" && head[3].Value != "=")
+					throw new LsnrParsingException(head[2], "cannot declare the variable of an if let structure as mutable.", script.Path);
+				var vName = head[2].Value;
+				var exprTokens = head.CreateSliceAt(4);
+				var expr = Express(exprTokens, script, null);
+				var exprType = expr.Type.Type as OptionType;
+				if (exprType == null)
+					throw new LsnrParsingException(head[4], "The value of an if let structure must be of an option type.", script.Path);
 
-				return null;
+				script.CurrentScope = script.CurrentScope.CreateChild();
+				Variable variable;
+				AssignmentStatement assignment = null;
+				if (ForInCollectionLoop.CheckCollectionVariable(expr))
+				{
+					variable = script.CurrentScope.CreateMaskVariable(vName, new HiddenCastExpression(expr, exprType.Contents), exprType.Contents.Type);
+				}
+				else
+				{
+					variable = script.CurrentScope.CreateVariable(vName, exprType.Contents.Type);
+					assignment = new AssignmentStatement(variable.Index, new HiddenCastExpression(expr, exprType.Contents));
+					variable.Assignment = assignment;
+				}
+				var p = new Parser(body, script);
+				p.Parse();
+				var components = new List<Component>();
+				if(assignment != null) components.Add(assignment);
+				components.AddRange(Parser.Consolidate(p.Components));
+
+				return new IfControl(expr, components);
 			}
 			if (h == "if")
 			{

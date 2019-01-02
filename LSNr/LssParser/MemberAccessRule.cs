@@ -31,7 +31,7 @@ namespace LSNr.LssParser
 
 			var left = tokens[index - 1];
 			var right = tokens[index + 1];
-			var rightStr = right.Value;
+			var memberName = right.Value;
 			IExpression leftExpr;
 			switch (left.Type)
 			{
@@ -60,9 +60,9 @@ namespace LSNr.LssParser
 
 			if (hiType != null) // It's a host interface method call.
 			{
-				if (!hiType.HasMethod(rightStr))
+				if (!hiType.HasMethod(memberName))
 					throw new LsnrParsingException(right, "...", script.Path);
-				var def = hiType.MethodDefinitions[rightStr];
+				var def = hiType.MethodDefinitions[memberName];
 				IExpression[] args = null;
 
 				if (def.Parameters.Count == 0)
@@ -91,17 +91,17 @@ namespace LSNr.LssParser
 
 			else if (scType != null) // It could be a property access expression
 			{
-				var props = scType.Properties.Where(p => p.Name == rightStr).ToArray();
+				var props = scType.Properties.Where(p => p.Name == memberName).ToArray();
 				if(props.Length != 0)
 				{
-					expr = new PropertyAccessExpression(leftExpr, scType.GetPropertyIndex(rightStr));
+					expr = new PropertyAccessExpression(leftExpr, scType.GetPropertyIndex(memberName));
 					nextIndex = index + 2;
 				}
 			}
 
 			if (expr == null && fieldType != null) // It could be a field access expression.
 			{
-				var arr = fieldType.FieldsB.Where(f => f.Name == rightStr).ToArray();
+				var arr = fieldType.FieldsB.Where(f => f.Name == memberName).ToArray();
 				if (arr.Length != 0)
 				{
 					nextIndex = index + 2;
@@ -113,17 +113,17 @@ namespace LSNr.LssParser
 			{
 				var args = new IExpression[] { leftExpr };
 				var type = leftExpr.Type.Type;
-				if (!type.Methods.ContainsKey(rightStr))
+				if (!type.Methods.ContainsKey(memberName))
 					throw new LsnrParsingException(right, "...", script.Path);
 
-				var method = type.Methods[rightStr];
-				if (method.Parameters.Count == 0 && index + 2 < tokens.Count && tokens[index + 2].Value == "(")
+				var method = type.Methods[memberName];
+				if (method.Parameters.Count == 1 && index + 2 < tokens.Count && tokens[index + 2].Value == "(")
 				{
 					if (index + 3 >= tokens.Count || tokens[index + 3].Value != ")")
 						throw new LsnrParsingException(tokens[index + 2], "...", script.Path);
 					nextIndex = index + 4; // Skip over the parenthesis.
 				}
-				else
+				else if(method.Parameters.Count > 1)
 				{
 					var x = Create.CreateArgList(index + 2, tokens, script);
 					var argTokens = x.argTokens;
@@ -134,8 +134,7 @@ namespace LSNr.LssParser
 					a.AddRange(argTokens.Select(ar => ExpressionParser.Parse(ar, script, substitutions)));
 					args = a.ToArray();
 				}
-				expr = new MethodCall(method, args);
-
+				expr = method.CreateMethodCall(args);
 			}
 
 			return (expr, nextIndex, numLeft);

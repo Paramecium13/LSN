@@ -22,6 +22,13 @@ namespace LsnCore.Utilities
 
 	public static class SliceExtensions
 	{
+		/// <summary>
+		/// Create a slice starting at the given index.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="self"></param>
+		/// <param name="index">The start of the slice</param>
+		/// <returns>A slice starting at the given index</returns>
 		public static ISlice<T> CreateSliceAt<T>(this ISlice<T> self, int index)
 			=> self.CreateSubSlice(index, self.Count - index);
 

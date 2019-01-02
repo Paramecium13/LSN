@@ -93,13 +93,19 @@ namespace LSNr
 			return v;
 		}
 
-
 		public Variable CreateVariable(string name, LsnType type)
 		{
 			var v = new Variable(name, type, NextOffset);
 			Variables.Add(v);
 			if (v.Const())
 				ConstCount++;
+			return v;
+		}
+
+		public Variable CreateMaskVariable(string name, IExpression accessExpression, LsnType type)
+		{
+			var v = new Variable(name, accessExpression, type);
+			Variables.Add(v);
 			return v;
 		}
 

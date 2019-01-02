@@ -15,11 +15,28 @@ namespace LSNr
 		public readonly bool Mutable;
 		public readonly string Name;
 		public readonly LsnType Type;
-		public readonly int Index;
-		private IExpression _AccessExpression;
+		private int _index;
+		public int Index
+		{
+			get { return _index; }
+			set
+			{
+				if(_index != value)
+				{
+					_index = value;
+					if (Assignment != null)
+						Assignment.Index = value;
+					if (AccessExpression is VariableExpression v)
+						v.Index = value;
+					foreach (var re in Reassignments)
+					{
+						re.Index = value;
+					}
+				}
+			}
+		}
 
-		public IExpression AccessExpression
-			=> _AccessExpression;
+		public IExpression AccessExpression { get; private set; }
 
 		public IExpression InitialValue { get; private set; }
 
@@ -41,12 +58,16 @@ namespace LSNr
 		public AssignmentStatement Assignment { get; set; }
 
 		private bool _IsUsed;
+
 		public bool Used { get { return /*Users.Count > 0*/ _IsUsed; } }
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
-		public Variable(string name, bool m, IExpression init)
+		public Variable(string name, IExpression access, LsnType type)
 		{
-			throw new NotImplementedException();
+			Name = name;
+			Type = type;
+			Mutable = false;
+			_index = -1;
+			AccessExpression = access;
 		}
 
 		public Variable(string name, bool m, IExpression init, int index)
@@ -55,15 +76,15 @@ namespace LSNr
 			Type = init.Type.Type;
 			Mutable = m;
 			InitialValue = init;
-			Index = index;
+			_index = index;
 			var e = init.Fold();
 			if (e.IsReifyTimeConst() && !m)
 			{
-				_AccessExpression = e;
-				Index = -1; // This is a constant.
+				AccessExpression = e;
+				_index = -1; // This is a constant.
 			}
 			else
-				_AccessExpression = new VariableExpression(Index, Type.Id, this);
+				AccessExpression = new VariableExpression(Index, Type.Id, this);
 		}
 
 		/// <summary>
@@ -75,8 +96,8 @@ namespace LSNr
 			Name = param.Name;
 			Type = param.Type.Type;
 			Mutable = false;
-			Index = param.Index;
-			_AccessExpression = new VariableExpression(Index, param.Type, this);
+			_index = param.Index;
+			AccessExpression = new VariableExpression(Index, param.Type, this);
 		}
 
 		public Variable(string name, LsnType type, int index)
@@ -84,7 +105,7 @@ namespace LSNr
 			Name = name;
 			Type = type;
 			Mutable = false;
-			Index = index; _AccessExpression = new VariableExpression(Index, type.Id, this);
+			_index = index; AccessExpression = new VariableExpression(Index, type.Id, this);
 		}
 
 		public Variable(string name, Variable indexVariable, IExpression collection)
@@ -92,8 +113,8 @@ namespace LSNr
 			Name = name;
 			Type = (collection.Type.Type as ICollectionType).ContentsType;
 			Mutable = false;
-			Index = -1;
-			_AccessExpression = 
+			_index = -1;
+			AccessExpression =
 				new CollectionValueAccessExpression(collection, indexVariable.AccessExpression, Type.Id);
 		}
 		/// <summary>
@@ -121,8 +142,8 @@ namespace LSNr
 		public void Replace(IExpression newExpr)
 		{
 			foreach (var user in _Users)
-				user.Replace(_AccessExpression, newExpr);
-			_AccessExpression = newExpr;
+				user.Replace(AccessExpression, newExpr);
+			AccessExpression = newExpr;
 		}
 
 		/// <summary>
@@ -132,8 +153,7 @@ namespace LSNr
 		public void ChangeIndex(int newIndex)
 		{
 			if (newIndex == Index) return;
-			if(_AccessExpression is VariableExpression v)
-				v.Index = newIndex;
+			Index = newIndex;
 		}
 
 		public void MarkAsUsed()

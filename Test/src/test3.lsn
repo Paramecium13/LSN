@@ -94,6 +94,15 @@ unique ScriptClass TestA
 		return Value;
 	}
 	
+	fn Talk()
+	{
+		if let str = Foo()
+		{
+			say str;
+		}
+	
+	}
+	
 	auto state StateA
 	{
 		
@@ -135,5 +144,29 @@ unique ScriptClass TestA
 		}
 	}
 	
-	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -265,7 +265,7 @@ namespace LsnCore.Serialization
 							args[i] = ReadExpression(reader);
 						return new MethodCall(GetMethod(typeName, methodName), args);
 					}
-				case ExpressionCode.ScriptObjectMethodCall:
+				/*case ExpressionCode.ScriptObjectMethodCall:
 					{
 						var methodName = reader.ReadString();
 						var numArgs = reader.ReadByte();
@@ -273,7 +273,7 @@ namespace LsnCore.Serialization
 						for (int i = 0; i < numArgs; i++)
 							args[i] = ReadExpression(reader);
 						return new ScriptObjectVirtualMethodCall(args, methodName);
-					}
+					}*/
 				case ExpressionCode.HostInterfaceMethodCall:
 					{
 						var methodName = reader.ReadString();

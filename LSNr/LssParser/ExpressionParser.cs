@@ -103,6 +103,7 @@ namespace LSNr.LssParser
 		{
 			SetupRules(new IExpressionRule[]
 				{ ConstantRule.Rule,
+				SelfMethodCallRule.Rule,
 				new MemberAccessRule(),
 				new PropertyFieldRule(),
 				new VariableExpressionRule(),

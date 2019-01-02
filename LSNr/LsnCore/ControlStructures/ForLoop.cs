@@ -60,6 +60,8 @@ namespace LsnCore.ControlStructures
 		/// <summary>
 		/// Can this expression be used as is or does it need to be stored in a variable
 		/// </summary>
+		/// <param name="expr"></param>
+		/// <param name="recCount"></param>
 		/// <returns></returns>
 		internal static bool CheckCollectionVariable(IExpression expr, int recCount = 0)
 		{
@@ -69,6 +71,7 @@ namespace LsnCore.ControlStructures
 				case FieldAccessExpression f:
 					return CheckCollectionVariable(f.Value, recCount + 1);
 				case VariableExpression varExp:
+					return !varExp.Variable.Mutable;
 				case GlobalVariableAccessExpression gVar:
 				case UniqueScriptObjectAccessExpression unique:
 				case LsnValue val:
