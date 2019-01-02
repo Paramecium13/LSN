@@ -112,8 +112,10 @@ namespace LsnCore
 
 		protected override LsnType CreateType(TypeId[] types)
 		{
-			if (types == null) throw new ArgumentNullException(nameof(types));
-			if (types.Length != 1) throw new ArgumentException("Vector types must have exactly one generic parameter.");
+			if (types == null)
+				throw new ArgumentNullException(nameof(types));
+			if (types.Length != 1)
+				throw new ArgumentException("Vector types must have exactly one generic parameter.");
 			return new VectorType(types[0],GetGenericName(types));
 		}
 

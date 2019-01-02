@@ -100,14 +100,16 @@ namespace LsnCore
 				double_,
 				string_,
 				Bool_,
-				RangeType.Instance
+				RangeType.Instance,
+				NullType.Instance
 			};
 		}
 
 		public static List<GenericType> GetBaseGenerics() => new List<GenericType>
 			{
 				VectorGeneric.Instance,
-				LsnListGeneric.Instance
+				LsnListGeneric.Instance,
+				OptionalGeneric.Instance
 			};
 
 		public virtual bool IsBounded { get { return false; } }

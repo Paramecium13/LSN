@@ -109,6 +109,8 @@ HostInterface IEnemy
 {
 	fn GetHP() -> int;
 	fn Kill();
+	
+	fn GetFriends() -> Optional<Vector<IEnemy>>;
 }
 
 

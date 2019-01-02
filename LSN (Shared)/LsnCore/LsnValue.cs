@@ -109,7 +109,7 @@ namespace LsnCore
 			Data = d;
 			Value = v;
 #if LSNR
-			Id = null;
+			Id = NullType.Instance.Id;
 #endif
 		}
 #if CORE

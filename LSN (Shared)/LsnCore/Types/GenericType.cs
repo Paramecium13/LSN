@@ -12,10 +12,19 @@ namespace LsnCore.Types
 
 		public abstract string Name { get; }
 
+		public virtual bool HasConstNumberOfTypeParams => true;
+
+		public virtual int NumberOfTypeParams => 1;
+
 		protected string GetGenericName(TypeId[] types)
 		{
 			var s = new StringBuilder(Name);
-			foreach(var type in types)
+			if (!HasConstNumberOfTypeParams)
+			{
+				s.Append('`');
+				s.Append(types.Length);
+			}
+			foreach (var type in types)
 			{
 				s.Append('`');
 				s.Append(type.Name);

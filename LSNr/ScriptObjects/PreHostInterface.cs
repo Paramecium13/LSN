@@ -176,7 +176,7 @@ namespace LSNr
 				throw new LsnrParsingException(Tokens[i], $"Error parsing method definition '{name}': Expected ';', received '{Tokens[i].Value}'.", Path);
 
 			if (i > Tokens.Count - 1 || Tokens[i].Value != ";")
-				throw new LsnrParsingException(Tokens[i >= Tokens.Count ? i - 1 : i], $"Error parsing event definition '{name}': Expected ';'.", Path);
+				throw new LsnrParsingException(Tokens[i >= Tokens.Count ? i - 1 : i], $"Error parsing method definition '{name}': Expected ';'.", Path);
 			i++; // 'i' points to the thing after ';'
 
 			return new FunctionSignature(parameters, name, returnType);
