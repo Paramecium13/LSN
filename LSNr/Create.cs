@@ -30,7 +30,7 @@ namespace LSNr
 			var n = head.Count;
 			if (h == "if")
 			{
-				var cnd = Express(head.Skip(2).Take(head.Count - 3).ToList(), script);
+				var cnd = Express(head.Skip(1).ToList(), script);
 				script.CurrentScope = script.CurrentScope.CreateChild();
 				var p = new Parser(body, script);
 				p.Parse();
@@ -38,14 +38,15 @@ namespace LSNr
 				script.CurrentScope = script.CurrentScope.Pop(components);
 				return new IfControl(cnd, components);
 			}
-			if (h == "elsif")
+			if (h == "elsif" || (h == "else" && head.Count > 2 && head[1].Value == "if"))
 			{
+				var offset = h == "else" ? 1 : 0;
 				script.CurrentScope = script.CurrentScope.CreateChild();
 				var p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
 				script.CurrentScope = script.CurrentScope.Pop(components);
-				return new ElsifControl(Express(head.Skip(1).ToList(),script), components);
+				return new ElsifControl(Express(head.Skip(1 + offset).ToList(),script), components);
 			}
 			if (h == "else")
 			{
@@ -127,12 +128,12 @@ namespace LSNr
 					var components = Parser.Consolidate(p.Components);
 					script.CurrentScope = script.CurrentScope.Pop(components);
 					return new ForInCollectionLoop(index, iterator, collection, components)
-					{ Statement = state};
+					{ Statement = state };
 				}
-				else if (expr.Type.Type == RangeType.Instance)
+				if (expr.Type.Type == RangeType.Instance)
 				{
 					script.CurrentScope = script.CurrentScope.CreateChild();
-					Variable index = script.CurrentScope.CreateVariable(vName,LsnType.int_);
+					var index = script.CurrentScope.CreateVariable(vName, LsnType.int_);
 					var p = new Parser(body, script);
 					p.Parse();
 					var components = Parser.Consolidate(p.Components);
@@ -178,7 +179,7 @@ namespace LSNr
 							rVar.AddUser(st);
 							rVar.Assignment = st;
 							loop.Statement = st;
-							
+
 							loop.Start = new FieldAccessExpression(rVar.AccessExpression, 0);
 							loop.End = new FieldAccessExpression(rVar.AccessExpression, 1);
 							rVar.AddUser(loop.Start);
@@ -264,40 +265,42 @@ namespace LSNr
 				default:
 					break;
 			}
-			if (token != null)
+			switch (token.Type)
 			{
-				switch (token.Type)
+				case TokenType.Float:
+					return new LsnValue(token.DoubleValue);
+				case TokenType.Integer:
+					return new LsnValue(token.IntValue);
+				case TokenType.String:
+					return new LsnValue(new StringValue(token.Value));
+				case TokenType.Substitution:
+					throw new ApplicationException();
+				default:
+					break;
+			}
+
+			switch (val)
+			{
+				case "true":
+					return LsnBoolValue.GetBoolValue(true);
+				case "false":
+					return LsnBoolValue.GetBoolValue(false);
+				case "self":
 				{
-					case TokenType.Float:
-						return new LsnValue(token.DoubleValue);
-					case TokenType.Integer:
-						return new LsnValue(token.IntValue);
-					case TokenType.String:
-						return new LsnValue(new StringValue(token.Value));
-					case TokenType.Substitution:
-						throw new ApplicationException();
+					if (preScrFn == null)
+						throw new LsnrParsingException(token, "Cannot use 'this' outside a script object method or event listener.", script.Path);
+					return script.CurrentScope.GetVariable("self").AccessExpression;
 				}
+				case "host":
+				{
+					if (preScrFn == null)
+						throw new LsnrParsingException(token, "Cannot use 'host' outside a script object method or event listener.", script.Path);
+					return new HostInterfaceAccessExpression(preScrFn.Parent.HostType.Id);
+				}
+				case "none": return LsnValue.Nil;
+				default:
+					throw new LsnrParsingException(token, $"Cannot parse token '{token.Value}' as an expression.", script.Path);
 			}
-
-			if (val == "true")
-				return LsnBoolValue.GetBoolValue(true);
-			if (val == "false")
-				return LsnBoolValue.GetBoolValue(false);
-
-			if (val == "self")
-			{
-				if (preScrFn == null)
-					throw new LsnrParsingException(token, "Cannot use 'this' outside a script object method or event listener.", script.Path);
-				return script.CurrentScope.GetVariable("self").AccessExpression;
-			}
-			if (val == "host")
-			{
-				if (preScrFn == null)
-					throw new LsnrParsingException(token, "Cannot use 'host' outside a script object method or event listener.", script.Path);
-				return new HostInterfaceAccessExpression(preScrFn.Parent.HostType.Id);
-			}
-
-			throw new LsnrParsingException(token, $"Cannot parse token '{token.Value}' as an expression.", script.Path);
 		}
 
 		public static (Token[][] argTokens, int indexOfNextToken) CreateArgList(int indexOfOpen, IReadOnlyList<Token> tokens, IPreScript script)

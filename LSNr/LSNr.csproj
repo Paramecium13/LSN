@@ -117,6 +117,7 @@
     <Compile Include="LsnCore\ControlStructures\IfElseControl.cs" />
     <Compile Include="LsnCore\ControlStructures\MatchStructure.cs" />
     <Compile Include="LsnCore\ControlStructures\WhileLoop.cs" />
+    <Compile Include="LsnCore\Expressions\SomeExpression.cs" />
     <Compile Include="LsnrException.cs" />
     <Compile Include="LsnrParsingException.cs" />
     <Compile Include="LsnrTypeNotFoundException.cs" />
@@ -130,6 +131,7 @@
     <Compile Include="LssParser\IndexerRule.cs" />
     <Compile Include="LssParser\MemberAccessRule.cs" />
     <Compile Include="LssParser\RangeExpressionRule.cs" />
+    <Compile Include="LssParser\SomeRule.cs" />
     <Compile Include="LssParser\UnaryExpressionRule.cs" />
     <Compile Include="LssParser\ParenthesisRule.cs" />
     <Compile Include="LssParser\PropertyFieldRule.cs" />

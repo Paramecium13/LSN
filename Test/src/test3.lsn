@@ -77,6 +77,8 @@ unique ScriptClass TestA
 	
 	fn abstract ValueChange()->();
 	
+	fn abstract Foo()->Optional<string>;
+	
 	fn ChangeA()
 	{
 		setstate StateA;
@@ -100,6 +102,11 @@ unique ScriptClass TestA
 			Value = Value + 5;
 		}
 		
+		fn Foo() -> Optional<string>
+		{
+			return none;
+		}
+		
 	}
 	
 	state StateB
@@ -111,6 +118,21 @@ unique ScriptClass TestA
 			Value = Value - 3;
 		}
 		
+		fn Foo() -> Optional<string>
+		{
+			let mut str = some("foo");
+			if(Value < 100){
+				str = none;
+			}
+			elsif(Value % 2 = 0){
+				str = "even";
+			}
+			else {
+				str = "odd";
+			}
+			
+			return str;
+		}
 	}
 	
 	

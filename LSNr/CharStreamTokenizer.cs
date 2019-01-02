@@ -22,20 +22,30 @@ namespace LSNr
 		};
 
 		private static readonly string[] Keywords = {
-			//Core Language stuff
-			"if", "else","elsif","let","mut","struct","fn","for","match","foreach","return",
-			"new","choose","virtual","state","record","is","to",
 			//"turn","quest","stage","repeat","unless",
 
-			//Statement headers
-			"give","goto","wait","say",
+			// Statement headers:
+			"let","return","give","goto","wait","attach","detach","say","set","setstate",
+			"comefrom",
 			//"exit","start","stop","change","fadein","fadeout","tint","flash","shake",
 			//"play","show","end","rotate","publish",
 
-			//Statement stuff
-			"item","gold","with","as","graphic",
+			//Statement stuff:
+			"mut","item","gold","with","as","graphic","is","to",
 			//"soundeffect","backgroundmusic","video","image","down","left","right","up","screen",
 			//"moveroute","animation","picture",
+
+			// Control Structures:
+			"if","choose","when","else","elsif","for","match","foreach",
+
+			// Expressions:
+			"new","host","self","true","false","none","some",
+			//Things
+
+			// Types:
+			"script","class","scriptclass","interface","hostinterface","struct","record",
+			// Type Contents:
+			"fn","property","state","auto","on","event","abstract","virtual"
 
 			//both
 			//"hp","level","exp","mp","g",
@@ -43,12 +53,8 @@ namespace LSNr
 			//Get expression stuff
 			//"get","number","of","at",
 
-			//Things
 			//"my","common","all"
-			//"int","double","num","complex","bool","string","watched","rule","when",,"attachedto","attatched""override"
-			"script","class","scriptclass","attach","detach","host","interface","hostinterface",
-			"property","state","auto","setstate","on","event","abstract","virtual"
-
+			//"watched","rule","attachedto","attatched","override"
 		};
 
 		protected enum TokenizerState
@@ -60,7 +66,7 @@ namespace LSNr
 			CommentSingleline,
 			CommentMultiline,
 			/// <summary>
-			/// When a * is seen in a multiline comment.
+			/// When a * is seen in a multi-line comment.
 			/// </summary>
 			CommentMultiLineStar,
 

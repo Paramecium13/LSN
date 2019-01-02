@@ -12,19 +12,27 @@ namespace LSNr.LssParser
 	public class BinaryExpressionRule : IExpressionRule
 	{
 		public uint Priority { get; private set; }
-		private readonly string operatorValue;
+		private readonly HashSet<string> OperatorValues;
 		private readonly Func<IExpression, IExpression, IExpression> createExpr;
 		private readonly ContextCheck contextCheck;
 
 		public BinaryExpressionRule(uint priority, string opVal, Func<IExpression, IExpression, IExpression> create, ContextCheck cxtCheck = null)
 		{
-			Priority = priority; operatorValue = opVal; createExpr = create; contextCheck = cxtCheck;
+			Priority = priority; OperatorValues = new HashSet<string>(new string[] { opVal });
+			createExpr = create; contextCheck = cxtCheck;
+			if (create == null)
+				throw new ArgumentNullException(nameof(create));
+		}
+		public BinaryExpressionRule(uint priority, string[] opVals, Func<IExpression, IExpression, IExpression> create, ContextCheck cxtCheck = null)
+		{
+			Priority = priority; OperatorValues = new HashSet<string>(opVals);
+			createExpr = create; contextCheck = cxtCheck;
 			if (create == null)
 				throw new ArgumentNullException(nameof(create));
 		}
 
 		public bool CheckToken(Token token, IPreScript script)
-			=> token.Value == operatorValue;
+			=> OperatorValues.Contains(token.Value);
 
 		public bool CheckContext(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 			=> contextCheck?.Invoke(index, tokens, script, substitutions) ?? true;
@@ -77,7 +85,7 @@ namespace LSNr.LssParser
 		public static readonly IExpressionRule GreaterThanOrEqual = new BinaryExpressionRule(ExpressionRulePriorities.Comparative, ">=",
 			(l, r) => new BinaryExpression(l, r, BinaryOperation.GreaterThanOrEqual, BinaryExpression.GetArgTypes(l.Type, r.Type)));
 
-		public static readonly IExpressionRule Equal = new BinaryExpressionRule(ExpressionRulePriorities.Comparative, "==",
+		public static readonly IExpressionRule Equal = new BinaryExpressionRule(ExpressionRulePriorities.Comparative, new string[] { "==" ,"="},
 			(l, r) => new BinaryExpression(l, r, BinaryOperation.Equal, BinaryExpression.GetArgTypes(l.Type, r.Type)));
 
 		public static readonly IExpressionRule NotEqual = new BinaryExpressionRule(ExpressionRulePriorities.Comparative, "!=",

@@ -126,7 +126,8 @@ namespace LSNr.LssParser
 				new ConstructorRule(),
 				UnaryExpressionRule.NegationRule,
 				UnaryExpressionRule.NotRule,
-				RangeExpressionRule.Rule});
+				RangeExpressionRule.Rule,
+				SomeRule.Rule});
 		}
 
 		public static void SetupRules(IExpressionRule[] rules)

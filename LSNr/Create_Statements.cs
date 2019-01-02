@@ -36,21 +36,22 @@ namespace LSNr
 			if (v == "say")
 				return Say(tokens.CreateSubSlice(1, n-1),script);
 			if (v == "goto")
-				return GotoStatement(tokens,script);
-			if (v == "setstate")
+				return GotoStatement(tokens,script); 
+			if (v == "setstate" || (v == "set" && tokens.Count > 1 && tokens[1].Value == "state"))
 			{
-				if (tokens.Count != 2)
+				var offset = v == "set"? 1: 0;
+				if (tokens.Count != 2 + offset)
 					throw new LsnrParsingException(tokens[0],"Improperly formatted setstate statement. Correct format is: 'setstate statename;'.",script.Path);
 
 				var preScObjFn = script as PreScriptClassFunction;
 				if (preScObjFn == null)
 					throw new LsnrParsingException(tokens[0],"Cannot use a setstate statement outside of a script object.",script.Path); // Cannot use SetState here.
 
-				var stateName = tokens[1].Value;
+				var stateName = tokens[1 + offset].Value;
 				var preScObj = preScObjFn.Parent;
 
 				if (!preScObj.StateExists(stateName))
-					throw new LsnrParsingException(tokens[1],$"The state '{stateName}' does not exist.",script.Path); // State does not exist.
+					throw new LsnrParsingException(tokens[1 + offset],$"The state '{stateName}' does not exist.",script.Path); // State does not exist.
 				return new SetStateStatement(preScObj.GetStateIndex(stateName));
 			}
 
