@@ -20,9 +20,9 @@ namespace LsnCore.Types
 			StoIDict = values.ToDictionary(p => p.Key, p => p.Value);
 			ItoSDict = values.ToDictionary(p => p.Value, p => p.Key);
 
-			_Methods.Add("GetName",new BoundedMethod(this, LsnType.string_, (a) => new LsnValue(new StringValue(ItoSDict[a[0].IntValue])), "GetName", null));
-			_Methods.Add("ToInt", new BoundedMethod(this, LsnType.int_, (a) => a[0], "ToInt"));
-			_Methods.Add("GetValue", new BoundedMethod(this, LsnType.int_, (a) => a[0], "GetValue"));
+			_Methods.Add("GetName",new BoundedMethod(this, string_, (a) => new LsnValue(new StringValue(ItoSDict[a[0].IntValue])), "GetName", null));
+			_Methods.Add("ToInt", new BoundedMethod(this, int_, (a) => a[0], "ToInt"));
+			_Methods.Add("GetValue", new BoundedMethod(this, int_, (a) => a[0], "GetValue"));
 		}
 
 		public override LsnValue CreateDefaultValue()

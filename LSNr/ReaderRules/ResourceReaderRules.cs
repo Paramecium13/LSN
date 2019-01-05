@@ -208,4 +208,79 @@ namespace LSNr.ReaderRules
 			PreResource.RegisterScriptClass(name, host, unique, meta, body);
 		}
 	}
+
+	sealed class ResourceReaderEnumRule : ResourceReaderBodyRule
+	{
+		public static bool EnforceCommas = true;
+		internal ResourceReaderEnumRule(IPreResource pre) : base(pre) { }
+
+		public override bool Check(ISlice<Token> head)
+			=> head[0].Value == "enum";
+
+		public override void Apply(ISlice<Token> head, ISlice<Token> body)
+		{
+			if (head.Length != 3)
+				throw new LsnrParsingException(head[0], "Invalid enum declaration", PreResource.Path);
+			var name = head[1].Value;
+			var justReadVal = false;
+			var lines = new List<ISlice<Token>>();
+			var currentLineStart = 0;
+			for (int i = 0; i < body.Count; i++)
+			{
+				if (body[i].Value == ",")
+				{
+					lines.Add(body.CreateSliceBetween(currentLineStart, i));
+					currentLineStart = i + 1;
+				}
+			}
+			var nextVal = 0;
+			var usedVals = new HashSet<int>();
+			var usedNames = new HashSet<string>();
+			var values = new List<KeyValuePair<string, int>>();
+			string defaultVal = null;
+			void addVal(string str, int v)
+			{
+				usedVals.Add(v); usedNames.Add(str);
+				values.Add(new KeyValuePair<string, int>(str, v));
+			}
+			for(int i = 0; i < lines.Count; i++)
+			{
+				var line = lines[i];
+				if(line.Count == 1)
+				{
+					if (!)
+					if (usedNames.Contains(line[0].Value))
+						throw new LsnrParsingException(line[0], $"Duplicate value '{line[0].Value}' in enum '{name}'.", PreResource.Path);
+
+				}
+
+
+			}
+
+			/*foreach (var token in body)
+			{
+				if (token.Type == TokenType.Identifier)
+				{
+					if (justReadVal && EnforceCommas)
+						throw LsnrParsingException.UnexpectedToken(token, "','", PreResource.Path);
+					if (values.Contains(token.Value))
+						throw new LsnrParsingException(token, $"Duplicate value '{token.Value}' in enum '{name}'.", PreResource.Path);
+					values.Add(token.Value);
+					justReadVal = true;
+				}
+				else if (token.Value == ",")
+				{
+					if (!justReadVal)
+						throw LsnrParsingException.UnexpectedToken(token, "an identifier", PreResource.Path);
+					justReadVal = false;
+				}
+				else
+					throw LsnrParsingException.UnexpectedToken(token,
+						EnforceCommas ? (justReadVal ? "a comma" : "an identifier") : (justReadVal ? "a comma or an identifier" : "an identifier")
+						, PreResource.Path);
+			}*/
+			if (defaultVal == null) defaultVal = values[0].Key;
+			throw new NotImplementedException();
+		}
+	}
 }
