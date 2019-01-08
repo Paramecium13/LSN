@@ -116,6 +116,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnResourceThing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnScriptBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ArraySlice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Indexer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ISearchableReadOnlyList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ListSlice.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Slice.cs" />
