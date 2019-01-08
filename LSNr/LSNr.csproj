@@ -105,6 +105,7 @@
   <ItemGroup>
     <Compile Include="BasePreScript.cs" />
     <Compile Include="CodeGen.cs" />
+    <Compile Include="ControlStructures\IControlStructureRule.cs" />
     <Compile Include="Dependencies.cs" />
     <Compile Include="DependenciesForest.cs" />
     <Compile Include="GlobalSuppressions.cs" />
@@ -155,6 +156,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="IPreScript.cs" />
     <Compile Include="IScope.cs" />
+    <Compile Include="Statements\IStatementRule.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="ITypeContainer.cs" />
     <Compile Include="Optimization\ArithmeticIdentityChecker.cs" />

@@ -26,6 +26,8 @@ namespace LsnCore.Utilities
 
 		public RestorePoint CreateRestorePoint() => new RestorePoint(Index, this);
 
+		public Indexer<T> Clone() => new Indexer<T>(Index, Collection);
+
 		/*
 		 * CreateBookmark()...
 		 *
