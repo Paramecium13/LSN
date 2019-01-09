@@ -155,7 +155,7 @@ namespace LSNr
 					else ++i; // Move on to the token after '{'.
 					var tokens = new List<Token>();
 					while (Tokens[i].Value != "}") tokens.Add(Tokens[i++]);
-					PreHostInterfaces.Add(name, new PreHostInterface(name, this, tokens));
+					PreHostInterfaces.Add(name, new PreHostInterface(name, null, tokens));
 				}
 				else if (val == "unique" || val == "scriptclass" || (val == "script" && Tokens[i+1].Value == "class"))
 				{
@@ -408,21 +408,17 @@ namespace LSNr
 				try
 				{
 					var host = pre.Parse();
-					if (pre.Valid)
-					{
-						HostInterfaces.Add(host.Name, host);
-						MyHostInterfaces.Add(host.Name, host);
-					}
-					else Valid = false;
+					HostInterfaces.Add(host.Name, host);
+					MyHostInterfaces.Add(host.Name, host);
 				}
 				catch (LsnrException e)
 				{
-					Logging.Log("host interface", pre.HostInterfaceId.Name, e);
+					Logging.Log("host interface", pre.Id.Name, e);
 					Valid = false;
 				}
 				catch (Exception e)
 				{
-					Logging.Log("host interface", pre.HostInterfaceId.Name, e, Path);
+					Logging.Log("host interface", pre.Id.Name, e, Path);
 					Valid = false;
 				}
 			}
@@ -704,7 +700,7 @@ namespace LSNr
 			if (PreScriptClasses.ContainsKey(name))
 				return PreScriptClasses[name].Id;
 			if (PreHostInterfaces.ContainsKey(name))
-				return PreHostInterfaces[name].HostInterfaceId;
+				return PreHostInterfaces[name].Id;
 			if (PreRecords.Keys.Any(k => k.Name == name))
 				return PreRecords.Keys.First(k => k.Name == name);
 			if (PreStructs.Keys.Any(k => k.Name == name))
@@ -758,7 +754,7 @@ namespace LSNr
 			if (MyRecordTypes.ContainsKey(name))
 				return MyRecordTypes[name];
 			if (PreHostInterfaces.ContainsKey(name))
-				return PreHostInterfaces[name].HostInterfaceId.Type;
+				return PreHostInterfaces[name].Id.Type;
 			if (PreScriptClasses.ContainsKey(name))
 				return PreScriptClasses[name].Id.Type;
 

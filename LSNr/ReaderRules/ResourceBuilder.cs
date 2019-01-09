@@ -71,8 +71,6 @@ namespace LSNr.ReaderRules
 			ParseSignatures?.Invoke(this);
 			ParseFunctionSignatures();
 
-			foreach (var pre in MyHostInterfaces.Values)
-				GeneratedHostInterfaces.Add(pre.HostInterfaceId.Name,pre.Parse());
 			foreach (var pre in MyScriptClasses.Values)
 			{
 				if (pre.HostName != null)
@@ -208,57 +206,6 @@ namespace LSNr.ReaderRules
 			}
 		}
 		#endregion
-
-		public List<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
-		{
-			var paramaters = new List<Parameter>();
-			ushort index = 0;
-			for (int i = 0; i < tokens.Count; i++)
-			{
-				var name = tokens[i].Value;
-				if (tokens[++i].Value != ":")
-					throw new LsnrParsingException(tokens[i], $"Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.", Path);
-				var type = this.ParseTypeId(tokens, ++i, out i);
-				var defaultValue = LsnValue.Nil;
-				if (i < tokens.Count && tokens[i].Value == "=")
-				{
-					if (tokens[++i].Type == TokenType.String)
-					{
-						if (type != LsnType.string_.Id)
-							throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type string to a parameter of type {type.Name}", Path);
-						defaultValue = new LsnValue(new StringValue(tokens[i].Value));
-						if (i + 1 < tokens.Count) i++;
-					}
-					else if (tokens[i].Type == TokenType.Integer)
-					{
-						if (type != LsnType.int_.Id)
-						{
-							if (type == LsnType.double_.Id)
-							{
-								defaultValue = new LsnValue(tokens[i].IntValue);
-							}
-							else
-								throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type int to a parameter of type {type.Name}", Path);
-						}
-						else defaultValue = new LsnValue(tokens[i].IntValue);
-						if (i + 1 < tokens.Count) i++;
-					}
-					else if (tokens[i].Type == TokenType.Float)
-					{
-						if (type != LsnType.double_.Id)
-							throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type double to a parameter of type {type.Name}", Path);
-						defaultValue = new LsnValue(tokens[i].DoubleValue);
-						if (i + 1 < tokens.Count) i++;
-					}
-					// Bools and other stuff...
-					else throw new LsnrParsingException(tokens[i], $"Error in parsing default value for parameter {name}.", Path);
-				}
-				paramaters.Add(new Parameter(name, type, defaultValue, index++));
-				if (i < tokens.Count && tokens[i].Value != ",")
-					throw new LsnrParsingException(tokens[i], $"expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.", Path);
-			}
-			return paramaters;
-		}
 		#region Register
 		public void RegisterTypeId(TypeId id) { MyTypes.Add(id.Name, id); }
 
@@ -271,18 +218,13 @@ namespace LSNr.ReaderRules
 
 		public void RegisterRecordType(RecordType recordType) { GeneratedRecordTypes.Add(recordType); }
 
+		public void RegisterHostInterface(HostInterfaceType host) { GeneratedHostInterfaces.Add(host.Name, host); }
+
 		public void RegisterScriptClass(string name, string hostname, bool unique, string metadata, ISlice<Token> tokens)
 		{
 			var pre = new PreScriptClass(name, this, hostname, unique, metadata, tokens);
 			RegisterTypeId(pre.Id);
 			MyScriptClasses.Add(name, pre);
-		}
-
-		public void RegisterHostInterface(string name, ISlice<Token> tokens)
-		{
-			var pre = new PreHostInterface(name, this, tokens);
-			MyHostInterfaces.Add(name, pre);
-			RegisterTypeId(pre.HostInterfaceId);
 		}
 
 		public void RegisterScriptClass(ScriptClass scriptClass)
@@ -296,7 +238,7 @@ namespace LSNr.ReaderRules
 		{
 			foreach (var fnSrc in FunctionSources)
 			{
-				var parameters = ParseParameters(fnSrc.Value.Args);
+				var parameters = this.ParseParameters(fnSrc.Value.Args, Path);
 				TypeId returnType = null;
 				if (fnSrc.Value.ReturnType != null)
 				{

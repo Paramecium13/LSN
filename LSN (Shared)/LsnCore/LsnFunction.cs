@@ -21,13 +21,13 @@ namespace LsnCore
 		/// </summary>
 		public Statement[] Code { get; set; }
 
-		public LsnFunction(List<Parameter> parameters, LsnType returnType, string name,string resourceFilePath)
+		public LsnFunction(IReadOnlyList<Parameter> parameters, LsnType returnType, string name,string resourceFilePath)
 			:base(new FunctionSignature(parameters, name, returnType?.Id))
 		{
 			ResourceFilePath = resourceFilePath;
 		}
 
-		public LsnFunction(List<Parameter> parameters, TypeId returnType, string name, string resourceFilePath)
+		public LsnFunction(IReadOnlyList<Parameter> parameters, TypeId returnType, string name, string resourceFilePath)
 			: base(new FunctionSignature(parameters, name, returnType))
 		{
 			ResourceFilePath = resourceFilePath;

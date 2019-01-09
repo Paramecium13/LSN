@@ -17,7 +17,7 @@ namespace LsnCore.Types
 
 		public Statement[] Code { get; set; } // Assigned in LSNr.
 
-		public ScriptClassMethod(TypeId type, TypeId returnType, IList<Parameter> parameters, string resourceFilePath,
+		public ScriptClassMethod(TypeId type, TypeId returnType, IReadOnlyList<Parameter> parameters, string resourceFilePath,
 			bool isVirtual, bool isAbstract, string name)
 			:base(type,returnType,name,parameters)
 		{
@@ -91,7 +91,7 @@ namespace LsnCore.Types
 	{
 		public Statement[] Code { get; set; } // Assigned in LSNr.
 
-		internal ScriptClassVirtualMethod(TypeId type, TypeId returnType, IList<Parameter> parameters, string resourceFilePath, string name)
+		internal ScriptClassVirtualMethod(TypeId type, TypeId returnType, IReadOnlyList<Parameter> parameters, string resourceFilePath, string name)
 			: base(type, returnType, name, parameters)
 		{
 			if (Parameters[0].Name != "self")
