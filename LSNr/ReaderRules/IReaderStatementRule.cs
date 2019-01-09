@@ -12,14 +12,14 @@ namespace LSNr.ReaderRules
 	{
 		bool Check(ISlice<Token> tokens);
 
-		void Apply(ISlice<Token> tokens);
+		void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes);
 	}
 
 	public interface IReaderBodyRule
 	{
 		bool Check(ISlice<Token> head);
 
-		void Apply(ISlice<Token> head, ISlice<Token> body);
+		void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes);
 	}
 }
 

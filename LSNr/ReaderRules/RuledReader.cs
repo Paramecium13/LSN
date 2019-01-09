@@ -28,26 +28,26 @@ namespace LSNr.ReaderRules
 
 		protected RuledReader(ISlice<Token> tokens) : base(tokens) { }
 
-		protected override void OnReadBody(ISlice<Token> headTokens, ISlice<Token> bodyTokens)
+		protected override void OnReadBody(ISlice<Token> headTokens, ISlice<Token> bodyTokens, ISlice<Token>[] attributes)
 		{
 			foreach (var rule in BodyRules)
 			{
 				if(rule.Check(headTokens))
 				{
-					rule.Apply(headTokens, bodyTokens);
+					rule.Apply(headTokens, bodyTokens, attributes);
 					return;
 				}
 			}
 			throw new NoValidRuleException();
 		}
 
-		protected override void OnReadStatement(ISlice<Token> tokens)
+		protected override void OnReadStatement(ISlice<Token> tokens, ISlice<Token>[] attributes)
 		{
 			foreach (var rule in StatementRules)
 			{
 				if (rule.Check(tokens))
 				{
-					rule.Apply(tokens);
+					rule.Apply(tokens, attributes);
 					return;
 				}
 			}

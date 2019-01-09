@@ -35,7 +35,7 @@ namespace LSNr.ReaderRules
 		protected ResourceReaderStatementRule(IPreResource pre) { PreResource = pre; }
 
 		public abstract bool Check(ISlice<Token> tokens);
-		public abstract void Apply(ISlice<Token> tokens);
+		public abstract void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes);
 	}
 
 	class ResourceUsingStatementRule : ResourceReaderStatementRule
@@ -44,7 +44,7 @@ namespace LSNr.ReaderRules
 		public ResourceUsingStatementRule(IPreResource pre, DependencyWaiter waiter) : base(pre)
 		{ Waiter = waiter; }
 
-		public override void Apply(ISlice<Token> tokens)
+		public override void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes)
 		{
 			if (tokens.Count > 3 || tokens[1].Type != TokenType.String)
 				throw new LsnrParsingException(tokens[0], "Invalid \'using\' statement.", PreResource.Path);
@@ -62,7 +62,7 @@ namespace LSNr.ReaderRules
 		protected ResourceReaderBodyRule(IPreResource pre) { PreResource = pre; }
 
 		public abstract bool Check(ISlice<Token> head);
-		public abstract void Apply(ISlice<Token> head, ISlice<Token> body);
+		public abstract void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes);
 	}
 
 	sealed class ResourceReaderFunctionRule : ResourceReaderBodyRule
@@ -72,7 +72,7 @@ namespace LSNr.ReaderRules
 		public override bool Check(ISlice<Token> head)
 			=> head[0].Value == "fn";
 
-		public override void Apply(ISlice<Token> head, ISlice<Token> body)
+		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{
 			var i = 0;
 			var fnToken = head[i];
@@ -119,7 +119,7 @@ namespace LSNr.ReaderRules
 		public override bool Check(ISlice<Token> head)
 			=> head[0].Value == "struct";
 
-		public override void Apply(ISlice<Token> head, ISlice<Token> body)
+		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{
 			if (head.Count > 3 || head.Count < 2)
 				throw new LsnrParsingException(head[0], "Invalid struct...", PreResource.Path);
@@ -134,7 +134,7 @@ namespace LSNr.ReaderRules
 		public override bool Check(ISlice<Token> head)
 			=> head[0].Value == "record";
 
-		public override void Apply(ISlice<Token> head, ISlice<Token> body)
+		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{
 			if (head.Count > 3 || head.Count < 2)
 				throw new LsnrParsingException(head[0], "Invalid record...", PreResource.Path);
@@ -149,7 +149,7 @@ namespace LSNr.ReaderRules
 		public override bool Check(ISlice<Token> head)
 			=> head[0].Value == "hostinterface" || (head[0].Value == "host" && head.Count > 1 && head[1].Value == "interface");
 
-		public override void Apply(ISlice<Token> head, ISlice<Token> body)
+		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{
 			if (head.Count < 2)
 				throw new LsnrParsingException(head[0], "Invalid Host Interface.", PreResource.Path);
@@ -168,17 +168,25 @@ namespace LSNr.ReaderRules
 			=> head[0].Value == "scriptclass" || (head[0].Value == "script" && head.Count > 1 && head[1].Value == "class") ||
 				(head[0].Value == "unique" && head.Count > 1 && ((head[1].Value == "scriptclass") || (head.Count > 2 && head[2].Value == "class")));
 
-		public override void Apply(ISlice<Token> head, ISlice<Token> body)
+		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{
 			var i = 0;
-			var unique = false;
+			var unique = attributes.Any(a => a.Count != 0 && a[0].Value == "unique");
 			string host = null;
 			string meta = null;
-			if (head[i].Value == "unique")
+			var m = attributes.FirstOrDefault(a => a.Count != 0 && string.Equals(a[0].Value, "metadata", StringComparison.OrdinalIgnoreCase));
+			if(m != null)
+			{
+				// [metadata: "stuff"]
+				if (m.Count != 3 || m[1].Value != ":" || m[2].Type != TokenType.String)
+					throw new LsnrParsingException(m[0], "Improperly formatted metadata...", PreResource.Path);
+				meta = m[2].Value;
+			}
+			/*if (head[i].Value == "unique")
 			{
 				unique = true;
 				i++;
-			}
+			}*/
 			if (head[i].Value == "scriptclass") i++;
 			else i += 2;
 			if (i >= head.Count) throw new LsnrParsingException(head[head.Count - 1], "...", PreResource.Path);

@@ -46,6 +46,6 @@ namespace LSNr
 		public static ResourceReader OpenResource(string src, string path, DependencyWaiter waiter)
 			=> new ResourceReader(path, new CharStreamTokenizer().Tokenize(src), waiter);
 
-		protected override void OnReadAdjSemiColon(){}
+		protected override void OnReadAdjSemiColon(ISlice<Token>[] attributes) {}
 	}
 }
