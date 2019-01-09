@@ -16,9 +16,9 @@ namespace LsnCore
 		public readonly IReadOnlyList<Parameter> Parameters;
 		public readonly TypeId ReturnType;
 
-		public FunctionSignature(IList<Parameter> parameters,string name, TypeId returnType)
+		public FunctionSignature(IReadOnlyList<Parameter> parameters,string name, TypeId returnType)
 		{
-			Parameters = parameters.ToList(); Name = name; ReturnType = returnType;
+			Parameters = parameters; Name = name; ReturnType = returnType;
 		}
 
 		public bool Equals(FunctionSignature other)

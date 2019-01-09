@@ -13,25 +13,84 @@ namespace LSNr.ReaderRules
 	{
 		string Path { get; }
 
-		bool Valid { get; }
+		bool Valid { get; set; }
 
 		void RegisterUsing(string file);
 
 		void RegisterScriptClass(string name, string hostname, bool unique, string metadata, ISlice<Token> tokens);
-		void RegisterHostInterface(string name, ISlice<Token> tokens);
-		List<Parameter> ParseParameters(IReadOnlyList<Token> tokens);
-
 		void RegisterFunction(string name, ISlice<Token> args, ISlice<Token> returnType, ISlice<Token> body);
 
-		void RegisterScriptClass(ScriptClass scriptClass);
+		void RegisterTypeId(TypeId id);
 		void RegisterStructType(StructType structType);
 		void RegisterRecordType(RecordType recordType);
-		void RegisterTypeId(TypeId id);
+		void RegisterHostInterface(HostInterfaceType host);
+		void RegisterScriptClass(ScriptClass scriptClass);
 
 		event Action<IPreResource> ParseSignatures;
 		event Action<IPreResource> ParseProcBodies;
 
 		LsnResourceThing Parse();
+	}
+
+	public static class TypeContainerExtensions
+	{
+		/// <summary>
+		/// ...
+		/// </summary>
+		/// <param name="tokens"></param>
+		/// <param name="self"></param>
+		/// <param name="Path"></param>
+		/// <returns>The parameters</returns>
+		public static IReadOnlyList<Parameter> ParseParameters(this ITypeContainer self, IReadOnlyList<Token> tokens, string Path)
+		{
+			var paramaters = new List<Parameter>();
+			ushort index = 0;
+			for (int i = 0; i < tokens.Count; i++)
+			{
+				var name = tokens[i].Value;
+				if (tokens[++i].Value != ":")
+					throw new LsnrParsingException(tokens[i], $"Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.", Path);
+				var type = self.ParseTypeId(tokens, ++i, out i);
+				var defaultValue = LsnValue.Nil;
+				if (i < tokens.Count && tokens[i].Value == "=")
+				{
+					if (tokens[++i].Type == TokenType.String)
+					{
+						if (type != LsnType.string_.Id)
+							throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type string to a parameter of type {type.Name}", Path);
+						defaultValue = new LsnValue(new StringValue(tokens[i].Value));
+						if (i + 1 < tokens.Count) i++;
+					}
+					else if (tokens[i].Type == TokenType.Integer)
+					{
+						if (type != LsnType.int_.Id)
+						{
+							if (type == LsnType.double_.Id)
+							{
+								defaultValue = new LsnValue(tokens[i].IntValue);
+							}
+							else
+								throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type int to a parameter of type {type.Name}", Path);
+						}
+						else defaultValue = new LsnValue(tokens[i].IntValue);
+						if (i + 1 < tokens.Count) i++;
+					}
+					else if (tokens[i].Type == TokenType.Float)
+					{
+						if (type != LsnType.double_.Id)
+							throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type double to a parameter of type {type.Name}", Path);
+						defaultValue = new LsnValue(tokens[i].DoubleValue);
+						if (i + 1 < tokens.Count) i++;
+					}
+					// Bools and other stuff...
+					else throw new LsnrParsingException(tokens[i], $"Error in parsing default value for parameter {name}.", Path);
+				}
+				paramaters.Add(new Parameter(name, type, defaultValue, index++));
+				if (i < tokens.Count && tokens[i].Value != ",")
+					throw new LsnrParsingException(tokens[i], $"expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.", Path);
+			}
+			return paramaters;
+		}
 	}
 
 	public abstract class ResourceReaderStatementRule : IReaderStatementRule
@@ -168,7 +227,8 @@ namespace LSNr.ReaderRules
 			string name;
 			if (head[0].Value == "host") name = head[2].Value;
 			else name = head[1].Value;
-			PreResource.RegisterHostInterface(name, body);
+			var host = new PreHostInterface(name, PreResource, body);
+			PreResource.ParseSignatures += host.OnParsingSignatures;
 		}
 	}
 

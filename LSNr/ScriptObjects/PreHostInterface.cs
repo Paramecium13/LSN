@@ -9,13 +9,13 @@ using LSNr.ReaderRules;
 
 namespace LSNr
 {
-	public class PreHostInterface : ITypeContainer// IPreScript
+	public class PreHostInterface : ITypeContainer
 	{
-		private readonly string Name;
+		string Name => Id.Name;
 
-		public readonly TypeId HostInterfaceId;
+		public readonly TypeId Id;
 
-		private readonly IPreScript Parent;
+		private readonly IPreResource Parent;
 
 		private readonly IReadOnlyList<Token> Tokens; // The tokens between (and not including) the opening and closing braces.
 
@@ -23,25 +23,12 @@ namespace LSNr
 
 		private readonly Dictionary<string, FunctionSignature> Methods = new Dictionary<string, FunctionSignature>();
 
-		public IScope CurrentScope { get; set; }
-
-		public bool Mutable => Parent.Mutable;
-
-		public bool Valid
+		internal PreHostInterface(string name, IPreResource parent, IReadOnlyList<Token> tokens)
 		{
-			get { return Parent.Valid; }
-			set { Parent.Valid = value; }
+			Id = new TypeId(name);  Parent = parent; Tokens = tokens;
+			Parent.RegisterTypeId(Id);
 		}
 
-		public string Path => Parent.Path;
-
-		internal PreHostInterface(string name, IPreScript parent, IReadOnlyList<Token> tokens)
-		{
-			Name = name; HostInterfaceId = new TypeId(name);  Parent = parent; Tokens = tokens;
-		}
-
-		public SymbolType CheckSymbol(string name)		=> Parent.CheckSymbol(name);
-		public Function GetFunction(string name)		=> Parent.GetFunction(name);
 		public bool GenericTypeExists(string name)		=> Parent.GenericTypeExists(name);
 		public GenericType GetGenericType(string name)	=> Parent.GetGenericType(name);
 		public LsnType GetType(string name)				=> Parent.GetType(name);
@@ -49,7 +36,7 @@ namespace LSNr
 
 		public TypeId GetTypeId(string name)
 		{
-			if (name == Name) return HostInterfaceId;
+			if (name == Name) return Id;
 			return Parent.GetTypeId(name);
 		}
 
@@ -74,37 +61,30 @@ namespace LSNr
 						Methods.Add(methodDef.Name, methodDef);
 					}
 					else
-						throw LsnrParsingException.UnexpectedToken(Tokens[i], "'fn' or 'event'", Path);
+						throw LsnrParsingException.UnexpectedToken(Tokens[i], "'fn' or 'event'", Parent.Path);
 				}
 				catch (LsnrException e)
 				{
-					Valid = false;
+					Parent.Valid = false;
 					Logging.Log("host interface", Name, e);
 					return null;
 				}
 				catch (Exception e)
 				{
-					Valid = false;
-					Logging.Log("host interface", Name, e, Path);
+					Parent.Valid = false;
+					Logging.Log("host interface", Name, e, Parent.Path);
 					return null;
 				}
 			}
 
-			var hostType = new HostInterfaceType(HostInterfaceId, Methods, Events);
-			HostInterfaceId.Load(hostType);
+			var hostType = new HostInterfaceType(Id, Methods, Events);
+			Id.Load(hostType);
 			return hostType;
 		}
 
-		private List<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
+		public void OnParsingSignatures(IPreResource resource)
 		{
-			switch (Parent)
-			{
-				case ResourceBuilder resourceBuilder:
-					return resourceBuilder.ParseParameters(tokens);
-				case PreResource pre: return pre.ParseParameters(tokens);
-				default:
-					throw new NotImplementedException();
-			}
+			resource.RegisterHostInterface(Parse());
 		}
 
 		/// <summary>
@@ -112,44 +92,44 @@ namespace LSNr
 		/// </summary>
 		/// <param name="i">Initially, points to the first token in the definition (i.e. the name).</param>
 		/// <returns></returns>
-		private EventDefinition ParseEventDefinition(ref int i)
+		EventDefinition ParseEventDefinition(ref int i)
 		{
 			string name = Tokens[i].Value;
 			i++; // 'i' should now point to the opening parenthesis.
 			if (Tokens[i].Value != "(")
-				throw new LsnrParsingException(Tokens[i - 1], $"Error parsing event definition '{name}': Expected '('.", Path);
+				throw new LsnrParsingException(Tokens[i - 1], $"Error parsing event definition '{name}': Expected '('.", Parent.Path);
 
 
 			var paramTokens = new List<Token>();
 			while (Tokens[++i].Value != ")") // This starts with the token after '('.
 				paramTokens.Add(Tokens[i]);
 
-			var parameters = ParseParameters(paramTokens);
+			var parameters = this.ParseParameters(paramTokens, Parent.Path);
 
 			i++; // 'i' Points to the thing after the closing parenthesis.
 			if (i > Tokens.Count - 1 || Tokens[i].Value != ";")
-				throw new LsnrParsingException(Tokens[i >= Tokens.Count ? i - 1 : i], $"Error parsing event definition '{name}': Expected ';'.", Path);
+				throw new LsnrParsingException(Tokens[i >= Tokens.Count ? i - 1 : i], $"Error parsing event definition '{name}': Expected ';'.", Parent.Path);
 			i++; // 'i' now points to the thing after the ';'.
 
 			return new EventDefinition(name,parameters);
 		}
 
-		private FunctionSignature ParseMethodDefinition(ref int i)
+		FunctionSignature ParseMethodDefinition(ref int i)
 		{
 			string name = Tokens[i].Value;
 			i++; // 'i' should now point to the opening parenthesis.
 			if (Tokens[i].Value != "(")
-				throw new LsnrParsingException(Tokens[i], $"Error parsing method definition '{name}': Expected '('.", Path);
+				throw new LsnrParsingException(Tokens[i], $"Error parsing method definition '{name}': Expected '('.", Parent.Path);
 
 			var paramTokens = new List<Token>();
 			while (Tokens[++i].Value != ")") // This starts with the token after '('.
 				paramTokens.Add(Tokens[i]);
 
-			var parameters = ParseParameters(paramTokens);
+			var parameters = this.ParseParameters(paramTokens, Parent.Path);
 			TypeId returnType = null;
 			i++; // 'i' Points to the thing after the closing parenthesis.
 			if (i > Tokens.Count - 1)
-				throw new LsnrParsingException(Tokens[i - 1], $"Error parsing method definition '{name}': Expected ';' or '->'.", Path);
+				throw new LsnrParsingException(Tokens[i - 1], $"Error parsing method definition '{name}': Expected ';' or '->'.", Parent.Path);
 
 			if (Tokens[i].Value == "->")
 			{
@@ -157,7 +137,7 @@ namespace LSNr
 				if (Tokens[i].Value == "(")
 				{
 					if (Tokens[++i].Value != ")")
-						throw new LsnrParsingException(Tokens[i], $"Error parsing method definition '{name}': Expected '('.", Path);
+						throw new LsnrParsingException(Tokens[i], $"Error parsing method definition '{name}': Expected '('.", Parent.Path);
 					// 'i' points to ')'.
 					i++; // 'i' points to the thing after ')'.
 				}
@@ -168,15 +148,15 @@ namespace LSNr
 					if (i < 0)
 					{
 						i = Tokens.Count;
-						throw new LsnrParsingException(Tokens[j], $"Error parsing method definition '{name}': Failed to parse return type.", Path);
+						throw new LsnrParsingException(Tokens[j], $"Error parsing method definition '{name}': Failed to parse return type.", Parent.Path);
 					}
 				}
 			}
 			else if(Tokens[i].Value != ";")
-				throw new LsnrParsingException(Tokens[i], $"Error parsing method definition '{name}': Expected ';', received '{Tokens[i].Value}'.", Path);
+				throw new LsnrParsingException(Tokens[i], $"Error parsing method definition '{name}': Expected ';', received '{Tokens[i].Value}'.", Parent.Path);
 
 			if (i > Tokens.Count - 1 || Tokens[i].Value != ";")
-				throw new LsnrParsingException(Tokens[i >= Tokens.Count ? i - 1 : i], $"Error parsing method definition '{name}': Expected ';'.", Path);
+				throw new LsnrParsingException(Tokens[i >= Tokens.Count ? i - 1 : i], $"Error parsing method definition '{name}': Expected ';'.", Parent.Path);
 			i++; // 'i' points to the thing after ';'
 
 			return new FunctionSignature(parameters, name, returnType);
