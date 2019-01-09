@@ -17,13 +17,19 @@ namespace LSNr.ReaderRules
 
 		void RegisterUsing(string file);
 
-		void RegisterStructType(string name, ISlice<Token> tokens);
 		void RegisterRecordType(string name, ISlice<Token> tokens);
 		void RegisterScriptClass(string name, string hostname, bool unique, string metadata, ISlice<Token> tokens);
 		void RegisterHostInterface(string name, ISlice<Token> tokens);
 		List<Parameter> ParseParameters(IReadOnlyList<Token> tokens);
 
 		void RegisterFunction(string name, ISlice<Token> args, ISlice<Token> returnType, ISlice<Token> body);
+
+		void RegisterScriptClass(ScriptClass scriptClass);
+		void RegisterStructType(StructType structType);
+		void RegisterTypeId(TypeId id);
+
+		event Action<IPreResource> ParseSignatures;
+		event Action<IPreResource> ParseProcBodies;
 
 		LsnResourceThing Parse();
 	}
@@ -123,7 +129,9 @@ namespace LSNr.ReaderRules
 		{
 			if (head.Count > 3 || head.Count < 2)
 				throw new LsnrParsingException(head[0], "Invalid struct...", PreResource.Path);
-			PreResource.RegisterStructType(head[1].Value, body);
+			var id = new TypeId(head[1].Value);
+			var builder = new StructBuilder(id, body);
+			PreResource.ParseSignatures += builder.OnParsingSignatures;
 		}
 	}
 

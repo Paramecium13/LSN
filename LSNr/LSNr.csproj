@@ -145,6 +145,7 @@
     <Compile Include="ReaderRules\IReaderStatementRule.cs" />
     <Compile Include="ReaderRules\ReaderBase.cs" />
     <Compile Include="ReaderRules\ResourceBuilder.cs" />
+    <Compile Include="ReaderRules\ResourceBuilderComponents.cs" />
     <Compile Include="ReaderRules\ResourceReaderRules.cs" />
     <Compile Include="ReaderRules\ResourceReader.cs" />
     <Compile Include="ReaderRules\RuledReader.cs" />

@@ -69,7 +69,7 @@ fn FnTestA()-> int
 	return 0;
 }
 
-
+struct Item{Name:string, Value :int}
 
 unique ScriptClass TestA
 {
@@ -145,28 +145,3 @@ unique ScriptClass TestA
 	}
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

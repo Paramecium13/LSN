@@ -38,7 +38,6 @@ namespace LSNr.ReaderRules
 		readonly Dictionary<string, TypeId> MyTypes = new Dictionary<string, TypeId>();
 
 		readonly ScriptPartMap<LsnFunction, ISlice<Token>>	MyFunctions			= new ScriptPartMap<LsnFunction, ISlice<Token>>();
-		readonly ScriptPartMap<TypeId, ISlice<Token>>		MyStructs			= new ScriptPartMap<TypeId, ISlice<Token>>();
 		readonly ScriptPartMap<TypeId, ISlice<Token>>		MyRecords			= new ScriptPartMap<TypeId, ISlice<Token>>();
 		readonly Dictionary<string,PreScriptClass>			MyScriptClasses		= new Dictionary<string, PreScriptClass>();
 		readonly Dictionary<string, PreHostInterface>		MyHostInterfaces	= new Dictionary<string, PreHostInterface>();
@@ -59,15 +58,21 @@ namespace LSNr.ReaderRules
 			Path = path;
 		}
 
+		public event Action<IPreResource> ParseSignatures;
+
+		public event Action<IPreResource> ParseProcBodies;
 		/// <summary>
-		/// Called after all stuff has been registered.
+		/// Called after all type names have been registered.
 		/// </summary>
 		public LsnResourceThing Parse()
 		{
+			// All type names have been registered.
+
+			// Parse Signatures:
+			ParseSignatures?.Invoke(this);
 			ParseFunctionSignatures();
 
 			ParseRecords();
-			ParseStructs();
 			foreach (var pre in MyHostInterfaces.Values)
 				GeneratedHostInterfaces.Add(pre.HostInterfaceId.Name,pre.Parse());
 			foreach (var pre in MyScriptClasses.Values)
@@ -80,10 +85,14 @@ namespace LSNr.ReaderRules
 				}
 				GeneratedScriptClasses.Add(pre.Name, pre.PreParse());
 			}
+			// End Parse Signatures
 
+			// Parse Procedure Bodies:
+			ParseProcBodies?.Invoke(this);
 			ParseFunctions();
 			foreach (var pre in MyScriptClasses.Values)
 				pre.Parse();
+			// End Parse Procedure Bodies
 
 			return GenerateResource();
 		}
@@ -253,29 +262,26 @@ namespace LSNr.ReaderRules
 			return paramaters;
 		}
 		#region Register
+		public void RegisterTypeId(TypeId id) { MyTypes.Add(id.Name, id); }
+
 		public void RegisterFunction(string name, ISlice<Token> args, ISlice<Token> returnType, ISlice<Token> body)
 		{
 			FunctionSources.Add(name, new FunctionSource(args, returnType, body));
 		}
 
+		public void RegisterStructType(StructType structType) { GeneratedStructTypes.Add(structType); }
+
 		public void RegisterRecordType(string name, ISlice<Token> tokens)
 		{
 			var id = new TypeId(name);
 			MyRecords.AddPart(name, id, tokens);
-			MyTypes.Add(name, id);
-		}
-
-		public void RegisterStructType(string name, ISlice<Token> tokens)
-		{
-			var id = new TypeId(name);
-			MyStructs.AddPart(name, id, tokens);
-			MyTypes.Add(name, id);
+			RegisterTypeId(id);
 		}
 
 		public void RegisterScriptClass(string name, string hostname, bool unique, string metadata, ISlice<Token> tokens)
 		{
 			var pre = new PreScriptClass(name, this, hostname, unique, metadata, tokens);
-			MyTypes.Add(name, pre.Id);
+			RegisterTypeId(pre.Id);
 			MyScriptClasses.Add(name, pre);
 		}
 
@@ -283,8 +289,14 @@ namespace LSNr.ReaderRules
 		{
 			var pre = new PreHostInterface(name, this, tokens);
 			MyHostInterfaces.Add(name, pre);
-			MyTypes.Add(name, pre.HostInterfaceId);
+			RegisterTypeId(pre.HostInterfaceId);
 		}
+
+		public void RegisterScriptClass(ScriptClass scriptClass)
+		{
+			GeneratedScriptClasses.Add(scriptClass.Name, scriptClass);
+		}
+
 		#endregion
 		#region PreParse
 		void ParseFunctionSignatures()
@@ -333,16 +345,6 @@ namespace LSNr.ReaderRules
 				break;
 			}
 			return fields.ToArray();
-		}
-
-		void ParseStructs()
-		{
-			foreach (var (name, id, src) in MyStructs)
-			{
-				var fields = ParseFields(src);
-				var str = new StructType(id, fields); // also loads the type into the id
-				GeneratedStructTypes.Add(str);
-			}
 		}
 
 		void ParseRecords()
@@ -492,5 +494,6 @@ namespace LSNr.ReaderRules
 			}
 			return res;
 		}
+
 	}
 }
