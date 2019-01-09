@@ -69,4 +69,55 @@ namespace LSNr.ReaderRules
 			preResource.RegisterRecordType(recordType);
 		}
 	}
+
+	public class FunctionBuilder
+	{
+		readonly string Name;
+		readonly ISlice<Token> Args;
+		readonly ISlice<Token> ReturnType;
+		readonly ISlice<Token> Body;
+
+		LsnFunction Function;
+
+		public FunctionBuilder(ISlice<Token> args, ISlice<Token> ret, ISlice<Token> body, string name)
+		{ Args = args; ReturnType = ret; Body = body; Name = name; }
+
+		public void OnParsingSignatures(IPreResource resource)
+		{
+			TypeId ret = null;
+			if (ReturnType != null)
+				ret = resource.ParseTypeId(ReturnType, 0, out int i);
+			Function = new LsnFunction(resource.ParseParameters(Args,resource.Path),ret, Name, resource.Path);
+			resource.RegisterFunction(Function);
+		}
+
+		public void OnParsingProcBodies(IPreResource resource)
+		{
+			try
+			{
+				var preFn = new PreFunction(resource.Script);
+				foreach (var param in Function.Parameters)
+					preFn.CurrentScope.CreateVariable(param);
+				var cg = new CodeGen(preFn, Function.ReturnType, $"function '{Function.Name}'");
+				cg.Generate(Body);
+				if (preFn.Valid)
+				{
+					Function.Code = cg.Code;
+					Function.StackSize = cg.StackSize;
+				}
+				else
+					resource.Valid = false;
+			}
+			catch (LsnrException e)
+			{
+				Logging.Log("function", Function.Name, e);
+				resource.Valid = false;
+			}
+			catch (Exception e)
+			{
+				Logging.Log("function", Function.Name, e, resource.Path);
+				resource.Valid = false;
+			}
+		}
+	}
 }

@@ -11,15 +11,6 @@ using LSNr.Optimization;
 
 namespace LSNr.ReaderRules
 {
-	class FunctionSource
-	{
-		internal readonly ISlice<Token> Args;
-		internal readonly ISlice<Token> ReturnType;
-		internal readonly ISlice<Token> Body;
-		internal FunctionSource(ISlice<Token> args, ISlice<Token> ret, ISlice<Token> body)
-			{ Args = args; ReturnType = ret; Body = body;}
-	}
-
 	class ResourceBuilder : IPreResource, IPreScript
 	{
 		readonly List<string> Usings = new List<string>();
@@ -33,20 +24,17 @@ namespace LSNr.ReaderRules
 
 		readonly List<TypeId> UsedGenerics = new List<TypeId>();
 
-		readonly Dictionary<string, FunctionSource> FunctionSources = new Dictionary<string, FunctionSource>();
-
 		readonly Dictionary<string, TypeId> MyTypes = new Dictionary<string, TypeId>();
 
-		readonly ScriptPartMap<LsnFunction, ISlice<Token>>	MyFunctions			= new ScriptPartMap<LsnFunction, ISlice<Token>>();
-		readonly Dictionary<string, PreScriptClass>			MyScriptClasses		= new Dictionary<string, PreScriptClass>();
-		readonly Dictionary<string, PreHostInterface>		MyHostInterfaces	= new Dictionary<string, PreHostInterface>();
-
-		readonly List<StructType>						GeneratedStructTypes = new List<StructType>();
-		readonly List<RecordType>						GeneratedRecordTypes = new List<RecordType>();
+		readonly Dictionary<string, Function>			MyFunctions				= new Dictionary<string, Function>();
+		readonly Dictionary<string, PreScriptClass>		MyScriptClasses			= new Dictionary<string, PreScriptClass>();
+		readonly List<StructType>						GeneratedStructTypes	= new List<StructType>();
+		readonly List<RecordType>						GeneratedRecordTypes	= new List<RecordType>();
 		readonly Dictionary<string, ScriptClass>		GeneratedScriptClasses	= new Dictionary<string, ScriptClass>();
 		readonly Dictionary<string, HostInterfaceType>	GeneratedHostInterfaces	= new Dictionary<string, HostInterfaceType>();
 
 		public string Path { get; private set; }
+		public IPreScript Script => this;
 
 		public IScope CurrentScope { get => throw new InvalidOperationException(); set => throw new InvalidOperationException(); }
 		public bool Mutable => false;
@@ -69,7 +57,6 @@ namespace LSNr.ReaderRules
 
 			// Parse Signatures:
 			ParseSignatures?.Invoke(this);
-			ParseFunctionSignatures();
 
 			foreach (var pre in MyScriptClasses.Values)
 			{
@@ -85,7 +72,6 @@ namespace LSNr.ReaderRules
 
 			// Parse Procedure Bodies:
 			ParseProcBodies?.Invoke(this);
-			ParseFunctions();
 			foreach (var pre in MyScriptClasses.Values)
 				pre.Parse();
 			// End Parse Procedure Bodies
@@ -209,9 +195,9 @@ namespace LSNr.ReaderRules
 		#region Register
 		public void RegisterTypeId(TypeId id) { MyTypes.Add(id.Name, id); }
 
-		public void RegisterFunction(string name, ISlice<Token> args, ISlice<Token> returnType, ISlice<Token> body)
+		public void RegisterFunction(Function fn)
 		{
-			FunctionSources.Add(name, new FunctionSource(args, returnType, body));
+			MyFunctions.Add(fn.Name, fn);
 		}
 
 		public void RegisterStructType(StructType structType) { GeneratedStructTypes.Add(structType); }
@@ -231,62 +217,9 @@ namespace LSNr.ReaderRules
 		{
 			GeneratedScriptClasses.Add(scriptClass.Name, scriptClass);
 		}
-
-		#endregion
-		#region PreParse
-		void ParseFunctionSignatures()
-		{
-			foreach (var fnSrc in FunctionSources)
-			{
-				var parameters = this.ParseParameters(fnSrc.Value.Args, Path);
-				TypeId returnType = null;
-				if (fnSrc.Value.ReturnType != null)
-				{
-					try { returnType = this.ParseTypeId(fnSrc.Value.ReturnType, 0, out int i); if (i < 0) throw new ApplicationException(); }
-					catch (Exception e)
-					{
-						throw new LsnrParsingException(fnSrc.Value.ReturnType[0], $"Error parsing return type for function '{fnSrc.Key}'.", e, Path);
-					}
-				}
-				var fn = new LsnFunction(parameters, returnType, fnSrc.Key, Path);
-				MyFunctions.AddPart(fnSrc.Key, fn, fnSrc.Value.Body);
-			}
-		}
 		#endregion
 
-		void ParseFunctions()
-		{
-			foreach (var (name, fn, src) in MyFunctions)
-			{
-				try
-				{
-					var preFn = new PreFunction(this);
-					foreach (var param in fn.Parameters)
-						preFn.CurrentScope.CreateVariable(param);
-					var cg = new CodeGen(preFn, fn.ReturnType, $"function '{name}'");
-					cg.Generate(src);
-					if (preFn.Valid)
-					{
-						fn.Code = cg.Code;
-						fn.StackSize = cg.StackSize;
-					}
-					else
-						Valid = false;
-				}
-				catch (LsnrException e)
-				{
-					Logging.Log("function", name, e);
-					Valid = false;
-				}
-				catch (Exception e)
-				{
-					Logging.Log("function", name, e, Path);
-					Valid = false;
-				}
-			}
-		}
-
-		public Function GetFunction(string name) => MyFunctions.HasPart(name) ? MyFunctions.GetPart(name) : LoadedFunctions[name];
+		public Function GetFunction(string name) => MyFunctions.ContainsKey(name) ? MyFunctions[name] : LoadedFunctions[name];
 
 		public bool TypeExists(string name)
 		{
@@ -328,7 +261,7 @@ namespace LSNr.ReaderRules
 
 		public SymbolType CheckSymbol(string name)
 		{
-			if (MyFunctions.HasPart(name) || LoadedFunctions.ContainsKey(name))
+			if (MyFunctions.ContainsKey(name) || LoadedFunctions.ContainsKey(name))
 				return SymbolType.Function;
 			if ((LoadedTypes.ContainsKey(name) && ((LoadedTypes[name] as ScriptClass)?.Unique ?? false))
 				|| (GeneratedScriptClasses.ContainsKey(name) && GeneratedScriptClasses[name].Unique))// check MyScriptClasses
@@ -356,7 +289,7 @@ namespace LSNr.ReaderRules
 
 		LsnResourceThing GenerateResource() => new LsnResourceThing(GetTypeIds())
 		{
-			Functions = MyFunctions.ToDictionary(e => e.name, e => e.Part as Function),
+			Functions = MyFunctions,
 			GameValues = new Dictionary<string, GameValue>(),
 			HostInterfaces = GeneratedHostInterfaces,
 			RecordTypes = GeneratedRecordTypes.ToDictionary(r => r.Name),

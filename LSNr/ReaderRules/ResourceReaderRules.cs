@@ -12,13 +12,13 @@ namespace LSNr.ReaderRules
 	public interface IPreResource : ITypeContainer
 	{
 		string Path { get; }
-
+		IPreScript Script { get; }
 		bool Valid { get; set; }
 
 		void RegisterUsing(string file);
 
 		void RegisterScriptClass(string name, string hostname, bool unique, string metadata, ISlice<Token> tokens);
-		void RegisterFunction(string name, ISlice<Token> args, ISlice<Token> returnType, ISlice<Token> body);
+		void RegisterFunction(Function fn);
 
 		void RegisterTypeId(TypeId id);
 		void RegisterStructType(StructType structType);
@@ -103,7 +103,7 @@ namespace LSNr.ReaderRules
 		public abstract void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes);
 	}
 
-	class ResourceUsingStatementRule : ResourceReaderStatementRule
+	sealed class ResourceUsingStatementRule : ResourceReaderStatementRule
 	{
 		readonly DependencyWaiter Waiter;
 		public ResourceUsingStatementRule(IPreResource pre, DependencyWaiter waiter) : base(pre)
@@ -172,8 +172,9 @@ namespace LSNr.ReaderRules
 			}
 			if (head[i].Value != "{")
 				throw LsnrParsingException.UnexpectedToken(head[i], "{", PreResource.Path);
-
-			PreResource.RegisterFunction(name,paramTokens.ToSlice(),returnType, body);
+			var fn = new FunctionBuilder(paramTokens.ToSlice(), returnType, body, name);
+			PreResource.ParseSignatures += fn.OnParsingSignatures;
+			PreResource.ParseProcBodies += fn.OnParsingProcBodies;
 		}
 	}
 
