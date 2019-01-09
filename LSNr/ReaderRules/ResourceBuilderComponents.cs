@@ -3,14 +3,18 @@ using LsnCore.Types;
 using LsnCore.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LSNr.ReaderRules
 {
-	public abstract class ResourceBuilderSimpleTypeComponent
+	public abstract class SimpleTypeBuilder
 	{
+		protected readonly TypeId Id;
+		protected readonly ISlice<Token> Tokens;
+		protected SimpleTypeBuilder(TypeId id, ISlice<Token> tokens)
+		{
+			Id = id; Tokens = tokens;
+		}
+
 		protected static Tuple<string, TypeId>[] ParseFields(ITypeContainer typeContainer, ISlice<Token> tokens, string path)
 		{
 			if (tokens.Length < 3) // struct Circle { Radius : double}
@@ -42,21 +46,27 @@ namespace LSNr.ReaderRules
 		public abstract void OnParsingSignatures(IPreResource preResource);
 	}
 
-	public class StructBuilder : ResourceBuilderSimpleTypeComponent
+	public class StructBuilder : SimpleTypeBuilder
 	{
-		readonly TypeId Id;
-		readonly ISlice<Token> Tokens;
-
-		public StructBuilder(TypeId id, ISlice<Token> tokens)
-		{
-			Id = id; Tokens = tokens;
-		}
+		public StructBuilder(TypeId id, ISlice<Token> tokens):base(id,tokens) {}
 
 		public override void OnParsingSignatures(IPreResource preResource)
 		{
 			var fields = ParseFields(preResource, Tokens, preResource.Path);
 			var structType = new StructType(Id, fields);
 			preResource.RegisterStructType(structType);
+		}
+	}
+
+	public class RecordBuilder : SimpleTypeBuilder
+	{
+		public RecordBuilder(TypeId id, ISlice<Token> tokens) : base(id, tokens) { }
+
+		public override void OnParsingSignatures(IPreResource preResource)
+		{
+			var fields = ParseFields(preResource, Tokens, preResource.Path);
+			var recordType = new RecordType(Id, fields);
+			preResource.RegisterRecordType(recordType);
 		}
 	}
 }

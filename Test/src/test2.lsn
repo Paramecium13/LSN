@@ -128,8 +128,7 @@ fn Sum(x:int, y:int)-> int
 
 record Circle
 {
-	X : double,
-	Y : double,
+	Position: Point,
 	Radius : double
 }
 
@@ -139,7 +138,7 @@ HostInterface IStandardActivator
 }
 fn IsInCircle(circ:Circle,x:double,y:double)->bool
 {
-	return (x-circ.X)^2 + (y-circ.Y)^2 <= circ.Radius;
+	return (x-circ.Position.X)^2 + (y-circ.Position.Y)^2 <= circ.Radius;
 }
 
 fn GetArea(circ:Circle)->double

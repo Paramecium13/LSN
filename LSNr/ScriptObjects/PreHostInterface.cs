@@ -9,7 +9,7 @@ using LSNr.ReaderRules;
 
 namespace LSNr
 {
-	public class PreHostInterface : IPreScript
+	public class PreHostInterface : ITypeContainer// IPreScript
 	{
 		private readonly string Name;
 
@@ -181,7 +181,6 @@ namespace LSNr
 
 			return new FunctionSignature(parameters, name, returnType);
 		}
-
 
 		public void GenericTypeUsed(TypeId typeId)
 		{

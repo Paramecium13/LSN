@@ -38,8 +38,7 @@ namespace LSNr.ReaderRules
 		readonly Dictionary<string, TypeId> MyTypes = new Dictionary<string, TypeId>();
 
 		readonly ScriptPartMap<LsnFunction, ISlice<Token>>	MyFunctions			= new ScriptPartMap<LsnFunction, ISlice<Token>>();
-		readonly ScriptPartMap<TypeId, ISlice<Token>>		MyRecords			= new ScriptPartMap<TypeId, ISlice<Token>>();
-		readonly Dictionary<string,PreScriptClass>			MyScriptClasses		= new Dictionary<string, PreScriptClass>();
+		readonly Dictionary<string, PreScriptClass>			MyScriptClasses		= new Dictionary<string, PreScriptClass>();
 		readonly Dictionary<string, PreHostInterface>		MyHostInterfaces	= new Dictionary<string, PreHostInterface>();
 
 		readonly List<StructType>						GeneratedStructTypes = new List<StructType>();
@@ -72,7 +71,6 @@ namespace LSNr.ReaderRules
 			ParseSignatures?.Invoke(this);
 			ParseFunctionSignatures();
 
-			ParseRecords();
 			foreach (var pre in MyHostInterfaces.Values)
 				GeneratedHostInterfaces.Add(pre.HostInterfaceId.Name,pre.Parse());
 			foreach (var pre in MyScriptClasses.Values)
@@ -271,12 +269,7 @@ namespace LSNr.ReaderRules
 
 		public void RegisterStructType(StructType structType) { GeneratedStructTypes.Add(structType); }
 
-		public void RegisterRecordType(string name, ISlice<Token> tokens)
-		{
-			var id = new TypeId(name);
-			MyRecords.AddPart(name, id, tokens);
-			RegisterTypeId(id);
-		}
+		public void RegisterRecordType(RecordType recordType) { GeneratedRecordTypes.Add(recordType); }
 
 		public void RegisterScriptClass(string name, string hostname, bool unique, string metadata, ISlice<Token> tokens)
 		{
@@ -315,45 +308,6 @@ namespace LSNr.ReaderRules
 				}
 				var fn = new LsnFunction(parameters, returnType, fnSrc.Key, Path);
 				MyFunctions.AddPart(fnSrc.Key, fn, fnSrc.Value.Body);
-			}
-		}
-
-		Tuple<string, TypeId>[] ParseFields(ISlice<Token> tokens)
-		{
-			if (tokens.Length < 3) // struct Circle { Radius : double}
-			{
-				throw new LsnrParsingException(tokens[0], "too few tokens.", Path);
-			}
-			var fields = new List<Tuple<string, TypeId>>();
-			for (int i = 0; i < tokens.Length; i++)
-			{
-				var fName = tokens[i++].Value; // Get the name of the field, move on to the next token.
-				if (i >= tokens.Length) // Make sure the definition does not end..
-					throw new LsnrParsingException(tokens[i - 1], "unexpected end of declaration, expected ':'.", Path);
-				if (tokens[i++].Value != ":") // Make sure the next token is ':', move on to the next token.
-					throw LsnrParsingException.UnexpectedToken(tokens[i - 1], ":", Path);
-				if (i >= tokens.Length) // Make sure the definition does not end.
-					throw new LsnrParsingException(tokens[i - 1], "unexpected end of declaration, expected type.", Path);
-				var tId = this.ParseTypeId(tokens, i, out i);
-				fields.Add(new Tuple<string, TypeId>(fName, tId));
-				if (i + 1 < tokens.Length && tokens[i].Value == ",") // Check if the definition ends, move on to the next token
-																	 // and check that it is ','.
-				{
-					// Move on to the next token, which should be the name of the next field.
-					continue; // Move on to the next field.
-				}
-				break;
-			}
-			return fields.ToArray();
-		}
-
-		void ParseRecords()
-		{
-			foreach (var (name, id, src) in MyRecords)
-			{
-				var fields = ParseFields(src);
-				var rec = new RecordType(id, fields); // also loads the type into the id
-				GeneratedRecordTypes.Add(rec);
 			}
 		}
 		#endregion
@@ -494,6 +448,5 @@ namespace LSNr.ReaderRules
 			}
 			return res;
 		}
-
 	}
 }
