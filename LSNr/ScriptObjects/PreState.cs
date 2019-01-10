@@ -17,29 +17,13 @@ namespace LSNr
 
 		public int Index { get; }
 
-		public override IScope CurrentScope { get; set; }
-
-		public override bool Mutable => Resource.Mutable;
-
-		public override bool Valid
-		{
-			get { return Resource.Valid; }
-			set { Resource.Valid = value; }
-		}
-
 		public PreState(PreScriptClass parent, string name, int index, IPreScript resource, IReadOnlyList<Token> tokens)
 			:base(tokens,parent.Id,resource,parent.HostName)
 		{
 			Parent = parent; StateName = name; Index = index;
-			HostType = parent.HostType;
+			HostId = parent.HostId;
 		}
 
-		public override Function GetFunction(string name)		=> Resource.GetFunction(name);
-		public override bool GenericTypeExists(string name)		=> Resource.GenericTypeExists(name);
-		public override GenericType GetGenericType(string name)	=> Resource.GetGenericType(name);
-		public override bool TypeExists(string name)			=> Parent.TypeExists(name);
-		public override LsnType GetType(string name)			=> Parent.GetType(name);
-		public override TypeId GetTypeId(string name)			=> Parent.GetTypeId(name);
 		internal override Property GetProperty(string val)		=> Parent.GetProperty(val);
 		internal override int GetPropertyIndex(string val)		=> Parent.GetPropertyIndex(val);
 		internal override Field GetField(string name)			=> Parent.GetField(name);

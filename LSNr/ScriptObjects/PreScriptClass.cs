@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
 using LSNr.Optimization;
+using LSNr.ReaderRules;
 
 namespace LSNr
 {
@@ -31,28 +32,12 @@ namespace LSNr
 
 		private List<Token> ConstructorTokens;
 
-		public override IScope CurrentScope { get; set; }
-
-		public override bool Mutable => Resource.Mutable;
-
-		public override bool Valid
-		{
-			get{ return Resource.Valid; }
-			set{ Resource.Valid = value; }
-		}
 		private readonly string Metadata;
 		public PreScriptClass(string name, IPreScript resource, string hostName, bool isUnique, string metadata, IReadOnlyList<Token> tokens)
 			:base(tokens, new TypeId(name),resource,hostName)
 		{
 			Name = name; IsUnique = isUnique; Metadata = metadata; //ToDo: Make the typeId contain the actual type...
 		}
-
-		public override Function GetFunction(string name)		=> Resource.GetFunction(name);
-		public override bool GenericTypeExists(string name)		=> Resource.GenericTypeExists(name);
-		public override GenericType GetGenericType(string name)	=> Resource.GetGenericType(name);
-		public override LsnType GetType(string name)			=> name == Name ? Id.Type : Resource.GetType(name);
-		public override TypeId GetTypeId(string name)			=> name == Name ? Id : Resource.GetTypeId(name);
-		public override bool TypeExists(string name)			=> name == Name || Resource.TypeExists(name);
 
 		public override SymbolType CheckSymbol(string name)
 		{
@@ -83,6 +68,14 @@ namespace LSNr
 		/// <returns></returns>
 		public override bool IsMethodSignatureValid(FunctionSignature signature) =>
 			CheckSymbol(signature.Name) == SymbolType.Undefined && !MethodExists(signature.Name); // No method exists with this name.
+
+		public void  OnParsingSignatures(IPreResource resource)
+		{
+			if(HostName != null)
+				HostId = resource.GetTypeId(HostName);
+			var scriptClass = PreParse();
+			resource.RegisterScriptClass(scriptClass);
+		}
 
 		internal ScriptClass PreParse()
 		{
@@ -279,6 +272,11 @@ namespace LSNr
 			return scClass;
 		}
 
+		public void OnParsingProcBodies()
+		{
+			Parse();
+		}
+
 		internal bool Parse()
 		{
 			// Parse methods
@@ -289,12 +287,12 @@ namespace LSNr
 
 			// Parse states
 			foreach (var state in PreStates)
-				Valid &= state.Parse();
+				Resource.Valid &= state.Parse();
 
 			if (Constructor != null)
 				ParseConstructor();
 
-			return Valid;
+			return Resource.Valid;
 		}
 
 		private void ParseConstructor()
@@ -314,12 +312,12 @@ namespace LSNr
 			}
 			catch (LsnrException e)
 			{
-				Valid = false;
+				Resource.Valid = false;
 				Logging.Log($"constructor for script class {Name}", e);
 			}
 			catch (Exception e)
 			{
-				Valid = false;
+				Resource.Valid = false;
 				Logging.Log($"consructor for script class {Name}", e, Path);
 			}
 		}

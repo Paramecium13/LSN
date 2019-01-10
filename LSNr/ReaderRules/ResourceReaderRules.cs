@@ -17,7 +17,6 @@ namespace LSNr.ReaderRules
 
 		void RegisterUsing(string file);
 
-		void RegisterScriptClass(string name, string hostname, bool unique, string metadata, ISlice<Token> tokens);
 		void RegisterFunction(Function fn);
 
 		void RegisterTypeId(TypeId id);
@@ -26,7 +25,8 @@ namespace LSNr.ReaderRules
 		void RegisterHostInterface(HostInterfaceType host);
 		void RegisterScriptClass(ScriptClass scriptClass);
 
-		event Action<IPreResource> ParseSignatures;
+		event Action<IPreResource> ParseSignaturesA;
+		event Action<IPreResource> ParseSignaturesB;
 		event Action<IPreResource> ParseProcBodies;
 
 		LsnResourceThing Parse();
@@ -173,7 +173,7 @@ namespace LSNr.ReaderRules
 			if (head[i].Value != "{")
 				throw LsnrParsingException.UnexpectedToken(head[i], "{", PreResource.Path);
 			var fn = new FunctionBuilder(paramTokens.ToSlice(), returnType, body, name);
-			PreResource.ParseSignatures += fn.OnParsingSignatures;
+			PreResource.ParseSignaturesA += fn.OnParsingSignatures;
 			PreResource.ParseProcBodies += fn.OnParsingProcBodies;
 		}
 	}
@@ -192,7 +192,7 @@ namespace LSNr.ReaderRules
 			var id = new TypeId(head[1].Value);
 			PreResource.RegisterTypeId(id);
 			var builder = new StructBuilder(id, body);
-			PreResource.ParseSignatures += builder.OnParsingSignatures;
+			PreResource.ParseSignaturesA += builder.OnParsingSignatures;
 		}
 	}
 
@@ -210,7 +210,7 @@ namespace LSNr.ReaderRules
 			var id = new TypeId(head[1].Value);
 			PreResource.RegisterTypeId(id);
 			var builder = new RecordBuilder(id, body);
-			PreResource.ParseSignatures += builder.OnParsingSignatures;
+			PreResource.ParseSignaturesA += builder.OnParsingSignatures;
 		}
 	}
 
@@ -229,7 +229,7 @@ namespace LSNr.ReaderRules
 			if (head[0].Value == "host") name = head[2].Value;
 			else name = head[1].Value;
 			var host = new PreHostInterface(name, PreResource, body);
-			PreResource.ParseSignatures += host.OnParsingSignatures;
+			PreResource.ParseSignaturesA += host.OnParsingSignatures;
 		}
 	}
 
@@ -286,7 +286,10 @@ namespace LSNr.ReaderRules
 				if (head[i].Value != "{")
 					throw LsnrParsingException.UnexpectedToken(head[i], "{", PreResource.Path);
 			}
-			PreResource.RegisterScriptClass(name, host, unique, meta, body);
+			var scriptClass = new PreScriptClass(name, PreResource.Script, host, unique, meta, body);
+			PreResource.ParseSignaturesB += scriptClass.OnParsingSignatures;
+			PreResource.ParseProcBodies += (_) => scriptClass.OnParsingProcBodies();
+			PreResource.RegisterTypeId(scriptClass.Id);
 		}
 	}
 }

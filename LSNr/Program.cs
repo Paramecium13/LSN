@@ -129,56 +129,6 @@ namespace LSNr
 			return rawPath;
 		}
 
-		public static void ReifyB(DependenciesNode myNode, IReadOnlyDictionary<string, Task> tasks)
-		{
-			var deps = new HashSet<string>(myNode.DependencyPaths);
-			MyWaitHandle.WaitOne();
-			foreach (var path in deps)
-				tasks[path].Wait();
-
-			// Parse the file
-			var source = File.ReadAllText(GetSourcePath(myNode.Path));
-			if (Regex.IsMatch(source, "#using", RegexOptions.IgnoreCase))
-			{
-				var updateDepsFile = false;
-				var usings = new List<string>();
-				foreach (var match in Regex.Matches(source, "#using\\s+\"(.+)\"").Cast<Match>())
-				{
-					var u = match.Groups.OfType<object>().Select(o => o.ToString()).Skip(1).First();
-					if (!u.StartsWith(@"Lsn Core\", StringComparison.Ordinal) &&
-							!u.StartsWith(@"std\", StringComparison.Ordinal))
-						usings.Add(GetSourcePath(u));
-				}
-
-				foreach (var path in usings)
-				{
-					if (!deps.Contains(path))
-					{
-						tasks[path].Wait();
-						updateDepsFile = true;
-					}
-				}
-				if (updateDepsFile)
-					_DependenciesFile.Dependencies[myNode.Path] = usings;
-			}
-			var rs = new PreResource(source, GetSourcePath(myNode.Path));
-			rs.Reify();
-			// Save the file.
-			LsnResourceThing res;
-			if (!rs.Valid)
-			{
-				res = null;
-				Console.WriteLine("Invalid source.");
-				Console.ReadLine();
-				throw new ApplicationException();
-			}
-			res = rs.GetResource();
-			using (var fs = File.Create(GetObjectPath(myNode.Path)))
-			{
-				res.Serialize(fs);
-			}
-		}
-
 		private static DependencyWaiter DependencyWaiter;
 
 		public static void Reify(DependenciesNode myNode, IReadOnlyDictionary<string, Task> tasks)

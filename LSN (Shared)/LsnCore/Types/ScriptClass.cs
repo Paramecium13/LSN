@@ -217,8 +217,10 @@ namespace LsnCore.Types
 			ScriptClassConstructor constructor = null;
 			if (reader.ReadBoolean())
 				constructor = ScriptClassConstructor.Read(reader, resourceFilePath, resourceDeserializer);
-
-			return new ScriptClass(type, typeContainer.GetTypeId(hostInterfaceTypeName), props, fields, methods, listeners,
+			TypeId h = null;
+			if(!string.IsNullOrEmpty(hostInterfaceTypeName))
+				h = typeContainer.GetTypeId(hostInterfaceTypeName);
+			return new ScriptClass(type, h, props, fields, methods, listeners,
 				states, defaultStateId, unique, meta, constructor);
 		}
 	}

@@ -6,39 +6,39 @@ using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
 using LSNr.Optimization;
+using LSNr.ReaderRules;
 
 namespace LSNr
 {
-	public abstract class BasePreScriptClass : IPreScript
+	public abstract class BasePreScriptClass : ITypeContainer
 	{
-		public abstract IScope CurrentScope { get; set; }
-		public abstract bool Mutable { get; }
-		public abstract bool Valid { get; set; }
-
 		public string Path => Resource.Path;
 
 		// The Id of the ScriptObject this is for.
 		internal readonly TypeId Id;
 		protected readonly IReadOnlyList<Token> Tokens;
 		protected readonly IPreScript Resource;
+		public bool Valid { get { return Resource.Valid; } set { Resource.Valid = value; } }
 
+		public bool Mutable => Resource.Mutable;
 		internal readonly string HostName;
-		internal HostInterfaceType HostType;
+		internal TypeId HostId;
+		internal HostInterfaceType HostType => HostId?.Type as HostInterfaceType;
 
 		protected readonly Dictionary<string, ScriptClassMethod> Methods = new Dictionary<string, ScriptClassMethod>();
 		protected readonly Dictionary<string, IReadOnlyList<Token>> MethodBodies = new Dictionary<string, IReadOnlyList<Token>>();
 		protected readonly Dictionary<string, EventListener> EventListeners = new Dictionary<string, EventListener>();
 		protected readonly Dictionary<string, IReadOnlyList<Token>> EventListenerBodies = new Dictionary<string, IReadOnlyList<Token>>();
 
-		public abstract SymbolType CheckSymbol(string name);
-		public abstract bool GenericTypeExists(string name);
-		public abstract Function GetFunction(string name);
-		internal abstract Field GetField(string name);
-		public abstract GenericType GetGenericType(string name);
-		public abstract LsnType GetType(string name);
-		public abstract TypeId GetTypeId(string name);
-		public abstract bool TypeExists(string name);
+		public Function GetFunction(string name)		=> Resource.GetFunction(name);
+		public bool GenericTypeExists(string name)		=> Resource.GenericTypeExists(name);
+		public GenericType GetGenericType(string name)	=> Resource.GetGenericType(name);
+		public LsnType GetType(string name)				=> name == Id.Name ? Id.Type : Resource.GetType(name);
+		public TypeId GetTypeId(string name)			=> name == Id.Name ? Id : Resource.GetTypeId(name);
+		public bool TypeExists(string name)				=> name == Id.Name || Resource.TypeExists(name);
 
+		public abstract SymbolType CheckSymbol(string name);
+		internal abstract Field GetField(string name);
 		internal abstract Property GetProperty(string val);
 		internal abstract int GetPropertyIndex(string val);
 		internal abstract bool StateExists(string name);
@@ -61,24 +61,10 @@ namespace LSNr
 
 		protected IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens, bool isEvent)
 		{
-			var paramaters = new List<Parameter>();
-			ushort index = 0;
-			for (int i = 0; i < tokens.Count; i++)
+			var paramaters = this.ParseParameters(tokens, Resource.Path);
+			if (isEvent && paramaters.Any(p => !p.DefaultValue.IsNull))
 			{
-				var name = tokens[i].Value;
-				if (tokens[++i].Value != ":")
-					throw new LsnrParsingException(tokens[i], $"Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.", Path);
-				var type = this.ParseTypeId(tokens, ++i, out i);
-				LsnValue defaultValue = LsnValue.Nil;
-				if (i < tokens.Count && tokens[i].Value == "=")
-				{
-					if (isEvent)
-						throw new LsnrParsingException(tokens[i], "Cannot have default values for event listeners", Path);
-					throw new NotImplementedException();
-				}
-				paramaters.Add(new Parameter(name, type, defaultValue, index++));
-				if (i < tokens.Count && tokens[i].Value != ",")
-					throw new LsnrParsingException(tokens[i], $"Expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.", Path);
+				throw new LsnrParsingException(tokens[0], "Cannot have default values for event listeners", Path);
 			}
 			return paramaters;
 		}
@@ -227,6 +213,7 @@ namespace LSNr
 
 			// Use def, which contains a self parameter, instead of hostDef, which doesn't.
 			return new EventListener(def, new string(Resource.Path.Skip(4).ToArray()));
+
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
@@ -262,14 +249,14 @@ namespace LSNr
 				}
 				catch (LsnrException e)
 				{
-					Valid = false;
+					Resource.Valid = false;
 					var st = this as PreState;
 					var x = st != null ? $"state {st.StateName} of " : "";
 					Logging.Log($"method '{method.Name}' in {x}script class {this.Id.Name}", e);
 				}
 				catch (Exception e)
 				{
-					Valid = false;
+					Resource.Valid = false;
 					var st = this as PreState;
 					var x = st != null ? $"state {st.StateName} of " : "";
 					Logging.Log($"method '{method.Name}' in {x}script class {this.Id.Name}", e, Path);
@@ -299,14 +286,14 @@ namespace LSNr
 				}
 				catch (LsnrException e)
 				{
-					Valid = false;
+					Resource.Valid = false;
 					var st = this as PreState;
 					var x = st != null ? $"state {st.StateName} of " : "";
 					Logging.Log($"event listener '{eventListener.Definition.Name}' in {x}script object {this.Id.Name}", e);
 				}
 				catch (Exception e)
 				{
-					Valid = false;
+					Resource.Valid = false;
 					var st = this as PreState;
 					var x = st != null ? $"state {st.StateName} of " : "";
 					Logging.Log($"event listener '{eventListener.Definition.Name}' in {x}script object {this.Id.Name}", e, Path);

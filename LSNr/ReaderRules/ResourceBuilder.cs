@@ -45,7 +45,8 @@ namespace LSNr.ReaderRules
 			Path = path;
 		}
 
-		public event Action<IPreResource> ParseSignatures;
+		public event Action<IPreResource> ParseSignaturesA;
+		public event Action<IPreResource> ParseSignaturesB;
 
 		public event Action<IPreResource> ParseProcBodies;
 		/// <summary>
@@ -56,24 +57,13 @@ namespace LSNr.ReaderRules
 			// All type names have been registered.
 
 			// Parse Signatures:
-			ParseSignatures?.Invoke(this);
+			ParseSignaturesA?.Invoke(this);
+			ParseSignaturesB?.Invoke(this);
 
-			foreach (var pre in MyScriptClasses.Values)
-			{
-				if (pre.HostName != null)
-				{
-					if (!TypeExists(pre.HostName))
-						throw new LsnrTypeNotFoundException(Path, pre.HostName);
-					pre.HostType = GeneratedHostInterfaces[pre.HostName];
-				}
-				GeneratedScriptClasses.Add(pre.Name, pre.PreParse());
-			}
 			// End Parse Signatures
 
 			// Parse Procedure Bodies:
 			ParseProcBodies?.Invoke(this);
-			foreach (var pre in MyScriptClasses.Values)
-				pre.Parse();
 			// End Parse Procedure Bodies
 
 			return GenerateResource();
@@ -206,13 +196,6 @@ namespace LSNr.ReaderRules
 
 		public void RegisterHostInterface(HostInterfaceType host) { GeneratedHostInterfaces.Add(host.Name, host); }
 
-		public void RegisterScriptClass(string name, string hostname, bool unique, string metadata, ISlice<Token> tokens)
-		{
-			var pre = new PreScriptClass(name, this, hostname, unique, metadata, tokens);
-			RegisterTypeId(pre.Id);
-			MyScriptClasses.Add(name, pre);
-		}
-
 		public void RegisterScriptClass(ScriptClass scriptClass)
 		{
 			GeneratedScriptClasses.Add(scriptClass.Name, scriptClass);
@@ -243,6 +226,8 @@ namespace LSNr.ReaderRules
 		public GenericType GetGenericType(string name) => LoadedGenerics[name];
 
 		public LsnType GetType(string name) {
+			if (name == null)
+				throw new ApplicationException();
 			if (name.Contains('`'))
 			{
 				var names = name.Split('`');
