@@ -158,6 +158,7 @@
     <Compile Include="IPreScript.cs" />
     <Compile Include="IScope.cs" />
     <Compile Include="Statements\AssignmentStatementRules.cs" />
+    <Compile Include="Statements\GiveStatementRules.cs" />
     <Compile Include="Statements\IStatementRule.cs" />
     <Compile Include="Statements\ScriptClassStatementRules.cs" />
     <Compile Include="Statements\SimpleStatementRules.cs" />

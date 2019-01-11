@@ -36,9 +36,15 @@ namespace LSNr.Statements
 			var name = tokens[i++].Value;
 			var symType = script.CheckSymbol(name);
 			switch (symType)
-			{
+			{//1F4CE
 				case SymbolType.UniqueScriptObject:
 				case SymbolType.Variable:
+					var msg = $"Cannot name a new variable '{name}'. That name is already used for another variable.";
+					if (script.CurrentScope.GetVariable(name).Mutable)
+						msg += $"\n\u3DD8\uCEDC:\"It looks like you're trying to change the value of '{name}'. To do so here, simply leave off the word 'let'.\"";
+					else
+						msg += $"\n\u3DD8\uCEDC:\"It looks like you're trying to change the value of '{name}'. To do so, mark it as mutable where it was declared by putting 'mut' after 'let' and leave off the word 'let' here.\"";
+					throw new LsnrParsingException(tokens[i - 1], msg, script.Path);
 				case SymbolType.GlobalVariable:
 				case SymbolType.Field:
 				case SymbolType.Property:
@@ -62,7 +68,7 @@ namespace LSNr.Statements
 
 	public class ReasignmentStatementRule : IStatementRule
 	{
-		public int Order => StatementRuleOrders.Last;
+		public virtual int Order => StatementRuleOrders.Reassign;
 
 		public virtual bool PreCheck(Token t) => true;
 
@@ -70,12 +76,14 @@ namespace LSNr.Statements
 
 		public virtual Statement Apply(ISlice<Token> tokens, IPreScript script)
 		{
-			throw new NotImplementedException();
+			var i = tokens.IndexOf("=");
+			var lTokens = tokens.CreateSliceTaking(i);
+			return Make(Create.Express(lTokens, script), Create.Express(tokens.CreateSliceAt(i + 1), script), script, lTokens);
 		}
 
-		protected static Statement Make(ISlice<Token> lTokens, IExpression rValue, IPreScript script)
+		protected static Statement Make(IExpression lValue, IExpression rValue, IPreScript script, ISlice<Token> lTokens)
 		{
-			switch (Create.Express(lTokens, script))
+			switch (lValue)
 			{
 				case VariableExpression v:
 					{
@@ -112,6 +120,27 @@ namespace LSNr.Statements
 					throw new LsnrParsingException(lTokens[0],
 						$"Cannot assign a different value to '{lTokens.Select(t=> t.Value).Aggregate((x,y) =>x + " " + y)}'.", script.Path);
 			}
+		}
+	}
+
+	public sealed class BinExprReassignStatementRule : ReasignmentStatementRule
+	{
+		readonly string Value;
+		readonly BinaryOperation Operation;
+
+		public BinExprReassignStatementRule(string val, BinaryOperation op) { Value = val; Operation = op; }
+
+		public override bool Check(ISlice<Token> tokens, IPreScript script)
+			=> tokens.Any(t => t.Value == Value);
+
+		public override Statement Apply(ISlice<Token> tokens, IPreScript script)
+		{
+			var i = tokens.IndexOf(Value);
+			var lTokens = tokens.CreateSliceTaking(i);
+			var lValue = Create.Express(lTokens, script);
+			var tmp = Create.Express(tokens.CreateSliceAt(i + 1),script);
+			var rValue = new BinaryExpression(lValue, tmp, Operation, BinaryExpression.GetArgTypes(lValue.Type, tmp.Type));
+			return Make(lValue, rValue, script, lTokens);
 		}
 	}
 }

@@ -15,6 +15,10 @@ namespace LSNr.Statements
 	{
 		public const int Base = 0;
 
-		public const int Last = int.MaxValue;
+		public const int GiveGold = 100;
+
+		public const int GiveItem = 101;
+
+		public const int Reassign = 10_000;
 	}
 }
