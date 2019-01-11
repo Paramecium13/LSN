@@ -70,4 +70,19 @@ namespace LSNr.ControlStructures
 			return new ElseControl(components);
 		}
 	}
+
+	public sealed class ChoiceStructureRule : ControlStructureRule
+	{
+		public override bool PreCheck(Token t) => t.Value == "choice";
+
+		public override bool Check(ISlice<Token> tokens, IPreScript script) => true;
+
+		public override ControlStructure Apply(ISlice<Token> head, ISlice<Token> body, IPreScript script)
+		{
+			var p = new Parser(body, script);
+			p.Parse();
+			var components = Parser.Consolidate(p.Components);
+			return new ChoicesBlockControl(components);
+		}
+	}
 }
