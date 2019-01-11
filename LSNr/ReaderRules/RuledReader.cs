@@ -7,7 +7,6 @@ using LsnCore.Utilities;
 
 namespace LSNr.ReaderRules
 {
-
 	[Serializable]
 	public class NoValidRuleException : Exception
 	{
@@ -19,7 +18,7 @@ namespace LSNr.ReaderRules
 		  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 	}
 
-	abstract class RuledReader<TStatementRule, TBodyRule> : ReaderBase
+	public abstract class RuledReader<TStatementRule, TBodyRule> : ReaderBase
 		where TStatementRule : IReaderStatementRule
 		where TBodyRule : IReaderBodyRule
 	{

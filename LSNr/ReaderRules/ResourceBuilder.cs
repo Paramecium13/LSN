@@ -29,7 +29,6 @@ namespace LSNr.ReaderRules
 		readonly Dictionary<string, TypeId> MyTypes = new Dictionary<string, TypeId>();
 
 		readonly Dictionary<string, Function>			MyFunctions				= new Dictionary<string, Function>();
-		readonly Dictionary<string, PreScriptClass>		MyScriptClasses			= new Dictionary<string, PreScriptClass>();
 		readonly List<StructType>						GeneratedStructTypes	= new List<StructType>();
 		readonly List<RecordType>						GeneratedRecordTypes	= new List<RecordType>();
 		readonly Dictionary<string, ScriptClass>		GeneratedScriptClasses	= new Dictionary<string, ScriptClass>();

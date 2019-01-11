@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LSNr
 {
-	abstract class ReaderBase
+	public abstract class ReaderBase
 	{
 		private readonly ISlice<Token> Tokens;
 

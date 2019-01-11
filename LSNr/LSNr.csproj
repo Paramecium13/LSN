@@ -159,6 +159,8 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="IPreScript.cs" />
     <Compile Include="IScope.cs" />
+    <Compile Include="ScriptObjects\ScriptClassComponent.cs" />
+    <Compile Include="ScriptObjects\ScriptClassReader.cs" />
     <Compile Include="Statements\AssignmentStatementRules.cs" />
     <Compile Include="Statements\CommandStatementRules.cs" />
     <Compile Include="Statements\GiveStatementRules.cs" />
