@@ -107,6 +107,7 @@
     <Compile Include="CodeGen.cs" />
     <Compile Include="ControlStructures\ConditionalStructureRules.cs" />
     <Compile Include="ControlStructures\IControlStructureRule.cs" />
+    <Compile Include="ControlStructures\LoopRules.cs" />
     <Compile Include="Dependencies.cs" />
     <Compile Include="DependenciesForest.cs" />
     <Compile Include="GlobalSuppressions.cs" />
