@@ -104,8 +104,10 @@ namespace LSNr.LssParser
 				var arr = fieldType.FieldsB.Where(f => f.Name == memberName).ToArray();
 				if (arr.Length != 0)
 				{
+					if (scType != null && !(script is PreScriptClassFunction && leftExpr is VariableExpression v && v.Index == 0))
+						throw new LsnrParsingException(tokens[index], "A script object's fields can only be accessed by that script object.", script.Path);
 					nextIndex = index + 2;
-					expr = new FieldAccessExpression(leftExpr, arr[0]);	// ToDo: Encapsulation...
+					expr = new FieldAccessExpression(leftExpr, arr[0]);
 				}
 			}
 

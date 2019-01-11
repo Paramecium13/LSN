@@ -100,12 +100,8 @@ namespace LSNr.Statements
 					{
 						if (f.Type.Type is RecordType)
 							throw new LsnrParsingException(lTokens[0], "Cannot reassign the contents of a record.", script.Path);
-						if(f.Type.Type is ScriptClass type)
-						{
-							if (!(script is PreScriptClassFunction && f.Value is VariableExpression v && v.Index == 0))
-								throw new LsnrParsingException(lTokens[0], "Cannot modify fields of other script objects.", script.Path);
-							//if (!(type.Fields[f.Index].Mutable)) throw ...;
-						}
+						/*if(f.Type.Type is ScriptClass type && !(type.Fields[f.Index].Mutable))
+							throw ...;*/
 						if (!f.Type.Subsumes(rValue.Type))
 							throw LsnrParsingException.TypeMismatch(lTokens[0], f.Type.Name, rValue.Type.Name, script.Path);
 						return new FieldAssignmentStatement(f.Value, f.Index, rValue);
