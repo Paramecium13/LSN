@@ -17,12 +17,6 @@ namespace LsnCore.ControlStructures
 		{
 			Components = components; Title = title; Condition = condition;
 		}
-#if CORE
-		public override InterpretValue Interpret(IInterpreter i)
-			=> throw new NotImplementedException();
-
-		public bool Check(IInterpreter i) => Condition?.Eval(i).BoolValue ?? true;
-#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{

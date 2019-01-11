@@ -3,11 +3,20 @@ using LsnCore.Utilities;
 
 namespace LSNr.ControlStructures
 {
-	interface IControlStructureRule
+	public abstract class ControlStructureRule
 	{
-		int Order { get; }
-		bool PreCheck(Token t);
-		bool Check(ISlice<Token> tokens, IPreScript script);
-		ControlStructure Apply(ISlice<Token> tokens, IPreScript script);
+		public virtual int Order => ControlStructureRuleOrders.Base;
+		public abstract bool PreCheck(Token t);
+		public abstract bool Check(ISlice<Token> tokens, IPreScript script);
+		public abstract ControlStructure Apply(ISlice<Token> head, ISlice<Token> body, IPreScript script);
+	}
+
+	public static class ControlStructureRuleOrders
+	{
+		public static readonly int Base = 0;
+
+		public static readonly int ElsIf = 100;
+
+		public static readonly int Else = 101;
 	}
 }

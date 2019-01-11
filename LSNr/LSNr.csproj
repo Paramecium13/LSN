@@ -105,6 +105,7 @@
   <ItemGroup>
     <Compile Include="BasePreScript.cs" />
     <Compile Include="CodeGen.cs" />
+    <Compile Include="ControlStructures\ConditionalStructureRules.cs" />
     <Compile Include="ControlStructures\IControlStructureRule.cs" />
     <Compile Include="Dependencies.cs" />
     <Compile Include="DependenciesForest.cs" />
