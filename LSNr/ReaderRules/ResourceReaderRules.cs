@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
 using LsnCore.Utilities;
+using LSNr.ScriptObjects;
 
 namespace LSNr.ReaderRules
 {
@@ -228,7 +229,9 @@ namespace LSNr.ReaderRules
 			string name;
 			if (head[0].Value == "host") name = head[2].Value;
 			else name = head[1].Value;
-			var host = new PreHostInterface(name, PreResource, body);
+			var id = new TypeId(name);
+			PreResource.RegisterTypeId(id);
+			var host = new HostInterfaceComponent(PreResource, id, body, PreResource.Script.Path);
 			PreResource.ParseSignaturesA += host.OnParsingSignatures;
 		}
 	}
