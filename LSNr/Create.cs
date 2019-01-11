@@ -241,7 +241,7 @@ namespace LSNr
 			return null;
 		}
 
-		private static IExpression Express(IEnumerable<Token> tokens, IPreScript script/*, IExpressionContainer container*/)
+		public static IExpression Express(IEnumerable<Token> tokens, IPreScript script/*, IExpressionContainer container*/)
 			=> Express(tokens.ToList(), script);
 
 		private static List<Variable> __variables = new List<Variable>();
