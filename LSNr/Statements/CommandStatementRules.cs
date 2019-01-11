@@ -58,7 +58,7 @@ namespace LSNr.Statements
 
 	public sealed class GoToStatementRule : IStatementRule
 	{
-		public int Order => throw new NotImplementedException();
+		public int Order => StatementRuleOrders.Base;
 
 		public bool PreCheck(Token t) => true;
 
@@ -119,7 +119,7 @@ namespace LSNr.Statements
 
 	public sealed class AttachStatementRule : IStatementRule
 	{
-		public int Order => throw new NotImplementedException();
+		public int Order => StatementRuleOrders.Base;
 
 		public bool PreCheck(Token t) => t.Value == "attach";
 

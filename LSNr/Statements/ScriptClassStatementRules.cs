@@ -20,12 +20,12 @@ namespace LSNr.Statements
 
 		public Statement Apply(ISlice<Token> tokens, IPreScript script)
 		{
-			var offset = tokens[0].Value == "setstate" ? 0 : 1;
-			if (tokens[offset + 1].Value == "to") ++offset;
+			var offset = tokens[0].Value == "setstate" ? 1 : 2;
+			if (tokens[offset].Value == "to") ++offset;
 			var stateName = tokens[offset].Value;
 			var pre = script as PreScriptClassFunction;
 			if (!pre.Parent.StateExists(stateName))
-				throw new LsnrParsingException(tokens[offset], $"The script class '{pre.Parent.Id.Name}' does not have a state '{stateName}'.", script.Path);
+				throw new LsnrParsingException(tokens[0], $"The script class '{pre.Parent.Id.Name}' does not have a state '{stateName}'.", script.Path);
 			return new SetStateStatement(pre.Parent.GetStateIndex(stateName));
 		}
 	}

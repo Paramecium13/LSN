@@ -20,7 +20,7 @@ namespace LSNr
 		/// <param name="tokens"> The tokens of the statement, not including the ';'.</param>
 		/// <param name="script"> The script.</param>
 		/// <returns></returns>
-		public static Statement State(ISlice<Token> tokens, IPreScript script)
+		public static Statement State_Old(ISlice<Token> tokens, IPreScript script)
 		{
 			var v = tokens[0].Value.ToLower();
 			int n = tokens.Count;
@@ -88,6 +88,29 @@ namespace LSNr
 			// collection value access expression. Parse this expression. If it is a field access expression, take the 'Value' and
 			// the field index. ... If it is a collection value access expression, take the 'Value' expression and the 'Index' expression.
 
+			// Expression statement:
+			// When all else fails, parse the whole thing as an expression.
+			return new ExpressionStatement(Express(tokens, script));
+			// The top level expression should be a function call, method call, ScriptObjectMethodCall, or HostInterfaceMethodCall.
+			// If it isn't, complain.
+
+			throw new LsnrParsingException(tokens[0], "Could not parse statement.", script.Path);
+		}
+
+		/// <summary>
+		/// Creates a statement.
+		/// </summary>
+		/// <param name="tokens"> The tokens of the statement, not including the ';'.</param>
+		/// <param name="script"> The script.</param>
+		/// <returns></returns>
+		public static Statement State(ISlice<Token> tokens, IPreScript script)
+		{
+			var first = tokens[0];
+			foreach (var rule in script.StatementRules)
+			{
+				if (rule.PreCheck(first) && rule.Check(tokens, script))
+					return rule.Apply(tokens, script);
+			}
 			// Expression statement:
 			// When all else fails, parse the whole thing as an expression.
 			return new ExpressionStatement(Express(tokens, script));

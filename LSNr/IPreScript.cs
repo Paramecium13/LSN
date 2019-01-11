@@ -1,5 +1,7 @@
 ﻿using LsnCore;
 using LsnCore.Types;
+using LSNr.Statements;
+using System.Collections.Generic;
 
 namespace LSNr
 {
@@ -15,5 +17,7 @@ namespace LSNr
 
 		SymbolType CheckSymbol(string name);
 		Function GetFunction(string name);
+
+		IReadOnlyList<IStatementRule> StatementRules { get; }
 	}
 }

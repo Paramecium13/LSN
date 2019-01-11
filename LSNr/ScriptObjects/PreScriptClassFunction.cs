@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
+using LSNr.Statements;
+using LsnCore.Expressions;
 
 namespace LSNr
 {
@@ -23,6 +25,28 @@ namespace LSNr
 
 		public bool Mutable								=> Parent.Mutable;
 		public string Path								=> Parent.Path;
+
+		private static readonly IReadOnlyList<IStatementRule> _StatementRules = new IStatementRule[] {
+			new LetStatementRule(),
+			new ReasignmentStatementRule(),
+			new BinExprReassignStatementRule("+=", BinaryOperation.Sum),
+			new BinExprReassignStatementRule("-=", BinaryOperation.Difference),
+			new BinExprReassignStatementRule("*=", BinaryOperation.Product),
+			new BinExprReassignStatementRule("/=", BinaryOperation.Quotient),
+			new BinExprReassignStatementRule("%=", BinaryOperation.Modulus),
+			new BreakStatementRule(),
+			new NextStatementRule(),
+			new ReturnStatementRule(),
+			new SayStatementRule(),
+			new GoToStatementRule(),
+			new AttachStatementRule(),
+			new GiveItemStatementRule(),
+
+			new SetStateStatementRule()
+		}.OrderBy(r => r.Order).ToList();
+
+		public IReadOnlyList<IStatementRule> StatementRules => _StatementRules;
+
 		public bool GenericTypeExists(string name)		=> Parent.GenericTypeExists(name);
 		public Function GetFunction(string name)		=> Parent.GetFunction(name);
 		public GenericType GetGenericType(string name)	=> Parent.GetGenericType(name);

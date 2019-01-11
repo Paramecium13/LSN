@@ -8,6 +8,7 @@ using LsnCore;
 using LsnCore.Types;
 using LsnCore.Utilities;
 using LSNr.Optimization;
+using LSNr.Statements;
 
 namespace LSNr.ReaderRules
 {
@@ -39,6 +40,9 @@ namespace LSNr.ReaderRules
 		public IScope CurrentScope { get => throw new InvalidOperationException(); set => throw new InvalidOperationException(); }
 		public bool Mutable => false;
 		public bool Valid { get; set; } = true;
+
+		public IReadOnlyList<IStatementRule> StatementRules
+			=> throw new NotImplementedException();
 
 		internal ResourceBuilder(string path)
 		{

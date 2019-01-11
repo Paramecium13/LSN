@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
+using LsnCore.Expressions;
 using LsnCore.Types;
+using LSNr.Statements;
 
 namespace LSNr
 {
@@ -16,6 +18,25 @@ namespace LSNr
 		{
 			Resource = resource;
 		}
+
+		private static readonly IReadOnlyList<IStatementRule> _StatementRules = new IStatementRule[] {
+			new LetStatementRule(),
+			new ReasignmentStatementRule(),
+			new BinExprReassignStatementRule("+=", BinaryOperation.Sum),
+			new BinExprReassignStatementRule("-=", BinaryOperation.Difference),
+			new BinExprReassignStatementRule("*=", BinaryOperation.Product),
+			new BinExprReassignStatementRule("/=", BinaryOperation.Quotient),
+			new BinExprReassignStatementRule("%=", BinaryOperation.Modulus),
+			new BreakStatementRule(),
+			new NextStatementRule(),
+			new ReturnStatementRule(),
+			new SayStatementRule(),
+			new GoToStatementRule(),
+			new AttachStatementRule(),
+			new GiveItemStatementRule(),
+		}.OrderBy(r => r.Order).ToList();
+
+		public IReadOnlyList<IStatementRule> StatementRules => _StatementRules;
 
 		public IScope CurrentScope { get; set; } = new VariableTable(new List<Variable>());
 

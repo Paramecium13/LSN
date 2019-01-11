@@ -8,6 +8,7 @@ using LsnCore.Types;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
+using LSNr.Statements;
 
 namespace LSNr
 {
@@ -225,6 +226,8 @@ namespace LSNr
 		#region Functions
 		private readonly Dictionary<string, Function> _LoadedExternallyDefinedFunctions = new Dictionary<string, Function>();
 		protected IReadOnlyDictionary<string, Function> LoadedExternallyDefinedFunctions => _LoadedExternallyDefinedFunctions;
+
+		public IReadOnlyList<IStatementRule> StatementRules => throw new NotImplementedException();
 
 		public virtual Function GetFunction(string name)
 		{
