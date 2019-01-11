@@ -105,6 +105,7 @@
   <ItemGroup>
     <Compile Include="BasePreScript.cs" />
     <Compile Include="CodeGen.cs" />
+    <Compile Include="ControlStructures\CaseStructureRules.cs" />
     <Compile Include="ControlStructures\ConditionalStructureRules.cs" />
     <Compile Include="ControlStructures\IControlStructureRule.cs" />
     <Compile Include="ControlStructures\LoopRules.cs" />

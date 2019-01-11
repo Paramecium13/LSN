@@ -71,9 +71,9 @@ namespace LSNr.ControlStructures
 		}
 	}
 
-	public sealed class ChoiceStructureRule : ControlStructureRule
+	public sealed class ChooseeStructureRule : ControlStructureRule
 	{
-		public override bool PreCheck(Token t) => t.Value == "choice";
+		public override bool PreCheck(Token t) => t.Value == "choose" || t.Value == "choice";
 
 		public override bool Check(ISlice<Token> tokens, IPreScript script) => true;
 
