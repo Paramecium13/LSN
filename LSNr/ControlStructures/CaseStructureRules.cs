@@ -60,7 +60,7 @@ namespace LSNr.ControlStructures
 			var components = Parser.Consolidate(p.Components);
 			//var endOfStr = head.IndexOf("->");
 
-			var str = Create.Express(head.CreateSubSlice(0, n - 1), script);
+			var str = Create.Express(head.CreateSubSlice(0, head.Count - 1), script);
 
 			return new Choice(str, components);
 		}

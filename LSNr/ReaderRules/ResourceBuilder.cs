@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
 using LsnCore.Utilities;
+using LSNr.ControlStructures;
 using LSNr.Optimization;
 using LSNr.Statements;
 
@@ -43,6 +44,8 @@ namespace LSNr.ReaderRules
 
 		public IReadOnlyList<IStatementRule> StatementRules
 			=> throw new NotImplementedException();
+
+		public IReadOnlyList<ControlStructureRule> ControlStructureRules => throw new NotImplementedException();
 
 		internal ResourceBuilder(string path)
 		{

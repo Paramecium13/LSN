@@ -26,6 +26,24 @@ namespace LSNr
 		/// <returns></returns>
 		public static ControlStructure ControlStructure(ISlice<Token> head, ISlice<Token> body, IPreScript script)
 		{
+			var first = head[0];
+			foreach (var rule in script.ControlStructureRules)
+			{
+				if (rule.PreCheck(first) && rule.Check(head, script))
+					return rule.Apply(head, body, script);
+			}
+			throw new LsnrParsingException(first, "Not a valid control structure.", script.Path);
+		}
+
+		/// <summary>
+		/// Creates a control structure.
+		/// </summary>
+		/// <param name="head"> The head tokens.</param>
+		/// <param name="body"> The body tokens.</param>
+		/// <param name="script"> The script.</param>
+		/// <returns></returns>
+		public static ControlStructure ControlStructure_Old(ISlice<Token> head, ISlice<Token> body, IPreScript script)
+		{
 			var h = head[0].Value;
 			var n = head.Count;
 			if (h == "if" && (n > 1 && head[1].Value == "let"))
@@ -59,7 +77,7 @@ namespace LSNr
 				var p = new Parser(body, script);
 				p.Parse();
 				var components = new List<Component>();
-				if(assignment != null) components.Add(assignment);
+				if (assignment != null) components.Add(assignment);
 				components.AddRange(Parser.Consolidate(p.Components));
 
 				return new IfControl(expr, components);
@@ -82,12 +100,12 @@ namespace LSNr
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
 				script.CurrentScope = script.CurrentScope.Pop(components);
-				return new ElsifControl(Express(head.Skip(1 + offset).ToList(),script), components);
+				return new ElsifControl(Express(head.Skip(1 + offset).ToList(), script), components);
 			}
 			if (h == "else")
 			{
 				script.CurrentScope = script.CurrentScope.CreateChild();
-				var p = new Parser(body,script);
+				var p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
 				script.CurrentScope = script.CurrentScope.Pop(components); // 'head.Count == 1'
@@ -98,7 +116,7 @@ namespace LSNr
 				}
 				return new ElseControl(components);
 			}
-			if(h == "choice")
+			if (h == "choice")
 			{
 				// It's a choice block.
 				var p = new Parser(body, script);
@@ -106,9 +124,9 @@ namespace LSNr
 				var components = Parser.Consolidate(p.Components);
 				return new ChoicesBlockControl(components);
 			}
-			if(h == "when")
+			if (h == "when")
 			{ /* when [expression (condition)] : [expression] -> [block] */
-				// It's a conditional choice (inside a choice block).
+			  // It's a conditional choice (inside a choice block).
 				var res = ExpressionParser.MultiParse(head.ToArray(), script);
 				// {"when", condition, :, title, ->}
 				// validate
@@ -117,7 +135,7 @@ namespace LSNr
 				if (res.tokens[4].Value != "->")
 					//throw new LsnrParsingException(head[0], "Improperly formatted conditional choice: must end in '->'.", script.Path);
 					throw LsnrParsingException.UnexpectedToken(res.tokens[4], "->", script.Path);
-				if(res.tokens[2].Value != ":")
+				if (res.tokens[2].Value != ":")
 					throw LsnrParsingException.UnexpectedToken(res.tokens[2], ":", script.Path);
 				var cnd = res.substitutions[res.tokens[1]]; // Check if bool?
 				var str = res.substitutions[res.tokens[3]]; // Check if string?
@@ -128,7 +146,7 @@ namespace LSNr
 				var components = Parser.Consolidate(p.Components);
 				return new Choice(str, components, cnd);
 			}
-			if(h == "for")
+			if (h == "for")
 			{
 				var i = 1;
 				if (head.Length < 4 || head[i].Type != TokenType.Identifier)
@@ -226,7 +244,7 @@ namespace LSNr
 				}
 				else throw new LsnrParsingException(head[3], "...", script.Path);
 			}
-			if(n > 1 && head.Last().Value == "->")
+			if (n > 1 && head.Last().Value == "->")
 			{
 				// It's a choice (inside a choice block).
 				var p = new Parser(body, script);

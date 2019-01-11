@@ -13,7 +13,7 @@ using LsnCore.Values;
 
 namespace LSNr.ControlStructures
 {
-	public sealed class ForLoopRule : ControlStructureRule
+	public sealed class ForLoopStructureRule : ControlStructureRule
 	{
 		public override bool PreCheck(Token t) => t.Value == "for";
 

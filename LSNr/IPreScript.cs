@@ -1,5 +1,6 @@
 ﻿using LsnCore;
 using LsnCore.Types;
+using LSNr.ControlStructures;
 using LSNr.Statements;
 using System.Collections.Generic;
 
@@ -19,5 +20,6 @@ namespace LSNr
 		Function GetFunction(string name);
 
 		IReadOnlyList<IStatementRule> StatementRules { get; }
+		IReadOnlyList<ControlStructureRule> ControlStructureRules { get; }
 	}
 }

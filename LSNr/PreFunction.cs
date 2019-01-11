@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Expressions;
 using LsnCore.Types;
+using LSNr.ControlStructures;
 using LSNr.Statements;
 
 namespace LSNr
@@ -37,6 +38,19 @@ namespace LSNr
 		}.OrderBy(r => r.Order).ToList();
 
 		public IReadOnlyList<IStatementRule> StatementRules => _StatementRules;
+
+		private static readonly IReadOnlyList<ControlStructureRule> _ControlStructureRules = new ControlStructureRule[] {
+			new IfStructureRule(),
+			new ElsIfStructureRule(),
+			new ElseStructureRule(),
+			new ChooseStructureRule(),
+			new CaseStructureRule(),
+			new ConditionedChoiceStructureRule(),
+			new ForLoopStructureRule(),
+			new IfLetStructureRule()
+		}.OrderBy(r => r.Order).ToList();
+
+		public IReadOnlyList<ControlStructureRule> ControlStructureRules => _ControlStructureRules;
 
 		public IScope CurrentScope { get; set; } = new VariableTable(new List<Variable>());
 

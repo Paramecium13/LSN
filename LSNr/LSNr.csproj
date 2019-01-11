@@ -103,7 +103,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasePreScript.cs" />
     <Compile Include="CodeGen.cs" />
     <Compile Include="ControlStructures\CaseStructureRules.cs" />
     <Compile Include="ControlStructures\ConditionalStructureRules.cs" />

@@ -7,6 +7,7 @@ using LsnCore;
 using LsnCore.Types;
 using LSNr.Statements;
 using LsnCore.Expressions;
+using LSNr.ControlStructures;
 
 namespace LSNr
 {
@@ -46,6 +47,19 @@ namespace LSNr
 		}.OrderBy(r => r.Order).ToList();
 
 		public IReadOnlyList<IStatementRule> StatementRules => _StatementRules;
+
+		private static readonly IReadOnlyList<ControlStructureRule> _ControlStructureRules = new ControlStructureRule[] {
+			new IfStructureRule(),
+			new ElsIfStructureRule(),
+			new ElseStructureRule(),
+			new ChooseStructureRule(),
+			new CaseStructureRule(),
+			new ConditionedChoiceStructureRule(),
+			new ForLoopStructureRule(),
+			new IfLetStructureRule()
+		}.OrderBy(r => r.Order).ToList();
+
+		public IReadOnlyList<ControlStructureRule> ControlStructureRules => _ControlStructureRules;
 
 		public bool GenericTypeExists(string name)		=> Parent.GenericTypeExists(name);
 		public Function GetFunction(string name)		=> Parent.GetFunction(name);
