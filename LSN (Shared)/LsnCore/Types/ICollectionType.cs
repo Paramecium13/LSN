@@ -20,5 +20,7 @@ namespace LsnCore.Types
 		/// The type of the contents.
 		/// </summary>
 		LsnType ContentsType { get; } // TODO: Replace with TypeId?
+
+		//bool Mutable { get; }
 	}
 }

@@ -36,7 +36,7 @@ namespace LSNr
 			if (v == "say")
 				return Say(tokens.CreateSubSlice(1, n-1),script);
 			if (v == "goto")
-				return GotoStatement(tokens,script); 
+				return GotoStatement(tokens,script);
 			if (v == "setstate" || (v == "set" && tokens.Count > 1 && tokens[1].Value == "state"))
 			{
 				var offset = v == "set"? 1: 0;

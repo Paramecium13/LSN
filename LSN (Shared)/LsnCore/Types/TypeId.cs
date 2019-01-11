@@ -43,24 +43,33 @@ namespace LsnCore.Types
 
 		public bool Equals(TypeId other)
 			=> Name == other?.Name;
-	
-			
-		public static bool operator ==(TypeId a, TypeId b)	
-			=> a?.Name == b?.Name;
 
+		public static bool operator ==(TypeId a, TypeId b)
+			=> a?.Name == b?.Name;
 
 		public static bool operator !=(TypeId a, TypeId b)
 			=> a?.Name != b?.Name;
 
-
 		public static bool operator ==(LsnType a, TypeId b)
 			=> a?.Name == b?.Name;
-
 
 		public static bool operator !=(LsnType a, TypeId b)
 			=> a?.Name != b?.Name;
 
+		/// <summary>
+		/// Is the other type assignable to a variable of this type?
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
 		public bool Subsumes(LsnType type)
 			=> Type?.Subsumes(type) ?? false;
+
+		/// <summary>
+		/// Is the other type assignable to a variable of this type?
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public bool Subsumes(TypeId type)
+			=> Type?.Subsumes(type.Type) ?? false;
 	}
 }

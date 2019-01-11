@@ -52,5 +52,11 @@ namespace LsnCore.Utilities
 
 		public static Slice<T> ToSlice<T>(this ArraySegment<T> segment)
 			=> new ArraySlice<T>(segment.Array, segment.Offset, segment.Count);
+
+		public static bool TestAt<T>(this IReadOnlyList<T> self, int index, Predicate<T> test=null)
+		{
+			if (self.Count <= index) return false;
+			return test?.Invoke(self[index]) ?? true;
+		}
 	}
 }

@@ -40,7 +40,7 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -52,7 +52,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
@@ -71,7 +71,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -82,7 +82,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -157,7 +157,10 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="IPreScript.cs" />
     <Compile Include="IScope.cs" />
+    <Compile Include="Statements\AssignmentStatementRules.cs" />
     <Compile Include="Statements\IStatementRule.cs" />
+    <Compile Include="Statements\ScriptClassStatementRules.cs" />
+    <Compile Include="Statements\SimpleStatementRules.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="ITypeContainer.cs" />
     <Compile Include="Optimization\ArithmeticIdentityChecker.cs" />
