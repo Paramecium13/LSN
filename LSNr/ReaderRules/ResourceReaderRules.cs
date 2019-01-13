@@ -16,6 +16,8 @@ namespace LSNr.ReaderRules
 		IPreScript Script { get; }
 		bool Valid { get; set; }
 
+		SymbolType CheckSymbol(string symbol);
+
 		void RegisterUsing(string file);
 
 		void RegisterFunction(Function fn);

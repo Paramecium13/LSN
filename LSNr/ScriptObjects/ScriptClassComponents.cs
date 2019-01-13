@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LSNr.ScriptObjects
 {
-	class ScriptClassFieldComponent
+	class ScriptClassMethodComponent
 	{
 	}
 }

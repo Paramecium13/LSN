@@ -250,14 +250,14 @@ namespace LSNr.ReaderRules
 
 		public TypeId GetTypeId(string name) => LoadedTypes.ContainsKey(name) ? LoadedTypes[name].Id : MyTypes[name];
 
-		public SymbolType CheckSymbol(string name)
+		public SymbolType CheckSymbol(string symbol)
 		{
-			if (MyFunctions.ContainsKey(name) || LoadedFunctions.ContainsKey(name))
+			if (MyFunctions.ContainsKey(symbol) || LoadedFunctions.ContainsKey(symbol))
 				return SymbolType.Function;
-			if ((LoadedTypes.ContainsKey(name) && ((LoadedTypes[name] as ScriptClass)?.Unique ?? false))
-				|| (GeneratedScriptClasses.ContainsKey(name) && GeneratedScriptClasses[name].Unique))// check MyScriptClasses
+			if ((LoadedTypes.ContainsKey(symbol) && ((LoadedTypes[symbol] as ScriptClass)?.Unique ?? false))
+				|| (GeneratedScriptClasses.ContainsKey(symbol) && GeneratedScriptClasses[symbol].Unique))// check MyScriptClasses
 				return SymbolType.UniqueScriptObject;
-			if (TypeExists(name))
+			if (TypeExists(symbol))
 				return SymbolType.Type;
 
 			return SymbolType.Undefined;
