@@ -161,7 +161,8 @@
     <Compile Include="IScope.cs" />
     <Compile Include="ScriptObjects\HostInterfaceComponent.cs" />
     <Compile Include="ScriptObjects\HostInterfaceReader.cs" />
-    <Compile Include="ScriptObjects\ScriptClassComponent.cs" />
+    <Compile Include="ScriptObjects\ScriptClassBuilder.cs" />
+    <Compile Include="ScriptObjects\ScriptClassComponents.cs" />
     <Compile Include="ScriptObjects\ScriptClassReader.cs" />
     <Compile Include="Statements\AssignmentStatementRules.cs" />
     <Compile Include="Statements\CommandStatementRules.cs" />

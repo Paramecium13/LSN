@@ -2,6 +2,7 @@
 using LsnCore.Values;
 using Syroot.BinaryData;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -144,12 +145,16 @@ namespace LsnCore.Types
 				prop.Write(writer);
 
 			writer.Write((ushort)Fields.Count);
+			var bv = new BitArray(Fields.Select(f => f.Mutable).ToArray());
+			var count = Fields.Count / 8 + (Fields.Count % 8 == 0 ? 0 : 1);
+			var buffer = new byte[count];
+			bv.CopyTo(buffer, 0);
+			writer.Write(buffer);
 			foreach (var field in Fields)
 			{
 				writer.Write(field.Name);
-				writer.Write(field.Type.Name);
+				resourceSerializer.WriteTypeId(field.Type, writer);
 			}
-
 
 			writer.Write((ushort)ScriptObjectMethods.Count);
 			foreach (var method in ScriptObjectMethods.Values)
@@ -183,12 +188,14 @@ namespace LsnCore.Types
 				props.Add(Property.Read(reader, typeContainer));
 
 			var nFields = reader.ReadUInt16();
+			var count = nFields / 8 + (nFields % 8 == 0 ? 0 : 1);
+			var bv = new BitArray(reader.ReadBytes(count));
 			var fields = new List<Field>();
 			for (int i = 0; i < nFields; i++)
 			{
 				var fName = reader.ReadString();
-				var fTypeName = reader.ReadString();
-				fields.Add(new Field(i, fName, typeContainer.GetTypeId(fTypeName)));
+				var t = resourceDeserializer.LoadTypeId(reader);
+				fields.Add(new Field(i, fName, t,bv[i]));
 			}
 
 			var nMethods = reader.ReadUInt16();

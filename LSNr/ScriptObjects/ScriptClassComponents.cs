@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LSNr.ScriptObjects
 {
-	public sealed class ScriptClassComponent : IPreScriptClass
+	class ScriptClassFieldComponent
 	{
 	}
 }

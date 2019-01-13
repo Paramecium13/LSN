@@ -3,15 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LsnCore;
 using LsnCore.Utilities;
 using LSNr.ReaderRules;
 
 namespace LSNr.ScriptObjects
 {
-	public interface IPreScriptClass
+	public interface IPreScriptClass : ITypeContainer
 	{
 
 	}
+
+	public sealed class ScriptClassReader : RuledReader<ScriptClaseStatementRule, ScriptClassBodyRule>
+	{
+		protected override IEnumerable<ScriptClaseStatementRule> StatementRules { get; } = new ScriptClaseStatementRule[] { };
+
+		protected override IEnumerable<ScriptClassBodyRule> BodyRules { get; } = new ScriptClassBodyRule[] { };
+
+		public ScriptClassReader(ISlice<Token> tokens) : base(tokens) { }
+
+		protected override void OnReadAdjSemiColon(ISlice<Token>[] attributes){}
+	}
+
+	// All types will have been registered before these rules are applied.
 
 	public abstract class ScriptClaseStatementRule : IReaderStatementRule
 	{
@@ -31,14 +45,20 @@ namespace LSNr.ScriptObjects
 		public abstract bool Check(ISlice<Token> head);
 	}
 
-	public sealed class ScriptClassReader : RuledReader<ScriptClaseStatementRule, ScriptClassBodyRule>
+	// NOTE: Put this last in the rule list.
+	public sealed class ScriptClassFieldRule : ScriptClaseStatementRule
 	{
-		protected override IEnumerable<ScriptClaseStatementRule> StatementRules { get; } = new ScriptClaseStatementRule[] { };
+		public ScriptClassFieldRule(IPreScriptClass p) : base(p) { }
 
-		protected override IEnumerable<ScriptClassBodyRule> BodyRules { get; } = new ScriptClassBodyRule[] { };
+		public override bool Check(ISlice<Token> tokens)
+		{
+			if (tokens[0].Value == "mut") return true;
+			return tokens.Any(t => t.Value == ":");
+		}
 
-		public ScriptClassReader(ISlice<Token> tokens) : base(tokens) { }
-
-		protected override void OnReadAdjSemiColon(ISlice<Token>[] attributes){}
+		public override void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

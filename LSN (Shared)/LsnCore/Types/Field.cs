@@ -11,15 +11,16 @@ namespace LsnCore.Types
 		public readonly int Index;
 		public readonly string Name;
 		public readonly TypeId Type;
+		public readonly bool Mutable;
 
-		public Field(int index, string name, LsnType type)
+		public Field(int index, string name, LsnType type, bool mutable = false)
 		{
-			Index = index; Name = name; Type = type.Id;
+			Index = index; Name = name; Type = type.Id; Mutable = mutable;
 		}
 
-		public Field(int index, string name, TypeId type)
+		public Field(int index, string name, TypeId type, bool mutable = false)
 		{
-			Index = index; Name = name; Type = type;
+			Index = index; Name = name; Type = type; Mutable = mutable;
 		}
 
 		public bool Equals(Field other)
