@@ -15,6 +15,7 @@ namespace LSNr.ReaderRules
 		string Path { get; }
 		IPreScript Script { get; }
 		bool Valid { get; set; }
+		Function GetFunction(string name);
 
 		SymbolType CheckSymbol(string symbol);
 
@@ -291,9 +292,10 @@ namespace LSNr.ReaderRules
 				if (head[i].Value != "{")
 					throw LsnrParsingException.UnexpectedToken(head[i], "{", PreResource.Path);
 			}
-			var scriptClass = new PreScriptClass(name, PreResource.Script, host, unique, meta, body);
-			PreResource.ParseSignaturesB += scriptClass.OnParsingSignatures;
-			PreResource.ParseProcBodies += (_) => scriptClass.OnParsingProcBodies();
+			var scriptClass = new ScriptClassBuilder(PreResource, name, host, unique, meta, body);
+				//new PreScriptClass(name, PreResource.Script, host, unique, meta, body);
+			PreResource.ParseSignaturesB += scriptClass.OnParsingSignaturesB;
+			PreResource.ParseProcBodies  += scriptClass.OnParsingProcBodies;
 			PreResource.RegisterTypeId(scriptClass.Id);
 		}
 	}

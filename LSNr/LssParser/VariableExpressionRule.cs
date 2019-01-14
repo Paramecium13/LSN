@@ -43,7 +43,7 @@ namespace LSNr.LssParser
 					{
 						if (preScFn != null)
 						{
-							if (preScFn.Parent.HostType != null)
+							if (preScFn.Parent.Host != null)
 								return true;
 							throw new LsnrParsingException(token, "The keyword 'host' cannot be used in a script class without a host.", script.Path);
 						}
@@ -86,7 +86,7 @@ namespace LSNr.LssParser
 					break;
 				case TokenType.Keyword:
 					if (str == "host")
-						expr = new HostInterfaceAccessExpression(((PreScriptClassFunction)script).Parent.HostType.Id);
+						expr = new HostInterfaceAccessExpression(((PreScriptClassFunction)script).Parent.HostId);
 					else if (str == "self")
 						expr = script.CurrentScope.GetVariable("self").AccessExpression;
 					else

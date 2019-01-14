@@ -313,6 +313,7 @@ namespace LsnCore
 		{
 			if (Data == Data)
 				return Math.Abs(Data - other.Data) < double.Epsilon;
+			if (Value == null) return other.Value == null;
 			return Value.Equals(other.Value);
 		}
 

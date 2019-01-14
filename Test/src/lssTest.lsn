@@ -41,13 +41,15 @@ fn Meow(cat : Cat)
 
 ScriptClass StandardDoor < IStandardActivator
 {
-	property InitiallyLocked : bool;
-	property KeyId : string;
-	property DestMap : string;
-	property DestX : int;
-	property DestY : int;
+	/*property*/  InitiallyLocked : bool;
+	/*property*/  KeyId : string;
+	/*property*/  DestMap : string;
+	/*property*/  DestX : int;
+	/*property*/  DestY : int;
 	
 	mut OpenCount: int;
+	
+	fn virtual Start(){ return; }
 	
 	auto state StartState
 	{

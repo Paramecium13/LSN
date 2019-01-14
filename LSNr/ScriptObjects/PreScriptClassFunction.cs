@@ -8,14 +8,15 @@ using LsnCore.Types;
 using LSNr.Statements;
 using LsnCore.Expressions;
 using LSNr.ControlStructures;
+using LSNr.ScriptObjects;
 
 namespace LSNr
 {
 	public sealed class PreScriptClassFunction : IPreScript
 	{
-		internal readonly BasePreScriptClass Parent;
+		internal readonly IBasePreScriptClass Parent;
 
-		internal PreScriptClassFunction(BasePreScriptClass parent)
+		internal PreScriptClassFunction(IBasePreScriptClass parent)
 		{
 			Parent = parent;
 		}
@@ -24,7 +25,7 @@ namespace LSNr
 
 		public bool Valid { get { return Parent.Valid; } set { Parent.Valid = value; } }
 
-		public bool Mutable								=> Parent.Mutable;
+		public bool Mutable								=> false;
 		public string Path								=> Parent.Path;
 
 		private static readonly IReadOnlyList<IStatementRule> _StatementRules = new IStatementRule[] {
@@ -67,6 +68,8 @@ namespace LSNr
 		public LsnType GetType(string name)				=> Parent.GetType(name);
 		public TypeId GetTypeId(string name)			=> Parent.GetTypeId(name);
 		public bool TypeExists(string name)				=> Parent.TypeExists(name);
+
+		public int GetStateIndex(string name)			=> Parent.GetStateIndex(name);
 
 		public SymbolType CheckSymbol(string name)
 		{

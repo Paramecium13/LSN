@@ -219,7 +219,7 @@ namespace LSNr
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
 		protected void ParseMethods()
 		{
-			foreach (var pair in MethodBodies)
+			/*foreach (var pair in MethodBodies)
 			{
 				var method = Methods[pair.Key];
 #if NO_CATCH
@@ -232,7 +232,7 @@ namespace LSNr
 
 					var components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
 					method.Code = new ComponentFlattener().Flatten(components);
-					method.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
+					method.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 ?? -1;
 #else
 				try
 				{
@@ -263,13 +263,13 @@ namespace LSNr
 				}
 
 #endif
-			}
+			}*/
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
 		protected void ParseEventListeners()
 		{
-			foreach (var pair in EventListenerBodies)
+			/*foreach (var pair in EventListenerBodies)
 			{
 				var eventListener = EventListeners[pair.Key];
 				try
@@ -282,7 +282,7 @@ namespace LSNr
 					parser.Parse();
 					pre.CurrentScope.Pop(parser.Components);
 					eventListener.Code = new ComponentFlattener().Flatten(Parser.Consolidate(parser.Components).Where(c => c != null).ToList());
-					eventListener.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize /*For the 'self' arg.*/?? -1;
+					eventListener.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize ?? -1;
 				}
 				catch (LsnrException e)
 				{
@@ -298,7 +298,7 @@ namespace LSNr
 					var x = st != null ? $"state {st.StateName} of " : "";
 					Logging.Log($"event listener '{eventListener.Definition.Name}' in {x}script object {this.Id.Name}", e, Path);
 				}
-			}
+			}*/
 		}
 
 		public abstract FunctionSignature GetMethodSignature(string name);

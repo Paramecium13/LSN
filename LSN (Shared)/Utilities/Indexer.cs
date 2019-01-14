@@ -57,5 +57,21 @@ namespace LsnCore.Utilities
 			Index++;
 			return true;
 		}
+
+		public Slice<T> SliceWhile(Predicate<T> pred, out bool reachedEnd)
+		{
+			var start = Index;
+			reachedEnd = false;
+			if (pred == null)
+				throw new ArgumentNullException(nameof(pred));
+			while (pred(Current))
+			{
+				if(!MoveForward())
+				{
+					reachedEnd = true; Index++; break;
+				}
+			}
+			return Slice<T>.Create(Collection, start, Index - start);
+		}
 	}
 }

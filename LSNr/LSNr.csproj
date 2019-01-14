@@ -164,6 +164,8 @@
     <Compile Include="ScriptObjects\ScriptClassBuilder.cs" />
     <Compile Include="ScriptObjects\ScriptClassComponents.cs" />
     <Compile Include="ScriptObjects\ScriptClassReader.cs" />
+    <Compile Include="ScriptObjects\StateBuilder.cs" />
+    <Compile Include="ScriptObjects\StateReader.cs" />
     <Compile Include="Statements\AssignmentStatementRules.cs" />
     <Compile Include="Statements\CommandStatementRules.cs" />
     <Compile Include="Statements\GiveStatementRules.cs" />

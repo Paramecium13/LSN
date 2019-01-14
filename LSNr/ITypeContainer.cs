@@ -79,10 +79,17 @@ namespace LSNr
 				++i;
 				var gType = self.GetGenericType(tName);
 				var generics = new List<TypeId>();
-				while (tokens[i].Value != ">")
+				try
 				{
-					generics.Add(self.ParseTypeId(tokens, i, out i));
-					if (tokens[i].Value == ",") i++; // else error?
+					while (tokens[i].Value != ">")
+					{
+						generics.Add(self.ParseTypeId(tokens, i, out i));
+						if (tokens[i].Value == ",") i++; // else error?
+					}
+				}
+				catch (Exception)
+				{
+					throw;
 				}
 				endIndex = i + 1;
 				var tId = gType.GetType(generics.ToArray()).Id;

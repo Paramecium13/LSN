@@ -10,49 +10,141 @@ using LSNr.ReaderRules;
 
 namespace LSNr.ScriptObjects
 {
-	public interface IPreScriptClass : ITypeContainer
+	public interface IBasePreScriptClass : ITypeContainer
 	{
 		string Path { get; }
+		bool Valid { get; set; }
+
+		TypeId Id { get; }
+		TypeId HostId { get; }
+		HostInterfaceType Host { get; }
 
 		SymbolType CheckSymbol(string symbol);
 
-		void RegisterField(string name, TypeId id, bool mutable);
-		void RegisterAbstractMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters);
+		Function GetFunction(string name);
+		int GetStateIndex(string name);
+		Field GetField(string val);
+		bool StateExists(string stateName);
+		bool MethodExists(string value);
 	}
 
-	public sealed class ScriptClassReader : RuledReader<ScriptClaseStatementRule, ScriptClassBodyRule>
+	public interface IPreScriptClass : IBasePreScriptClass
 	{
-		protected override IEnumerable<ScriptClaseStatementRule> StatementRules { get; } = new ScriptClaseStatementRule[] { };
+		void RegisterField(string name, TypeId id, bool mutable);
+		void RegisterAbstractMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters);
+		ScriptClassMethod RegisterMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters, bool isVirtual);
+		EventListener RegisterEventListener(string name, IReadOnlyList<Parameter> parameters);
+		ScriptClassConstructor RegisterConstructor(IReadOnlyList<Parameter> parameters);
 
-		protected override IEnumerable<ScriptClassBodyRule> BodyRules { get; } = new ScriptClassBodyRule[] { };
+		event Action<IPreScriptClass> ParsingProcBodies;
+		event Action<IPreScriptClass> ParsingSignaturesB;
+		event Action<IPreScriptClass> ParsingStateSignatures;
 
-		public ScriptClassReader(ISlice<Token> tokens) : base(tokens) { }
+		ScriptClassState RegisterState(string name, bool auto, IReadOnlyList<ScriptClassMethod> methods, IReadOnlyList<EventListener> eventListeners);
+	}
+
+	public sealed class ScriptClassReader : RuledReader<ScriptClassStatementRule, ScriptClassBodyRule>
+	{
+		protected override IEnumerable<ScriptClassStatementRule> StatementRules { get; }
+
+		protected override IEnumerable<ScriptClassBodyRule> BodyRules { get; }
+
+		public ScriptClassReader(ISlice<Token> tokens, IPreScriptClass pre) : base(tokens)
+		{
+			StatementRules = new ScriptClassStatementRule[] {
+				new ScriptClassAbstractMethodRule(pre),
+				new ScriptClassFieldRule(pre)
+			};
+			BodyRules = new ScriptClassBodyRule[] {
+				new ScriptClassConstuctorRule(pre),
+				new ScriptClassEventListenerRule(pre),
+				new ScriptClassMethodRule(pre),
+				new ScriptClassStateRule(pre)
+			};
+		}
+
+		public void Read()
+		{
+			ReadTokens();
+		}
 
 		protected override void OnReadAdjSemiColon(ISlice<Token>[] attributes){}
 	}
 
 	// All types will have been registered before these rules are applied.
 
-	public abstract class ScriptClaseStatementRule : IReaderStatementRule
+	public abstract class ScriptClassRule
 	{
 		protected readonly IPreScriptClass ScriptClass;
-		protected ScriptClaseStatementRule(IPreScriptClass scriptClass) { ScriptClass = scriptClass; }
+		protected ScriptClassRule(IPreScriptClass scriptClass) { ScriptClass = scriptClass; }
+
+		protected string GetName(Indexer<Token> i, string memberTypeName)
+		{
+			if (i.Current.Type != TokenType.Identifier)
+				throw new LsnrParsingException(i.Current, $"'{i.Current.Value}' is not a valid {memberTypeName} name.", ScriptClass.Path);
+			var s = ScriptClass.CheckSymbol(i.Current.Value);
+			if (s != SymbolType.Undefined)
+				throw new LsnrParsingException(i.Current, $"Cannot name a {memberTypeName} '{i.Current.Value}'. There is already a(n) {s.ToString()} with that name.", ScriptClass.Path);
+			return i.Current.Value;
+		}
+
+		protected IReadOnlyList<Parameter> ParseParameters(Indexer<Token> i, string memberTypeName, string memberName)
+		{
+			if (!i.MoveForward() || i.Current.Value != "(" || !i.MoveForward())
+				throw new LsnrParsingException(i.Current, $"Error parsing {memberTypeName} {memberName}: No parameter list defined", ScriptClass.Path);
+			var argTokens = i.SliceWhile(t => t.Value != ")", out bool err);
+			if(err)
+				throw new LsnrParsingException(i.Current, $"Error parsing {memberTypeName} {memberName}: No parameter list defined", ScriptClass.Path);
+			var parameters = new List<Parameter> { new Parameter("self", ScriptClass.Id, LsnValue.Nil, 0) };
+			if(argTokens.Length != 0)
+				parameters.AddRange( ScriptClass.ParseParameters(argTokens, ScriptClass.Path)
+					.Select(p => new Parameter(p.Name,p.Type,p.DefaultValue, (ushort)(p.Index + 1))));
+			return parameters;
+		}
+
+		protected TypeId ParseReturnType(Indexer<Token> index, string memberTypeName, string memberName)
+		{
+			TypeId ret = null;
+			if (index.MoveForward() && index.Current.Value != ";" && index.Current.Value != "{")
+			{
+				if (index.Current.Value != "->" || !index.MoveForward())
+					throw new LsnrParsingException(index.Current, $"Error parsing {memberTypeName} {memberName}: Expected '->' or end of definition; received '{index.Current.Value}'.",
+						ScriptClass.Path);
+				if(index.Current.Value == "(")
+				{
+					if (!index.MoveForward() || index.Current.Value != ")")
+						throw new LsnrParsingException(index.Current, "...", ScriptClass.Path);
+				}
+				else
+				{
+					var tTokens = index.SliceWhile(t => t.Value != ";" && t.Value != "{", out bool err);
+					ret = ScriptClass.ParseTypeId(tTokens, 0, out int x);
+					if (ret == null)
+						throw new LsnrParsingException(index.Current, "Type not found...", ScriptClass.Path);
+				}
+			}
+			return ret;
+		}
+	}
+
+	public abstract class ScriptClassStatementRule : ScriptClassRule, IReaderStatementRule
+	{
+		protected ScriptClassStatementRule(IPreScriptClass scriptClass):base(scriptClass) {}
 
 		public abstract void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes);
 		public abstract bool Check(ISlice<Token> tokens);
 	}
 
-	public abstract class ScriptClassBodyRule : IReaderBodyRule
+	public abstract class ScriptClassBodyRule : ScriptClassRule, IReaderBodyRule
 	{
-		protected readonly IPreScriptClass ScriptClass;
-		protected ScriptClassBodyRule(IPreScriptClass scriptClass) { ScriptClass = scriptClass; }
+		protected ScriptClassBodyRule(IPreScriptClass scriptClass):base(scriptClass) {}
 
 		public abstract void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes);
 		public abstract bool Check(ISlice<Token> head);
 	}
 
 	// NOTE: Put this last in the rule list.
-	public sealed class ScriptClassFieldRule : ScriptClaseStatementRule
+	public sealed class ScriptClassFieldRule : ScriptClassStatementRule
 	{
 		public ScriptClassFieldRule(IPreScriptClass p) : base(p) { }
 
@@ -71,29 +163,132 @@ namespace LSNr.ScriptObjects
 				mutable = true;
 				indexer.MoveForward();
 			}
-			if (indexer.Current.Type != TokenType.Identifier)
-				throw new LsnrParsingException(indexer.Current, "Invalid field name.", ScriptClass.Path);
-			// ToDo: Check that the name is unused.
-
-			var name = indexer.Current.Value;
-			if (!indexer.MoveForward()) throw new LsnrParsingException(tokens[0], "Invalid field...", ScriptClass.Path);
+			var name = GetName(indexer,"field");
+			if (!indexer.MoveForward() || indexer.Current.Value != ":" || !indexer.MoveForward())
+				throw new LsnrParsingException(tokens[0], "Invalid field...", ScriptClass.Path);
 			var type = ScriptClass.ParseTypeId(tokens, indexer.LengthBehind, out int i);
 			if (i < 0)
-				throw new LsnrParsingException(tokens[0], "", ScriptClass.Path);
+				throw new LsnrParsingException(tokens[0], "Could not parse type name.", ScriptClass.Path);
 
 			ScriptClass.RegisterField(name, type, mutable);
 		}
 	}
 
-	public sealed class ScriptClassAbstractMethodRule : ScriptClaseStatementRule
+	public sealed class ScriptClassAbstractMethodRule : ScriptClassStatementRule
 	{
 		public ScriptClassAbstractMethodRule(IPreScriptClass p) : base(p) { }
 
-		public override bool Check(ISlice<Token> tokens) => tokens[0].Value == "abstract";
+		public override bool Check(ISlice<Token> tokens) => tokens.Length > 2
+			&& ((tokens[0].Value == "abstract" && tokens[1].Value == "fn")
+			|| (tokens[0].Value == "fn" && tokens[1].Value == "abstract"));
 
 		public override void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes)
 		{
-			throw new NotImplementedException();
+			// abstract fn foo()
+			if (tokens.Length < 5)
+				throw new LsnrParsingException(tokens[0], "Improperly formatted abstract method definition", ScriptClass.Path);
+			var index = new Indexer<Token>(2, tokens);
+			var name = GetName(index, "method");
+			var args = ParseParameters(index, "method", name);
+			var ret = ParseReturnType(index, "method", name);
+			ScriptClass.RegisterAbstractMethod(name, ret, args);
+		}
+	}
+
+	public sealed class ScriptClassMethodRule : ScriptClassBodyRule
+	{
+		public ScriptClassMethodRule(IPreScriptClass p) : base(p) { }
+
+		public override bool Check(ISlice<Token> head) => head[0].Value == "fn" || head[0].Value == "virtual";
+
+		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
+		{
+			var index = new Indexer<Token>(0, head);
+			var virt = false;
+			if(index.Current.Value == "virtual")
+			{
+				virt = true;
+				index.MoveForward();
+			}
+			if (index.Current.Value != "fn")
+				throw new LsnrParsingException(index.Current, "Error parsing virtual method", ScriptClass.Path);
+			index.MoveForward();
+			if(!virt && index.Current.Value == "virtual")
+			{
+				virt = true;
+				index.MoveForward();
+			}
+			var name = GetName(index, "method");
+			var args = ParseParameters(index, "method", name);
+			var ret = ParseReturnType(index, "method", name);
+			var method = ScriptClass.RegisterMethod(name, ret, args, virt);
+			var comp = new ScriptClassMethodComponent(method, body);
+			ScriptClass.ParsingProcBodies += comp.OnParsingProcBodies;
+		}
+	}
+
+	public sealed class ScriptClassEventListenerRule : ScriptClassBodyRule
+	{
+		public ScriptClassEventListenerRule(IPreScriptClass p):base(p) { }
+
+		public override bool Check(ISlice<Token> head) => head[0].Value == "on";
+
+		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
+		{
+			var index = new Indexer<Token>(1, head);
+			var name = GetName(index, "event listener");
+			var args = ParseParameters(index, "event listener", name);
+			if (index.MoveForward() && index.Current.Value != "{")
+				throw new LsnrParsingException(index.Current, "", ScriptClass.Path);
+			var listener = ScriptClass.RegisterEventListener(name, args);
+			var comp = new ScriptClassEventListenerComponent(listener, body, head[0]);
+			ScriptClass.ParsingProcBodies += comp.OnParsingProcBodies;
+			ScriptClass.ParsingSignaturesB += comp.Validate;
+		}
+	}
+
+	public sealed class ScriptClassConstuctorRule : ScriptClassBodyRule
+	{
+		public ScriptClassConstuctorRule(IPreScriptClass p) : base(p) { }
+
+		public override bool Check(ISlice<Token> head) => head[0].Value == "new";
+
+		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
+		{
+			var index = new Indexer<Token>(1, head);
+			var args = ParseParameters(index, "constructor", "new");
+			if (index.MoveForward() && index.Current.Value != "{")
+				throw new LsnrParsingException(index.Current, "", ScriptClass.Path);
+			var constructor = ScriptClass.RegisterConstructor(args);
+			if (constructor == null)
+				throw new LsnrParsingException(head[0], "A constructor already exists...", ScriptClass.Path);
+			var comp = new ScriptClassConstructorComponent(constructor, body);
+			ScriptClass.ParsingProcBodies += comp.OnParsingProcBodies;
+		}
+	}
+
+	public sealed class ScriptClassStateRule : ScriptClassBodyRule
+	{
+		public ScriptClassStateRule(IPreScriptClass p) : base(p) { }
+
+		public override bool Check(ISlice<Token> head) => head[0].Value == "state" || head[0].Value == "auto";
+
+		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
+		{
+			var index = new Indexer<Token>(0, head);
+			var auto = false;
+			if(index.Current.Value == "auto")
+			{
+				auto = true;
+				index.MoveForward();
+			}
+			if (index.Current.Value != "state" || !index.MoveForward())
+				throw new LsnrParsingException(index.Current, "Improperly formatted state...", ScriptClass.Path);
+			var name = GetName(index, "state");
+			var comp = new StateBuilder(ScriptClass, name, auto);
+			comp.PreParse(body);
+			ScriptClass.ParsingStateSignatures += comp.OnParsingStateSignatures;
+			ScriptClass.ParsingProcBodies += comp.OnParsingProcBodies;
 		}
 	}
 }

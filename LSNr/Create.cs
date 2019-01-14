@@ -313,9 +313,9 @@ namespace LSNr
 					throw new NotImplementedException();
 				case SymbolType.Field:
 					return new FieldAccessExpression(preScrFn.CurrentScope.GetVariable("self").AccessExpression,preScrFn.Parent.GetField(val));
-				case SymbolType.Property:
+				/*case SymbolType.Property:
 					var preScr = preScrFn.Parent;
-					return new PropertyAccessExpression(preScrFn.CurrentScope.GetVariable("self").AccessExpression, preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);
+					return new PropertyAccessExpression(preScrFn.CurrentScope.GetVariable("self").AccessExpression, preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);*/
 				default:
 					break;
 			}
@@ -349,7 +349,7 @@ namespace LSNr
 				{
 					if (preScrFn == null)
 						throw new LsnrParsingException(token, "Cannot use 'host' outside a script object method or event listener.", script.Path);
-					return new HostInterfaceAccessExpression(preScrFn.Parent.HostType.Id);
+					return new HostInterfaceAccessExpression(preScrFn.Parent.HostId);
 				}
 				case "none": return LsnValue.Nil;
 				default:

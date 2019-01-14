@@ -248,7 +248,17 @@ namespace LSNr.ReaderRules
 			return LoadedTypes.ContainsKey(name) ? LoadedTypes[name] : MyTypes[name].Type;
 		}
 
-		public TypeId GetTypeId(string name) => LoadedTypes.ContainsKey(name) ? LoadedTypes[name].Id : MyTypes[name];
+		public TypeId GetTypeId(string name)
+		{
+			try
+			{
+				return LoadedTypes.ContainsKey(name) ? LoadedTypes[name].Id : MyTypes[name];
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
 
 		public SymbolType CheckSymbol(string symbol)
 		{

@@ -50,9 +50,9 @@ namespace LSNr.LssParser
 				case SymbolType.Field:
 					expr = new FieldAccessExpression(self, preScriptClass.GetField(str));
 					break;
-				case SymbolType.Property:
+				/*case SymbolType.Property:
 					expr = new PropertyAccessExpression(self, preScriptClass.GetPropertyIndex(str), preScriptClass.GetProperty(str).Type);
-					break;
+					break;*/
 				default:
 					throw new ApplicationException();
 			}

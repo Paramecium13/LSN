@@ -297,7 +297,7 @@ namespace LSNr
 
 		private void ParseConstructor()
 		{
-			try
+			/*try
 			{
 				var pre = new PreScriptClassFunction(this);
 				foreach (var param in Constructor.Parameters)
@@ -308,7 +308,7 @@ namespace LSNr
 
 				var components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
 				Constructor.Code = new ComponentFlattener().Flatten(components);
-				Constructor.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
+				Constructor.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /?? -1;
 			}
 			catch (LsnrException e)
 			{
@@ -319,7 +319,7 @@ namespace LSNr
 			{
 				Resource.Valid = false;
 				Logging.Log($"consructor for script class {Name}", e, Path);
-			}
+			}*/
 		}
 
 		public override FunctionSignature GetMethodSignature(string name)
