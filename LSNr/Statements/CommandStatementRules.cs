@@ -139,12 +139,12 @@ namespace LSNr.Statements
 			if (scClassType.Unique)
 				throw new LsnrParsingException(tokens[2], $"Cannot create an instance of a unique script class ('{scClassName}')", script.Path);
 
-			int i = 4;
+			var i = 3;
 			List<Token>[] parseP(string open, string close)
 			{
 				var ls = new List<List<Token>>();
 				var paramTokens = new List<Token>();
-				int pCount = 1;
+				var pCount = 1;
 				do
 				{
 					if (++i >= tokens.Count)
@@ -158,30 +158,26 @@ namespace LSNr.Statements
 						ls.Add(paramTokens);
 						paramTokens = new List<Token>();
 					}
-					else paramTokens.Add(t);
+					else if(pCount != 0) paramTokens.Add(t);
 				} while (pCount != 0);
+				if(paramTokens.Count != 0)
+					ls.Add(paramTokens);
 				return ls.ToArray();
 			}
 			List<Token>[] args = null;
 			if (tokens[3].Value == "(")
 			{
 				args = parseP("(", ")");
-				if (tokens[i].Value != "[" && scClassType.Properties.Count != 0)
-					throw LsnrParsingException.UnexpectedToken(tokens[i], "[", script.Path);
 				i++;
 			}
-			else throw LsnrParsingException.UnexpectedToken(tokens[3], "'[' or '('", script.Path);
+			else throw LsnrParsingException.UnexpectedToken(tokens[3], "'('", script.Path);
 
-			IExpression[] argExps = null;
+			var argExps = new IExpression[args.Length];
 			var useCstor = scClassType.Constructor != null;
 
-			if (useCstor && args.Length != scClassType.Constructor.Parameters.Length - 1)
+			if (args.Length != scClassType.Constructor.Parameters.Length - 1)
 				throw new LsnrParsingException(tokens[2],
 					$"Incorrect number of arguments for constructor of script class '{scClassName}'.", script.Path);
-			if (args.Length != scClassType.FieldsB.Count)
-				throw new LsnrParsingException(tokens[2],
-					$"Incorrect number of fields for script class '{scClassName}'.", script.Path);
-
 			if (args.Length > 0 && args[0].Count > 2 && args[0][1].Value == ":")
 			{
 				if (!args.All(p => p.Count > 2 && p[1].Value == ":"))
@@ -226,20 +222,18 @@ namespace LSNr.Statements
 				for (int j = 0; j < args.Length; j++)
 				{
 					var expr = Create.Express(args[j], script);
-					if (useCstor && !scClassType.Constructor.Parameters[j + 1].Type.Subsumes(expr.Type.Type))
+					if (!scClassType.Constructor.Parameters[j + 1].Type.Subsumes(expr.Type.Type))
 						throw LsnrParsingException.TypeMismatch(args[j][0], scClassType.Constructor.Parameters[j + 1].Type.Name,
 							expr.Type.Name, script.Path);
-					if (!scClassType.Fields[j].Type.Subsumes(expr.Type.Type))
-						throw LsnrParsingException.TypeMismatch(args[j][0], scClassType.Fields[j].Name, expr.Type.Name, script.Path);
 					argExps[j] = expr;
 				}
 			}
 
-			if (tokens[++i].Value != "to")
+			if (tokens[i].Value != "to")
 				throw LsnrParsingException.UnexpectedToken(tokens[i], "to", script.Path);
 			i++;
 
-			var host = Create.Express(tokens.Skip(i + 1), script);
+			var host = Create.Express(tokens.Skip(i), script);
 
 			return new AttachStatement(scClassType.Id, argExps, host);
 		}

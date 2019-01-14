@@ -255,7 +255,7 @@ namespace LSNr.ScriptObjects
 
 		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{
-			var index = new Indexer<Token>(1, head);
+			var index = new Indexer<Token>(0, head);
 			var args = ParseParameters(index, "constructor", "new");
 			if (index.MoveForward() && index.Current.Value != "{")
 				throw new LsnrParsingException(index.Current, "", ScriptClass.Path);
