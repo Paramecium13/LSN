@@ -113,6 +113,9 @@ HostInterface IEnemy
 	fn Kill();
 	
 	fn GetFriends() -> Option<Vector<IEnemy>>;
+	
+	event Death(killer : IActor);
+	
 }
 
 

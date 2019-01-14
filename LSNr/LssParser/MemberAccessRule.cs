@@ -89,7 +89,7 @@ namespace LSNr.LssParser
 				expr = new HostInterfaceMethodCall(def, leftExpr, args);
 			}
 
-			else if (scType != null) // It could be a property access expression
+			/*else if (scType != null) // It could be a property access expression
 			{
 				var props = scType.Properties.Where(p => p.Name == memberName).ToArray();
 				if(props.Length != 0)
@@ -97,7 +97,7 @@ namespace LSNr.LssParser
 					expr = new PropertyAccessExpression(leftExpr, scType.GetPropertyIndex(memberName));
 					nextIndex = index + 2;
 				}
-			}
+			}*/
 
 			if (expr == null && fieldType != null) // It could be a field access expression.
 			{

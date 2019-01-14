@@ -16,7 +16,7 @@ namespace LsnCore.Types
 		public readonly TypeId HostInterface;
 
 		// Properties
-		private readonly IList<Property> _Properties;
+		private readonly IList<Property> _Properties = new List<Property>();
 
 		public IReadOnlyList<Property> Properties => (IReadOnlyList<Property>)_Properties;
 
@@ -44,16 +44,15 @@ namespace LsnCore.Types
 
 		public readonly string Metadata;
 
-		public ScriptClass(TypeId id, TypeId host, IList<Property> properties, IReadOnlyList<Field> fields,
-			IReadOnlyDictionary<string,ScriptClassMethod> methods, IReadOnlyDictionary<string,EventListener> eventListeners,
-			IReadOnlyDictionary<int,ScriptClassState> states, int defaultStateIndex, bool unique, string meta, ScriptClassConstructor constructor = null)
+		public ScriptClass(TypeId id, TypeId host, IReadOnlyList<Field> fields,	IReadOnlyDictionary<string,ScriptClassMethod> methods,
+			IReadOnlyDictionary<string,EventListener> eventListeners, IReadOnlyDictionary<int,ScriptClassState> states,
+			int defaultStateIndex, bool unique, string meta, ScriptClassConstructor constructor = null)
 		{
 			Name = id.Name;
 			Id = id;
 			HostInterface = host;
 			Unique = unique;
 			Metadata = meta;
-			_Properties = properties;
 			Fields = fields;
 			ScriptObjectMethods = methods;
 			EventListeners = eventListeners;
@@ -68,6 +67,7 @@ namespace LsnCore.Types
 				if (method.IsVirtual)
 					_Methods.Add(method.Name, method.ToVirtualMethod());
 				else _Methods.Add(method.Name, method);
+				// Calculate properties...
 			}
 		}
 
@@ -87,15 +87,12 @@ namespace LsnCore.Types
 		public int GetFieldIndex(string name)
 			=> (this as IHasFieldsType).GetIndex(name);
 
-		public int GetPropertyIndex(string name)
+#if LSNR
+		public object GetPropertyInfo(string name)
 		{
-			if (_Properties.Any(f => f.Name == name))
-			{
-				var prop = _Properties.First(f => f.Name == name);
-				return _Properties.IndexOf(prop);
-			}
-			throw new ApplicationException($"The ScriptObject type {Name} does not have a property named {name}.");
+			throw new NotImplementedException();
 		}
+#endif
 
 		public bool HasMethod(string name)
 			=> ScriptObjectMethods.ContainsKey(name);
@@ -114,12 +111,12 @@ namespace LsnCore.Types
 		public ScriptClassState GetState(int id) => _States[id];
 
 #if CORE
-		internal ScriptObject Construct(LsnValue[] properties, LsnValue[] arguments, IInterpreter i, IHostInterface host = null)
+		internal ScriptObject Construct(LsnValue[] arguments, IInterpreter i, IHostInterface host = null)
 		{
 			var fields = new LsnValue[FieldsB.Count];
 			if (Constructor != null)
 			{
-				var obj = new ScriptObject(properties, fields, this, DefaultStateId, host);
+				var obj = new ScriptObject(fields, this, DefaultStateId, host);
 				var args = new LsnValue[arguments.Length + 1];
 				arguments.CopyTo(args, 1);
 				args[0] = new LsnValue(obj);
@@ -128,7 +125,7 @@ namespace LsnCore.Types
 			}
 			for (int j = 0; j < fields.Length; j++)
 				fields[j] = arguments[j];
-			return new ScriptObject(properties, fields, this, DefaultStateId, host);
+			return new ScriptObject(fields, this, DefaultStateId, host);
 		}
 #endif
 
@@ -140,9 +137,9 @@ namespace LsnCore.Types
 			writer.Write(Metadata ?? "");
 			writer.Write(DefaultStateId);
 
-			writer.Write((ushort)_Properties.Count);
+			/*writer.Write((ushort)_Properties.Count);
 			foreach (var prop in _Properties)
-				prop.Write(writer);
+				prop.Write(writer);*/
 
 			writer.Write((ushort)Fields.Count);
 			var bv = new BitArray(Fields.Select(f => f.Mutable).ToArray());
@@ -182,10 +179,10 @@ namespace LsnCore.Types
 
 			var type = typeContainer.GetTypeId(name);
 
-			var nProperties = reader.ReadUInt16();
+			/*var nProperties = reader.ReadUInt16();
 			var props = new List<Property>(nProperties);
 			for (int i = 0; i < nProperties; i++)
-				props.Add(Property.Read(reader, typeContainer));
+				props.Add(Property.Read(reader, typeContainer));*/
 
 			var nFields = reader.ReadUInt16();
 			var count = nFields / 8 + (nFields % 8 == 0 ? 0 : 1);
@@ -227,7 +224,7 @@ namespace LsnCore.Types
 			TypeId h = null;
 			if(!string.IsNullOrEmpty(hostInterfaceTypeName))
 				h = typeContainer.GetTypeId(hostInterfaceTypeName);
-			return new ScriptClass(type, h, props, fields, methods, listeners,
+			return new ScriptClass(type, h, fields, methods, listeners,
 				states, defaultStateId, unique, meta, constructor);
 		}
 	}

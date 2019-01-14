@@ -13,32 +13,26 @@ namespace LsnCore.Statements
 	public class AttachStatement : Statement
 	{
 		private readonly TypeId ScriptClass;
-		private readonly IExpression[] PropertyExpressions;
 		private readonly IExpression[] ConstructorArguments;
 		private IExpression HostExpression;
 
-		public AttachStatement(TypeId scriptClass, IExpression[] properties, IExpression[] args, IExpression host)
+		public AttachStatement(TypeId scriptClass, IExpression[] args, IExpression host)
 		{
-			ScriptClass = scriptClass; PropertyExpressions = properties; ConstructorArguments = args; HostExpression = host;
+			ScriptClass = scriptClass; ConstructorArguments = args; HostExpression = host;
 		}
 
 #if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			var obj = (ScriptClass.Type as ScriptClass).Construct(PropertyExpressions.Select(e => e.Eval(i)).ToArray(),
-				ConstructorArguments.Select(e => e.Eval(i)).ToArray(), i, HostExpression.Eval(i).Value as IHostInterface);
+			var obj = (ScriptClass.Type as ScriptClass)
+				.Construct(ConstructorArguments.Select(e => e.Eval(i)).ToArray(),
+				i, HostExpression.Eval(i).Value as IHostInterface);
 			return InterpretValue.Base;
 		}
 #endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
-			for (int i = 0; i < PropertyExpressions.Length; i++)
-			{
-				if (PropertyExpressions[i].Equals(oldExpr))
-					PropertyExpressions[i] = newExpr;
-				else PropertyExpressions[i].Replace(oldExpr, newExpr);
-			}
 			for (int i = 0; i < ConstructorArguments.Length; i++)
 			{
 				if (ConstructorArguments[i].Equals(oldExpr))
@@ -56,10 +50,6 @@ namespace LsnCore.Statements
 
 			resourceSerializer.WriteTypeId(ScriptClass, writer);
 
-			writer.Write((byte)PropertyExpressions.Length);
-			for (int i = 0; i < PropertyExpressions.Length; i++)
-				PropertyExpressions[i].Serialize(writer, resourceSerializer);
-
 			writer.Write((byte)ConstructorArguments.Length);
 			for (int i = 0; i < ConstructorArguments.Length; i++)
 				ConstructorArguments[i].Serialize(writer, resourceSerializer);
@@ -69,12 +59,6 @@ namespace LsnCore.Statements
 
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
-			for (int i = 0; i < PropertyExpressions.Length; i++)
-			{
-				yield return PropertyExpressions[i];
-				foreach (var expr in PropertyExpressions[i].SelectMany(e => e))
-					yield return expr;
-			}
 			for (int i = 0; i < ConstructorArguments.Length; i++)
 			{
 				yield return ConstructorArguments[i];

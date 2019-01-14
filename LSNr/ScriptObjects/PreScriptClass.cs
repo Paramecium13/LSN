@@ -267,7 +267,7 @@ namespace LSNr
 
 			// PreParse states
 			var states = PreStates.Select(p => p.PreParse()).ToDictionary((s) => s.Id);
-			var scClass = new ScriptClass(Id, HostType?.Id, Properties, Fields, Methods, EventListeners, states, DefaultStateIndex, IsUnique, Metadata);
+			var scClass = new ScriptClass(Id, HostType?.Id, Fields, Methods, EventListeners, states, DefaultStateIndex, IsUnique, Metadata);
 			Id.Load(scClass);
 			return scClass;
 		}

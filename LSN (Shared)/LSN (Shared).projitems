@@ -30,7 +30,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\ListConstructor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\MethodCall.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\NotExpression.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\PropertyAccessExpression.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\RangeExpression.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\RecordConstructor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\ScriptObjectMethodCall.cs" />

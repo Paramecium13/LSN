@@ -163,69 +163,22 @@ namespace LSNr.Statements
 				return ls.ToArray();
 			}
 			List<Token>[] args = null;
-			List<Token>[] props = null;
 			if (tokens[3].Value == "(")
 			{
 				args = parseP("(", ")");
 				if (tokens[i].Value != "[" && scClassType.Properties.Count != 0)
 					throw LsnrParsingException.UnexpectedToken(tokens[i], "[", script.Path);
 				i++;
-				props = parseP("[", "]");
-			}
-			else if (tokens[3].Value == "[")
-			{
-				props = parseP("[", "]");
-				if (tokens[i].Value != "(")
-					throw LsnrParsingException.UnexpectedToken(tokens[i], "[", script.Path);
-				i++;
-				args = parseP("(", ")");
 			}
 			else throw LsnrParsingException.UnexpectedToken(tokens[3], "'[' or '('", script.Path);
 
-			if (props.Length != scClassType.Properties.Count)
-				throw new LsnrParsingException(tokens[2], $"All properties of script class '{scClassName}' must be given a value.",
-					script.Path);
-
-			var propExps = new IExpression[scClassType.Properties.Count];
 			IExpression[] argExps = null;
-			if (props.Length > 0 && props[0].Count > 2 && props[0][1].Value == ":")
-			{
-				if (!props.All(p => p.Count > 2 && p[1].Value == ":"))
-					throw new LsnrParsingException(props[0][2],
-						"Either all properties must be entered by name or all properties must be entered by position", script.Path);
-				foreach (var ls in props)
-				{
-					var name = ls[0].Value;
-					var prop = scClassType.Properties.FirstOrDefault(p => p.Name == name);
-					if (prop == null)
-						throw new LsnrParsingException(ls[0],
-							$"The script class '{scClassName}' does not have a property named '{name}'", script.Path);
-					int index = scClassType.GetPropertyIndex(name);
-					if (propExps[index] != null)
-						throw new LsnrParsingException(ls[0], $"Property '{name}' cannot be given two values.", script.Path);
-					var expr = Create.Express(ls.Skip(2), script);
-					propExps[index] = expr;
-					if (!prop.Type.Subsumes(expr.Type.Type))
-						throw LsnrParsingException.TypeMismatch(ls[0], prop.Type.Name, expr.Type.Name, script.Path);
-				}
-			}
-			else
-			{
-				for (int j = 0; j < props.Length; j++)
-				{
-					var expr = Create.Express(props[j], script);
-					if (!scClassType.Properties[j].Type.Subsumes(expr.Type.Type))
-						throw LsnrParsingException.TypeMismatch(props[j][0], scClassType.Properties[j].Type.Name,
-							expr.Type.Name, script.Path);
-					propExps[j] = expr;
-				}
-			}
 			var useCstor = scClassType.Constructor != null;
 
 			if (useCstor && args.Length != scClassType.Constructor.Parameters.Length - 1)
 				throw new LsnrParsingException(tokens[2],
 					$"Incorrect number of arguments for constructor of script class '{scClassName}'.", script.Path);
-			else if (args.Length != scClassType.FieldsB.Count)
+			if (args.Length != scClassType.FieldsB.Count)
 				throw new LsnrParsingException(tokens[2],
 					$"Incorrect number of fields for script class '{scClassName}'.", script.Path);
 
@@ -234,7 +187,7 @@ namespace LSNr.Statements
 				if (!args.All(p => p.Count > 2 && p[1].Value == ":"))
 				{
 					var x = useCstor ? "arguments" : "fields";
-					throw new LsnrParsingException(props[0][2],
+					throw new LsnrParsingException(args[0][1],
 						$"Either all {x} must be entered by name or all {x} must be entered by position", script.Path);
 				}
 				foreach (var ls in args)
@@ -288,7 +241,7 @@ namespace LSNr.Statements
 
 			var host = Create.Express(tokens.Skip(i + 1), script);
 
-			return new AttachStatement(scClassType.Id, propExps, argExps, host);
+			return new AttachStatement(scClassType.Id, argExps, host);
 		}
 	}
 }

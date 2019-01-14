@@ -63,7 +63,12 @@ namespace LSNr.ScriptObjects
 			ParsingStateSignatures?.Invoke(this);
 			var methods = AbstractMethods.Union(NonAbstractMethods)
 				.ToDictionary(m => m.Name);
-			Resource.RegisterScriptClass(new ScriptClass(Id, HostId, new List<Property>(), Fields, methods,
+			if(Constructor == null)
+			{
+				// ToDo: If no constructor, create default constructor.
+
+			}
+			Resource.RegisterScriptClass(new ScriptClass(Id, HostId, Fields, methods,
 				EventListeners.ToDictionary(e => e.Definition.Name), States.Values.ToDictionary(s => s.Id), First ?? 0, Unique, Metadata, Constructor));
 		}
 
@@ -72,6 +77,7 @@ namespace LSNr.ScriptObjects
 			if (pre != Resource)
 				throw new ApplicationException();
 			ParsingProcBodies?.Invoke(this);
+			// ToDo: If not auto generated constructor, validate constructor (& add field default values...)
 		}
 
 		public void RegisterField(string name, TypeId id, bool mutable)

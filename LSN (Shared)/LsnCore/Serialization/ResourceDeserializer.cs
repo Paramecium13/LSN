@@ -176,15 +176,11 @@ namespace LsnCore.Serialization
 				case StatementCode.AttachNewScriptObject:
 					{
 						var type = TypeIds[reader.ReadUInt16()];
-						var nProps = reader.ReadByte();
-						var props = new IExpression[nProps];
-						for (int i = 0; i < nProps; i++)
-							props[i] = ReadExpression(reader);
 						var nArgs = reader.ReadByte();
 						var args = new IExpression[nArgs];
 						for (int i = 0; i < nArgs; i++)
 							args[i] = ReadExpression(reader);
-						return new AttachStatement(type, props, args, ReadExpression(reader));
+						return new AttachStatement(type, args, ReadExpression(reader));
 					}
 				default:
 					throw new ApplicationException();
@@ -221,12 +217,6 @@ namespace LsnCore.Serialization
 						var target = ReadExpression(reader);
 						var index = ReadExpression(reader);
 						return new CollectionValueAccessExpression(target, index);
-					}
-				case ExpressionCode.PropertyAccess:
-					{
-						var index = reader.ReadUInt16();
-						var target = ReadExpression(reader);
-						return new PropertyAccessExpression(target, index);
 					}
 				case ExpressionCode.HostInterfaceAccess:
 					return new HostInterfaceAccessExpression();
@@ -547,14 +537,11 @@ namespace LsnCore.Serialization
 			var typeName = reader.ReadString();
 			var currentState = reader.ReadInt32();
 			var type = (ScriptClass)resourceManager.GetLsnType(typeName);
-			var properties = new LsnValue[type.NumberOfProperties];
-			for (int i = 0; i < type.NumberOfProperties; i++)
-				properties[i] = ReadValue(reader, resourceManager);
 			var fields = new LsnValue[type.NumberOfFields];
 			for (int i = 0; i < type.NumberOfFields; i++)
 				fields[i] = ReadValue(reader, resourceManager);
 
-			return new ScriptObject(properties, fields, type, currentState, host);
+			return new ScriptObject(fields, type, currentState, host);
 		}
 
 		public static ScriptObject ReadScriptObject(BinaryDataReader reader, IResourceManager resourceManager, bool canHaveHost)
@@ -574,6 +561,8 @@ namespace LsnCore.Serialization
 						if ((txtId?.Length ?? 0) > 0)
 							host = resourceManager.GetHostInterface(txtId);
 						break;
+					default:
+						throw new Exception("Unexpected Case");
 				}
 			}
 			return ReadScriptObject(reader, resourceManager, host);

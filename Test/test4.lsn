@@ -1,0 +1,23 @@
+﻿using "test2";
+
+// Turns a vampire to ash upon death.
+script class VampireDeathScript < IEnemy
+{
+	AshItemId : string;
+	
+	new(ash : string)
+	{
+		AshItemId = ash;
+	}
+	
+	on Death(killer : IActor)
+	{
+		give 1 item AshItemId to killer;
+	}
+	
+}
+
+fn Vampify(vamp : IEnemy)
+{
+	attach new VampireDeathScript("VampireAsh") to vamp;
+}

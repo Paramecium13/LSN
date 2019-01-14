@@ -76,8 +76,6 @@ namespace LsnCore.ControlStructures
 				case UniqueScriptObjectAccessExpression unique:
 				case LsnValue val:
 					return true;
-				case PropertyAccessExpression prop:
-					return CheckCollectionVariable(prop.ScriptObject, recCount + 1);
 				case CollectionValueAccessExpression coll:
 					return CheckCollectionVariable(coll.Index, recCount + 1)
 						&& CheckCollectionVariable(coll.Collection, recCount + 1);

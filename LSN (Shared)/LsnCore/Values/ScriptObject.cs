@@ -11,8 +11,6 @@ namespace LsnCore.Values
 {
 	public sealed class ScriptObject : ILsnValue, IHasMutableFieldsValue
 	{
-		private readonly LsnValue[] Properties;
-
 		private readonly LsnValue[] Fields;
 
 		private readonly ScriptClass ScriptClass;
@@ -31,9 +29,9 @@ namespace LsnCore.Values
 
 		public string TextId { get; private set; }
 
-		public ScriptObject(LsnValue[] properties, LsnValue[] fields, ScriptClass type, int currentState, IHostInterface host = null)
+		public ScriptObject(LsnValue[] fields, ScriptClass type, int currentState, IHostInterface host = null)
 		{
-			Properties = properties; Fields = fields; Type = type.Id; ScriptClass = type; CurrentStateIndex = currentState;
+			Fields = fields; Type = type.Id; ScriptClass = type; CurrentStateIndex = currentState;
 			if (type._States.Count > 0)
 				CurrentState = ScriptClass.GetState(CurrentStateIndex);
 			if (host != null)
@@ -75,7 +73,7 @@ namespace LsnCore.Values
 		}
 
 		internal LsnValue GetPropertyValue(int index)
-			=> Properties[index];
+			=> throw new InvalidOperationException();
 
 		internal ScriptClassMethod GetMethod(string methodName)
 		{
@@ -210,12 +208,12 @@ namespace LsnCore.Values
 					case IdentifierType.Text:
 						writer.Write(Host?.TextId ?? "");
 						break;
+					default:
+						break;
 				}
 			}
 			writer.Write(Type.Name);
 			writer.Write(CurrentStateIndex);
-			for (int i = 0; i < Properties.Length; i++)
-				Properties[i].Serialize(writer);
 			for (int i = 0; i < Fields.Length; i++)
 				Fields[i].Serialize(writer);
 		}
