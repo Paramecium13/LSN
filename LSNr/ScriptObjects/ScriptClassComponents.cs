@@ -123,7 +123,7 @@ namespace LSNr.ScriptObjects
 		{
 			try
 			{
-				var pre = new PreScriptClassFunction(sc);
+				var pre = new PreScriptClassFunction(sc, true);
 				foreach (var param in Constructor.Parameters)
 					pre.CurrentScope.CreateVariable(param);
 				var parser = new Parser(Body, pre);

@@ -16,9 +16,9 @@ namespace LSNr
 	{
 		internal readonly IBasePreScriptClass Parent;
 
-		internal PreScriptClassFunction(IBasePreScriptClass parent)
+		internal PreScriptClassFunction(IBasePreScriptClass parent, bool isConstructor = false)
 		{
-			Parent = parent;
+			Parent = parent; IsConstructor = isConstructor;
 		}
 
 		public IScope CurrentScope { get; set; } = new VariableTable(new List<Variable>());
@@ -61,6 +61,8 @@ namespace LSNr
 		}.OrderBy(r => r.Order).ToList();
 
 		public IReadOnlyList<ControlStructureRule> ControlStructureRules => _ControlStructureRules;
+
+		public bool IsConstructor { get; private set; }
 
 		public bool GenericTypeExists(string name)		=> Parent.GenericTypeExists(name);
 		public Function GetFunction(string name)		=> Parent.GetFunction(name);
