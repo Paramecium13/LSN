@@ -30,14 +30,14 @@ fn foo(a:int, b:double)
 	let mut f = a /(b+1);
 }
 
-fn bar(val: int)-> Range
+fn bar(value: int)-> Range
 {
-	return -val..val;
+	return -value..value;
 }
 
-fn HelloRanges(val:int)
+fn HelloRanges(value: int)
 {
-	for i in bar(val)
+	for i in bar(value)
 	{
 		say i;
 	}

@@ -37,7 +37,7 @@ namespace LSNr
 		internal void Write(string path)
 		{
 			using (var writer = new StreamWriter(File.Open(path, FileMode.Create)))
-				writer.Write(JsonConvert.SerializeObject(Dependencies.OrderBy(p => p.Key), Formatting.Indented));
+				writer.Write(JsonConvert.SerializeObject(Dependencies, Formatting.Indented));
 		}
 
 		internal IEnumerable<string> GetUsed(string user) => Dependencies[user].ToArray();
