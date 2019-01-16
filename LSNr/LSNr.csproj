@@ -108,6 +108,10 @@
     <Compile Include="ControlStructures\ConditionalStructureRules.cs" />
     <Compile Include="ControlStructures\IControlStructureRule.cs" />
     <Compile Include="ControlStructures\LoopRules.cs" />
+    <Compile Include="Converations\ConversationBuilder.cs" />
+    <Compile Include="Converations\ConversationReader.cs" />
+    <Compile Include="Converations\NodeBuilder.cs" />
+    <Compile Include="Converations\NodeReader.cs" />
     <Compile Include="Dependencies.cs" />
     <Compile Include="DependenciesForest.cs" />
     <Compile Include="GlobalSuppressions.cs" />
