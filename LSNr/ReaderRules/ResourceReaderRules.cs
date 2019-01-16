@@ -299,4 +299,17 @@ namespace LSNr.ReaderRules
 			PreResource.RegisterTypeId(scriptClass.Id);
 		}
 	}
+
+	sealed class ResourceReaderConversationRule : ResourceReaderBodyRule
+	{
+		public ResourceReaderConversationRule(IPreResource p) : base(p) { }
+
+		public override bool Check(ISlice<Token> head)
+			=> head[0].Type == TokenType.Keyword && head[0].Value == "conversation";
+
+		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

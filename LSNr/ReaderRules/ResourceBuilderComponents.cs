@@ -120,4 +120,9 @@ namespace LSNr.ReaderRules
 			}
 		}
 	}
+
+	public sealed class ConversationBuilder
+	{
+
+	}
 }
