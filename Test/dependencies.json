@@ -1,8 +1,14 @@
 {
-  "src\\test2.lsn": [],
-  "src\\lssTest.lsn": [],
-  "src\\test3.lsn": [
-    "src\\test2.lsn"
+  "DogToy": [
+    "test3",
+    "test2"
   ],
-  "src\\test4.lsn": []
+  "lssTest": [],
+  "test2": [],
+  "test3": [
+    "test2"
+  ],
+  "test4": [
+    "test2"
+  ]
 }

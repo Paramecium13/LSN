@@ -1,0 +1,12 @@
+﻿using "test3";
+using "CatToy";
+
+struct DogToy{
+	Toy : Item,
+	Owner : Dog
+}
+
+fn ToCatToy(d : DogToy) -> CatToy
+{
+	return new CatToy(d.Toy, ToCat(d.Owner));
+}

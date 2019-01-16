@@ -1,0 +1,4 @@
+﻿using "test3";
+using "test2";
+
+record CatToy {Toy : Item, Owner : Cat}

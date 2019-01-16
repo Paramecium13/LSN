@@ -34,6 +34,7 @@ namespace LSNr.ReaderRules
 		readonly Dictionary<string, ScriptClass>		GeneratedScriptClasses	= new Dictionary<string, ScriptClass>();
 		readonly Dictionary<string, HostInterfaceType>	GeneratedHostInterfaces	= new Dictionary<string, HostInterfaceType>();
 
+		readonly string PurePath;
 		public string Path { get; private set; }
 		public IPreScript Script => this;
 
@@ -48,7 +49,7 @@ namespace LSNr.ReaderRules
 
 		internal ResourceBuilder(string path)
 		{
-			Path = path;
+			Path = path; PurePath = new string(path.Skip(4).Take(Path.Length - 8).ToArray());
 		}
 
 		public event Action<IPreResource> ParseSignaturesA;
@@ -84,8 +85,11 @@ namespace LSNr.ReaderRules
 		readonly HashSet<string> LoadedResources = new HashSet<string>();
 		protected void Use(string path)
 		{
-			Use(ResourceLoader(path), path);
-			LoadedResources.Add(path);
+			if (!LoadedResources.Contains(path))
+			{
+				Use(Program.Load(PurePath, path), path);
+				LoadedResources.Add(path);
+			}
 		}
 
 		protected void Use(LsnScriptBase resource, string path)
@@ -298,31 +302,5 @@ namespace LSNr.ReaderRules
 			StructTypes = GeneratedStructTypes.ToDictionary(s => s.Name),
 			Usings = Usings
 		};
-
-		static readonly Func<string, LsnResourceThing> ResourceLoader =
-			(path) =>
-			{
-				if (path.StartsWith(@"Lsn Core\", StringComparison.Ordinal))
-					return ResourceManager.GetStandardLibraryResource(new string(path.Skip(9).ToArray()));
-				if (path.StartsWith(@"std\", StringComparison.Ordinal))
-					return ResourceManager.GetStandardLibraryResource(new string(path.Skip(4).ToArray()));
-				var objPath = Program.GetObjectPath(path);
-				using (var stream = File.OpenRead(objPath)) //ToDo: Replace with a call to a static method...
-				{
-					return LsnResourceThing.Read(stream, new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()), ResourceLoader);
-				}
-			};
-
-		protected static LsnResourceThing Load(string path)
-		{
-			LsnResourceThing res = null;
-			var objPath = Program.GetObjectPath(path);
-			var srcPath = Program.GetSourcePath(path);
-			using (var fs = File.OpenRead(objPath))
-			{
-				res = LsnResourceThing.Read(fs, new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()), ResourceLoader);
-			}
-			return res;
-		}
 	}
 }

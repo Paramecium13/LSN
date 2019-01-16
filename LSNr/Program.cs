@@ -46,21 +46,30 @@ namespace LSNr
 				_DependenciesFile = DependenciesFile.Read(DEP_FILE_PATH);
 			else
 				_DependenciesFile = DependenciesFile.SetUp();
-
 			var changedFiles = GetChangedFiles();
-			var dependenciesForest = DependenciesNode.CreateForest(_DependenciesFile, changedFiles);
-
+			var deps =  _DependenciesFile.RegirsterChangedFiles(changedFiles);
 			var tasks = new Dictionary<string, Task>();
-			foreach (var path in changedFiles)
-				tasks[path] = Task.Run(() => Reify(dependenciesForest[path], tasks));
-			DependencyWaiter = new DependencyWaiter(tasks);
+			foreach (var path in changedFiles.Union(deps))
+				tasks[new string(path.Skip(4).Take(path.Length - 8).ToArray())] = Task.Run(() => Reify(path));
+			DependencyWaiter = new DependencyWaiter(_DependenciesFile, tasks);
 			MyWaitHandle.Set();
 
 			var rTask = Task.WhenAll(tasks.Values);
 
-			rTask.Wait();
+			try
+			{
+				rTask.Wait();
+			}
+			catch(Exception)
+			{
+				return 8;
+			}
+			finally
+			{
+				if(tasks.Values.Any(t => t.Status == TaskStatus.RanToCompletion))
+					_DependenciesFile.Write(DEP_FILE_PATH);
+			}
 
-			_DependenciesFile.Write(DEP_FILE_PATH);
 
 			if (rTask.Status == TaskStatus.Faulted)
 				return 8;
@@ -98,23 +107,23 @@ namespace LSNr
 
 		public static string GetObjectPath(string rawPath)
 		{
-			if(rawPath.StartsWith("obj"))
+			if (rawPath.StartsWith("obj"))
 			{
 				if (Path.HasExtension(rawPath))
 					return rawPath;
 				return rawPath + _MainFile.ObjectFileExtension;
 			}
-			if(rawPath.StartsWith("src"))
+			if (rawPath.StartsWith("src"))
 			{
 				rawPath = new string(rawPath.Skip(4).ToArray());
 			}
-			if(Path.HasExtension(rawPath))
+			if (Path.HasExtension(rawPath))
 			{
-				if(Path.GetExtension(rawPath) != _MainFile.ObjectFileExtension)
+				if (Path.GetExtension(rawPath) != _MainFile.ObjectFileExtension)
 				{
 					rawPath = new string(rawPath.Take(rawPath.Length - Path.GetExtension(rawPath).Length).Concat(_MainFile.ObjectFileExtension).ToArray());
 				}
-				return Path.Combine("obj",rawPath);
+				return Path.Combine("obj", rawPath);
 			}
 
 			return Path.Combine("obj", rawPath + _MainFile.ObjectFileExtension);
@@ -131,15 +140,12 @@ namespace LSNr
 
 		private static DependencyWaiter DependencyWaiter;
 
-		public static void Reify(DependenciesNode myNode, IReadOnlyDictionary<string, Task> tasks)
+		public static void Reify(string path)
 		{
-			var deps = new HashSet<string>(myNode.DependencyPaths);
 			MyWaitHandle.WaitOne();
-			foreach (var path in deps)
-				tasks[path].Wait();
 
 			// Parse the file
-			var rs = ResourceReader.OpenResource(File.ReadAllText(GetSourcePath(myNode.Path)), myNode.Path, DependencyWaiter);
+			var rs = ResourceReader.OpenResource(File.ReadAllText(GetSourcePath(path)), path, DependencyWaiter);
 			var res = rs.Read();
 			if (!rs.Valid)
 			{
@@ -148,10 +154,26 @@ namespace LSNr
 				Console.ReadLine();
 				throw new ApplicationException();
 			}
-			using (var fs = File.Create(GetObjectPath(myNode.Path)))
+			using (var fs = File.Create(GetObjectPath(path)))
 			{
 				res.Serialize(fs);
 			}
+		}
+
+		internal static LsnResourceThing Load(string user, string used)
+		{
+			if (used.StartsWith(@"Lsn Core\", StringComparison.Ordinal))
+				return ResourceManager.GetStandardLibraryResource(new string(used.Skip(9).ToArray()));
+			if (used.StartsWith(@"std\", StringComparison.Ordinal))
+				return ResourceManager.GetStandardLibraryResource(new string(used.Skip(4).ToArray()));
+			DependencyWaiter.WaitOn(user, used);
+			LsnResourceThing res = null;
+			var objPath = Program.GetObjectPath(used);
+			using (var fs = File.OpenRead(objPath))
+			{
+				res = LsnResourceThing.Read(fs, new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()), (x) => Load(user,x));
+			}
+			return res;
 		}
 	}
 }

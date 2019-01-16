@@ -116,7 +116,7 @@ namespace LSNr.LssParser
 				var args = new IExpression[] { leftExpr };
 				var type = leftExpr.Type.Type;
 				if (!type.Methods.ContainsKey(memberName))
-					throw new LsnrParsingException(right, "...", script.Path);
+					throw new LsnrParsingException(right, $"'{leftExpr.Type.Name}' does not have a method (or any member) named '{memberName}'.", script.Path);
 
 				var method = type.Methods[memberName];
 				if (method.Parameters.Count == 1 && index + 2 < tokens.Count && tokens[index + 2].Value == "(")
