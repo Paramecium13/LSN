@@ -86,8 +86,8 @@ namespace LsnCore
 	/// </summary>
 	public static class LsnBoolValue
 	{
-		static readonly LsnValue True = new LsnValue(1);
-		static readonly LsnValue False = LsnValue.Nil;
+		static readonly LsnValue True = new LsnValue(true);
+		static readonly LsnValue False = new LsnValue(false);
 		public static LsnValue GetBoolValue(bool val)
 			=> val? True : False;
 	}

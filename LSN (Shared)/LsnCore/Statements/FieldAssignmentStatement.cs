@@ -12,6 +12,22 @@ namespace LsnCore.Statements
 {
 	public sealed class FieldAssignmentStatement : Statement
 	{
+#if LSNR
+		/// <summary>
+		/// The expression for the value with fields.
+		/// </summary>
+		public IExpression FieldedValue { get; private set; }
+
+		/// <summary>
+		/// The index of the field.
+		/// </summary>
+		public readonly int Index;
+
+		/// <summary>
+		/// The value to assign to the field.
+		/// </summary>
+		public IExpression ValueToAssign { get; private set; }
+#else
 		/// <summary>
 		/// The expression for the value with fields.
 		/// </summary>
@@ -26,6 +42,8 @@ namespace LsnCore.Statements
 		/// The value to assign to the field.
 		/// </summary>
 		private IExpression ValueToAssign;
+
+#endif
 
 		public FieldAssignmentStatement(IExpression fieldedValue,int index,IExpression value)
 		{

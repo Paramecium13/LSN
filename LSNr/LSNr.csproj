@@ -152,7 +152,6 @@
     <Compile Include="ReaderRules\ResourceReader.cs" />
     <Compile Include="ReaderRules\RuledReader.cs" />
     <Compile Include="ReaderRules\ScriptPartMap.cs" />
-    <Compile Include="ScriptObjects\BasePreScriptClass.cs" />
     <Compile Include="CharStreamTokenizer.cs" />
     <Compile Include="Create.cs" />
     <Compile Include="Create_Statements.cs" />
@@ -180,9 +179,7 @@
     <Compile Include="Parser.cs" />
     <Compile Include="PreFunction.cs" />
     <Compile Include="PreResource.cs" />
-    <Compile Include="ScriptObjects\PreScriptClass.cs" />
     <Compile Include="ScriptObjects\PreScriptClassFunction.cs" />
-    <Compile Include="ScriptObjects\PreState.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Variable.cs" />

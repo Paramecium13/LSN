@@ -1,8 +1,11 @@
 ﻿using LsnCore;
+using LsnCore.Expressions;
+using LsnCore.Statements;
 using LsnCore.Types;
 using LsnCore.Utilities;
 using LSNr.ReaderRules;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -63,11 +66,14 @@ namespace LSNr.ScriptObjects
 			ParsingStateSignatures?.Invoke(this);
 			var methods = AbstractMethods.Union(NonAbstractMethods)
 				.ToDictionary(m => m.Name);
-			if(Constructor == null)
+			if (Unique)
 			{
-				// ToDo: If no constructor, create default constructor.
-
+				if (Constructor != null)
+					throw new ApplicationException("Unique script classes cannot have constructors.");
 			}
+			else if (Constructor == null)
+				GenerateConstructor();
+			else ParsingProcBodies += (_) => ValidateConstructor();
 			Resource.RegisterScriptClass(new ScriptClass(Id, HostId, Fields, methods,
 				EventListeners.ToDictionary(e => e.Definition.Name), States.Values.ToDictionary(s => s.Id), First ?? 0, Unique, Metadata, Constructor));
 		}
@@ -78,6 +84,7 @@ namespace LSNr.ScriptObjects
 				throw new ApplicationException();
 			ParsingProcBodies?.Invoke(this);
 			// ToDo: If not auto generated constructor, validate constructor (& add field default values...)
+			// Done. It's the last thing added...
 		}
 
 		public void RegisterField(string name, TypeId id, bool mutable)
@@ -173,5 +180,69 @@ namespace LSNr.ScriptObjects
 		public bool StateExists(string stateName) => States.ContainsKey(stateName);
 
 		public bool MethodExists(string value) => AbstractMethods.Any(m => m.Name == value) || NonAbstractMethods.Any(m => m.Name == value);
+
+		void GenerateConstructor()
+		{
+			var code = new Statement[Fields.Count];
+			var parameters = new Parameter[Fields.Count + 1];
+			parameters[0] = new Parameter("self", Id, LsnValue.Nil, 0);
+			var vars = new Variable[Fields.Count + 1];
+			vars[0] = new Variable(parameters[0]);
+			var self = vars[0].AccessExpression;
+			for(int i = 0; i < Fields.Count; i++)
+			{
+				parameters[i + 1] = new Parameter(Fields[i].Name, Fields[i].Type, LsnValue.Nil, (ushort)(i + 1));
+				vars[i + 1] = new Variable(parameters[i + 1]);
+				code[i] = new FieldAssignmentStatement(self, i, vars[i + 1].AccessExpression);
+			}
+			Constructor = new ScriptClassConstructor(code, Fields.Count + 1, Path, parameters);
+		}
+
+		void ValidateConstructor()
+		{
+			var assignments = Enumerable.Repeat(-1, Fields.Count).ToArray();
+			string checkFields(IEnumerable<IExpression> expressions, out int field)
+			{
+				field = -1;
+				if (assignments.All(a => a >= 0))
+					return null;
+				foreach (var expr in expressions.OfType<FieldAccessExpression>())
+				{
+					if (assignments[expr.Index] < 0)
+					{
+						field = expr.Index;
+						return $"In the constructor for {Id.Name}, field '{Fields[field].Name}' is used before it is assigned a value";
+					}
+				}
+				if (expressions.OfType<MethodCall>().Any(m => m.Args[0] is VariableExpression v && v.Index == 0))
+					return $"In the constructor for {Id.Name}, a method on 'self' is being called before all of its fields have values.";
+
+				// ToDo: Function calls...
+
+				return null;// indicates no error.
+			}
+			for(int i = 0; i < Constructor.Code.Length; i++)
+			{
+				var statement = Constructor.Code[i];
+				if(statement is FieldAssignmentStatement a && a.FieldedValue is VariableExpression v && v.Index == 0 && assignments[a.Index] == -1)
+				{
+					var x = checkFields(a.ValueToAssign, out int f);
+					if (x != null)
+					{
+						if (f == a.Index)
+							throw new ApplicationException($"In the constructor for {Id.Name}, the value of '{Fields[f].Name}' is being used in the statement where it is first being assigned...");
+						throw new ApplicationException(x);
+					}
+					assignments[a.Index] = i;
+				}
+				else
+				{
+					var x = checkFields(statement, out int field);
+					if (x != null)
+						throw new ApplicationException(x);
+				}
+			}
+			// ToDo: Check self method calls, they may use fields.
+		}
 	}
 }

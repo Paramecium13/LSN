@@ -188,4 +188,19 @@ fn PathDistance(path:Vector<Point>)-> double
 	return sum;
 }
 
+fn MakeLockedDoor(door : IStandardActivator, key : string, x : int, y : int, map : string)
+{
+	attach new StandardDoor(true, key, map, x, y, 0) to door;
+}
+
+
+
+
+
+
+
+
+
+
+
 
