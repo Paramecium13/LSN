@@ -11,10 +11,11 @@ namespace LSNr.Converations
 {
 	interface INode : ITypeContainer
 	{
-
+		bool BranchExists(string name);
+		string Name { get; }
 	}
 
-	class NodeReader : RuledReader<NodeStatementRule, NodeBodyRule>
+	sealed class NodeReader : RuledReader<NodeStatementRule, NodeBodyRule>
 	{
 		protected override IEnumerable<NodeStatementRule> StatementRules { get; }
 

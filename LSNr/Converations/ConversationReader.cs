@@ -14,7 +14,7 @@ namespace LSNr.Converations
 
 	}
 
-	class ConversationReader : RuledReader<ConversationStatementRule, ConversationBodyRule>
+	sealed class ConversationReader : RuledReader<ConversationStatementRule, ConversationBodyRule>
 	{
 		protected override IEnumerable<ConversationStatementRule> StatementRules { get; }
 

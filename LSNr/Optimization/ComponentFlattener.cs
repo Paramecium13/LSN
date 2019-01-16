@@ -35,13 +35,15 @@ namespace LSNr.Optimization
 			return PreStatements.Select(p => p.Statement).ToArray();
 		}
 
-		public void StartFlatten(List<Component> components, string prefix)
+		public void StartFlatten(List<Component> components, string prefix, string startLabel)
 		{
+			if (startLabel != null)
+				NextLabel = startLabel;
 			LabelPrefix = prefix;
 			Walk(components);
 
 			if (NextLabel != null)
-				PreStatements.Add(new PreStatement(new ReturnStatement(null)) { Label = NextLabel });
+				throw new ApplicationException();
 		}
 
 		// Use at start of node

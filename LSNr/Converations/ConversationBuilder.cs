@@ -9,7 +9,7 @@ using LSNr.ReaderRules;
 
 namespace LSNr.Converations
 {
-	class ConversationBuilder : IConversation
+	sealed class ConversationBuilder : IConversation
 	{
 		readonly IPreResource Resource;
 

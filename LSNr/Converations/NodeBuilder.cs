@@ -1,4 +1,5 @@
 ﻿using LsnCore;
+using LsnCore.Statements;
 using LsnCore.Types;
 using LSNr.ReaderRules;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LSNr.Converations
 {
-	class NodeBuilder : INode
+	sealed class NodeBuilder : INode
 	{
 		readonly IConversation Conversation;
 
@@ -19,5 +20,16 @@ namespace LSNr.Converations
 		public LsnType GetType(string name) => Conversation.GetType(name);
 		public TypeId GetTypeId(string name) => Conversation.GetTypeId(name);
 		public bool TypeExists(string name) => Conversation.TypeExists(name);
+
+		readonly HashSet<string> BranchNames;
+
+		public string Name { get; private set; }
+
+		public NodeBuilder(IConversation conversation, string name)
+		{
+			Conversation = conversation; Name = name;
+		}
+
+		public bool BranchExists(string name) => BranchNames.Contains(name);
 	}
 }
