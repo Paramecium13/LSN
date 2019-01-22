@@ -15,7 +15,14 @@ namespace LsnCore.Statements
 		internal IExpression ChoiceText;
 
 		public int Target { get; set; } = -1;
+#if LSNR
+		public string Label { get; private set; }
 
+		internal RegisterChoiceStatement(IExpression condition, IExpression choiceText, string label):this(condition, choiceText)
+		{
+			Label = label;
+		}
+#endif
 		internal RegisterChoiceStatement(IExpression condition, IExpression choiceText)
 		{
 			Condition = condition; ChoiceText = choiceText;

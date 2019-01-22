@@ -35,15 +35,14 @@ namespace LSNr.Optimization
 			return PreStatements.Select(p => p.Statement).ToArray();
 		}
 
-		public void StartFlatten(List<Component> components, string prefix, string startLabel)
+		public void ConvPartialFlatten(List<Component> components, string prefix, string startLabel)
 		{
 			if (startLabel != null)
 				NextLabel = startLabel;
 			LabelPrefix = prefix;
 			Walk(components);
-
-			if (NextLabel != null)
-				throw new ApplicationException();
+			
+			// add a Jump to Target statement, w/ next label, if any.
 		}
 
 		// Use at start of node
@@ -230,6 +229,10 @@ namespace LSNr.Optimization
 				{
 					Target = InnerMostLoopContinueLabels.Peek()
 				};
+			}
+			else if(s is RegisterChoiceStatement reg && reg.Label != null)
+			{
+				preSt = new PreStatement(reg) { Target = reg.Label };
 			}
 			else
 				preSt = new PreStatement(s);

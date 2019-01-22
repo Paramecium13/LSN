@@ -10,9 +10,9 @@ namespace LSNr.Converations
 {
 	interface IBranch : ITypeContainer
 	{
+		string Name { get; }
 		IExpression Condition { get; }
-
-		PreStatement[] Code { get; }
+		IExpression Prompt { get; }
 	}
 
 	class BranchReader

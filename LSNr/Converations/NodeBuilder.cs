@@ -21,15 +21,22 @@ namespace LSNr.Converations
 		public TypeId GetTypeId(string name) => Conversation.GetTypeId(name);
 		public bool TypeExists(string name) => Conversation.TypeExists(name);
 
-		readonly HashSet<string> BranchNames;
+		readonly List<IBranch> Branches;
 
-		public string Name { get; private set; }
+		public string Name { get; }
 
 		public NodeBuilder(IConversation conversation, string name)
 		{
 			Conversation = conversation; Name = name;
 		}
 
-		public bool BranchExists(string name) => BranchNames.Contains(name);
+		public bool BranchExists(string name) => Branches.Any(b => b.Name == name);
+
+		IEnumerable<Component> GetChoiceSegment()
+		{
+			foreach (var branch in Branches)
+				yield return new RegisterChoiceStatement(branch.Condition, branch.Prompt, branch.Name);
+			yield return new DisplayChoicesStatement();
+		}
 	}
 }

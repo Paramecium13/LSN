@@ -23,8 +23,8 @@ namespace LSNr.Converations
 		public TypeId GetTypeId(string name) => TypeContainer.GetTypeId(name);
 		public bool TypeExists(string name) => TypeContainer.TypeExists(name);
 
+		public string Name { get; }
 		public IExpression Condition { get; private set; }
-
-		public PreStatement[] Code { get; private set; }
+		public IExpression Prompt { get; private set; }
 	}
 }
