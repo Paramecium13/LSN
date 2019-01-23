@@ -13,6 +13,11 @@ namespace LsnCore
 		LsnValue ReturnValue { get; set; }
 
 		/// <summary>
+		/// ...
+		/// </summary>
+		int JumpTarget { get; set; }
+
+		/// <summary>
 		/// The next statement to execute.
 		/// </summary>
 		int NextStatement { get; set; }

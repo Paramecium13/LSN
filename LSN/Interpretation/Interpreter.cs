@@ -16,6 +16,7 @@ namespace LsnCore
 
 		public LsnValue ReturnValue { get; set; }
 
+		public int JumpTarget { get; set; } = -1;
 		public int NextStatement { get; set; }
 
 		private readonly LsnStack Stack = new LsnStack();
@@ -27,7 +28,7 @@ namespace LsnCore
 
 		public virtual void RunProcedure(IProcedure procedure)
 		{
-			Stack.EnterProcedure(NextStatement, procedure);
+			Stack.EnterProcedure(NextStatement, JumpTarget, procedure);
 			var code = procedure.Code;
 			NextStatement = 0;
 			var currentStatement = NextStatement++;
@@ -38,12 +39,13 @@ namespace LsnCore
 				v = code[currentStatement].Interpret(this);
 				currentStatement = NextStatement++;
 			}
-			NextStatement = Stack.ExitProcedure();
+			NextStatement = Stack.ExitProcedure(out int j);
+			JumpTarget = j;
 		}
 
 		public virtual void RunProcedure(IProcedure procedure, LsnValue[] args)
 		{
-			Stack.EnterProcedure(NextStatement, procedure, args);
+			Stack.EnterProcedure(NextStatement, JumpTarget, procedure, args);
 			var code = procedure.Code;
 			NextStatement = 0;
 			var currentStatement = NextStatement++;
@@ -54,7 +56,8 @@ namespace LsnCore
 				v = code[currentStatement].Interpret(this);
 				currentStatement = NextStatement++;
 			}
-			NextStatement = Stack.ExitProcedure();
+			NextStatement = Stack.ExitProcedure(out int j);
+			JumpTarget = j;
 		}
 
 		/// <summary>

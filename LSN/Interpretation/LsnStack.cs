@@ -26,9 +26,9 @@ namespace LsnCore
 
 		public Function GetFunction(string name) => CurrentEnvironment.Functions[name];
 
-		public void EnterProcedure(int nextStatement, IProcedure procedure, LsnValue[] args)
+		public void EnterProcedure(int nextStatement, int jumpTarget, IProcedure procedure, LsnValue[] args)
 		{
-			Frames.Push(new FrameInfo(nextStatement, procedure, ResourceManager.GetResource(procedure.ResourceFilePath).GetEnvironment(ResourceManager)));
+			Frames.Push(new FrameInfo(nextStatement, jumpTarget, procedure, ResourceManager.GetResource(procedure.ResourceFilePath).GetEnvironment(ResourceManager)));
 			Offset = Count;
 			Count += procedure.StackSize;
 			if (Count > Values.Length) Grow();
@@ -37,20 +37,21 @@ namespace LsnCore
 				Values[i] = args[i];
 		}
 
-		public void EnterProcedure(int nextStatement, IProcedure procedure)
+		public void EnterProcedure(int nextStatement, int jumpTarget, IProcedure procedure)
 		{
-			Frames.Push(new FrameInfo(nextStatement, procedure, ResourceManager.GetResource(procedure.ResourceFilePath).GetEnvironment(ResourceManager)));
+			Frames.Push(new FrameInfo(nextStatement, jumpTarget, procedure, ResourceManager.GetResource(procedure.ResourceFilePath).GetEnvironment(ResourceManager)));
 			Offset = Count;
 			Count += procedure.StackSize;
 			if (Count > Values.Length) Grow();
 		}
 
-		public int ExitProcedure()
+		public int ExitProcedure(out int target)
 		{
 			var frame = Frames.Pop();
 			Array.Clear(Values, Offset, Count - Offset);
 			Count = Offset;
 			Offset -= frame.Procedure.StackSize;
+			target = frame.Target;
 			return frame.NextStatement;
 		}
 
@@ -66,12 +67,13 @@ namespace LsnCore
 		private struct FrameInfo
 		{
 			internal readonly int NextStatement;
+			internal readonly int Target;
 			internal readonly IProcedure Procedure;
 			internal readonly LsnEnvironment Environment;
 
-			internal FrameInfo(int nxt, IProcedure proc, LsnEnvironment env)
+			internal FrameInfo(int nxt, int target, IProcedure proc, LsnEnvironment env)
 			{
-				NextStatement = nxt; Procedure = proc; Environment = env;
+				NextStatement = nxt; Target = target; Procedure = proc; Environment = env;
 			}
 		}
 	}

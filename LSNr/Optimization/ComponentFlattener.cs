@@ -47,8 +47,7 @@ namespace LSNr.Optimization
 
 		public void AddJumpToTargetStatement()
 		{
-			if (LabelAliases.ContainsKey(target))
-				target = LabelAliases[target];
+			i
 			PreStatements.Add(new PreStatement(null) {Label = PopNextLabel() });
 		}
 
@@ -58,6 +57,7 @@ namespace LSNr.Optimization
 			{
 
 			}
+		}
 
 		public void AddSetTargetStatement(string target)
 		{
@@ -111,7 +111,7 @@ namespace LSNr.Optimization
 		{
 			for(int i = 0; i < PreStatements.Count; i++)
 				if (PreStatements[i].Label == label)
-					return i;
+					return i - 1; // Because the interpreter's main loop does 'NextStatement++'...
 			return PreStatements.Count;
 		}
 
