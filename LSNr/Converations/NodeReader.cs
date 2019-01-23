@@ -13,6 +13,7 @@ namespace LSNr.Converations
 	{
 		bool BranchExists(string name);
 		string Name { get; }
+		bool NodeExists(string name);
 	}
 
 	sealed class NodeReader : RuledReader<NodeStatementRule, NodeBodyRule>

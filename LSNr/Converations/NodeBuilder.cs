@@ -20,6 +20,7 @@ namespace LSNr.Converations
 		public LsnType GetType(string name) => Conversation.GetType(name);
 		public TypeId GetTypeId(string name) => Conversation.GetTypeId(name);
 		public bool TypeExists(string name) => Conversation.TypeExists(name);
+		public bool NodeExists(string name) => Conversation.NodeExists(name);
 
 		readonly List<IBranch> Branches;
 

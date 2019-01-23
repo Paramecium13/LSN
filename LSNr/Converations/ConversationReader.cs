@@ -11,7 +11,8 @@ namespace LSNr.Converations
 {
 	interface IConversation : ITypeContainer
 	{
-
+		void RegisterNode(INode node, bool first);
+		bool NodeExists(string name);
 	}
 
 	sealed class ConversationReader : RuledReader<ConversationStatementRule, ConversationBodyRule>
@@ -49,7 +50,7 @@ namespace LSNr.Converations
 
 		public override bool Check(ISlice<Token> head)
 			=> head[0].Type == TokenType.Keyword && (head[0].Value == "node"
-			|| (head[0].Value == "auto" && head.Length > 1 && head[1].Type == TokenType.Keyword && head[1].Value == "node"))
+			|| (head[0].Value == "auto" && head.Length > 1 && head[1].Type == TokenType.Keyword && head[1].Value == "node"));
 
 		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{

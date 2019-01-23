@@ -14,17 +14,28 @@ namespace LSNr.Converations
 {
 	sealed class BranchBuilder : IBranch
 	{
-		readonly ITypeContainer TypeContainer;
+		readonly IConversation Conversation;
 
-		public bool GenericTypeExists(string name) => TypeContainer.GenericTypeExists(name);
-		public void GenericTypeUsed(TypeId typeId) => TypeContainer.GenericTypeUsed(typeId);
-		public GenericType GetGenericType(string name) => TypeContainer.GetGenericType(name);
-		public LsnType GetType(string name) => TypeContainer.GetType(name);
-		public TypeId GetTypeId(string name) => TypeContainer.GetTypeId(name);
-		public bool TypeExists(string name) => TypeContainer.TypeExists(name);
+		public bool GenericTypeExists(string name) => Conversation.GenericTypeExists(name);
+		public void GenericTypeUsed(TypeId typeId) => Conversation.GenericTypeUsed(typeId);
+		public GenericType GetGenericType(string name) => Conversation.GetGenericType(name);
+		public LsnType GetType(string name) => Conversation.GetType(name);
+		public TypeId GetTypeId(string name) => Conversation.GetTypeId(name);
+		public bool TypeExists(string name) => Conversation.TypeExists(name);
 
 		public string Name { get; }
-		public IExpression Condition { get; private set; }
-		public IExpression Prompt { get; private set; }
+
+		public ISlice<Token> ConditionTokens { get; set; }
+		public IExpression Condition { get; set; }
+
+		public ISlice<Token> PromptTokens { get; set; }
+		public IExpression Prompt { get; set; }
+
+		public ISlice<Token> ActionTokens { get; set; }
+
+		public BranchBuilder(string name, IConversation conversation)
+		{
+			Name = name; Conversation = conversation;
+		}
 	}
 }
