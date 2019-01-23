@@ -11,6 +11,7 @@ namespace LSNr.Converations
 {
 	interface IConversation : ITypeContainer
 	{
+		ISlice<Token> StartTokens { get; set; }
 		void RegisterNode(INode node, bool first);
 		bool NodeExists(string name);
 	}
@@ -54,7 +55,19 @@ namespace LSNr.Converations
 
 		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{
-			throw new NotImplementedException();
+			var i = 0;
+			var first = false;
+			if(head[i].Value == "auto")
+			{
+				first = true;
+				++i;
+			}
+			var name = head[i].Value;
+			var builder = new NodeBuilder(Conversation, name);
+			var reader = new NodeReader(builder, body);
+			reader.Read();
+			Conversation.RegisterNode(builder, first);
+			// ToDo: Hook-up events.
 		}
 	}
 }

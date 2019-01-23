@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LSNr
 {
-	class CodeGen
+	public class CodeGen
 	{
 		private readonly IPreScript Script;
 		private readonly TypeId ReturnType;

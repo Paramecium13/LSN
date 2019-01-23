@@ -41,8 +41,41 @@ namespace LSNr.Optimization
 				NextLabel = startLabel;
 			LabelPrefix = prefix;
 			Walk(components);
-			
+
 			// add a Jump to Target statement, w/ next label, if any.
+		}
+
+		public void AddJumpToTargetStatement()
+		{
+			if (LabelAliases.ContainsKey(target))
+				target = LabelAliases[target];
+			PreStatements.Add(new PreStatement(null) {Label = PopNextLabel() });
+		}
+
+		public void AddOptionalJumpToTargetStatement()
+		{
+			if (!(PreStatements[PreStatements.Count - 1].Statement is JumpToTargetStatement))
+			{
+
+			}
+
+		public void AddSetTargetStatement(string target)
+		{
+			if (LabelAliases.ContainsKey(target))
+				target = LabelAliases[target];
+			PreStatements.Add(new PreStatement(null) { Target = target, Label = PopNextLabel() });
+		}
+
+		private readonly Dictionary<string, string> LabelAliases = new Dictionary<string, string>();
+
+		/// <summary>
+		/// For when the node has no start block, [Node Start] should redirect to [Node]
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="label"></param>
+		public void AddLabelAlias(string alias, string label)
+		{
+			LabelAliases.Add(alias, label);
 		}
 
 		// Use at start of node
@@ -54,6 +87,13 @@ namespace LSNr.Optimization
 		public Statement[] FinishFlatten()
 		{
 			LabelPrefix = "";
+			foreach (var pre in PreStatements)
+			{
+				if (pre.Label != null && LabelAliases.ContainsKey(pre.Label))
+					pre.Label = LabelAliases[pre.Label];
+				if (pre.Target != null && LabelAliases.ContainsKey(pre.Target))
+					pre.Target = LabelAliases[pre.Target];
+			}
 			foreach (var jmp in PreStatements.Where(s => s.Target != null))
 				(jmp.Statement as IHasTargetStatement).Target = FindLabel(jmp.Target);
 

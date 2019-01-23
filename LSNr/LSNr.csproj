@@ -211,6 +211,12 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LSN\LSN.csproj">
+      <Project>{C1269507-B8FD-4668-8D5A-0819DEAAFE89}</Project>
+      <Name>LSN</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="..\LSN (Shared)\LSN (Shared).projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -22,9 +22,18 @@ namespace LSNr.Converations
 
 		protected override IEnumerable<NodeBodyRule> BodyRules { get; }
 
-		public NodeReader(ISlice<Token> tokens) : base(tokens) { }
+		public NodeReader(INode node, ISlice<Token> tokens) : base(tokens)
+		{
+			StatementRules = new NodeStatementRule[0];
+			BodyRules = new NodeBodyRule[] { new BranchRule(node) };
+		}
 
 		protected override void OnReadAdjSemiColon(ISlice<Token>[] attributes) { }
+
+		public void Read()
+		{
+			ReadTokens();
+		}
 	}
 
 	abstract class NodeStatementRule : IReaderStatementRule
