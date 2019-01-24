@@ -29,7 +29,7 @@ namespace LSNr
 
 		private readonly List<Variable> Variables = new List<Variable>();
 
-		private readonly IList<Variable> MasterVariableList;
+		private readonly IList<Variable> MasterVariableList; // ToDo: Remove?
 
 		private readonly IList<VariableTable> Children = new List<VariableTable>();
 
@@ -93,9 +93,9 @@ namespace LSNr
 			return v;
 		}
 
-		public Variable CreateVariable(string name, LsnType type)
+		public Variable CreateVariable(string name, LsnType type, bool mutable = false)
 		{
-			var v = new Variable(name, type, NextOffset);
+			var v = new Variable(name, type, NextOffset, mutable);
 			Variables.Add(v);
 			if (v.Const())
 				ConstCount++;

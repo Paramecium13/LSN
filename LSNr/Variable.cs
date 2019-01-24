@@ -100,11 +100,11 @@ namespace LSNr
 			AccessExpression = new VariableExpression(Index, param.Type, this);
 		}
 
-		public Variable(string name, LsnType type, int index)
+		public Variable(string name, LsnType type, int index, bool mutable = false)
 		{
 			Name = name;
 			Type = type;
-			Mutable = false;
+			Mutable = mutable;
 			_index = index; AccessExpression = new VariableExpression(Index, type.Id, this);
 		}
 

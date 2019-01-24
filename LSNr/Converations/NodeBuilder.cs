@@ -68,7 +68,7 @@ namespace LSNr.Converations
 		{
 			var ls = new List<Component>();
 			foreach (var branch in Branches)
-				ls.Add(new RegisterChoiceStatement(branch.Condition, branch.Prompt, Name + branch.Name));
+				ls.Add(new RegisterChoiceStatement(branch.Condition, branch.Prompt, Name + " " + branch.Name));
 			ls.Add(new DisplayChoicesStatement());
 			return ls;
 		}
@@ -78,13 +78,20 @@ namespace LSNr.Converations
 			if (StartBlockTokens != null)
 			{
 				flattener.ConvPartialFlatten(GetStartBlock(), Name + " Start", Name + " ");
-				flattener.AddSetTargetStatement(Name);
+				flattener.AddSetTargetStatement(Name, Conversation.JumpTargetVariable);
 			}
 			else flattener.AddLabelAlias(Name + " Start", Name);
 			flattener.ConvPartialFlatten(GetChoiceSegment(), Name, Name + " ");
 			foreach (var branch in Branches)
 			{
-				
+				CurrentScope = CurrentScope.CreateChild();
+				var parser = new Parser(branch.ActionTokens, this);
+				parser.Parse();
+				var res = Parser.Consolidate(parser.Components);
+				CurrentScope = CurrentScope.Pop(res);
+				var label = Name + " " + branch.Name;
+				flattener.ConvPartialFlatten(res, label + " ", label);
+				flattener.AddOptionalJumpToTargetStatement(Conversation.JumpTargetVariable);
 			}
 		}
 

@@ -1,5 +1,6 @@
 ﻿using LsnCore;
 using LsnCore.Utilities;
+using LSNr.Optimization;
 using LSNr.ReaderRules;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace LSNr.Converations
 		bool BranchExists(string name);
 		string Name { get; }
 		bool NodeExists(string name);
+
+		void Parse(ComponentFlattener flattener);
 	}
 
 	sealed class NodeReader : RuledReader<NodeStatementRule, NodeBodyRule>

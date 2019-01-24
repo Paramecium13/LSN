@@ -14,6 +14,8 @@ namespace LSNr.Converations
 		ISlice<Token> StartTokens { get; set; }
 		void RegisterNode(INode node, bool first);
 		bool NodeExists(string name);
+
+		Variable JumpTargetVariable { get; }
 	}
 
 	sealed class ConversationReader : RuledReader<ConversationStatementRule, ConversationBodyRule>

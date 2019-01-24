@@ -45,24 +45,25 @@ namespace LSNr.Optimization
 			// add a Jump to Target statement, w/ next label, if any.
 		}
 
-		public void AddJumpToTargetStatement()
+		public void AddJumpToTargetStatement(Variable convJumpTargetVariable)
 		{
-			PreStatements.Add(new PreStatement(null) {Label = PopNextLabel() });
+			var jump = new JumpToTargetStatement(convJumpTargetVariable.Index);
+			PreStatements.Add(new PreStatement(jump) { Label = PopNextLabel() });
 		}
 
-		public void AddOptionalJumpToTargetStatement()
+		public void AddOptionalJumpToTargetStatement(Variable convJumpTargetVariable)
 		{
 			if (!(PreStatements[PreStatements.Count - 1].Statement is JumpToTargetStatement))
-			{
-
-			}
+				AddJumpToTargetStatement(convJumpTargetVariable);
 		}
 
-		public void AddSetTargetStatement(string target)
+		public void AddSetTargetStatement(string target, Variable jumpTargetVar)
 		{
 			if (LabelAliases.ContainsKey(target))
 				target = LabelAliases[target];
-			PreStatements.Add(new PreStatement(null) { Target = target, Label = PopNextLabel() });
+			var set = new SetTargetStatement(jumpTargetVar);
+			jumpTargetVar.AddUser(set);
+			PreStatements.Add(new PreStatement(set) { Target = target, Label = PopNextLabel() });
 		}
 
 		private readonly Dictionary<string, string> LabelAliases = new Dictionary<string, string>();

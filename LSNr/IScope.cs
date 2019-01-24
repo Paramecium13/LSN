@@ -8,7 +8,7 @@ namespace LSNr
 	public interface IScope
 	{
 		Variable CreateVariable(string name, bool mutable, IExpression init);
-		Variable CreateVariable(string name, LsnType type);
+		Variable CreateVariable(string name, LsnType type, bool mutable = false);
 		Variable CreateVariable(Parameter param);
 		Variable CreateIteratorVariable(string name, IExpression collection, Variable index);
 		Variable CreateMaskVariable(string name, IExpression accessExpression, LsnType type);

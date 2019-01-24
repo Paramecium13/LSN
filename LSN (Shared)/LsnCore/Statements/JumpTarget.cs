@@ -69,6 +69,11 @@ namespace LsnCore.Statements
 		{
 			Variable = variable;
 		}
+
+		public SetTargetStatement(ushort index)
+		{
+			Variable = new Variable("jump target", LsnType.int_, index, true);
+		}
 #else
 		int Index;
 
@@ -83,7 +88,26 @@ namespace LsnCore.Statements
 			return InterpretValue.Base;
 		}
 #endif
-		public override void Replace(IExpression oldExpr, IExpression newExpr) { }
+		public override void Replace(IExpression oldExpr, IExpression newExpr)
+		{
+#if LSNR
+			if (Variable.Name == "jump target" && oldExpr is VariableExpression vOld && vOld.Index == Index)
+			{
+				switch (newExpr)
+				{
+					case VariableExpression vNew:
+						Variable.Index = vNew.Index;
+						//vNew.Variable.AddUser(this);
+						break;
+					case LsnValue val:
+						Variable.Index = val.IntValue;
+						break;
+					default:
+						throw new InvalidOperationException();
+				}
+			}
+#endif
+		}
 
 		public override IEnumerator<IExpression> GetEnumerator()
 		{

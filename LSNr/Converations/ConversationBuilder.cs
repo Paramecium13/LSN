@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
+using LsnCore.Statements;
 using LsnCore.Types;
 using LsnCore.Utilities;
 using LSNr.ControlStructures;
+using LSNr.Optimization;
 using LSNr.ReaderRules;
 using LSNr.Statements;
 
@@ -28,21 +30,27 @@ namespace LSNr.Converations
 		public string Path => Resource.Path;
 		public Function GetFunction(string name) => Resource.GetFunction(name);
 
+		string Name;
+		//readonly ISlice<Token> Args;
+
 		readonly HashSet<string> NodeNames = new HashSet<string>();
 		readonly List<INode> Nodes = new List<INode>();
 		INode First;
 
+		LsnFunction Function;
+
 		public ISlice<Token> StartTokens { get; set; }
 		public IScope CurrentScope { get; set; }
 
+		public Variable JumpTargetVariable { get; private set; }
 
 		public IReadOnlyList<IStatementRule> StatementRules => throw new NotImplementedException();
 
 		public IReadOnlyList<ControlStructureRule> ControlStructureRules => throw new NotImplementedException();
 
-		public ConversationBuilder(IPreResource res)
+		public ConversationBuilder(IPreResource res, string name/*,ISlice<Token> args*/)
 		{
-			Resource = res;
+			Resource = res; Name = name;//Args = args;
 		}
 
 		public void RegisterNode(INode node, bool first)
@@ -67,5 +75,51 @@ namespace LSNr.Converations
 			return Resource.CheckSymbol(name);
 		}
 
+		List<Component> GetStartBlock()
+		{
+			if (StartTokens == null || StartTokens.Length == 0)
+				return new List<Component>();
+			CurrentScope = CurrentScope.CreateChild();
+			var parser = new Parser(StartTokens, this);
+			parser.Parse();
+			var res = Parser.Consolidate(parser.Components);
+			CurrentScope = CurrentScope.Pop(res);
+			return res;
+		}
+
+		public void OnParsingSignatures(IPreResource resource)
+		{
+			Function = new LsnFunction(new List<Parameter>(), null, Name, resource.Path);
+		}
+
+		public void Parse()
+		{
+			CurrentScope = new VariableTable(new List<Variable>());
+			// ToDo: Get parameters, add to scope.
+			JumpTargetVariable = CurrentScope.CreateVariable("Jump Target", LsnType.int_, true);
+			JumpTargetVariable.MarkAsUsed();
+
+			var flattener = new ComponentFlattener();
+
+			// Start Block
+			flattener.ConvPartialFlatten(GetStartBlock(), "conv start", null);
+			var i = 0;
+			if(First == null)
+			{
+				i = 1;
+				First = Nodes[0];
+			}
+			flattener.AddSetTargetStatement(First.Name, JumpTargetVariable);
+
+			// First Node:
+			First.Parse(flattener);
+
+			// Other nodes:
+			for (; i < Nodes.Count; i++)
+				Nodes[i].Parse(flattener);
+
+			Function.StackSize = (CurrentScope as VariableTable)?.MaxSize ?? -1;
+			Function.Code = flattener.FinishFlatten();
+		}
 	}
 }
