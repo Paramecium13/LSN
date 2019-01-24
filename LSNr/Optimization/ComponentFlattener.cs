@@ -47,8 +47,6 @@ namespace LSNr.Optimization
 
 		public void AddJumpToTargetStatement()
 		{
-			if (LabelAliases.ContainsKey(target))
-				target = LabelAliases[target];
 			PreStatements.Add(new PreStatement(null) {Label = PopNextLabel() });
 		}
 
@@ -58,6 +56,7 @@ namespace LSNr.Optimization
 			{
 
 			}
+		}
 
 		public void AddSetTargetStatement(string target)
 		{

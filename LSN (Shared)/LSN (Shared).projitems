@@ -63,6 +63,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\GiveStatement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\GoToStatement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\JumpStatements.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\JumpTarget.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\RegisterChoiceStatement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\ReturnStatement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\SaveStatement.cs" />
