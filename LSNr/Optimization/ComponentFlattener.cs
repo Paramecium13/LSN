@@ -110,7 +110,7 @@ namespace LSNr.Optimization
 		{
 			for(int i = 0; i < PreStatements.Count; i++)
 				if (PreStatements[i].Label == label)
-					return i;
+					return i - 1; // Because the interpreter's main loop does 'NextStatement++'...
 			return PreStatements.Count;
 		}
 
