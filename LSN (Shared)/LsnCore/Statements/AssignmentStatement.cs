@@ -9,9 +9,10 @@ namespace LsnCore.Statements
 	public class AssignmentStatement : Statement
 	{
 		public IExpression Value;
-		public int Index;
+		public int Index; // ToDo: For LSNr, add a Variable field, make 'Index' a property that returns Variable.Index
 
-		// ToDo: Create a ProtoAssignmentStatement class in LSNr. Make it take a variable object, in case the variable's value changes during optimization.
+		// ToDo:	Create a ProtoAssignmentStatement class in LSNr. Make it take a variable object, in case the variable's value changes during optimization.
+		//			Or use compiler directives in this class...
 		public AssignmentStatement(int index, IExpression value)
 		{
 			//VariableName = name;

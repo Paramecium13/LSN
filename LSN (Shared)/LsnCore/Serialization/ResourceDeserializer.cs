@@ -184,7 +184,7 @@ namespace LsnCore.Serialization
 					}
 
 				case StatementCode.SetTarget:
-					throw new NotImplementedException();
+					return new SetTargetStatement(reader.ReadUInt16()) { Target = reader.ReadInt32() };
 				case StatementCode.JumpToTarget:
 					return new JumpToTargetStatement(reader.ReadUInt16());
 				case StatementCode.Extension1:
@@ -484,6 +484,9 @@ namespace LsnCore.Serialization
 					{
 						return new LsnValue(ReadScriptObjectReference(reader, resourceManager));
 					}
+
+				case ConstantCode.Range:
+					throw new NotImplementedException();
 				default:
 					throw new ApplicationException();
 			}

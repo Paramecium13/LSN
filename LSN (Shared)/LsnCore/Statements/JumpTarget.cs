@@ -56,4 +56,49 @@ namespace LsnCore.Statements
 			yield break;
 		}
 	}
+
+	public sealed class SetTargetStatement : Statement, IHasTargetStatement
+	{
+		public int Target { get; set; }
+#if LSNR
+		public readonly Variable Variable;
+
+		int Index => Variable.Index;
+
+		public SetTargetStatement(Variable variable)
+		{
+			Variable = variable;
+		}
+#else
+		int Index;
+
+		public SetTargetStatement(int index)
+		{
+			Index = index;
+		}
+
+		public override InterpretValue Interpret(IInterpreter i)
+		{
+			i.SetVariable(Index, new LsnValue(Target));
+			return InterpretValue.Base;
+		}
+#endif
+		public override void Replace(IExpression oldExpr, IExpression newExpr) { }
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+#if LSNR
+			yield return Variable.AccessExpression; // ????
+#else
+			yield break;
+#endif
+		}
+
+		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			writer.Write((ushort)StatementCode.SetTarget);
+			writer.Write(Target);
+		}
+
+	}
 }

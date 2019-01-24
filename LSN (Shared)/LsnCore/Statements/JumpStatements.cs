@@ -34,7 +34,7 @@ namespace LsnCore.Statements
 
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
-			yield return null;
+			yield break;
 		}
 
 	}
