@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="LsnCore.Statements.Statement" Collapsed="true">
+    <Position X="23" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAAAAACAAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\Statement.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="LsnCore.Statements.GoToStatement" Collapsed="true">
+    <Position X="20.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAgBAggAAAAAAAACAAIAAAAAAAAAAAYCA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\GoToStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.SetStateStatement" Collapsed="true">
+    <Position X="2.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAgAAAAAAAACAAAAAAAAAABAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\SetStateStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.SayStatement" Collapsed="true">
+    <Position X="5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAgAAAAAAAFAAgAAAAAAAALAAAAAAAAAAIAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\SayStatement.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="LsnCore.Statements.SaveStatement" Collapsed="true">
+    <Position X="7.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAgAAAAAAAACAAAAAAIAAAAAAAECA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\SaveStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.ReturnStatement" Collapsed="true">
+    <Position X="9.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAgAAAAAAAACAAAAAAAAAgAAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\ReturnStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.RegisterChoiceStatement" Collapsed="true">
+    <Position X="11.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAABAAgAAAACAAACBAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\RegisterChoiceStatement.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="LsnCore.Statements.NextStatement" Collapsed="true">
+    <Position X="14" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAgAAAAAAAACAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\SimpleStatements.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.LoadStatement" Collapsed="true">
+    <Position X="16.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAgAAAAAAAACAAAAAAIAAAAAAAECA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\SaveStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.JumpStatement" Collapsed="true">
+    <Position X="18.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAgAAAACAAACAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\JumpStatements.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="LsnCore.Statements.AssignmentStatement" Collapsed="true">
+    <Position X="34.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAgAAAAAAAACAAAAAAAAEgAAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\AssignmentStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.AttachStatement" Collapsed="true">
+    <Position X="29.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAgAAAFAAAACAAAAAAAAAAAAAAICA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\AttachStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.BreakStatement" Collapsed="true">
+    <Position X="38.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAgAAAAAAAACAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\SimpleStatements.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.ChangeGlobalVariableStatement" Collapsed="true">
+    <Position X="43.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAABAAgAAAAAAAACAAAAAAAAAgAAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\ChangeGlobalVariableStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.CollectionValueAssignmentStatement" Collapsed="true">
+    <Position X="0.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQBAAgAAAAAAAACAAAAAAAAEgAAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\CollectionValueReassignmentStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.ConditionalJumpStatement" Collapsed="true">
+    <Position X="32" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAABAAgAAAACAAACAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\JumpStatements.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="LsnCore.Statements.DetachStatement" Collapsed="true">
+    <Position X="41" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAgAAAAAAAACAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\DetachStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.DisplayChoicesStatement" Collapsed="true">
+    <Position X="45.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAgAAAAAAAACAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\DisplayChoicesStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.ExpressionStatement" Collapsed="true">
+    <Position X="23" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAgAAAAAAAACAAAAAQAAAAAAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\ExpressionStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.FieldAssignmentStatement" Collapsed="true">
+    <Position X="36.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAABAAgAAAAAAAACAAAAAAAAEAAAIAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\FieldAssignmentStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.GiveGoldStatement" Collapsed="true">
+    <Position X="25.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAgAAAAAAAACAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\GiveStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.GiveItemStatement" Collapsed="true">
+    <Position X="27.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAABAAgAAAAAAAACAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\GiveStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LsnCore.Statements.GiveStatement" Collapsed="true">
+    <Position X="26.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAACAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\GiveStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="LsnCore.Statements.IHasTargetStatement" Collapsed="true">
+    <Position X="48" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\JumpStatements.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

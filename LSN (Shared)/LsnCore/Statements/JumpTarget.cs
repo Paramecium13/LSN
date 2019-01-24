@@ -20,8 +20,8 @@ namespace LsnCore.Statements
 #if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			i.GetVariable()
-			throw new NotImplementedException();
+			i.NextStatement = i.GetVariable(Index).IntValue;
+			return InterpretValue.Base;
 		}
 #endif
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
@@ -47,9 +47,8 @@ namespace LsnCore.Statements
 
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
-			//...Write Statement Code
+			writer.Write((ushort)StatementCode.JumpToTarget);
 			writer.Write((ushort)Index);
-			throw new NotImplementedException();
 		}
 
 		public override IEnumerator<IExpression> GetEnumerator()// => Enumerable.Empty<IExpression>().GetEnumerator();

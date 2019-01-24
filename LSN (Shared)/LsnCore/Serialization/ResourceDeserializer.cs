@@ -182,6 +182,13 @@ namespace LsnCore.Serialization
 							args[i] = ReadExpression(reader);
 						return new AttachStatement(type, args, ReadExpression(reader));
 					}
+
+				case StatementCode.SetTarget:
+					throw new NotImplementedException();
+				case StatementCode.JumpToTarget:
+					return new JumpToTargetStatement(reader.ReadUInt16());
+				case StatementCode.Extension1:
+				case StatementCode.Extension2:
 				default:
 					throw new ApplicationException();
 			}

@@ -253,28 +253,24 @@ namespace LSNr.Optimization
 		protected override void View(Statement s)
 		{
 			PreStatement preSt;
-			var br = s as BreakStatement;
-			var nxt = s as NextStatement;
-			if(br != null)
+			switch (s)
 			{
-				preSt = new PreStatement(new JumpStatement())
-				{
-					Target = InnerMostLoopEndLabels.Peek()
-				};
+				case BreakStatement br:
+					preSt = new PreStatement(new JumpStatement())
+					{ Target = InnerMostLoopEndLabels.Peek() };
+					break;
+				case NextStatement nxt:
+					preSt = new PreStatement(new JumpStatement())
+					{ Target = InnerMostLoopContinueLabels.Peek() };
+					break;
+				case RegisterChoiceStatement reg when reg.Label != null:
+					preSt = new PreStatement(reg) { Target = reg.Label };
+					break;
+				default:
+					preSt = new PreStatement(s);
+					break;
 			}
-			else if(nxt != null)
-			{
-				preSt = new PreStatement(new JumpStatement())
-				{
-					Target = InnerMostLoopContinueLabels.Peek()
-				};
-			}
-			else if(s is RegisterChoiceStatement reg && reg.Label != null)
-			{
-				preSt = new PreStatement(reg) { Target = reg.Label };
-			}
-			else
-				preSt = new PreStatement(s);
+
 			/*if (ExitLabelStack.Count > 0)
 				preSt.Label = ExitLabelStack.Pop();*/
 			if(NextLabel != null)

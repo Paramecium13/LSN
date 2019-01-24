@@ -63,7 +63,7 @@ namespace LSNr.Converations
 				++i;
 			}
 			var name = head[i].Value;
-			var builder = new NodeBuilder(Conversation, name);
+			var builder = new NodeBuilder((ConversationBuilder)Conversation, name);
 			var reader = new NodeReader(builder, body);
 			reader.Read();
 			Conversation.RegisterNode(builder, first);
