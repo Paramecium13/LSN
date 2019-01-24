@@ -36,10 +36,10 @@ namespace LSNr.Converations
 		readonly HashSet<string> NodeNames = new HashSet<string>();
 		readonly List<INode> Nodes = new List<INode>();
 		INode First;
+		public ISlice<Token> StartTokens { get; set; }
 
 		LsnFunction Function;
 
-		public ISlice<Token> StartTokens { get; set; }
 		public IScope CurrentScope { get; set; }
 
 		public Variable JumpTargetVariable { get; private set; }
@@ -90,6 +90,7 @@ namespace LSNr.Converations
 		public void OnParsingSignatures(IPreResource resource)
 		{
 			Function = new LsnFunction(new List<Parameter>(), null, Name, resource.Path);
+			resource.RegisterFunction(Function);
 		}
 
 		public void Parse()
@@ -112,11 +113,11 @@ namespace LSNr.Converations
 			flattener.AddSetTargetStatement(First.Name, JumpTargetVariable);
 
 			// First Node:
-			First.Parse(flattener);
+			First.Parse(flattener, CurrentScope);
 
 			// Other nodes:
 			for (; i < Nodes.Count; i++)
-				Nodes[i].Parse(flattener);
+				Nodes[i].Parse(flattener, CurrentScope);
 
 			Function.StackSize = (CurrentScope as VariableTable)?.MaxSize ?? -1;
 			Function.Code = flattener.FinishFlatten();

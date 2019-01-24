@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
 using LsnCore.Utilities;
+using LSNr.Converations;
 using LSNr.ScriptObjects;
 
 namespace LSNr.ReaderRules
@@ -309,7 +310,11 @@ namespace LSNr.ReaderRules
 
 		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{
-			throw new NotImplementedException();
+			if (head.Count != 2 || head[1].Type != TokenType.Identifier)
+				throw new LsnrParsingException(head[0], "Improperly formatted conversation.", PreResource.Path);
+			var conv = new ConversationBuilder(PreResource, head[1].Value);
+			PreResource.ParseSignaturesA += conv.OnParsingSignatures;
+			PreResource.ParseProcBodies += (_) => conv.Parse();
 		}
 	}
 }

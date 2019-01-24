@@ -16,18 +16,19 @@ namespace LSNr.Converations
 {
 	sealed class NodeBuilder : INode, IPreScript
 	{
-		readonly ConversationBuilder Conversation;
+		public ConversationBuilder _Conversation;
+		public IConversation Conversation => _Conversation;
 
-		public bool GenericTypeExists(string name) => Conversation.GenericTypeExists(name);
-		public void GenericTypeUsed(TypeId typeId) => Conversation.GenericTypeUsed(typeId);
-		public GenericType GetGenericType(string name) => Conversation.GetGenericType(name);
-		public LsnType GetType(string name) => Conversation.GetType(name);
-		public TypeId GetTypeId(string name) => Conversation.GetTypeId(name);
-		public bool TypeExists(string name) => Conversation.TypeExists(name);
-		public bool NodeExists(string name) => Conversation.NodeExists(name);
-		public bool Mutable => Conversation.Mutable;
-		public bool Valid { get => Conversation.Valid; set => Conversation.Valid = value; }
-		public string Path => Conversation.Path;
+		public bool GenericTypeExists(string name) => _Conversation.GenericTypeExists(name);
+		public void GenericTypeUsed(TypeId typeId) => _Conversation.GenericTypeUsed(typeId);
+		public GenericType GetGenericType(string name) => _Conversation.GetGenericType(name);
+		public LsnType GetType(string name) => _Conversation.GetType(name);
+		public TypeId GetTypeId(string name) => _Conversation.GetTypeId(name);
+		public bool TypeExists(string name) => _Conversation.TypeExists(name);
+		public bool NodeExists(string name) => _Conversation.NodeExists(name);
+		public bool Mutable => _Conversation.Mutable;
+		public bool Valid { get => _Conversation.Valid; set => _Conversation.Valid = value; }
+		public string Path => _Conversation.Path;
 
 		readonly List<IBranch> Branches = new List<IBranch>();
 
@@ -36,13 +37,13 @@ namespace LSNr.Converations
 		public ISlice<Token> StartBlockTokens { get; set; }
 		public IScope CurrentScope { get; set; }
 
-		public IReadOnlyList<IStatementRule> StatementRules => Conversation.StatementRules;
+		public IReadOnlyList<IStatementRule> StatementRules => _Conversation.StatementRules;
 
-		public IReadOnlyList<ControlStructureRule> ControlStructureRules => Conversation.ControlStructureRules;
+		public IReadOnlyList<ControlStructureRule> ControlStructureRules => _Conversation.ControlStructureRules;
 
 		public NodeBuilder(ConversationBuilder conversation, string name)
 		{
-			Conversation = conversation; Name = name;
+			_Conversation = conversation; Name = name;
 		}
 
 		public bool BranchExists(string name) => Branches.Any(b => b.Name == name);
@@ -68,17 +69,26 @@ namespace LSNr.Converations
 		{
 			var ls = new List<Component>();
 			foreach (var branch in Branches)
-				ls.Add(new RegisterChoiceStatement(branch.Condition, branch.Prompt, Name + " " + branch.Name));
+			{
+				branch.Parse(this);
+				if (branch.Prompt == null)
+					throw new ApplicationException($"Branch {branch.Name} has no prompt.");
+				if (branch.ActionTokens == null)
+					throw new ApplicationException($"Branch {branch.Name} has no action.");
+
+				ls.Add(new RegisterChoiceStatement(branch.Condition ?? LsnBoolValue.GetBoolValue(true), branch.Prompt, Name + " " + branch.Name));
+			}
 			ls.Add(new DisplayChoicesStatement());
 			return ls;
 		}
 
-		public void Parse(ComponentFlattener flattener)
+		public void Parse(ComponentFlattener flattener, IScope scope)
 		{
+			CurrentScope = scope;
 			if (StartBlockTokens != null)
 			{
 				flattener.ConvPartialFlatten(GetStartBlock(), Name + " Start", Name + " ");
-				flattener.AddSetTargetStatement(Name, Conversation.JumpTargetVariable);
+				flattener.AddSetTargetStatement(Name, _Conversation.JumpTargetVariable);
 			}
 			else flattener.AddLabelAlias(Name + " Start", Name);
 			flattener.ConvPartialFlatten(GetChoiceSegment(), Name, Name + " ");
@@ -91,18 +101,18 @@ namespace LSNr.Converations
 				CurrentScope = CurrentScope.Pop(res);
 				var label = Name + " " + branch.Name;
 				flattener.ConvPartialFlatten(res, label + " ", label);
-				flattener.AddOptionalJumpToTargetStatement(Conversation.JumpTargetVariable);
+				flattener.AddOptionalJumpToTargetStatement(_Conversation.JumpTargetVariable);
 			}
 		}
 
 		public SymbolType CheckSymbol(string name)
 		{
-			return Conversation.CheckSymbol(name);
+			return _Conversation.CheckSymbol(name);
 		}
 
 		public Function GetFunction(string name)
 		{
-			return Conversation.GetFunction(name);
+			return _Conversation.GetFunction(name);
 		}
 	}
 }

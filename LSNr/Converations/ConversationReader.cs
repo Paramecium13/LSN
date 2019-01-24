@@ -16,6 +16,7 @@ namespace LSNr.Converations
 		bool NodeExists(string name);
 
 		Variable JumpTargetVariable { get; }
+		string Path { get; }
 	}
 
 	sealed class ConversationReader : RuledReader<ConversationStatementRule, ConversationBodyRule>
@@ -24,7 +25,14 @@ namespace LSNr.Converations
 
 		protected override IEnumerable<ConversationBodyRule> BodyRules { get; }
 
-		public ConversationReader(ISlice<Token> tokens) : base(tokens) { }
+		public ConversationReader(IConversation conversation, ISlice<Token> tokens) : base(tokens)
+		{
+			StatementRules = new ConversationStatementRule[0];
+			BodyRules = new ConversationBodyRule[] {
+				new NodeRule(conversation),
+				new ConversationStartRule(conversation)
+			};
+		}
 
 		protected override void OnReadAdjSemiColon(ISlice<Token>[] attributes){ }
 	}
@@ -69,7 +77,33 @@ namespace LSNr.Converations
 			var reader = new NodeReader(builder, body);
 			reader.Read();
 			Conversation.RegisterNode(builder, first);
-			// ToDo: Hook-up events.
+			// ToDo: Hook-up events ??
+		}
+	}
+
+	sealed class ConversationStartRule : ConversationBodyRule
+	{
+		public ConversationStartRule(IConversation conversation) : base(conversation) { }
+
+		public override bool Check(ISlice<Token> head)
+		{
+			if (head[0].Value == "start") return true;
+			if(head.Length < 2)
+				return false;
+			if (head[0].Value == "fn" && head[1].Value == "start")
+				return true;
+			return false;
+		}
+
+		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
+		{
+			if(head[0].Value == "fn" && head[1].Value == "start")
+			{
+				// ToDo: Make sure it has no parameters, return type, or junk.
+			}
+			if (Conversation.StartTokens != null)
+				throw new LsnrParsingException(head[0], "Conversation can't have more than one start block...", Conversation.Path);
+			Conversation.StartTokens = body;
 		}
 	}
 }

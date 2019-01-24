@@ -22,20 +22,26 @@ namespace LSNr.Converations
 		public LsnType GetType(string name) => Conversation.GetType(name);
 		public TypeId GetTypeId(string name) => Conversation.GetTypeId(name);
 		public bool TypeExists(string name) => Conversation.TypeExists(name);
+		public string Path => Conversation.Path;
 
 		public string Name { get; }
 
-		public ISlice<Token> ConditionTokens { get; set; }
 		public IExpression Condition { get; set; }
 
-		public ISlice<Token> PromptTokens { get; set; }
 		public IExpression Prompt { get; set; }
 
 		public ISlice<Token> ActionTokens { get; set; }
 
+		public event Action<IPreScript> ParsingBodies;
+
 		public BranchBuilder(string name, IConversation conversation)
 		{
 			Name = name; Conversation = conversation;
+		}
+
+		public void Parse(IPreScript script)
+		{
+			ParsingBodies?.Invoke(script);
 		}
 	}
 }

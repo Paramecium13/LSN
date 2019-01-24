@@ -21,3 +21,133 @@ fn Vampify(vamp : IEnemy)
 {
 	attach new VampireDeathScript("VampireAsh") to vamp;
 }
+
+conversation SimpleConv
+{
+	
+	start
+	{
+		Say "Hello my name is Bob." as "Bob";
+	}
+	
+	
+	
+	//introduced : bool = false;
+	node LocalInfo
+	{	
+		
+		branch Shops
+		{
+			Prompt = "What shops are there around here?";
+			action()
+			{
+				say "There are a few shops around here. There's shopA where you can get X; shopB, which sells Y; shopC,"
+				+ " which sells Z, and Nana's Groceries where you can get produce from the nearby villages." as charName;
+				say "Do you want to know more about any of them?";
+				choice
+				{
+					"Yes"	-> { set node Shops;}
+					"No"	-> { return;		} // This doesn't end the conversation. I can't leave a choice empty...
+				}
+			}
+		}
+		
+		branch Goodbye // Free Branches can be included in multiple nodes.
+		{
+			prompt = "Goodbye.";
+			action
+			{
+				if (false)
+				{
+					Say "Bye. It was nice meeting you.";
+				}
+				else
+				{
+					Say "Bye.";
+				}
+				EndConversation;
+			}
+		}
+	}
+	
+	auto Node BaseNode
+	{
+		
+		start
+		{}
+		
+		branch PCIntroduce
+		{
+			Prompt()-> String // The reifier shouldn't complain if the return type is left off but should if it is something other than string.
+			{
+				return "My name is Player0.";
+			}
+			when { return !false;}
+			
+			Action()
+			{
+				say "It's a pleasure to meet you.";
+				//introduced = true;
+			}
+		}
+		
+		branch Weather
+		{
+			Prompt = "How's the weather?";
+			Action()
+			{
+				Say "It's fine.";
+			}
+		}
+		
+		branch AskAboutLocalStuff
+		{
+			prompt = "What can you tell me about the local area?";
+			
+			action()
+			{
+				say "I can tell you a lot. What do you want to know?";
+				set node LocalInfo;
+			}
+		}
+		
+		branch Goodbye // Free Branches can be included in multiple nodes.
+		{
+			prompt = "Goodbye.";
+			action
+			{
+				if (false)
+				{
+					Say "Bye. It was nice meeting you.";
+				}
+				else
+				{
+					Say "Bye.";
+				}
+				EndConversation;
+			}
+		} // Placing it at the end makes it the last choice displayed.
+	}
+	
+	
+	node Shops
+	{
+		branch Goodbye // Free Branches can be included in multiple nodes.
+		{
+			prompt = "Goodbye.";
+			action
+			{
+				if (false)
+				{
+					Say "Bye. It was nice meeting you.";
+				}
+				else
+				{
+					Say "Bye.";
+				}
+				EndConversation;
+			}
+		}
+	}
+	
+}
