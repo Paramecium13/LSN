@@ -54,7 +54,8 @@ namespace LSNr.Optimization
 
 		public void AddOptionalJumpToTargetStatement(Variable convJumpTargetVariable)
 		{
-			if (!(PreStatements[PreStatements.Count - 1].Statement is JumpToTargetStatement))
+			if (!(PreStatements[PreStatements.Count - 1].Statement is JumpToTargetStatement
+				|| PreStatements[PreStatements.Count - 1].Statement is ReturnStatement))
 				AddJumpToTargetStatement(convJumpTargetVariable);
 		}
 
@@ -112,8 +113,8 @@ namespace LSNr.Optimization
 		{
 			for(int i = 0; i < PreStatements.Count; i++)
 				if (PreStatements[i].Label == label)
-					return i - 1; // Because the interpreter's main loop does 'NextStatement++'...
-			return PreStatements.Count;
+					return i;
+			throw new ApplicationException("Label not found");
 		}
 
 		private int IfCount;

@@ -141,7 +141,7 @@ namespace LSNr.Converations
 				i = 1;
 				First = Nodes[0];
 			}
-			flattener.AddSetTargetStatement(First.Name, JumpTargetVariable);
+			flattener.AddSetTargetStatement(First.Name + " Start", JumpTargetVariable);
 
 			// First Node:
 			First.Parse(flattener, CurrentScope);

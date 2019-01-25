@@ -69,15 +69,14 @@
   <Class Name="LsnCore.Statements.JumpStatement" Collapsed="true">
     <Position X="18.5" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAABAAgAAAACAAACAAAAAAAAAAAAAAACA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\JumpStatements.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
   </Class>
   <Class Name="LsnCore.Statements.AssignmentStatement" Collapsed="true">
     <Position X="34.25" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAABAAgAAAAAAAACAAAAAAAAEgAAAAACA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\AssignmentStatement.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -112,10 +111,9 @@
   <Class Name="LsnCore.Statements.ConditionalJumpStatement" Collapsed="true">
     <Position X="32" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAABAAgAAAACAAACAAAAAAAAAAAAAAACA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\JumpStatements.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
   </Class>
   <Class Name="LsnCore.Statements.DetachStatement" Collapsed="true">
     <Position X="41" Y="2" Width="1.5" />
@@ -169,7 +167,7 @@
   <Interface Name="LsnCore.Statements.IHasTargetStatement" Collapsed="true">
     <Position X="48" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\JumpStatements.cs</FileName>
     </TypeIdentifier>
   </Interface>

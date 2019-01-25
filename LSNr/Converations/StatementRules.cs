@@ -85,11 +85,11 @@ namespace LSNr.Converations
 			// set node foo
 			if ((tokens[0].Value == "set" && tokens.Length > 3) ||( tokens[0].Value != "set" && tokens.Length > 2))
 				throw new LsnrParsingException(tokens[1], "Improperly formatted Set Node statement...", script.Path);
-			var index = tokens[0].Value == "exit" ? 2 : 1;
+			var index = tokens[0].Value == "set" ? 2 : 1;
 			var name = tokens[index].Value;
 
 			var v = script.CurrentScope.GetVariable("jump target");
-			return new SetNodeStatement(name, v);
+			return new SetNodeStatement(name + " Start", v);
 		}
 
 		public bool Check(ISlice<Token> tokens, IPreScript script)

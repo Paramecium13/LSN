@@ -102,7 +102,7 @@ namespace LSNr
 						{
 							f.ElseBlock = (components[i] as ElseControl).Body;
 							c.Add(f);
-							i++; // Move on to the next non-elseif/else component.
+							// Move on to the next non-elseif/else component.
 							break;
 						}
 						else

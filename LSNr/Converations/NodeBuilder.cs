@@ -43,6 +43,8 @@ namespace LSNr.Converations
 
 		public NodeBuilder(ConversationBuilder conversation, string name)
 		{
+			if (name == "node")
+				throw new ApplicationException("You're doing this wrong...");
 			_Conversation = conversation; Name = name;
 		}
 
@@ -87,12 +89,12 @@ namespace LSNr.Converations
 			CurrentScope = scope;
 			if (StartBlockTokens != null)
 			{
-				flattener.ConvPartialFlatten(GetStartBlock(), Name + " Start", Name + " ");
+				flattener.ConvPartialFlatten(GetStartBlock(), Name + " ", Name + " Start");
 				flattener.AddSetTargetStatement(Name, _Conversation.JumpTargetVariable);
 			}
 			else
 				flattener.AddLabelAlias(Name + " Start", Name);
-			flattener.ConvPartialFlatten(GetChoiceSegment(), Name, Name + " ");
+			flattener.ConvPartialFlatten(GetChoiceSegment(), Name + " ", Name);
 			foreach (var branch in Branches)
 			{
 				CurrentScope = CurrentScope.CreateChild();

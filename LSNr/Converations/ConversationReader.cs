@@ -69,7 +69,7 @@ namespace LSNr.Converations
 		{
 			var i = 1;
 			var first = false;
-			if(head[i].Value == "auto")
+			if(head[0].Value == "auto")
 			{
 				first = true;
 				++i;
