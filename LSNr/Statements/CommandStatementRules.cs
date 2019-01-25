@@ -47,7 +47,7 @@ namespace LSNr.Statements
 			else if (asIndex > 0)
 			{
 				message = Create.Express(tokens.CreateSliceTaking(asIndex), script);
-				title = Create.Express(tokens.CreateSliceAt(asIndex), script);
+				title = Create.Express(tokens.CreateSliceAt(asIndex + 1), script);
 			}
 			else // No title or graphic
 				message = Create.Express(tokens, script);

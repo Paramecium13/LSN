@@ -42,7 +42,7 @@ conversation SimpleConv
 			action()
 			{
 				say "There are a few shops around here. There's shopA where you can get X; shopB, which sells Y; shopC,"
-				+ " which sells Z, and Nana's Groceries where you can get produce from the nearby villages." as charName;
+				+ " which sells Z, and Nana's Groceries where you can get produce from the nearby villages." as "Bob";
 				say "Do you want to know more about any of them?";
 				choice
 				{
@@ -78,11 +78,9 @@ conversation SimpleConv
 		
 		branch PCIntroduce
 		{
-			Prompt()-> String // The reifier shouldn't complain if the return type is left off but should if it is something other than string.
-			{
-				return "My name is Player0.";
-			}
-			when { return !false;}
+			when = ! false;
+			Prompt: "My name is Player0.";
+			
 			
 			Action()
 			{

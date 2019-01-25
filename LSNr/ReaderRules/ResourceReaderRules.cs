@@ -310,9 +310,11 @@ namespace LSNr.ReaderRules
 
 		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{
-			if (head.Count != 2 || head[1].Type != TokenType.Identifier)
+			if (head.Count != 3 || head[1].Type != TokenType.Identifier)
 				throw new LsnrParsingException(head[0], "Improperly formatted conversation.", PreResource.Path);
 			var conv = new ConversationBuilder(PreResource, head[1].Value);
+			var reader = new ConversationReader(conv, body);
+			reader.Read();
 			PreResource.ParseSignaturesA += conv.OnParsingSignatures;
 			PreResource.ParseProcBodies += (_) => conv.Parse();
 		}

@@ -35,6 +35,8 @@ namespace LSNr.Converations
 		}
 
 		protected override void OnReadAdjSemiColon(ISlice<Token>[] attributes){ }
+
+		public void Read() => ReadTokens();
 	}
 
 	abstract class ConversationStatementRule : IReaderStatementRule
@@ -65,7 +67,7 @@ namespace LSNr.Converations
 
 		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{
-			var i = 0;
+			var i = 1;
 			var first = false;
 			if(head[i].Value == "auto")
 			{

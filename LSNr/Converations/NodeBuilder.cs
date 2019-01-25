@@ -90,7 +90,8 @@ namespace LSNr.Converations
 				flattener.ConvPartialFlatten(GetStartBlock(), Name + " Start", Name + " ");
 				flattener.AddSetTargetStatement(Name, _Conversation.JumpTargetVariable);
 			}
-			else flattener.AddLabelAlias(Name + " Start", Name);
+			else
+				flattener.AddLabelAlias(Name + " Start", Name);
 			flattener.ConvPartialFlatten(GetChoiceSegment(), Name, Name + " ");
 			foreach (var branch in Branches)
 			{

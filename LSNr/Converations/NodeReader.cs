@@ -70,7 +70,7 @@ namespace LSNr.Converations
 
 		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{
-			if (head.Length != 2 || head[1].Type != TokenType.Identifier)
+			if (head.Length != 3 || head[1].Type != TokenType.Identifier)
 				throw new LsnrParsingException(head[2], "Improperly formatted branch", Node.Path);
 			var name = head[1].Value;
 			if (Node.BranchExists(name))

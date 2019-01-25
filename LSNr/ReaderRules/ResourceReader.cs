@@ -33,7 +33,8 @@ namespace LSNr
 				new ResourceReaderStructRule(PreResource),
 				new ResourceReaderRecordRule(PreResource),
 				new ResourceReaderHostInterfaceRule(PreResource),
-				new ResourceReaderScriptClassRule(PreResource)
+				new ResourceReaderScriptClassRule(PreResource),
+				new ResourceReaderConversationRule(PreResource)
 			};
 		}
 

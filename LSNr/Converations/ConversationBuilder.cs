@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
+using LsnCore.Expressions;
 using LsnCore.Statements;
 using LsnCore.Types;
 using LsnCore.Utilities;
@@ -16,6 +17,36 @@ namespace LSNr.Converations
 {
 	sealed class ConversationBuilder : IConversation, IPreScript
 	{
+		internal static readonly IReadOnlyList<IStatementRule> _StatementRules = new IStatementRule[] {
+			new LetStatementRule(),
+			new ReasignmentStatementRule(),
+			new BinExprReassignStatementRule("+=", BinaryOperation.Sum),
+			new BinExprReassignStatementRule("-=", BinaryOperation.Difference),
+			new BinExprReassignStatementRule("*=", BinaryOperation.Product),
+			new BinExprReassignStatementRule("/=", BinaryOperation.Quotient),
+			new BinExprReassignStatementRule("%=", BinaryOperation.Modulus),
+			new BreakStatementRule(),
+			new NextStatementRule(),
+			new ConversationReturnStatementRule(),
+			new SayStatementRule(),
+			new GoToStatementRule(),
+			new AttachStatementRule(),
+			new GiveItemStatementRule(),
+			new SetNodeStatementRule(),
+			new EndConversationStatementRule()
+		}.OrderBy(r => r.Order).ToList();
+
+		internal static readonly IReadOnlyList<ControlStructureRule> _ControlStructureRules = new ControlStructureRule[] {
+			new IfStructureRule(),
+			new ElsIfStructureRule(),
+			new ElseStructureRule(),
+			new ChooseStructureRule(),
+			new CaseStructureRule(),
+			new ConditionedChoiceStructureRule(),
+			new ForLoopStructureRule(),
+			new IfLetStructureRule()
+		}.OrderBy(r => r.Order).ToList();
+
 		readonly IPreResource Resource;
 
 		public bool GenericTypeExists(string name) => Resource.GenericTypeExists(name);
@@ -44,9 +75,9 @@ namespace LSNr.Converations
 
 		public Variable JumpTargetVariable { get; private set; }
 
-		public IReadOnlyList<IStatementRule> StatementRules => throw new NotImplementedException();
+		public IReadOnlyList<IStatementRule> StatementRules => _StatementRules;
 
-		public IReadOnlyList<ControlStructureRule> ControlStructureRules => throw new NotImplementedException();
+		public IReadOnlyList<ControlStructureRule> ControlStructureRules => _ControlStructureRules;
 
 		public ConversationBuilder(IPreResource res, string name/*,ISlice<Token> args*/)
 		{

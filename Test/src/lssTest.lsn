@@ -49,11 +49,11 @@ ScriptClass StandardDoor < IStandardActivator
 	
 	mut OpenCount: int;
 	
-	fn virtual Start(){ return; }
+	fn virtual Init(){ return; }
 	
 	auto state StartState
 	{
-		fn Start()
+		fn Init()
 		{
 			if(InitiallyLocked){
 				SetState LockedState;

@@ -45,8 +45,8 @@ namespace LSNr
 			// Types:
 			"script","class","scriptclass","interface","hostinterface","struct","record",
 			// Type Contents:
-			"fn","property","state","auto","on","event","abstract","virtual", "conversation", "node", "branch", "start", "Prompt",
-			"endconversation", "action"
+			"fn","property","state","auto","on","event","abstract","virtual", "conversation", "node", "branch", "start", "prompt",
+			"end","endconversation", "action"
 
 			//both
 			//"hp","level","exp","mp","g",

@@ -7,6 +7,7 @@ using LsnCore.ControlStructures;
 using LsnCore.Statements;
 using LsnCore;
 using LsnCore.Expressions;
+using LSNr.Converations;
 
 namespace LSNr.Optimization
 {
@@ -266,6 +267,10 @@ namespace LSNr.Optimization
 					break;
 				case RegisterChoiceStatement reg when reg.Label != null:
 					preSt = new PreStatement(reg) { Target = reg.Label };
+					break;
+				case SetNodeStatement sn:
+					var st = new SetTargetStatement(sn.Variable);
+					preSt = new PreStatement(st) { Target = sn.Node };
 					break;
 				default:
 					preSt = new PreStatement(s);

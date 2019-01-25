@@ -87,6 +87,7 @@ namespace LSNr
 							else
 								reader.OnReadAdjSemiColon(reader.PopAttributes());
 							reader.ResetHead();
+							reader.CurrentHeadCount++;
 							reader.TokenReader = reader.AttrBaseReader;
 							return;
 						case "{":
