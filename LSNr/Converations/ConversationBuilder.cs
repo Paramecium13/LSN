@@ -67,7 +67,9 @@ namespace LSNr.Converations
 		readonly HashSet<string> NodeNames = new HashSet<string>();
 		readonly List<INode> Nodes = new List<INode>();
 		INode First;
+		readonly List<IConversationVariable> PreStartConvVars = new List<IConversationVariable>();
 		public ISlice<Token> StartTokens { get; set; }
+		readonly List<IConversationVariable> PostStartConvVars = new List<IConversationVariable>();
 
 		LsnFunction Function;
 
@@ -97,12 +99,21 @@ namespace LSNr.Converations
 			NodeNames.Add(node.Name);
 		}
 
+		public void RegisterConvVar(IConversationVariable convVar)
+		{
+			if (StartTokens == null)
+				PreStartConvVars.Add(convVar);
+			else PostStartConvVars.Add(convVar);
+		}
+
 		public bool NodeExists(string name) => NodeNames.Contains(name);
 
 		public SymbolType CheckSymbol(string name)
 		{
 			if (NodeExists(name))
-				return SymbolType.Undefined;
+				return SymbolType.Undefined; // Add symbol type for this?
+			if (CurrentScope.VariableExists(name))
+				return SymbolType.Variable;
 			return Resource.CheckSymbol(name);
 		}
 
@@ -133,6 +144,10 @@ namespace LSNr.Converations
 
 			var flattener = new ComponentFlattener();
 
+			// Conversation variables before start block:
+			foreach (var cv in PreStartConvVars)
+				cv.Parse(flattener, this);
+
 			// Start Block
 			flattener.ConvPartialFlatten(GetStartBlock(), "conv start", null);
 			var i = 0;
@@ -142,6 +157,10 @@ namespace LSNr.Converations
 				First = Nodes[0];
 			}
 			flattener.AddSetTargetStatement(First.Name + " Start", JumpTargetVariable);
+
+			// Conversation variables after start block:
+			foreach (var cv in PostStartConvVars)
+				cv.Parse(flattener, this);
 
 			// First Node:
 			First.Parse(flattener, CurrentScope);

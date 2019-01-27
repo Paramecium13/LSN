@@ -55,11 +55,14 @@ namespace LSNr
 
 		public IReadOnlyList<IExpressionContainer> Users => _Users;
 
-		public AssignmentStatement Assignment { get; set; }
+		private AssignmentStatement _assignment;
+		public AssignmentStatement Assignment
+		{
+			get { return _assignment; }
+			set { _assignment = value; Used = true; }
+		}
 
-		private bool _IsUsed;
-
-		public bool Used { get { return /*Users.Count > 0*/ _IsUsed; } }
+		public bool Used { get; private set; }
 
 		public Variable(string name, IExpression access, LsnType type)
 		{
@@ -126,6 +129,7 @@ namespace LSNr
 		public void AddUser(IExpressionContainer user) // Include an indication of its position...
 		{
 			_Users.Add(user);
+			Used = true;
 		}
 
 		public void AddReasignment(AssignmentStatement reassign)
@@ -158,7 +162,7 @@ namespace LSNr
 
 		public void MarkAsUsed()
 		{
-			_IsUsed = true;
+			Used = true;
 		}
 	}
 }

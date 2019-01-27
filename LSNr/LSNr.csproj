@@ -112,6 +112,7 @@
     <Compile Include="Converations\BranchReader.cs" />
     <Compile Include="Converations\ConversationBuilder.cs" />
     <Compile Include="Converations\ConversationReader.cs" />
+    <Compile Include="Converations\ConversationVariable.cs" />
     <Compile Include="Converations\NodeBuilder.cs" />
     <Compile Include="Converations\NodeReader.cs" />
     <Compile Include="Converations\StatementRules.cs" />

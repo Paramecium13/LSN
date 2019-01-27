@@ -72,6 +72,7 @@
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\JumpStatements.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="LsnCore.Statements.AssignmentStatement" Collapsed="true">
     <Position X="34.25" Y="2" Width="1.5" />
@@ -114,6 +115,7 @@
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>J:\Source\Repos\LSN\LSN (Shared)\LsnCore\Statements\JumpStatements.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="LsnCore.Statements.DetachStatement" Collapsed="true">
     <Position X="41" Y="2" Width="1.5" />

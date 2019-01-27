@@ -11,7 +11,7 @@ using LSNr.Converations;
 
 namespace LSNr.Optimization
 {
-	sealed class ComponentFlattener : ComponentWalker
+	public sealed class ComponentFlattener : ComponentWalker
 	{
 		private string LabelPrefix = "";
 

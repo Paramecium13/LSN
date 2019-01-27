@@ -30,7 +30,7 @@ namespace LSNr.LssParser
 		public (IExpression expression, int indexOfNextToken, ushort numTokensToRemoveFromLeft)
 			CreateExpression(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
-			var expr = substitutions[tokens[index + 1]];
+			var expr = Create.Express(new List<Token> { tokens[index + 1] }, script, substitutions);
 			return (CreateExpr(expr), index + 2, 0);
 		}
 

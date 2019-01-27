@@ -31,6 +31,7 @@ conversation SimpleConv
 	}
 	
 	
+	let mut introduced = false;
 	
 	//introduced : bool = false;
 	node LocalInfo
@@ -57,7 +58,7 @@ conversation SimpleConv
 			prompt = "Goodbye.";
 			action
 			{
-				if (false)
+				if (introduced)
 				{
 					Say "Bye. It was nice meeting you.";
 				}
@@ -78,7 +79,7 @@ conversation SimpleConv
 		
 		branch PCIntroduce
 		{
-			when = ! false;
+			when = ! introduced;
 			Prompt: "My name is Player0.";
 			
 			
@@ -114,7 +115,7 @@ conversation SimpleConv
 			prompt = "Goodbye.";
 			action
 			{
-				if (false)
+				if (introduced)
 				{
 					Say "Bye. It was nice meeting you.";
 				}
@@ -135,7 +136,7 @@ conversation SimpleConv
 			prompt = "Goodbye.";
 			action
 			{
-				if (false)
+				if (introduced)
 				{
 					Say "Bye. It was nice meeting you.";
 				}
