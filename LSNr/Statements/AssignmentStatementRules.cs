@@ -41,9 +41,9 @@ namespace LSNr.Statements
 				case SymbolType.Variable:
 					var msg = $"Cannot name a new variable '{name}'. That name is already used for another variable.";
 					if (script.CurrentScope.GetVariable(name).Mutable)
-						msg += $"\n\u3DD8\uCEDC:\"It looks like you're trying to change the value of '{name}'. To do so here, simply leave off the word 'let'.\"";
+						msg += $"\r\n\uCEDC\u3DD8:\"It looks like you're trying to change the value of '{name}'. To do so here, simply leave off the word 'let'.\"";
 					else
-						msg += $"\n\u3DD8\uCEDC:\"It looks like you're trying to change the value of '{name}'. To do so, mark it as mutable where it was declared by putting 'mut' after 'let' and leave off the word 'let' here.\"";
+						msg += $"\r\n\uCEDC\u3DD8:\"It looks like you're trying to change the value of '{name}'. To do so, mark it as mutable where it was declared by putting 'mut' after 'let' and leave off the word 'let' here.\"";
 					throw new LsnrParsingException(tokens[i - 1], msg, script.Path);
 				case SymbolType.GlobalVariable:
 				case SymbolType.Field:
@@ -81,6 +81,7 @@ namespace LSNr.Statements
 			return Make(Create.Express(lTokens, script), Create.Express(tokens.CreateSliceAt(i + 1), script), script, lTokens);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "gv")]
 		protected static Statement Make(IExpression lValue, IExpression rValue, IPreScript script, ISlice<Token> lTokens)
 		{
 			switch (lValue)

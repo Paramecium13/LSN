@@ -54,7 +54,7 @@ namespace LSNr.ControlStructures
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
 				script.CurrentScope = script.CurrentScope.Pop(components);
-				return new ForInCollectionLoop(index, iterator, collection, components)
+				return new ForInCollectionLoop(index, collection, components)
 				{ Statement = state };
 			}
 			if (expr.Type.Type == RangeType.Instance)

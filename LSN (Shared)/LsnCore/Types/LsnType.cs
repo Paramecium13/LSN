@@ -10,10 +10,10 @@ namespace LsnCore
 {
 	public abstract class LsnType
 	{
-		public static LsnType int_ { get; } = new LsnBoundedType<int>("int", () => new LsnValue(0), "Integer");
+		public static LsnType int_ { get; } = new LsnBoundedType<int>("int", () => new LsnValue(0));
 		public static LsnType double_ { get; } = new LsnBoundedType<double>("double", () => new LsnValue(0.0));
 		public static LsnType string_ { get; } = new LsnBoundedType<string>("string", () => new LsnValue(new StringValue("")));
-		public static LsnType Bool_ { get; } = new BoolType("bool", "Boolean");
+		public static LsnType Bool_ { get; } = new BoolType("bool");
 		public static LsnType object_ { get; } = new LsnBoundedType<object>("object", () => LsnValue.Nil);
 
 		static LsnType()

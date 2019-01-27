@@ -16,6 +16,7 @@ namespace LSNr
 		private readonly string _Value;
 
 		public readonly TokenType Type;
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "int")]
 		public readonly int IntValue;
 		public readonly double DoubleValue = double.NaN;
 

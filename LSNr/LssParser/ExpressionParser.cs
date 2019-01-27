@@ -46,7 +46,7 @@ namespace LSNr.LssParser
 			foreach (var level in Rules)
 			{
 				ApplyRuleLevel(level);
-				if (CurrentTokens.Count == 1 && CurrentTokens[0].Value.StartsWith(SUB, StringComparison.InvariantCulture))
+				if (CurrentTokens.Count == 1 && CurrentTokens[0].Value.StartsWith(SUB, StringComparison.Ordinal))
 					break;
 			}
 

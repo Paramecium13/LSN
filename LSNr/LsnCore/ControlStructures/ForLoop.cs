@@ -44,9 +44,9 @@ namespace LsnCore.ControlStructures
 
 		public Statement Statement { get; set; }
 
-		public readonly List<Component> Body;
+		public readonly ICollection<Component> Body;
 
-		public ForInCollectionLoop(Variable index, Variable iterator, IExpression collection, IEnumerable<Component> body)
+		public ForInCollectionLoop(Variable index, IExpression collection, IEnumerable<Component> body)
 		{
 			Index = index; Collection = collection; Body = body.ToList();
 		}
@@ -87,8 +87,8 @@ namespace LsnCore.ControlStructures
 
 	public class ForInRangeLoop : ControlStructure
 	{
-		internal readonly Variable		Iterator;
-		public readonly List<Component> Body;
+		internal readonly Variable				Iterator;
+		public readonly ICollection<Component>	Body;
 
 		internal IExpression Start { get; set; }
 

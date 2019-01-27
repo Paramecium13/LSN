@@ -10,11 +10,7 @@ namespace LSNr
 	internal sealed class PreStatement
 	{
 		public readonly Statement Statement;
-		private string _label;
-		public string Label {
-			get => _label;
-			set => _label = value;
-		}
+		public IList<string> Label { get; set; }// = new List<string>();
 		public string Target { get; set; }
 
 		/*private List<string> _Labels = new List<string>();

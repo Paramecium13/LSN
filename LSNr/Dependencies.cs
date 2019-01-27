@@ -65,7 +65,14 @@ namespace LSNr
 		{
 			if(child == parent)
 				throw new ApplicationException($"Circular dependency from '{child}' to '{first}'!!!");
-			var parents = Dependencies[child];
+			IList<string> parents;
+			if(Dependencies.ContainsKey(child))
+				parents = Dependencies[child];
+			else
+			{
+				parents = new List<string>();
+				Dependencies.TryAdd(child, parents);
+			}
 			var updated = false;
 			string[] grandparents = null;
 			lock (parents)

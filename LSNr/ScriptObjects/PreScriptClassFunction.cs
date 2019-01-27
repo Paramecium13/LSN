@@ -18,6 +18,7 @@ namespace LSNr
 		IFunctionContainer Parent { get; }
 	}
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "PreScript")]
 	public sealed class PreScriptClassFunction : IPreFunction
 	{
 		public IBasePreScriptClass Parent { get; }

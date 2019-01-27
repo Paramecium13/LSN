@@ -55,7 +55,6 @@ namespace LSNr
 		private void ParseControl()
 		{
 			var balance = 0;
-			var bodyTokens = new List<Token>();
 			var start = i;
 			var count = 0;
 			do

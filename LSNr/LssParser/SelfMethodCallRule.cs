@@ -46,7 +46,7 @@ namespace LSNr.LssParser
 				a.AddRange(argTokens.Select(ar => ExpressionParser.Parse(ar, script, substitutions)));
 				args = a.ToArray();
 			}
-			return (expr: method.CreateMethodCall(args), nextIndex, 0);
+			return (method.CreateMethodCall(args), nextIndex, 0);
 		}
 	}
 }

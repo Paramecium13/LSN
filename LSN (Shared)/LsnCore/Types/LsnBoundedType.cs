@@ -25,9 +25,13 @@ namespace LsnCore
 
 		public Func<LsnValue> CreateDefault { get; set; }
 
-		public LsnBoundedType(string name, Func<LsnValue> createDefault, params string[] args)
+		public LsnBoundedType(string name, Func<LsnValue> createDefault)
 		{
+			if (name == null)
+				throw new ArgumentNullException(nameof(name));
 			Name = name;
+			if (createDefault == null)
+				throw new ArgumentNullException(nameof(createDefault));
 			CreateDefault = createDefault;
 		}
 

@@ -21,13 +21,13 @@ namespace LSNr.Optimization
 
 		private readonly Stack<string> InnerMostLoopEndLabels = new Stack<string>();
 
-		private string NextLabel;
+		private IList<string> NextLabel { get; } = new List<string>();
 
-		public Statement[] Flatten(List<Component> components)
+		public Statement[] Flatten(IEnumerable<Component> components)
 		{
 			Walk(components);
 
-			if (NextLabel != null)
+			if (NextLabel.Count > 0)
 				PreStatements.Add(new PreStatement(new ReturnStatement(null)) { Label = NextLabel });
 
 			foreach (var jmp in PreStatements.Where(s => s.Target != null))
@@ -36,10 +36,10 @@ namespace LSNr.Optimization
 			return PreStatements.Select(p => p.Statement).ToArray();
 		}
 
-		public void ConvPartialFlatten(List<Component> components, string prefix, string startLabel)
+		public void ConvPartialFlatten(IEnumerable<Component> components, string prefix, string startLabel)
 		{
 			if (startLabel != null)
-				NextLabel = startLabel;
+				NextLabel.Add(startLabel);
 			LabelPrefix = prefix;
 			Walk(components);
 
@@ -83,16 +83,22 @@ namespace LSNr.Optimization
 		// Use at start of node
 		public void AddLabel(string label)
 		{
-			NextLabel = label;
+			NextLabel.Add(label);
 		}
 
 		public Statement[] FinishFlatten()
 		{
 			LabelPrefix = "";
+			/*if (NextLabel.Count > 0)
+				PreStatements.Add(new PreStatement(new ReturnStatement(null)) { Label = NextLabel });*/
 			foreach (var pre in PreStatements)
 			{
-				if (pre.Label != null && LabelAliases.ContainsKey(pre.Label))
-					pre.Label = LabelAliases[pre.Label];
+				if(pre.Label != null)
+				{
+					var foo = pre.Label.FirstOrDefault(l => LabelAliases.ContainsKey(l));
+					if (foo != null)
+						pre.Label[pre.Label.IndexOf(foo)] = LabelAliases[foo];
+				}
 				if (pre.Target != null && LabelAliases.ContainsKey(pre.Target))
 					pre.Target = LabelAliases[pre.Target];
 			}
@@ -102,17 +108,17 @@ namespace LSNr.Optimization
 			return PreStatements.Select(p => p.Statement).ToArray();
 		}
 
-		private string PopNextLabel()
+		private IList<string> PopNextLabel()
 		{
-			var tmp = NextLabel;
-			NextLabel = null;
+			var tmp = NextLabel.ToList();
+			NextLabel.Clear();
 			return tmp;
 		}
 
 		private int FindLabel(string label)
 		{
 			for(int i = 0; i < PreStatements.Count; i++)
-				if (PreStatements[i].Label == label)
+				if (PreStatements[i]?.Label?.Contains(label) ?? false)
 					return i;
 			throw new ApplicationException("Label not found");
 		}
@@ -129,7 +135,7 @@ namespace LSNr.Optimization
 			PreStatements.Add(preSt);
 
 			Walk(f.Body);
-			NextLabel = endifLabel;
+			AddLabel(endifLabel);
 			for (int i = 0; i < f.Elsifs.Count; i++)
 				WalkElsif(f.Elsifs[i]);
 
@@ -147,7 +153,7 @@ namespace LSNr.Optimization
 			PreStatements.Add(preSt);
 
 			Walk(e.Body);
-			NextLabel = endifLabel;
+			AddLabel(endifLabel);
 		}
 
 		private int WhileLoopCount;
@@ -175,7 +181,7 @@ namespace LSNr.Optimization
 			};
 			PreStatements.Add(loopPreSt);
 
-			NextLabel = endLabel;
+			AddLabel(endLabel);
 
 			InnerMostLoopContinueLabels.Pop();
 			InnerMostLoopEndLabels.Pop();
@@ -193,7 +199,7 @@ namespace LSNr.Optimization
 			PreStatements.Add(assignPreSt);
 
 			var cndPreSt = new PreStatement(new ConditionalJumpStatement(new NotExpression(f.Condition)))
-			{ Label = cndLabel, Target = endLabel };    // Jump to EndLabel if cnd is false
+			{ Label = new List<string> { cndLabel }, Target = endLabel };    // Jump to EndLabel if cnd is false
 			PreStatements.Add(cndPreSt);
 
 			InnerMostLoopContinueLabels.Push(cndLabel);
@@ -206,13 +212,14 @@ namespace LSNr.Optimization
 			PreStatements.Add(postPreSt);
 			PreStatements.Add(new PreStatement(new JumpStatement()) { Target = cndLabel });
 
-			NextLabel = endLabel;
+			AddLabel(endLabel);
 
 			InnerMostLoopContinueLabels.Pop();
 			InnerMostLoopEndLabels.Pop();
 		}
 
 		int ChoiceCount;
+
 		protected override void WalkCbc(ChoicesBlockControl c)
 		{
 			var index = (ChoiceCount++).ToString();
@@ -240,19 +247,21 @@ namespace LSNr.Optimization
 
 			foreach (var ch in choices)
 			{
-				NextLabel = ch.Item2;
+				AddLabel(ch.Item2);
 				Walk(ch.Item1);
 				var jEndPreSt = new PreStatement(new JumpStatement()) { Target = endLabel };
 				if (NextLabel != null)
 				{
-					jEndPreSt.Label = NextLabel;
-					NextLabel = null;
+					jEndPreSt.Label = PopNextLabel();
+					//NextLabel = null;
 				}
 				PreStatements.Add(jEndPreSt);
 			}
-			NextLabel = endLabel;
+			AddLabel(endLabel);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "nxt")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "br")]
 		protected override void View(Statement s)
 		{
 			PreStatement preSt;
@@ -280,11 +289,7 @@ namespace LSNr.Optimization
 
 			/*if (ExitLabelStack.Count > 0)
 				preSt.Label = ExitLabelStack.Pop();*/
-			if(NextLabel != null)
-			{
-				preSt.Label = NextLabel;
-				NextLabel = null;
-			}
+			preSt.Label = PopNextLabel();
 			PreStatements.Add(preSt);
 		}
 
@@ -318,21 +323,21 @@ namespace LSNr.Optimization
 			InnerMostLoopContinueLabels.Push(continueLabel);
 			InnerMostLoopEndLabels.Push(endLabel);
 
-			NextLabel = startLabel;
+			AddLabel(startLabel);
 			Walk(fr.Body);
 					// [start] body
 			//if(NextLabel == null) add NOP.
 			var incrStatement = new AssignmentStatement(fr.Iterator.Index,
 				new BinaryExpression(fr.Iterator.AccessExpression, new LsnValue(1), BinaryOperation.Sum,
 				BinaryOperationArgsType.Int_Int));
-			PreStatements.Add(new PreStatement(incrStatement) { Label = continueLabel});
+			PreStatements.Add(new PreStatement(incrStatement) { Label = new List<string> { continueLabel } });
 					// [continue] increment
 			var condExpr = new BinaryExpression(fr.Iterator.AccessExpression, fr.End,
 				BinaryOperation.LessThanOrEqual, BinaryOperationArgsType.Int_Int);
 			var jumpBack = new PreStatement(new ConditionalJumpStatement(condExpr)) { Target = startLabel };
 			PreStatements.Add(jumpBack);
-					// if(in range) jmp [start]
-			NextLabel = endLabel;
+			// if(in range) jmp [start]
+			AddLabel(endLabel);
 					// [end] ...
 		}
 
@@ -363,12 +368,11 @@ namespace LSNr.Optimization
 			// if (collection is empty) jmp end
 			var length = new MethodCall(fc.Collection.Type.Type.Methods["Length"], new IExpression[] { fc.Collection });
 			var stCond = new BinaryExpression(length, new LsnValue(0), BinaryOperation.Equal, BinaryOperationArgsType.Int_Int);
-			var preCheck = new PreStatement(new ConditionalJumpStatement(stCond)) { Target = endLabel };
 
 			InnerMostLoopContinueLabels.Push(continueLabel);
 			InnerMostLoopEndLabels.Push(endLabel);
 
-			NextLabel = startLabel;
+			AddLabel(startLabel);
 			// [start] Body
 			Walk(fc.Body);
 			//if(NextLabel == null) add NOP.
@@ -377,7 +381,7 @@ namespace LSNr.Optimization
 			var incrStatement = new AssignmentStatement(fc.Index.Index,
 				new BinaryExpression(fc.Index.AccessExpression, new LsnValue(1), BinaryOperation.Sum,
 				BinaryOperationArgsType.Int_Int));
-			PreStatements.Add(new PreStatement(incrStatement) { Label = continueLabel });
+			PreStatements.Add(new PreStatement(incrStatement) { Label = new List<string> { continueLabel } });
 
 			// if (index < collection.length) jmp [start]
 			var condExpr = new BinaryExpression(fc.Index.AccessExpression, length,
@@ -385,7 +389,7 @@ namespace LSNr.Optimization
 			var jumpBack = new PreStatement(new ConditionalJumpStatement(condExpr)) { Target = startLabel };
 			PreStatements.Add(jumpBack);
 			// [end] ...
-			NextLabel = endLabel;
+			AddLabel(endLabel);
 		}
 	}
 }

@@ -14,8 +14,10 @@ namespace LsnCore
 			:base(new FunctionSignature(parameters,name,returnType?.Id))
 		{
 #if CORE
-			Bound = bound ?? throw new ArgumentNullException(nameof(bound));
+			if (bound == null)
+				throw new ArgumentNullException(nameof(bound));
 #endif
+			Bound = bound;
 		}
 
 		public BoundedFunction(Func<LsnValue[], LsnValue> bound, List<Parameter> parameters, TypeId returnType, string name)
@@ -24,8 +26,8 @@ namespace LsnCore
 #if CORE
 			if (bound == null)
 				throw new ArgumentNullException(nameof(bound));
-			Bound = bound;
 #endif
+			Bound = bound;
 		}
 #if CORE
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
@@ -58,8 +60,8 @@ namespace LsnCore
 #if CORE
 			if (bound == null)
 				throw new ArgumentNullException(nameof(bound));
-			Bound = bound;
 #endif
+			Bound = bound;
 		}
 	}
 #endif

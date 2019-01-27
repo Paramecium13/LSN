@@ -11,6 +11,7 @@ using LSNr.ReaderRules;
 
 namespace LSNr.ScriptObjects
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "PreScript")]
 	public interface IBasePreScriptClass : ITypeContainer, IFunctionContainer
 	{
 		TypeId Id { get; }
@@ -23,6 +24,7 @@ namespace LSNr.ScriptObjects
 		bool MethodExists(string value);
 	}
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "PreScript")]
 	public interface IPreScriptClass : IBasePreScriptClass
 	{
 		void RegisterField(string name, TypeId id, bool mutable);

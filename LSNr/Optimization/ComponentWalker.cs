@@ -19,11 +19,10 @@ namespace LSNr.Optimization
 			else View((Statement)c);
 		}
 
-		protected virtual void Walk(IList<Component> components)
+		protected virtual void Walk(IEnumerable<Component> components)
 		{
-			var length = components.Count;
-			for (int i = 0; i < length; i++)
-				Walk(components[i]);
+			foreach (var component in components)
+				Walk(component);
 		}
 
 		private void Walk(ControlStructure c)

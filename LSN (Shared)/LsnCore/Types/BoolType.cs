@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace LsnCore
 {
-	[Serializable]
 	public class BoolType : LsnBoundedType<bool>
 	{
-		internal BoolType(string name, params string[] args):base(name,null,args) { }
+		internal BoolType(string name):base(name, ()=> LsnBoolValue.GetBoolValue(false)) { }
 
 		public override LsnValue CreateDefaultValue() => LsnBoolValue.GetBoolValue(false);
 	}

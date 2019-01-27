@@ -122,4 +122,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Slice.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\SubSlice.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)LSN.ruleset" />
+  </ItemGroup>
 </Project>
