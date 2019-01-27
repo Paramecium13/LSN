@@ -19,7 +19,7 @@ namespace LsnCore
 
 		public override bool HandlesScope { get { return false; } }
 
-		public LsnMethod(LsnType type, LsnType returnType, Statement[] code, string name, LsnResourceThing res, 
+		public LsnMethod(LsnType type, LsnType returnType, Statement[] code, string name, LsnResourceThing res,
 			List<Parameter> paramaters = null)
 			:base(type,returnType,name, paramaters ?? new List<Parameter>() { new Parameter("self", type.Id, LsnValue.Nil, 0) })
 		{

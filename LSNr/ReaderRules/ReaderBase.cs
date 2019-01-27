@@ -82,7 +82,7 @@ namespace LSNr
 					switch (token.Value)
 					{
 						case ";":
-							if (reader.CurrentHeadCount != -1)
+							if (reader.CurrentHeadCount > 0)
 								reader.OnReadStatement(reader.GetStatement(), reader.PopAttributes());
 							else
 								reader.OnReadAdjSemiColon(reader.PopAttributes());
@@ -124,6 +124,7 @@ namespace LSNr
 								var head = reader.GetHeader();
 								reader.OnReadBody(head, Slice<Token>.Create(reader.Tokens, reader.CurrentBodyStart, reader.CurrentBodyCount), reader.PopAttributes());
 								reader.ResetHead();
+								reader.CurrentHeadCount++;
 								// I don't need to change body[start/count] or balance b/c these will be changed before it switches to this state.
 								reader.TokenReader = reader.AttrBaseReader;
 								return;

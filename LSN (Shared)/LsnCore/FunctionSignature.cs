@@ -18,7 +18,7 @@ namespace LsnCore
 
 		public FunctionSignature(IReadOnlyList<Parameter> parameters,string name, TypeId returnType)
 		{
-			Parameters = parameters; Name = name; ReturnType = returnType;
+			Parameters = parameters ?? new List<Parameter>(); Name = name; ReturnType = returnType;
 		}
 
 		public bool Equals(FunctionSignature other)

@@ -10,18 +10,12 @@ using LSNr.ReaderRules;
 
 namespace LSNr.ScriptObjects
 {
-	public interface IBasePreScriptClass : ITypeContainer
+	public interface IBasePreScriptClass : ITypeContainer, IFunctionContainer
 	{
-		string Path { get; }
-		bool Valid { get; set; }
-
 		TypeId Id { get; }
 		TypeId HostId { get; }
 		HostInterfaceType Host { get; }
 
-		SymbolType CheckSymbol(string symbol);
-
-		Function GetFunction(string name);
 		int GetStateIndex(string name);
 		Field GetField(string val);
 		bool StateExists(string stateName);
@@ -95,11 +89,7 @@ namespace LSNr.ScriptObjects
 			var argTokens = i.SliceWhile(t => t.Value != ")", out bool err);
 			if(err)
 				throw new LsnrParsingException(i.Current, $"Error parsing {memberTypeName} {memberName}: No parameter list defined", ScriptClass.Path);
-			var parameters = new List<Parameter> { new Parameter("self", ScriptClass.Id, LsnValue.Nil, 0) };
-			if(argTokens.Length != 0)
-				parameters.AddRange( ScriptClass.ParseParameters(argTokens, ScriptClass.Path)
-					.Select(p => new Parameter(p.Name,p.Type,p.DefaultValue, (ushort)(p.Index + 1))));
-			return parameters;
+			return ScriptClass.ParseParameters(argTokens);
 		}
 
 		protected TypeId ParseReturnType(Indexer<Token> index, string memberTypeName, string memberName)

@@ -47,7 +47,7 @@ namespace LSNr.Converations
 			new IfLetStructureRule()
 		}.OrderBy(r => r.Order).ToList();
 
-		readonly IPreResource Resource;
+		readonly IFunctionContainer Resource;
 
 		public bool GenericTypeExists(string name) => Resource.GenericTypeExists(name);
 		public void GenericTypeUsed(TypeId typeId) => Resource.GenericTypeUsed(typeId);
@@ -62,7 +62,7 @@ namespace LSNr.Converations
 		public Function GetFunction(string name) => Resource.GetFunction(name);
 
 		string Name;
-		//readonly ISlice<Token> Args;
+		readonly ISlice<Token> Args;
 
 		readonly HashSet<string> NodeNames = new HashSet<string>();
 		readonly List<INode> Nodes = new List<INode>();
@@ -71,7 +71,7 @@ namespace LSNr.Converations
 		public ISlice<Token> StartTokens { get; set; }
 		readonly List<IConversationVariable> PostStartConvVars = new List<IConversationVariable>();
 
-		LsnFunction Function;
+		IProcedure Function;
 
 		public IScope CurrentScope { get; set; }
 
@@ -81,9 +81,9 @@ namespace LSNr.Converations
 
 		public IReadOnlyList<ControlStructureRule> ControlStructureRules => _ControlStructureRules;
 
-		public ConversationBuilder(IPreResource res, string name/*,ISlice<Token> args*/)
+		public ConversationBuilder(IFunctionContainer res, string name, ISlice<Token> args)
 		{
-			Resource = res; Name = name;//Args = args;
+			Resource = res; Name = name; Args = args;
 		}
 
 		public void RegisterNode(INode node, bool first)
@@ -131,14 +131,22 @@ namespace LSNr.Converations
 
 		public void OnParsingSignatures(IPreResource resource)
 		{
-			Function = new LsnFunction(new List<Parameter>(), null, Name, resource.Path);
-			resource.RegisterFunction(Function);
+			CurrentScope = new VariableTable(new List<Variable>());
+			// ToDo: Get parameters, add to scope.
+			IReadOnlyList<Parameter> args = null;
+			if(Args != null && Args.Length > 0)
+			{
+				args = Resource.ParseParameters(Args);
+				foreach (var arg in args)
+					CurrentScope.CreateVariable(arg);
+			}
+			var fn = new LsnFunction(args, null, Name, resource.Path);
+			Function = fn;
+			resource.RegisterFunction(fn);
 		}
 
 		public void Parse()
 		{
-			CurrentScope = new VariableTable(new List<Variable>());
-			// ToDo: Get parameters, add to scope.
 			JumpTargetVariable = CurrentScope.CreateVariable("Jump Target", LsnType.int_, true);
 			JumpTargetVariable.MarkAsUsed();
 

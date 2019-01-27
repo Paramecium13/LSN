@@ -121,7 +121,7 @@ namespace LSNr.Converations
 		public override void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes)
 		{
 			// let x = y;
-			if (tokens.Length < 5)
+			if (tokens.Length < 4)
 				throw new LsnrParsingException(tokens[0], "Improperly formatted conversation variable", Conversation.Path);
 			var mutable = false;
 			var nameIndex = 1;
@@ -136,7 +136,7 @@ namespace LSNr.Converations
 			if (tokens[++nameIndex].Value != "=")
 				throw LsnrParsingException.UnexpectedToken(tokens[nameIndex], "=", Conversation.Path);
 			nameIndex++;
-			var expr = tokens.CreateSliceAt(nameIndex);
+			var expr = tokens.CreateSliceSkipTake(nameIndex, tokens.Length - nameIndex - 1);
 			Conversation.RegisterConvVar(new ConversationVariable(name, mutable, expr));
 		}
 	}

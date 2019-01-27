@@ -87,7 +87,7 @@ namespace LSNr.ReaderRules
 			TypeId ret = null;
 			if (ReturnType != null)
 				ret = resource.ParseTypeId(ReturnType, 0, out int i);
-			Function = new LsnFunction(resource.ParseParameters(Args,resource.Path),ret, Name, resource.Path);
+			Function = new LsnFunction(resource.ParseParameters(Args),ret, Name, resource.Path);
 			resource.RegisterFunction(Function);
 		}
 

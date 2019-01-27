@@ -10,9 +10,8 @@ using LSNr.ReaderRules;
 
 namespace LSNr.ScriptObjects
 {
-	public interface IPreHostInterface : ITypeContainer
+	public interface IPreHostInterface : IFunctionContainer
 	{
-		string Path { get; }
 		void RegisterEvent(EventDefinition ev);
 		void RegisterMethod(FunctionSignature fn);
 	}
@@ -73,7 +72,7 @@ namespace LSNr.ScriptObjects
 			while (tokens[++i].Value != ")") // This starts with the token after '('.
 				paramTokens.Add(tokens[i]);
 
-			var parameters = PreHostInterface.ParseParameters(paramTokens, PreHostInterface.Path);
+			var parameters = PreHostInterface.ParseParameters(paramTokens);
 			TypeId returnType = null;
 			i++; // 'i' Points to the thing after the closing parenthesis.
 			if (tokens.TestAt(i, t => t.Value == "->"))
@@ -118,7 +117,7 @@ namespace LSNr.ScriptObjects
 			while (tokens[++i].Value != ")") // This starts with the token after '('.
 				paramTokens.Add(tokens[i]);
 
-			var parameters = PreHostInterface.ParseParameters(paramTokens, PreHostInterface.Path);
+			var parameters = PreHostInterface.ParseParameters(paramTokens);
 
 			i++; // 'i' Points to the thing after the closing parenthesis.
 			if (i > tokens.Count)

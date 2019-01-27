@@ -200,6 +200,15 @@ namespace LSNr.ReaderRules
 			MyFunctions.Add(fn.Name, fn);
 		}
 
+		public Function CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
+		{
+			if (isVirtual)
+				throw new InvalidOperationException();
+			var fn = new LsnFunction(args, retType, name, Path);
+			RegisterFunction(fn);
+			return fn;
+		}
+
 		public void RegisterStructType(StructType structType) { GeneratedStructTypes.Add(structType); }
 
 		public void RegisterRecordType(RecordType recordType) { GeneratedRecordTypes.Add(recordType); }
@@ -302,5 +311,7 @@ namespace LSNr.ReaderRules
 			StructTypes = GeneratedStructTypes.ToDictionary(s => s.Name),
 			Usings = Usings
 		};
+
+		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens) => ((IFunctionContainer)this).BaseParseParameters(tokens);
 	}
 }

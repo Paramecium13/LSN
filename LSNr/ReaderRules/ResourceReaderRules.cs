@@ -11,14 +11,20 @@ using LSNr.ScriptObjects;
 
 namespace LSNr.ReaderRules
 {
-	public interface IPreResource : ITypeContainer
+	public interface IFunctionContainer : ITypeContainer
 	{
 		string Path { get; }
-		IPreScript Script { get; }
 		bool Valid { get; set; }
 		Function GetFunction(string name);
 
 		SymbolType CheckSymbol(string symbol);
+		IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens);
+		Function CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false);
+	}
+
+	public interface IPreResource : IFunctionContainer
+	{
+		IPreScript Script { get; }
 
 		void RegisterUsing(string file);
 
@@ -44,17 +50,16 @@ namespace LSNr.ReaderRules
 		/// </summary>
 		/// <param name="tokens"></param>
 		/// <param name="self"></param>
-		/// <param name="Path"></param>
+		/// <param name="index">The starting index.</param>
 		/// <returns>The parameters</returns>
-		public static IReadOnlyList<Parameter> ParseParameters(this ITypeContainer self, IReadOnlyList<Token> tokens, string Path)
+		internal static IReadOnlyList<Parameter> BaseParseParameters(this IFunctionContainer self, IReadOnlyList<Token> tokens, ushort index = 0)
 		{
 			var paramaters = new List<Parameter>();
-			ushort index = 0;
 			for (int i = 0; i < tokens.Count; i++)
 			{
 				var name = tokens[i].Value;
 				if (tokens[++i].Value != ":")
-					throw new LsnrParsingException(tokens[i], $"Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.", Path);
+					throw new LsnrParsingException(tokens[i], $"Expected token ':' after parameter name {name} received token '{tokens[i].Value}'.", self.Path);
 				var type = self.ParseTypeId(tokens, ++i, out i);
 				var defaultValue = LsnValue.Nil;
 				if (i < tokens.Count && tokens[i].Value == "=")
@@ -62,7 +67,7 @@ namespace LSNr.ReaderRules
 					if (tokens[++i].Type == TokenType.String)
 					{
 						if (type != LsnType.string_.Id)
-							throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type string to a parameter of type {type.Name}", Path);
+							throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type string to a parameter of type {type.Name}", self.Path);
 						defaultValue = new LsnValue(new StringValue(tokens[i].Value));
 						if (i + 1 < tokens.Count) i++;
 					}
@@ -75,7 +80,7 @@ namespace LSNr.ReaderRules
 								defaultValue = new LsnValue(tokens[i].IntValue);
 							}
 							else
-								throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type int to a parameter of type {type.Name}", Path);
+								throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type int to a parameter of type {type.Name}", self.Path);
 						}
 						else defaultValue = new LsnValue(tokens[i].IntValue);
 						if (i + 1 < tokens.Count) i++;
@@ -83,16 +88,16 @@ namespace LSNr.ReaderRules
 					else if (tokens[i].Type == TokenType.Float)
 					{
 						if (type != LsnType.double_.Id)
-							throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type double to a parameter of type {type.Name}", Path);
+							throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type double to a parameter of type {type.Name}", self.Path);
 						defaultValue = new LsnValue(tokens[i].DoubleValue);
 						if (i + 1 < tokens.Count) i++;
 					}
 					// Bools and other stuff...
-					else throw new LsnrParsingException(tokens[i], $"Error in parsing default value for parameter {name}.", Path);
+					else throw new LsnrParsingException(tokens[i], $"Error in parsing default value for parameter {name}.", self.Path);
 				}
 				paramaters.Add(new Parameter(name, type, defaultValue, index++));
 				if (i < tokens.Count && tokens[i].Value != ",")
-					throw new LsnrParsingException(tokens[i], $"expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.", Path);
+					throw new LsnrParsingException(tokens[i], $"expected token ',' after definition of parameter {name}, received '{tokens[i].Value}'.", self.Path);
 			}
 			return paramaters;
 		}
@@ -310,9 +315,18 @@ namespace LSNr.ReaderRules
 
 		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{
-			if (head.Count != 3 || head[1].Type != TokenType.Identifier)
+			if (head.Count < 3 || head[1].Type != TokenType.Identifier)
 				throw new LsnrParsingException(head[0], "Improperly formatted conversation.", PreResource.Path);
-			var conv = new ConversationBuilder(PreResource, head[1].Value);
+			var name = head[1].Value;
+			ISlice<Token> args = null;
+			if (head[2].Value == "(")
+			{
+				var i = new Indexer<Token>(3, head);
+				args = i.SliceWhile(t => t.Value != ")", out bool err);
+				if (err)
+					throw new LsnrParsingException(head[0], $"Error parsing parameter list of conversation '{name}'.", PreResource.Path);
+			}
+			var conv = new ConversationBuilder(PreResource, name, args);
 			var reader = new ConversationReader(conv, body);
 			reader.Read();
 			PreResource.ParseSignaturesA += conv.OnParsingSignatures;

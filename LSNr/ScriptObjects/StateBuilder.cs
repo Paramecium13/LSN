@@ -32,6 +32,7 @@ namespace LSNr.ScriptObjects
 		public Field GetField(string val) => ScriptClass.GetField(val);
 		public bool StateExists(string stateName) => ScriptClass.StateExists(stateName);
 		public bool MethodExists(string value) => ScriptClass.MethodExists(value);
+		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens) => ScriptClass.ParseParameters(tokens);
 
 		readonly List<ScriptClassMethod> Methods = new List<ScriptClassMethod>();
 		readonly List<EventListener> EventListeners = new List<EventListener>();
@@ -74,11 +75,15 @@ namespace LSNr.ScriptObjects
 			return m;
 		}
 
+		public Function CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
+			=> RegisterMethod(name, retType, args);
+
 		public EventListener RegisterEventListener(string name, IReadOnlyList<Parameter> parameters)
 		{
 			var e = new EventListener(new EventDefinition(name, parameters), Path);
 			EventListeners.Add(e);
 			return e;
 		}
+
 	}
 }

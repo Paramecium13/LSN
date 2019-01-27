@@ -17,8 +17,13 @@ namespace LsnCore.Types
 
 	public interface IProcedure
 	{
+#if LSNR
+		Statement[] Code { get; set; }
+		int StackSize { get; set; }
+#else
 		Statement[] Code { get; }
 		int StackSize { get; }
+#endif
 		string ResourceFilePath { get; }
 	}
 

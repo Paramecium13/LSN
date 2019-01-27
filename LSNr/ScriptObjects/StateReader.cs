@@ -66,11 +66,7 @@ namespace LSNr.ScriptObjects
 			var argTokens = i.SliceWhile(t => t.Value != ")", out bool err);
 			if (err)
 				throw new LsnrParsingException(i.Current, $"Error parsing {memberTypeName} {memberName}: No parameter list defined", State.Path);
-			var parameters = new List<Parameter> { new Parameter("self", State.Id, LsnValue.Nil, 0) };
-			if(argTokens.Length != 0)
-				parameters.AddRange(State.ParseParameters(argTokens, State.Path)
-					.Select(p => new Parameter(p.Name, p.Type, p.DefaultValue, (ushort)(p.Index + 1))));
-			return parameters;
+			return State.ParseParameters(argTokens);
 		}
 
 		protected TypeId ParseReturnType(Indexer<Token> index, string memberTypeName, string memberName)
