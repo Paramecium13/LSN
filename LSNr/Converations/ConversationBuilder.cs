@@ -15,7 +15,7 @@ using LSNr.Statements;
 
 namespace LSNr.Converations
 {
-	sealed class ConversationBuilder : IConversation, IPreScript
+	sealed class ConversationBuilder : IConversation, IPreFunction
 	{
 		internal static readonly IReadOnlyList<IStatementRule> _StatementRules = new IStatementRule[] {
 			new LetStatementRule(),
@@ -47,19 +47,19 @@ namespace LSNr.Converations
 			new IfLetStructureRule()
 		}.OrderBy(r => r.Order).ToList();
 
-		readonly IFunctionContainer Resource;
+		public IFunctionContainer Parent { get; }
 
-		public bool GenericTypeExists(string name) => Resource.GenericTypeExists(name);
-		public void GenericTypeUsed(TypeId typeId) => Resource.GenericTypeUsed(typeId);
-		public GenericType GetGenericType(string name) => Resource.GetGenericType(name);
-		public LsnType GetType(string name) => Resource.GetType(name);
-		public TypeId GetTypeId(string name) => Resource.GetTypeId(name);
-		public bool TypeExists(string name) => Resource.TypeExists(name);
+		public bool GenericTypeExists(string name) => Parent.GenericTypeExists(name);
+		public void GenericTypeUsed(TypeId typeId) => Parent.GenericTypeUsed(typeId);
+		public GenericType GetGenericType(string name) => Parent.GetGenericType(name);
+		public LsnType GetType(string name) => Parent.GetType(name);
+		public TypeId GetTypeId(string name) => Parent.GetTypeId(name);
+		public bool TypeExists(string name) => Parent.TypeExists(name);
 
 		public bool Mutable => false;
-		public bool Valid { get => Resource.Valid; set => Resource.Valid = value; }
-		public string Path => Resource.Path;
-		public Function GetFunction(string name) => Resource.GetFunction(name);
+		public bool Valid { get => Parent.Valid; set => Parent.Valid = value; }
+		public string Path => Parent.Path;
+		public Function GetFunction(string name) => Parent.GetFunction(name);
 
 		string Name;
 		readonly ISlice<Token> Args;
@@ -81,9 +81,11 @@ namespace LSNr.Converations
 
 		public IReadOnlyList<ControlStructureRule> ControlStructureRules => _ControlStructureRules;
 
-		public ConversationBuilder(IFunctionContainer res, string name, ISlice<Token> args)
+		public bool IsVirtual { get; private set; }
+
+		public ConversationBuilder(IFunctionContainer res, string name, ISlice<Token> args, bool isVirtual = false)
 		{
-			Resource = res; Name = name; Args = args;
+			Parent = res; Name = name; Args = args ?? Slice<Token>.Create(new Token[0], 0, 0); IsVirtual = isVirtual;
 		}
 
 		public void RegisterNode(INode node, bool first)
@@ -114,7 +116,7 @@ namespace LSNr.Converations
 				return SymbolType.Undefined; // Add symbol type for this?
 			if (CurrentScope.VariableExists(name))
 				return SymbolType.Variable;
-			return Resource.CheckSymbol(name);
+			return Parent.CheckSymbol(name);
 		}
 
 		List<Component> GetStartBlock()
@@ -129,20 +131,14 @@ namespace LSNr.Converations
 			return res;
 		}
 
-		public void OnParsingSignatures(IPreResource resource)
+		public void OnParsingSignatures(IFunctionContainer resource)
 		{
 			CurrentScope = new VariableTable(new List<Variable>());
-			// ToDo: Get parameters, add to scope.
-			IReadOnlyList<Parameter> args = null;
-			if(Args != null && Args.Length > 0)
-			{
-				args = Resource.ParseParameters(Args);
-				foreach (var arg in args)
-					CurrentScope.CreateVariable(arg);
-			}
-			var fn = new LsnFunction(args, null, Name, resource.Path);
-			Function = fn;
-			resource.RegisterFunction(fn);
+			// Get parameters, add to scope.
+			var args = Parent.ParseParameters(Args);
+			foreach (var arg in args)
+				CurrentScope.CreateVariable(arg);
+			Function = resource.CreateFunction(args, null, Name, IsVirtual);
 		}
 
 		public void Parse()

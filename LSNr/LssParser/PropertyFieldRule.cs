@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Expressions;
+using LSNr.ScriptObjects;
 
 namespace LSNr.LssParser
 {
@@ -43,7 +44,7 @@ namespace LSNr.LssParser
 			var token = tokens[index];
 			var str = token.Value;
 			IExpression expr;
-			var preScriptClass = ((PreScriptClassFunction)script).Parent;
+			var preScriptClass = (IBasePreScriptClass)((IPreFunction)script).Parent;
 			var self = script.CurrentScope.GetVariable("self").AccessExpression;
 			switch (script.CheckSymbol(str))
 			{

@@ -51,7 +51,7 @@ namespace LSNr.ScriptObjects
 
 		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens) => Resource.ParseParameters(tokens);
 
-		public Function CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
+		public IProcedure CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
 		{
 			throw new NotImplementedException();
 		}

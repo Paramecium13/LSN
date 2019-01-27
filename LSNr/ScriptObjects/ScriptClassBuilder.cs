@@ -106,7 +106,7 @@ namespace LSNr.ScriptObjects
 			return m;
 		}
 
-		public Function CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
+		public IProcedure CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
 			=> RegisterMethod(name, retType, args, isVirtual);
 
 		public EventListener RegisterEventListener(string name, IReadOnlyList<Parameter> parameters)
@@ -251,7 +251,8 @@ namespace LSNr.ScriptObjects
 		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
 		{
 			var ls = new List<Parameter> { new Parameter("self", Id, LsnValue.Nil, 0) };
-			ls.AddRange(((IFunctionContainer)this).BaseParseParameters(tokens, 1));
+			var additional = ((IFunctionContainer)this).BaseParseParameters(tokens, 1);
+			ls.AddRange(additional);
 			return ls;
 		}
 	}

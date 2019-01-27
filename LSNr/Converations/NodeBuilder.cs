@@ -14,10 +14,11 @@ using LSNr.Statements;
 
 namespace LSNr.Converations
 {
-	sealed class NodeBuilder : INode, IPreScript
+	sealed class NodeBuilder : INode, IPreFunction
 	{
 		public ConversationBuilder _Conversation;
 		public IConversation Conversation => _Conversation;
+		public IFunctionContainer Parent => _Conversation.Parent;
 
 		public bool GenericTypeExists(string name) => _Conversation.GenericTypeExists(name);
 		public void GenericTypeUsed(TypeId typeId) => _Conversation.GenericTypeUsed(typeId);

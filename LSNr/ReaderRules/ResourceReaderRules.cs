@@ -19,7 +19,7 @@ namespace LSNr.ReaderRules
 
 		SymbolType CheckSymbol(string symbol);
 		IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens);
-		Function CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false);
+		IProcedure CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false);
 	}
 
 	public interface IPreResource : IFunctionContainer

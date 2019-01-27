@@ -200,7 +200,7 @@ namespace LSNr.ReaderRules
 			MyFunctions.Add(fn.Name, fn);
 		}
 
-		public Function CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
+		public IProcedure CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
 		{
 			if (isVirtual)
 				throw new InvalidOperationException();

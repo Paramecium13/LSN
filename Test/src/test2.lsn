@@ -123,6 +123,7 @@ HostInterface IActor
 {
 	fn HasItem(itemId : string ) -> bool;
 	// Other stuff...
+	fn GetName() ->string;
 }
 
 

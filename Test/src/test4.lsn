@@ -151,133 +151,152 @@ conversation SimpleConv
 	
 }
 
-conversation SimpleConv2(charName : string, pcName:string, myNum : int)
+script class Talker < IStandardActivator
 {
-	
-	start
+	Name : string;
+	mut count : int;
+	new(name : string)
 	{
-		Say "Hello my name is " + charName + "." as charName;
+		Name = name; count = 0;
+	}
+	
+	on Activate(actor : IActor)
+	{
+		Talk(actor.GetName(), count);
+		count = count + 1;
 	}
 	
 	
-	auto Node BaseNode
+	conversation Talk(pcName:string, myNum : int)
 	{
 		
 		start
-		{}
+		{
+			Say "Hello my name is " + Name + "." as Name;
+		}
 		
-		branch PCIntroduce
+		
+		auto Node BaseNode
 		{
 			
-			when -> ! introduced;
+			start
+			{}
 			
-			Action()
+			branch PCIntroduce
 			{
-				say "It's a pleasure to meet you " + pcName + "." as charName;
-				introduced = true;
+				
+				when -> ! introduced;
+				
+				Action()
+				{
+					say "It's a pleasure to meet you " + pcName + "." as Name;
+					introduced = true;
+				}
+				Prompt : "My name is " + pcName + ".";
 			}
-			Prompt : "My name is " + pcName + ".";
-		}
-		
-		branch Weather
-		{
-			Prompt = "How's the weather?";
-			Action()
-			{
-				Say "It's fine." as charName;
-			}
-		}
-		
-		branch AskAboutLocalStuff
-		{
-			prompt = "What can you tell me about the local area?";
 			
-			action()
+			branch Weather
 			{
-				say "I can tell you a lot. What do you want to know?" as charName;
-				set node LocalInfo;
+				Prompt = "How's the weather?";
+				Action()
+				{
+					Say "It's fine." as Name;
+				}
+			}
+			
+			branch AskAboutLocalStuff
+			{
+				prompt = "What can you tell me about the local area?";
+				
+				action()
+				{
+					say "I can tell you a lot. What do you want to know?" as Name;
+					set node LocalInfo;
+				}
+			}
+			
+			branch Goodbye // Free Branches can be included in multiple nodes.
+			{
+				prompt = "Goodbye.";
+				action
+				{
+					if (introduced)
+					{
+						Say "Bye, " + pcName + ". It was nice meeting you." as Name;
+					}
+					else
+					{
+						Say "Bye." as Name;
+					}
+					EndConversation;
+				}
+			}
+		}
+		let mut introduced = false;
+		
+		node LocalInfo
+		{	
+			
+			branch Shops
+			{
+				action()
+				{
+					say "There are a few shops around here. There's shopA where you can get X; shopB, which sells Y; shopC,"
+					+ " which sells Z, and Nana's Groceries where you can get produce from the nearby villages." as Name;
+					say "Do you want to know more about any of them?";
+					choice
+					{
+						"Yes"	-> { set node Shops;}
+						"No"	-> { return;		} // This doesn't end the conversation. I can't leave a choice empty...
+					}
+				}
+				Prompt = "What shops are there around here?";
+			}
+			
+			
+			
+			branch Goodbye // Free Branches can be included in multiple nodes.
+			{
+				prompt = "Goodbye.";
+				action
+				{
+					if (introduced)
+					{
+						Say "Bye, " + pcName + ". It was nice meeting you." as Name;
+					}
+					else
+					{
+						Say "Bye." as Name;
+					}
+					EndConversation;
+				}
 			}
 		}
 		
-		branch Goodbye // Free Branches can be included in multiple nodes.
+		node Shops
 		{
-			prompt = "Goodbye.";
-			action
+			
+			
+			
+			branch Goodbye // Free Branches can be included in multiple nodes.
 			{
-				if (introduced)
+				prompt = "Goodbye.";
+				action
 				{
-					Say "Bye, " + pcName + ". It was nice meeting you." as charName;
+					if (introduced)
+					{
+						Say "Bye, " + pcName + ". It was nice meeting you." as Name;
+					}
+					else
+					{
+						Say "Bye." as Name;
+					}
+					EndConversation;
 				}
-				else
-				{
-					Say "Bye." as charName;
-				}
-				EndConversation;
 			}
 		}
+		
 	}
-	let mut introduced = false;
-	
-	node LocalInfo
-	{	
-		
-		branch Shops
-		{
-			action()
-			{
-				say "There are a few shops around here. There's shopA where you can get X; shopB, which sells Y; shopC,"
-				+ " which sells Z, and Nana's Groceries where you can get produce from the nearby villages." as charName;
-				say "Do you want to know more about any of them?";
-				choice
-				{
-					"Yes"	-> { set node Shops;}
-					"No"	-> { return;		} // This doesn't end the conversation. I can't leave a choice empty...
-				}
-			}
-			Prompt = "What shops are there around here?";
-		}
-		
-		
-		
-		branch Goodbye // Free Branches can be included in multiple nodes.
-		{
-			prompt = "Goodbye.";
-			action
-			{
-				if (introduced)
-				{
-					Say "Bye, " + pcName + ". It was nice meeting you." as charName;
-				}
-				else
-				{
-					Say "Bye." as charName;
-				}
-				EndConversation;
-			}
-		}
-	}
-	
-	node Shops
-	{
-		
-		
-		
-		branch Goodbye // Free Branches can be included in multiple nodes.
-		{
-			prompt = "Goodbye.";
-			action
-			{
-				if (introduced)
-				{
-					Say "Bye, " + pcName + ". It was nice meeting you." as charName;
-				}
-				else
-				{
-					Say "Bye." as charName;
-				}
-				EndConversation;
-			}
-		}
-	}
-	
 }
+
+

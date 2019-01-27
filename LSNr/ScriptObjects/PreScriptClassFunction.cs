@@ -9,12 +9,19 @@ using LSNr.Statements;
 using LsnCore.Expressions;
 using LSNr.ControlStructures;
 using LSNr.ScriptObjects;
+using LSNr.ReaderRules;
 
 namespace LSNr
 {
-	public sealed class PreScriptClassFunction : IPreScript
+	public interface IPreFunction : IPreScript
 	{
-		internal readonly IBasePreScriptClass Parent;
+		IFunctionContainer Parent { get; }
+	}
+
+	public sealed class PreScriptClassFunction : IPreFunction
+	{
+		public IBasePreScriptClass Parent { get; }
+		IFunctionContainer IPreFunction.Parent => Parent;
 
 		internal PreScriptClassFunction(IBasePreScriptClass parent, bool isConstructor = false)
 		{
@@ -63,6 +70,7 @@ namespace LSNr
 		public IReadOnlyList<ControlStructureRule> ControlStructureRules => _ControlStructureRules;
 
 		public bool IsConstructor { get; private set; }
+
 
 		public bool GenericTypeExists(string name)		=> Parent.GenericTypeExists(name);
 		public Function GetFunction(string name)		=> Parent.GetFunction(name);

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Types;
 using LsnCore.Utilities;
+using LSNr.Converations;
 using LSNr.ReaderRules;
 
 namespace LSNr.ScriptObjects
@@ -53,7 +54,8 @@ namespace LSNr.ScriptObjects
 				new ScriptClassConstuctorRule(pre),
 				new ScriptClassEventListenerRule(pre),
 				new ScriptClassMethodRule(pre),
-				new ScriptClassStateRule(pre)
+				new ScriptClassStateRule(pre),
+				new ScriptClassConversationRule(pre)
 			};
 		}
 
@@ -279,6 +281,45 @@ namespace LSNr.ScriptObjects
 			comp.PreParse(body);
 			ScriptClass.ParsingStateSignatures += comp.OnParsingStateSignatures;
 			ScriptClass.ParsingProcBodies += comp.OnParsingProcBodies;
+		}
+	}
+
+	public sealed class ScriptClassConversationRule : ScriptClassBodyRule
+	{
+		public ScriptClassConversationRule(IPreScriptClass p) : base(p) { }
+
+		public override bool Check(ISlice<Token> head) => head[0].Value == "conversation"
+			|| (head[0].Value == "virtual" && head.Length > 1 && head[1].Value == "conversation");
+
+		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
+		{
+			var index = new Indexer<Token>(0, head);
+			var virt = false;
+			if(index.Current.Value == "virtual")
+			{
+				virt = true;
+				index.MoveForward();
+			}
+
+			if (index.Current.Value != "conversation" || !index.MoveForward())
+				throw new LsnrParsingException(index.Current, "Improperly formatted conversation...", ScriptClass.Path);
+			var name = index.Current.Value;
+			ISlice<Token> args = null;
+			if (index.MoveForward())
+			{
+				if (index.Current.Value != "(")
+					throw LsnrParsingException.UnexpectedToken(index.Current, "( or {", ScriptClass.Path);
+				if (!index.MoveForward())
+					throw new LsnrParsingException(head[0], "Improperly formatted conversation...", ScriptClass.Path);
+				args = index.SliceWhile(t => t.Value != ")", out bool err);
+				if (err)
+					throw new LsnrParsingException(index.Current, $"Error parsing conversation {name}: No parameter list defined", ScriptClass.Path);
+			}
+			var conv = new ConversationBuilder(ScriptClass, name, args, virt);
+			var reader = new ConversationReader(conv, body);
+			ScriptClass.ParsingSignaturesB += conv.OnParsingSignatures;
+			ScriptClass.ParsingProcBodies += (_) => conv.Parse();
+			reader.Read();
 		}
 	}
 }

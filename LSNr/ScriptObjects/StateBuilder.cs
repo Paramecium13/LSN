@@ -75,7 +75,7 @@ namespace LSNr.ScriptObjects
 			return m;
 		}
 
-		public Function CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
+		public IProcedure CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
 			=> RegisterMethod(name, retType, args);
 
 		public EventListener RegisterEventListener(string name, IReadOnlyList<Parameter> parameters)

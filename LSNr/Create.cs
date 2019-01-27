@@ -6,6 +6,7 @@ using LsnCore.Types;
 using LsnCore.Utilities;
 using LsnCore.Values;
 using LSNr.LssParser;
+using LSNr.ScriptObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -294,7 +295,10 @@ namespace LSNr
 			var val = token.Value;
 			var symType = script.CheckSymbol(val);
 			IExpression expr;
-			var preScrFn = script as PreScriptClassFunction;
+			var preScrFn = script as IPreFunction;
+			IBasePreScriptClass preScCl = null;
+			if (preScrFn != null)
+				preScCl = preScrFn.Parent as IBasePreScriptClass;
 			switch (symType)
 			{
 				case SymbolType.Variable:
@@ -312,7 +316,9 @@ namespace LSNr
 				case SymbolType.GlobalVariable:
 					throw new NotImplementedException();
 				case SymbolType.Field:
-					return new FieldAccessExpression(preScrFn.CurrentScope.GetVariable("self").AccessExpression,preScrFn.Parent.GetField(val));
+					if (preScCl == null)
+						throw new ApplicationException("...");
+					return new FieldAccessExpression(preScrFn.CurrentScope.GetVariable("self").AccessExpression, preScCl.GetField(val));
 				/*case SymbolType.Property:
 					var preScr = preScrFn.Parent;
 					return new PropertyAccessExpression(preScrFn.CurrentScope.GetVariable("self").AccessExpression, preScr.GetPropertyIndex(val), preScr.GetProperty(val).Type);*/
@@ -349,7 +355,7 @@ namespace LSNr
 				{
 					if (preScrFn == null)
 						throw new LsnrParsingException(token, "Cannot use 'host' outside a script object method or event listener.", script.Path);
-					return new HostInterfaceAccessExpression(preScrFn.Parent.HostId);
+					return new HostInterfaceAccessExpression(((IBasePreScriptClass)preScrFn.Parent).HostId);
 				}
 				case "none": return LsnValue.Nil;
 				default:
