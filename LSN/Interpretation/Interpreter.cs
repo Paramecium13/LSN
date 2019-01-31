@@ -140,8 +140,8 @@ namespace LsnCore
 		/// <summary>
 		/// Register a choice for the player and the index of the instruction to jump to if the player selects that choice.
 		/// </summary>
-		/// <param name="text"></param>
-		/// <param name="target"></param>
+		/// <param name="text">The text to display</param>
+		/// <param name="target">The position in the code corresponding to this choice</param>
 		public void RegisterChoice(string text, int target)
 		{
 			_Choices.Add(new Tuple<string, int>(text, target));
@@ -160,6 +160,10 @@ namespace LsnCore
 		/// </summary>
 		/// <returns></returns>
 		public abstract int DisplayChoices();
+
+		public abstract string GetString(string prompt);
+		public abstract int GetInt(string prompt);
+		public abstract double GetDouble(string prompt);
 
 		public void SaveVariables(ushort[] indexes, string saveId)
 		{

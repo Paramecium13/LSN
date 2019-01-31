@@ -87,8 +87,8 @@ namespace LsnCore
 		/// <summary>
 		/// Register a choice for the player and the index of the instruction to jump to if the player selects that choice.
 		/// </summary>
-		/// <param name="text"></param>
-		/// <param name="target"></param>
+		/// <param name="text">The text to display</param>
+		/// <param name="target">The position in the code corresponding to this choice
 		void RegisterChoice(string text, int target);
 
 		/// <summary>
@@ -122,6 +122,27 @@ namespace LsnCore
 		/// </summary>
 		/// <returns></returns>
 		double RngGetDouble();
+
+		/// <summary>
+		/// Get a string from the player.
+		/// </summary>
+		/// <param name="prompt"></param>
+		/// <returns></returns>
+		string GetString(string prompt);
+
+		/// <summary>
+		/// Get an integer from the player.
+		/// </summary>
+		/// <param name="prompt"></param>
+		/// <returns></returns>
+		int GetInt(string prompt);
+
+		/// <summary>
+		/// Get a double from the player
+		/// </summary>
+		/// <param name="prompt"></param>
+		/// <returns></returns>
+		double GetDouble(string prompt);
 	}
 
 	public static class InterpreterExtensions
