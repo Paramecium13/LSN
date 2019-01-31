@@ -9,9 +9,9 @@ namespace ConsoleInterpreter
 {
 	class ConsoleInterpreter : Interpreter
 	{
-		public ConsoleInterpreter()
+		public ConsoleInterpreter(string objPath)
 		{
-			ResourceManager = null;
+			ResourceManager = new ConsoleResourceManager(objPath);
 		}
 
 		public static bool BoolChoice(string prompt)
