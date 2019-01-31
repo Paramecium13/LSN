@@ -120,7 +120,7 @@ namespace LsnCore
 		}
 
 		/// <summary>
-		/// Get a resurce from the standard library.
+		/// Get a resource from the standard library.
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
