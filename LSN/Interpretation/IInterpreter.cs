@@ -88,7 +88,7 @@ namespace LsnCore
 		/// Register a choice for the player and the index of the instruction to jump to if the player selects that choice.
 		/// </summary>
 		/// <param name="text">The text to display</param>
-		/// <param name="target">The position in the code corresponding to this choice
+		/// <param name="target">The position in the code corresponding to this choice</param>
 		void RegisterChoice(string text, int target);
 
 		/// <summary>
