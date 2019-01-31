@@ -59,6 +59,7 @@ namespace LsnCore
 	{
 		private static LsnResourceThing LsnMath;
 		private static LsnResourceThing LsnRandom;
+		private static LsnResourceThing LsnRead;
 
 		/// <summary>
 		/// Get the unique script object that has the provided name, typically from the current save file...
@@ -109,6 +110,10 @@ namespace LsnCore
 				case "Regex":
 				case "RegEx":
 					throw new NotImplementedException();
+				case "Read":
+					if (LsnRead == null)
+						LsnRead = LoadRead();
+					return LsnRead;
 				default:
 					throw new ApplicationException("Standard file not found.");
 			}
@@ -396,7 +401,55 @@ namespace LsnCore
 			var t = x + 8 - 0.5;
 			return Sqrt2Pi * Math.Pow(t, x + 0.5) * Math.Exp(-t) * y;
 		}
+#if CORE
+		private static LsnResourceThing LoadRead()
+		{
+			var prompt = new Parameter("prompt", LsnType.string_, LsnValue.Nil, 0);
+			var functions = new Function[]
+			{
+				new BoundedFunctionWithInterpreter((i,v)=>new LsnValue(i.GetInt((v[0].Value as StringValue).Value)),
+					new List<Parameter>{prompt}, LsnType.int_.Id, "GetInt"),
+				new BoundedFunctionWithInterpreter((i,v)=>new LsnValue(new StringValue(i.GetString((v[0].Value as StringValue).Value))),
+					new List<Parameter>{prompt}, LsnType.string_.Id,"GetString"),
+				new BoundedFunctionWithInterpreter((i,v)=>new LsnValue(i.GetDouble((v[0].Value as StringValue).Value)),
+					new List<Parameter>{prompt}, LsnType.double_.Id, "GetDouble")
+			};
 
+			return new LsnResourceThing(new TypeId[0])
+			{
+				Functions = functions.ToDictionary(f => f.Name),
+				GameValues = new Dictionary<string, GameValue>(),
+				HostInterfaces = new Dictionary<string, HostInterfaceType>(),
+				RecordTypes = new Dictionary<string, RecordType>(),
+				ScriptClassTypes = new Dictionary<string, ScriptClass>(),
+				StructTypes = new Dictionary<string, StructType>(),
+				Usings = new List<string>()
+			};
+		}
+#else
+		private static LsnResourceThing LoadRead()
+		{
+			var prompt = new Parameter("prompt", LsnType.string_, LsnValue.Nil, 0);
+			var functions = new Function[]
+			{
+				new BoundedFunctionWithInterpreter(null, new List<Parameter>{prompt}, LsnType.int_.Id, "GetInt"),
+				new BoundedFunctionWithInterpreter(null, new List<Parameter>{prompt}, LsnType.string_.Id, "GetString"),
+				new BoundedFunctionWithInterpreter(null, new List<Parameter>{prompt}, LsnType.double_.Id, "GetDouble")
+			};
+
+			return new LsnResourceThing(new TypeId[0])
+			{
+				Functions = functions.ToDictionary(f => f.Name),
+				GameValues = new Dictionary<string, GameValue>(),
+				HostInterfaces = new Dictionary<string, HostInterfaceType>(),
+				RecordTypes = new Dictionary<string, RecordType>(),
+				ScriptClassTypes = new Dictionary<string, ScriptClass>(),
+				StructTypes = new Dictionary<string, StructType>(),
+				Usings = new List<string>()
+			};
+		}
+
+#endif
 		public abstract LsnValue[] LoadValues(string id);
 
 		public abstract void SaveValues(LsnValue[] values, string id);
