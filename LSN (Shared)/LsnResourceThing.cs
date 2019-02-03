@@ -213,7 +213,7 @@ namespace LsnCore
 			}
 		}
 
-		public static LsnResourceThing Read(Stream stream, string filePath, Func<string, LsnResourceThing> resourceLoader)
+		public static LsnResourceThing Read(Stream stream, string path, Func<string, LsnResourceThing> resourceLoader)
 		{
 			LsnResourceThing res;
 			var resourceDeserializer = new Serialization.ResourceDeserializer();
@@ -302,7 +302,7 @@ namespace LsnCore
 				var scriptObjectTypes = new Dictionary<string, ScriptClass>();
 				for (int i = 0; i < nScriptObjectTypes; i++)
 				{
-					var s = ScriptClass.Read(reader, typeIdContainer, filePath, resourceDeserializer);
+					var s = ScriptClass.Read(reader, typeIdContainer, path, resourceDeserializer);
 					scriptObjectTypes.Add(s.Name, s);
 				}
 				res.ScriptClassTypes = scriptObjectTypes;
@@ -314,7 +314,7 @@ namespace LsnCore
 				var functions = new Dictionary<string, Function>(nFunctions);
 				for (int i = 0; i < nFunctions; i++)
 				{
-					var fn = LsnFunction.Read(reader, typeIdContainer, filePath, resourceDeserializer);
+					var fn = LsnFunction.Read(reader, typeIdContainer, path, resourceDeserializer);
 					functions.Add(fn.Name, fn);
 				}
 				res.Functions = functions;

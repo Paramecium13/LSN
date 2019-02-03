@@ -95,7 +95,7 @@ namespace ConsoleInterpreter
 			var p = Path.Combine(ObjPath, path) + ObjExtension;
 			using (var fs = File.OpenRead(p))
 			{
-				resource = LsnResourceThing.Read(fs, p, GetResource);
+				resource = LsnResourceThing.Read(fs, path, GetResource);
 			}
 			Cache.Add(path, resource);
 			return resource;

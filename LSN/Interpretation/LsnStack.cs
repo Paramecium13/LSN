@@ -18,6 +18,11 @@ namespace LsnCore
 		private readonly Stack<FrameInfo> Frames = new Stack<FrameInfo>();
 		internal LsnEnvironment CurrentEnvironment => Frames.Peek().Environment;
 
+		public LsnStack(IResourceManager resourceManager)
+		{
+			ResourceManager = resourceManager;
+		}
+
 		public LsnValue GetVariable(int index) => Values[Offset + index];
 		public void SetVariable(int index, LsnValue value)
 		{

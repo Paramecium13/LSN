@@ -1,0 +1,6 @@
+﻿using "std\\Read";
+
+
+fn Hello(){
+	say "Hello World!";
+}

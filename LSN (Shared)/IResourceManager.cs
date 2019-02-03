@@ -136,6 +136,10 @@ namespace LsnCore
 					if (LsnRandom == null)
 						LsnRandom = LoadRandom();
 					return LsnRandom;
+				case "Read":
+					if (LsnRead == null)
+						LsnRead = LoadRead();
+					return LsnRead;
 				case "Regex":
 				case "RegEx":
 					throw new NotImplementedException();

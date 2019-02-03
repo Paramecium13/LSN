@@ -171,7 +171,7 @@ namespace LSNr
 			var objPath = Program.GetObjectPath(used);
 			using (var fs = File.OpenRead(objPath))
 			{
-				res = LsnResourceThing.Read(fs, new string(objPath.Skip(4).Reverse().Skip(4).Reverse().ToArray()), (x) => Load(user,x));
+				res = LsnResourceThing.Read(fs, used, (x) => Load(user,x));
 			}
 			return res;
 		}

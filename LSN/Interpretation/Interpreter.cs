@@ -18,12 +18,16 @@ namespace LsnCore
 
 		public int NextStatement { get; set; }
 
-		private readonly LsnStack Stack = new LsnStack();
+		private readonly LsnStack Stack;
 
 		private readonly List<Tuple<string, int>> _Choices = new List<Tuple<string, int>>();
 		protected IReadOnlyList<Tuple<string, int>> Choices => _Choices;
 
-		protected Interpreter() { }
+		protected Interpreter(IResourceManager resourceManager)
+		{
+			ResourceManager = resourceManager;
+			Stack = new LsnStack(resourceManager);
+		}
 
 		public virtual void RunProcedure(IProcedure procedure)
 		{

@@ -53,6 +53,9 @@
     <StartupObject>ConsoleInterpreter.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Nett, Version=0.10.0.0, Culture=neutral, PublicKeyToken=605dcfe7a1d3365b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nett.0.10.1\lib\Net40\Nett.dll</HintPath>
+    </Reference>
     <Reference Include="Syroot.BinaryData, Version=4.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Syroot.IO.BinaryData.4.0.4\lib\net45\Syroot.BinaryData.dll</HintPath>
     </Reference>
