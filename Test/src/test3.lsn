@@ -14,7 +14,7 @@ fn TryStakeVampire(vampire : IEnemy)
 	}
 }
 
-fn foo(a:int, b:double)
+fn foo(a:int, b:double) -> double
 {
 	let c = a - b;
 	if(a < b)
@@ -28,6 +28,8 @@ fn foo(a:int, b:double)
 		}
 	}
 	let mut f = a /(b+1);
+	f -= 2;
+	return f;
 }
 
 fn bar(value: int)-> Range
@@ -39,7 +41,8 @@ fn HelloRanges(value: int)
 {
 	for i in bar(value)
 	{
-		say i;
+		// say i;// results in runtime error.
+		say ""+i;
 	}
 }
 

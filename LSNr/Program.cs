@@ -49,7 +49,7 @@ namespace LSNr
 			var changedFiles = GetChangedFiles();
 			var deps =  _DependenciesFile.RegirsterChangedFiles(changedFiles);
 			var tasks = new Dictionary<string, Task>();
-			foreach (var path in changedFiles.Union(deps))
+			foreach (var path in changedFiles.Union(deps).Where(s => s != null && s.Length > 0)) // deps may contain empty strings for some reason...
 				tasks[new string(path.Skip(4).Take(path.Length - 8).ToArray())] = Task.Run(() => Reify(path));
 			DependencyWaiter = new DependencyWaiter(_DependenciesFile, tasks);
 			MyWaitHandle.Set();

@@ -61,10 +61,10 @@ namespace LSNr.ControlStructures
 			{
 				script.CurrentScope = script.CurrentScope.CreateChild();
 				var index = script.CurrentScope.CreateVariable(vName, LsnType.int_);
+				index.MarkAsUsed();
 				var p = new Parser(body, script);
 				p.Parse();
 				var components = Parser.Consolidate(p.Components);
-				script.CurrentScope = script.CurrentScope.Pop(components);
 				var loop = new ForInRangeLoop(index, components);
 				switch (expr)
 				{
@@ -113,6 +113,7 @@ namespace LSNr.ControlStructures
 						rVar.AddUser(loop.End);
 						break;
 				}
+				script.CurrentScope = script.CurrentScope.Pop(components);
 				return loop;
 			}
 			throw new LsnrParsingException(head[3], "...", script.Path);

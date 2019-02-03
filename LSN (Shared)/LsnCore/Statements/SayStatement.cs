@@ -28,7 +28,14 @@ namespace LsnCore.Statements
 #if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			i.Say(((StringValue)Message.Eval(i).Value).Value, Graphic?.Eval(i) ?? LsnValue.Nil, Title?.Eval(i).Value?.ToString());
+			var msg = Message.Eval(i);
+			var strVal = msg.Value as StringValue;
+			var text = strVal.Value;
+			var g = Graphic?.Eval(i) ?? LsnValue.Nil;
+			string t = null;
+			if (Title != null && !(Title is LsnValue v && v.IsNull))
+				t = (Title.Eval(i).Value as StringValue).Value;
+			i.Say(text, g, t);
 			return InterpretValue.Base;
 		}
 #endif

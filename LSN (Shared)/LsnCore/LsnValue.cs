@@ -96,7 +96,7 @@ namespace LsnCore
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public LsnValue(bool value)
 		{
-			Data = value ? 0 : double.NaN;
+			Data = value ? 1 : 0;
 			Value = null;
 #if LSNR
 			Id = LsnType.Bool_.Id;

@@ -37,9 +37,8 @@ namespace LsnCore
 			Offset = Count;
 			Count += procedure.StackSize;
 			if (Count > Values.Length) Grow();
-			var x = args.Length + Offset;
-			for (int i = Offset; i < x; i++)
-				Values[i] = args[i];
+			for (int i = 0; i < args.Length; i++)
+				Values[i + Offset] = args[i];
 		}
 
 		public void EnterProcedure(int nextStatement, IProcedure procedure)

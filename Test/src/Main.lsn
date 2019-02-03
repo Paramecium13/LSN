@@ -1,6 +1,11 @@
 ﻿using "std\\Read";
-
+using "test3";
 
 fn Hello(){
 	say "Hello World!";
+	for i in 0..10
+	{
+		say "" + i;
+	}
+	//HelloRanges(5);
 }

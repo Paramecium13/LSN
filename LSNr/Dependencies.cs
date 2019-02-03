@@ -91,6 +91,8 @@ namespace LSNr
 				{
 					children.Add(child);
 				}
+				if (!Dependents.ContainsKey(child))
+					Dependents.TryAdd(child, new List<string>());
 				foreach (var grandchild in Dependents[child].ToArray())
 				{
 					RegisterDependency(grandchild, parent, parent);
