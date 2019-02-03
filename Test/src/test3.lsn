@@ -41,7 +41,7 @@ fn HelloRanges(value: int)
 {
 	for i in bar(value)
 	{
-		// say i;// results in runtime error.
+		// say i; // results in runtime error.
 		say ""+i;
 	}
 }

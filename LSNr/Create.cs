@@ -88,7 +88,7 @@ namespace LSNr
 						variables?.Add(v);
 					return expr;
 				case SymbolType.UniqueScriptObject:
-					return new UniqueScriptObjectAccessExpression(val, script.GetTypeId(val));
+					return new UniqueScriptObjectAccessExpression(script.GetTypeId(val));
 				case SymbolType.GlobalVariable:
 					throw new NotImplementedException();
 				case SymbolType.Field:

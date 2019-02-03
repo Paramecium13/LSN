@@ -67,12 +67,14 @@ namespace LsnCore.Statements
 
 		public SetTargetStatement(Variable variable)
 		{
+			if (variable == null)
+				throw new ArgumentNullException(nameof(variable));
 			Variable = variable;
 		}
 
 		public SetTargetStatement(ushort index)
 		{
-			Variable = new Variable("jump target", LsnType.int_, index, true);
+			Variable = new Variable("Jump Target", LsnType.int_, index, true);
 		}
 #else
 		int Index;
@@ -91,7 +93,7 @@ namespace LsnCore.Statements
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 #if LSNR
-			if (Variable.Name == "jump target" && oldExpr is VariableExpression vOld && vOld.Index == Index)
+			if (Variable.Name == "Jump Target" && oldExpr is VariableExpression vOld && vOld.Index == Index)
 			{
 				switch (newExpr)
 				{
@@ -121,6 +123,7 @@ namespace LsnCore.Statements
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((ushort)StatementCode.SetTarget);
+			writer.Write((ushort)Index);
 			writer.Write(Target);
 		}
 

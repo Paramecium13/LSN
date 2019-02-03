@@ -10,18 +10,16 @@ namespace LsnCore.Expressions
 {
 	public sealed class UniqueScriptObjectAccessExpression : Expression
 	{
-		private readonly string Name;
-
 		public override bool IsPure => false;
 
-		public UniqueScriptObjectAccessExpression(string name, TypeId type)
+		public UniqueScriptObjectAccessExpression(TypeId type)
 		{
-			Name = name; Type = type;
+			Type = type;
 		}
 
 #if CORE
 		public override LsnValue Eval(IInterpreter i)
-			=> new LsnValue(i.GetUniqueScriptObject(Name));
+			=> new LsnValue(i.GetUniqueScriptObject(Type));
 #endif
 
 		public override IExpression Fold() => this;

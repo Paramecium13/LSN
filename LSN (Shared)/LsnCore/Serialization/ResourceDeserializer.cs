@@ -79,7 +79,8 @@ namespace LsnCore.Serialization
 
 		private Statement ReadStatement(BinaryDataReader reader)
 		{
-			switch ((StatementCode)reader.ReadUInt16())
+			var code = (StatementCode)reader.ReadUInt16();
+			switch (code)
 			{
 				case StatementCode.Return:
 					return new ReturnStatement(null);
@@ -184,7 +185,11 @@ namespace LsnCore.Serialization
 					}
 
 				case StatementCode.SetTarget:
-					return new SetTargetStatement(reader.ReadUInt16()) { Target = reader.ReadInt32() };
+					{
+						var index = reader.ReadUInt16();
+						var target = reader.ReadInt32();
+						return new SetTargetStatement(index) { Target = target };
+					}
 				case StatementCode.JumpToTarget:
 					return new JumpToTargetStatement(reader.ReadUInt16());
 				case StatementCode.Extension1:
@@ -230,7 +235,7 @@ namespace LsnCore.Serialization
 				case ExpressionCode.UniqueScriptObjectAccess:
 					{
 						var typeId = TypeIds[reader.ReadUInt16()];
-						return new UniqueScriptObjectAccessExpression(typeId.Name, typeId);
+						return new UniqueScriptObjectAccessExpression(typeId);
 					}
 				case ExpressionCode.BinaryExpression:
 					{

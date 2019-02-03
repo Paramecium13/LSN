@@ -68,7 +68,7 @@ namespace LSNr
 			=> HasVariable(name) || (Parent?.VariableExists(name) ?? false);
 
 		public Variable GetVariable(string name)
-			=> Variables.FirstOrDefault(v => v.Name == name) ?? Parent?.GetVariable(name);
+			=> Variables.FirstOrDefault(v => v.Name == name) ?? Parent?.GetVariable(name) ?? throw new KeyNotFoundException($"No variable named '{name}' exists.");
 
 		public IExpression GetAccessExpression(string name, IExpressionContainer container)
 		{

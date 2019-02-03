@@ -36,18 +36,11 @@ namespace LsnCore
 		void SetVariable(int index, LsnValue value);
 
 		/// <summary>
-		/// Get the function with the provided name from the loaded file(s).
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		Function GetFunction(string name);
-
-		/// <summary>
 		/// Get the unique script object.
 		/// </summary>
-		/// <param name="name"></param>
+		/// <param name="typeId"></param>
 		/// <returns></returns>
-		ScriptObject GetUniqueScriptObject(string name);
+		ScriptObject GetUniqueScriptObject(TypeId typeId);
 
 		void SaveVariables(ushort[] indexes, string saveId);
 

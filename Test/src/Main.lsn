@@ -3,9 +3,143 @@ using "test3";
 
 fn Hello(){
 	say "Hello World!";
-	for i in 0..10
+	for i in 0..2
 	{
 		say "" + i;
 	}
-	//HelloRanges(5);
+	HelloRanges(5);
+	let pcName = GetString("Enter your name:");
+	let charName = GetString("Enter name of person to speak with:");
+	SimpleConv(charName, pcName, 42);
+}
+
+conversation SimpleConv(charName : String, pcName:string, myNum : int)
+{
+	
+	start
+	{
+		Say "Hello my name is " + charName + "." as charName;
+	}
+	
+	let mut introduced = false;
+	
+	auto Node BaseNode
+	{
+		
+		start
+		{}
+		
+		branch PCIntroduce
+		{
+			Prompt = "My name is " + pcName + ".";
+			
+			when = ! introduced;
+			
+			Action()
+			{
+				say "It's a pleasure to meet you " + pcName + "." as charName;
+				introduced = true;
+			}
+		}
+		
+		branch Weather
+		{
+			Prompt = "How's the weather?";
+			Action()
+			{
+				Say "It's fine." as charName;
+			}
+		}
+		
+		branch AskAboutLocalStuff
+		{
+			prompt = "What can you tell me about the local area?";
+			
+			action()
+			{
+				say "I can tell you a lot. What do you want to know?" as charName;
+				set node LocalInfo;
+			}
+		}
+		
+		branch Goodbye // Free Branches can be included in multiple nodes.
+		{
+			prompt = "Goodbye.";
+			action
+			{
+				if (introduced)
+				{
+					Say "Bye, " + pcName + ". It was nice meeting you." as charName;
+				}
+				else
+				{
+					Say "Bye." as charName;
+				}
+				EndConversation;
+			}
+		}
+	}
+	
+	node LocalInfo
+	{	
+		
+		branch Shops
+		{
+			Prompt = "What shops are there around here?";
+			action()
+			{
+				say "There are a few shops around here. There's shopA where you can get X; shopB, which sells Y; shopC,"
+				+ " which sells Z, and Nana's Groceries where you can get produce from the nearby villages." as charName;
+				say "Do you want to know more about any of them?";
+				choice
+				{
+					"Yes"	-> { set node Shops;}
+					"No"	-> { return;		} // This doesn't end the conversation. I can't leave a choice empty...
+				}
+			}
+		}
+		
+		
+		
+		branch Goodbye // Free Branches can be included in multiple nodes.
+		{
+			prompt = "Goodbye.";
+			action
+			{
+				if (introduced)
+				{
+					Say "Bye, " + pcName + ". It was nice meeting you." as charName;
+				}
+				else
+				{
+					Say "Bye." as charName;
+				}
+				EndConversation;
+			}
+		}
+	}
+	
+	node Shops
+	{
+		
+		
+		
+		branch Goodbye // Free Branches can be included in multiple nodes.
+		{
+			prompt = "Goodbye.";
+			action
+			{
+				if (introduced)
+				{
+					Say "Bye, " + pcName + ". It was nice meeting you." as charName;
+				}
+				else
+				{
+					Say "Bye." as charName;
+				}
+				EndConversation;
+			}
+		}
+	}
+	
 }

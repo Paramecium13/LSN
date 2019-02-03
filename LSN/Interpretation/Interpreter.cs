@@ -62,14 +62,6 @@ namespace LsnCore
 		}
 
 		/// <summary>
-		/// Get a function.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public virtual Function GetFunction(string name)
-			=> Stack.GetFunction(name);
-
-		/// <summary>
 		/// Get the variable at the provided index.
 		/// </summary>
 		/// <param name="index"></param>
@@ -94,9 +86,9 @@ namespace LsnCore
 		/// <summary>
 		/// Get the unique script object.
 		/// </summary>
-		/// <param name="name"></param>
+		/// <param name="typeId"></param>
 		/// <returns></returns>
-		public ScriptObject GetUniqueScriptObject(string name) => ResourceManager.GetUniqueScriptObject(Stack.CurrentEnvironment.ScriptClasses[name]);
+		public ScriptObject GetUniqueScriptObject(TypeId typeId) => ResourceManager.GetUniqueScriptObject(typeId.Type as ScriptClass);
 
 		//protected abstract GlobalVariableValue GetGlobalVariableValue(string globalVarName/*, string fileName*/);
 

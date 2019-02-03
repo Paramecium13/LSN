@@ -76,7 +76,7 @@ namespace LSNr.LssParser
 							v.MarkAsUsed();
 							break;
 						case SymbolType.UniqueScriptObject:
-							expr = new UniqueScriptObjectAccessExpression(str,script.GetType(str).Id);
+							expr = new UniqueScriptObjectAccessExpression(script.GetType(str).Id);
 							break;
 						case SymbolType.GlobalVariable:
 							throw new NotImplementedException();

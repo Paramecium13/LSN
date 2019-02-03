@@ -13,29 +13,24 @@ namespace LsnCore
 		protected readonly IResourceManager ResourceManager;
 
 		private LsnValue[] Values = new LsnValue[8];
-		private int Count;		// == Offset + Current Frame Size
+		private int Count => Offset + Frames.Peek().StackSize;
 		private int Offset;
 		private readonly Stack<FrameInfo> Frames = new Stack<FrameInfo>();
-		internal LsnEnvironment CurrentEnvironment => Frames.Peek().Environment;
 
 		public LsnStack(IResourceManager resourceManager)
 		{
 			ResourceManager = resourceManager;
+			Frames.Push(new FrameInfo(-1, 0));
 		}
 
 		public LsnValue GetVariable(int index) => Values[Offset + index];
-		public void SetVariable(int index, LsnValue value)
-		{
-			Values[Offset + index] = value;
-		}
 
-		public Function GetFunction(string name) => CurrentEnvironment.Functions[name];
+		public void SetVariable(int index, LsnValue value) => Values[Offset + index] = value;
 
 		public void EnterProcedure(int nextStatement, IProcedure procedure, LsnValue[] args)
 		{
-			Frames.Push(new FrameInfo(nextStatement, procedure, ResourceManager.GetResource(procedure.ResourceFilePath).GetEnvironment(ResourceManager)));
-			Offset = Count;
-			Count += procedure.StackSize;
+			Offset += Frames.Peek().StackSize;
+			Frames.Push(new FrameInfo(nextStatement, procedure));
 			if (Count > Values.Length) Grow();
 			for (int i = 0; i < args.Length; i++)
 				Values[i + Offset] = args[i];
@@ -43,9 +38,8 @@ namespace LsnCore
 
 		public void EnterProcedure(int nextStatement, IProcedure procedure)
 		{
-			Frames.Push(new FrameInfo(nextStatement, procedure, ResourceManager.GetResource(procedure.ResourceFilePath).GetEnvironment(ResourceManager)));
-			Offset = Count;
-			Count += procedure.StackSize;
+			Offset += Frames.Peek().StackSize;
+			Frames.Push(new FrameInfo(nextStatement, procedure));
 			if (Count > Values.Length) Grow();
 		}
 
@@ -53,8 +47,7 @@ namespace LsnCore
 		{
 			var frame = Frames.Pop();
 			Array.Clear(Values, Offset, Count - Offset);
-			Count = Offset;
-			Offset -= frame.Procedure.StackSize;
+			Offset -= Frames.Peek().StackSize;
 			return frame.NextStatement;
 		}
 
@@ -70,12 +63,16 @@ namespace LsnCore
 		private struct FrameInfo
 		{
 			internal readonly int NextStatement;
-			internal readonly IProcedure Procedure;
-			internal readonly LsnEnvironment Environment;
+			internal readonly int StackSize;
 
-			internal FrameInfo(int nxt, IProcedure proc, LsnEnvironment env)
+			internal FrameInfo(int nxt, IProcedure proc)
 			{
-				NextStatement = nxt; Procedure = proc; Environment = env;
+				NextStatement = nxt; StackSize = proc.StackSize;
+			}
+
+			internal FrameInfo(int nxt, int sz)
+			{
+				NextStatement = nxt; StackSize = sz;
 			}
 		}
 	}

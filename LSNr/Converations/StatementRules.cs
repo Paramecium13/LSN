@@ -57,7 +57,10 @@ namespace LSNr.Converations
 
 		public SetNodeStatement(string node, Variable v)
 		{
-			Node = node; Variable = v;
+			Node = node;
+			if (v == null)
+				throw new ArgumentNullException(nameof(v));
+			Variable = v;
 		}
 
 		public override IEnumerator<IExpression> GetEnumerator()
@@ -88,7 +91,7 @@ namespace LSNr.Converations
 			var index = tokens[0].Value == "set" ? 2 : 1;
 			var name = tokens[index].Value;
 
-			var v = script.CurrentScope.GetVariable("jump target");
+			var v = script.CurrentScope.GetVariable("Jump Target");
 			return new SetNodeStatement(name + " Start", v);
 		}
 
