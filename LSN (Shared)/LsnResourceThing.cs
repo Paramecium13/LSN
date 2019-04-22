@@ -178,6 +178,9 @@ namespace LsnCore
 					foreach (var t in RecordTypes.Values)
 						t.Serialize(writer);
 
+					foreach (var handle in HandleTypes)
+						handle.Serialize(writer, resourceSerializer);
+
 					writer.Write((ushort)HostInterfaces.Count);
 					foreach (var type in HostInterfaces.Values)
 						type.Serialize(writer, resourceSerializer);
@@ -285,6 +288,12 @@ namespace LsnCore
 				}
 				res.RecordTypes = recordTypes;
 				resourceDeserializer.LoadTypes(recordTypes.Values);
+
+				var nHandleTypes = reader.ReadUInt16();
+				var handleTypes = new HandleType[nHandleTypes];
+				for (int i = 0; i < nHandleTypes; i++)
+					handleTypes[i] = HandleType.Read(reader, typeIdContainer);
+				resourceDeserializer.LoadTypes(handleTypes);
 
 				var nHostInterfaces = reader.ReadUInt16();
 				var hostInterfaces = new Dictionary<string, HostInterfaceType>(nHostInterfaces);

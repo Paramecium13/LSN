@@ -1,11 +1,6 @@
 ﻿using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
-using System.Text;
-
-#if LSNR
-using LSNr;
-#endif
 
 namespace LsnCore.Types
 {
@@ -16,12 +11,14 @@ namespace LsnCore.Types
 		internal HandleType(TypeId id, TypeId[] parents)
 		{
 			Id = id; Name = id.Name; ParentTypes = new HashSet<TypeId>(parents);
+			Id.Load(this);
 		}
 
 #if LSNR
-		public HandleType(string name)
+		public HandleType(string name, out TypeId typeId)
 		{
 			Name = name; ParentTypes = new HashSet<TypeId>();
+			Id = new TypeId(this); typeId = Id;
 		}
 
 		public void AddParent(HandleType parent)
@@ -56,12 +53,13 @@ namespace LsnCore.Types
 #if LSNR
 			return new LsnValue(0u, this.Id);
 #else
-			return new LsnValue(0u)
+			return new LsnValue(0u);
 #endif
 		}
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
+			resourceSerializer.WriteTypeId(Id, writer);
 			writer.Write(Name);
 			writer.Write((ushort)ParentTypes.Count);
 			foreach (var parent in ParentTypes)
@@ -70,13 +68,13 @@ namespace LsnCore.Types
 
 		public static HandleType Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
 		{
-			var name = reader.ReadString();
+			var id = typeContainer.GetTypeId(reader.ReadUInt16());
 			var nParents = reader.ReadUInt16();
 			var parents = new TypeId[nParents];
 			for (int i = 0; i < nParents; i++)
 				parents[i] = typeContainer.GetTypeId(reader.ReadUInt16());
 
-			return new HandleType(typeContainer.GetTypeId(name), parents);
+			return new HandleType(id, parents);
 		}
 	}
 }

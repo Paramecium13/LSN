@@ -16,6 +16,8 @@ namespace LsnCore
 
 		public IReadOnlyDictionary<string, RecordType> RecordTypes { get; set; } = new Dictionary<string, RecordType>();
 
+		public IReadOnlyList<HandleType> HandleTypes { get; set; } = new List<HandleType>();
+
 		public IReadOnlyDictionary<string, StructType> StructTypes { get; set; } = new Dictionary<string, StructType>();
 
 		/// <summary>

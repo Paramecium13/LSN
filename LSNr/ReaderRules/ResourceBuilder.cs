@@ -31,6 +31,7 @@ namespace LSNr.ReaderRules
 		readonly Dictionary<string, Function>			MyFunctions				= new Dictionary<string, Function>();
 		readonly List<StructType>						GeneratedStructTypes	= new List<StructType>();
 		readonly List<RecordType>						GeneratedRecordTypes	= new List<RecordType>();
+		readonly List<HandleType>						GeneratedHandleTypes	= new List<HandleType>();
 		readonly Dictionary<string, ScriptClass>		GeneratedScriptClasses	= new Dictionary<string, ScriptClass>();
 		readonly Dictionary<string, HostInterfaceType>	GeneratedHostInterfaces	= new Dictionary<string, HostInterfaceType>();
 
@@ -109,6 +110,8 @@ namespace LSNr.ReaderRules
 				LoadedTypes.Add(stType.Name, stType);
 				stType.Id.Load(stType);
 			}
+			foreach (var handle in resource.HandleTypes)
+				LoadedTypes.Add(handle.Name, handle);
 			foreach (var hostInterface in resource.HostInterfaces.Values)
 			{
 				LoadedTypes.Add(hostInterface.Name, hostInterface);
@@ -209,16 +212,11 @@ namespace LSNr.ReaderRules
 			return fn;
 		}
 
-		public void RegisterStructType(StructType structType) { GeneratedStructTypes.Add(structType); }
-
-		public void RegisterRecordType(RecordType recordType) { GeneratedRecordTypes.Add(recordType); }
-
-		public void RegisterHostInterface(HostInterfaceType host) { GeneratedHostInterfaces.Add(host.Name, host); }
-
-		public void RegisterScriptClass(ScriptClass scriptClass)
-		{
-			GeneratedScriptClasses.Add(scriptClass.Name, scriptClass);
-		}
+		public void RegisterStructType(StructType structType)		=> GeneratedStructTypes.Add(structType);
+		public void RegisterRecordType(RecordType recordType)		=> GeneratedRecordTypes.Add(recordType);
+		public void RegisterHandleType(HandleType handleType)		=> GeneratedHandleTypes.Add(handleType);
+		public void RegisterHostInterface(HostInterfaceType host)	=> GeneratedHostInterfaces.Add(host.Name, host);
+		public void RegisterScriptClass(ScriptClass scriptClass)	=> GeneratedScriptClasses.Add(scriptClass.Name, scriptClass);
 		#endregion
 
 		public Function GetFunction(string name) => MyFunctions.ContainsKey(name) ? MyFunctions[name] : LoadedFunctions[name];
@@ -305,6 +303,7 @@ namespace LSNr.ReaderRules
 		{
 			Functions = MyFunctions,
 			GameValues = new Dictionary<string, GameValue>(),
+			HandleTypes = GeneratedHandleTypes,
 			HostInterfaces = GeneratedHostInterfaces,
 			RecordTypes = GeneratedRecordTypes.ToDictionary(r => r.Name),
 			ScriptClassTypes = GeneratedScriptClasses,
