@@ -3,14 +3,14 @@ using "test3";
 
 fn Hello(){
 	say "Hello World!";
-	for i in 0..2
+	for i in 0..200
 	{
 		say "" + i;
 	}
-	HelloRanges(5);
-	let pcName = GetString("Enter your name:");
+	HelloRanges(50);
+	/*let pcName = GetString("Enter your name:");
 	let charName = GetString("Enter name of person to speak with:");
-	SimpleConv(charName, pcName, 42);
+	SimpleConv(charName, pcName, 42);*/
 }
 
 conversation SimpleConv(charName : String, pcName:string, myNum : int)
@@ -75,7 +75,7 @@ conversation SimpleConv(charName : String, pcName:string, myNum : int)
 				{
 					Say "Bye." as charName;
 				}
-				EndConversation;
+				end conversation;
 			}
 		}
 	}

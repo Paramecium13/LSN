@@ -10,11 +10,11 @@
   "test4": [
     "test2"
   ],
-  "lssTest": [],
   "Main": [
     "test3",
     "test2"
   ],
+  "lssTest": [],
   "CatToy": [
     "test3",
     "test2"
