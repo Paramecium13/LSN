@@ -22,7 +22,6 @@ namespace LsnCore
 		/// </summary>
 		public static readonly LsnValue Nil = new LsnValue(double.NaN, null);
 
-
 		public bool IsPure => true;
 
 		public bool IsNull => Data != Data && Value == null;

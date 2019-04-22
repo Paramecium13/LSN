@@ -8,12 +8,10 @@ using System.Reflection;
 
 namespace LsnCore
 {
-
 	/// <summary>
 	/// Is bounded to a type in the underlying engine or the .NET Framework
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	[Serializable]
 	public class LsnBoundedType<T> : LsnType
 	{
 		/// <summary>

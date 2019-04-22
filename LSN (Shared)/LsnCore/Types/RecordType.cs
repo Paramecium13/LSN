@@ -49,6 +49,7 @@ namespace LsnCore.Types
 
 		public TypeId GetFieldType(int index) => _FieldsB[index].Type;
 
+		// ToDo: Make this use ResourceSerializer
 		public void Serialize(BinaryDataWriter writer)
 		{
 			writer.Write(Name);

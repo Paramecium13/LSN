@@ -77,6 +77,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\EventListener.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\Field.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\GenericType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\HandleType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\HostInterfaceType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\ICollectionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\IHasFields.cs" />

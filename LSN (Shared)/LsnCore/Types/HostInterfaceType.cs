@@ -52,7 +52,7 @@ namespace LsnCore.Types
 			=> EventDefinitions.ContainsKey(name);
 
 		/// <summary>
-		/// 
+		/// ...
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
