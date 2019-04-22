@@ -4,9 +4,3 @@ using "test2";
 record CatToy {Toy : Item, Owner : Cat}
 
 handle hCat : hAnimal;
-
-fn BadFn(cat : hCat)
-{
-	MoveLvlObject("cats", 0,-1);
-}
-

@@ -21,11 +21,16 @@ namespace LsnCore.Types
 			Id = new TypeId(this); typeId = Id;
 		}
 
+		event Action<HandleType> ParentAdded;
+
 		public void AddParent(HandleType parent)
 		{
 			if (this == parent)
 				throw new InvalidOperationException("Cyclic inheritance!!!");
-			if (!ParentTypes.Add(parent.Id)) return;
+			if (!ParentTypes.Add(parent.Id))
+				return;
+			parent.ParentAdded += AddParent;
+			ParentAdded?.Invoke(parent);
 			foreach (var grand in parent.ParentTypes)
 			{
 				try

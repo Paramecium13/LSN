@@ -39,6 +39,30 @@ namespace LSNr.LssParser
 
 			var (args, nextIndex) = Create.CreateArgs(index + 1, tokens, script, substitutions);
 
+			if (fn.Parameters.Count != args.Length)
+			{
+				if(fn.Parameters.Count > args.Length)
+				{
+					var count = args.Length;
+					var old = args;
+					args = new IExpression[fn.Parameters.Count];
+					Array.Copy(old, args, old.Length);
+					for(int i = count; i < args.Length; i++)
+					{
+						if(fn.Parameters[i].DefaultValue.IsNull)
+							throw new LsnrParsingException(tokens[index], "Incorrect number of arguments...", script.Path);
+						args[i] = fn.Parameters[i].DefaultValue;
+					}
+				}
+				else
+					throw new LsnrParsingException(tokens[index], "Incorrect number of arguments...", script.Path);
+			}
+			for (int i = 0; i < args.Length; i++)
+			{
+				if (!fn.Parameters[i].Type.Subsumes(args[i].Type))
+					throw new LsnrParsingException(tokens[index], "Bad type", script.Path);
+			}
+
 			return (new FunctionCall(fn, args), nextIndex, 0);
 		}
 	}
