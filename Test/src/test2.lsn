@@ -1,6 +1,21 @@
 ﻿using "std\\Math";
 using "std\\Random";
 
+
+handle hLevelObject;
+
+handle hAnimal;
+
+fn MoveLvlObject(obj : hLevelObject, x : double, y : double)
+{
+	Say "Moving object.";
+}
+
+fn PetAnimal(animal : hAnimal)
+{
+	say "Petting animal";
+}
+
 record Cat {Age:int, Name:string}
 
 record Dog {Age: int, Name:string}

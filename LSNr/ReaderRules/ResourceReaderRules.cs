@@ -33,6 +33,7 @@ namespace LSNr.ReaderRules
 		void RegisterTypeId(TypeId id);
 		void RegisterStructType(StructType structType);
 		void RegisterRecordType(RecordType recordType);
+		void RegisterHandleType(HandleType handleType);
 		void RegisterHostInterface(HostInterfaceType host);
 		void RegisterScriptClass(ScriptClass scriptClass);
 
@@ -101,6 +102,16 @@ namespace LSNr.ReaderRules
 			}
 			return paramaters;
 		}
+
+		internal static void TestToken(this ISlice<Token> self, int index, string expectedVal, string file, string expectedMsg = null,
+			StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
+			=> self.TestToken(index, (s) => s.Equals(expectedVal, stringComparison), expectedMsg ?? expectedVal, file);
+
+		internal static void TestToken(this ISlice<Token> self, int index, Predicate<string> test, string expectedMsg, string file)
+		{
+			if (!test(self[index].Value))
+				throw LsnrParsingException.UnexpectedToken(self[index], expectedMsg, file);
+		}
 	}
 
 	public abstract class ResourceReaderStatementRule : IReaderStatementRule
@@ -110,6 +121,12 @@ namespace LSNr.ReaderRules
 		protected ResourceReaderStatementRule(IPreResource pre) { PreResource = pre; }
 
 		public abstract bool Check(ISlice<Token> tokens);
+
+		/// <summary>
+		/// The terminal semicolon is included.
+		/// </summary>
+		/// <param name="tokens"></param>
+		/// <param name="attributes"></param>
 		public abstract void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes);
 	}
 
@@ -128,6 +145,61 @@ namespace LSNr.ReaderRules
 
 		public override bool Check(ISlice<Token> tokens)
 			=> tokens[0].Value == "using";
+	}
+
+	sealed class ResourceHandleTypeStatementRule : ResourceReaderStatementRule
+	{
+		public ResourceHandleTypeStatementRule(IPreResource pre) : base(pre) { }
+
+		public override void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes)
+		{
+			if (tokens[1].Type != TokenType.Identifier)
+				throw new LsnrParsingException(tokens[1], "Invalid handle name", PreResource.Path);
+			var name = tokens[1].Value;
+			if (PreResource.TypeExists(name))
+				throw new LsnrParsingException(tokens[1], "Type already has name", PreResource.Path);
+
+			var handle = new HandleType(name, out TypeId id);
+
+			PreResource.RegisterTypeId(id);
+
+			var parents = new List<Token>();
+
+			if(tokens.Length > 3)
+			{
+				tokens.TestToken(2, ":", PreResource.Path, ": or ;");
+				if (tokens.Length == 4)
+					throw new LsnrParsingException(tokens[3], "Expected list of parent handle types.", PreResource.Path);
+				var lastWasComma = false;
+				for (int i = 3; i < tokens.Length - 1; i++)
+				{
+					var token = tokens[i];
+					switch (token.Type)
+					{
+						case TokenType.Identifier:
+							parents.Add(token);
+							lastWasComma = false;
+							break;
+						case TokenType.SyntaxSymbol:
+							if(lastWasComma)
+								throw LsnrParsingException.UnexpectedToken(token,"the name of a handle type", PreResource.Path);
+							if (token.Value != ",")
+								throw LsnrParsingException.UnexpectedToken(token,lastWasComma ? "the name of a handle type" : "a comma or the name of a handle type", PreResource.Path);
+							lastWasComma = true;
+							break;
+						default:
+							throw LsnrParsingException.UnexpectedToken(token,lastWasComma ? "the name of a handle type" : "a comma or the name of a handle type", PreResource.Path);
+					}
+				}
+			}
+
+			var builder = new HandleBuilder(handle,parents.ToArray());
+			PreResource.RegisterHandleType(handle);
+			PreResource.ParseSignaturesA += builder.OnParsingSignatures;
+		}
+
+		public override bool Check(ISlice<Token> tokens)
+			=> tokens.Length >= 3 && tokens[0].Value == "handle";
 	}
 
 	public abstract class ResourceReaderBodyRule : IReaderBodyRule
@@ -174,7 +246,8 @@ namespace LSNr.ReaderRules
 					while (head[i].Value != "{")
 					{
 						i++;
-						if (i >= head.Count) throw new LsnrParsingException(fnToken, "error parsing return type.", PreResource.Path);
+						if (i >= head.Count)
+							throw new LsnrParsingException(fnToken, "error parsing return type.", PreResource.Path);
 						count++;
 					}
 					returnType = head.CreateSubSlice(start, count);

@@ -91,7 +91,12 @@ namespace LsnCore
 			return TypeIdDictionary[name];
 		}
 
-		public TypeId GetTypeId(ushort index) => TypeIds[index];
+		public TypeId GetTypeId(ushort index)
+		{
+			if (index < TypeIds.Length)
+				return TypeIds[index];
+			throw new IndexOutOfRangeException();
+		}
 	}
 
 	public interface ITypeContainer
@@ -178,6 +183,7 @@ namespace LsnCore
 					foreach (var t in RecordTypes.Values)
 						t.Serialize(writer);
 
+					writer.Write((ushort)HandleTypes.Count);
 					foreach (var handle in HandleTypes)
 						handle.Serialize(writer, resourceSerializer);
 
@@ -244,6 +250,7 @@ namespace LsnCore
 				{
 					var r = resourceLoader(u);
 					resourceDeserializer.LoadFunctions(r.Functions.Values);
+					resourceDeserializer.LoadTypes(r.HandleTypes);
 					resourceDeserializer.LoadTypes(r.HostInterfaces.Values);
 					resourceDeserializer.LoadTypes(r.RecordTypes.Values);
 					resourceDeserializer.LoadTypes(r.ScriptClassTypes.Values);
@@ -293,6 +300,7 @@ namespace LsnCore
 				var handleTypes = new HandleType[nHandleTypes];
 				for (int i = 0; i < nHandleTypes; i++)
 					handleTypes[i] = HandleType.Read(reader, typeIdContainer);
+				res.HandleTypes = handleTypes.ToList();
 				resourceDeserializer.LoadTypes(handleTypes);
 
 				var nHostInterfaces = reader.ReadUInt16();

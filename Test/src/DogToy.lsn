@@ -6,7 +6,26 @@ struct DogToy{
 	Owner : Dog
 }
 
+handle hLvlDog : hDog hLvlChar;
+
+handle hDog : hAnimal;
+
 fn ToCatToy(d : DogToy) -> CatToy
 {
 	return new CatToy(d.Toy, ToCat(d.Owner));
+}
+
+
+fn FeedDog(dog: hDog)
+{
+	say "Feeding dog.";
+	PetAnimal(dog);
+}
+
+
+fn HandlePolymorphismTest(dog: hLvlDog)
+{
+	FeedDog(dog);
+	PetAnimal(dog);
+	MoveLvlObject(dog, 0, 1.5);
 }

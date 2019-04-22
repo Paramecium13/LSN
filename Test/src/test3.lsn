@@ -1,6 +1,8 @@
 ﻿using "test2";
 
 
+handle hLvlChar : hLevelObject;
+
 fn TryStakeVampire(vampire : IEnemy)
 {
 	if(vampire.GetHP() < 25)

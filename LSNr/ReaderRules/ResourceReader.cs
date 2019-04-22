@@ -25,7 +25,8 @@ namespace LSNr
 		{
 			PreResource = new ResourceBuilder(path);
 			_StatementRules = new ResourceReaderStatementRule[] {
-				new ResourceUsingStatementRule(PreResource, waiter)
+				new ResourceUsingStatementRule(PreResource, waiter),
+				new ResourceHandleTypeStatementRule(PreResource)
 			};
 			_BodyRules = new ResourceReaderBodyRule[]
 			{

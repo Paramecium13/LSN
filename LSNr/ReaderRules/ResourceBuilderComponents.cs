@@ -70,6 +70,37 @@ namespace LSNr.ReaderRules
 		}
 	}
 
+	public class HandleBuilder
+	{
+		readonly HandleType Type;
+		readonly Token[] Parents;
+		public HandleBuilder(HandleType type, Token[] parents)
+		{
+			Type = type; Parents = parents;
+		}
+
+		public void OnParsingSignatures(IPreResource preResource)
+		{
+			foreach (var parent in Parents)
+			{
+				if (!preResource.TypeExists(parent.Value))
+					throw new LsnrParsingException(parent, $"The type '{parent.Value}' does not exist.", preResource.Path);
+				try
+				{
+					var ty = preResource.GetType(parent.Value);
+					var hty = (HandleType)ty;
+					Type.AddParent(hty);
+				}
+				catch (InvalidCastException)
+					{ throw new LsnrParsingException(parent, $"The type '{parent.Value}' is not a handle type.", preResource.Path); }
+				catch (ApplicationException e)
+					{ throw new LsnrParsingException(parent, e.Message, preResource.Path); }
+				catch (Exception e)
+					{ throw new LsnrParsingException(parent, $"Error parsing handle type '{Type.Name}'.", e, preResource.Path); }
+			}
+		}
+	}
+
 	public class FunctionBuilder
 	{
 		readonly string Name;

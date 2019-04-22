@@ -37,11 +37,15 @@ namespace LsnCore.Serialization
 		internal TypeId[] LoadTypeIds(BinaryDataReader reader)
 		{
 			var nTypes = reader.ReadUInt16();
-			var typeNames = new string[nTypes];
+			TypeIds = new TypeId[nTypes];
 			for (int i = 0; i < nTypes; i++)
-				typeNames[i] = reader.ReadString();
+			{
+				var name = reader.ReadString();
+				if (Types.ContainsKey(name))
+					TypeIds[i] = Types[name].Id;
+				else TypeIds[i] = new TypeId(name);
+			}
 
-			TypeIds = typeNames.Select(n => new TypeId(n)).ToArray();
 			return TypeIds;
 		}
 

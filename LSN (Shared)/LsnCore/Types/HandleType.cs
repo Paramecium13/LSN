@@ -60,7 +60,6 @@ namespace LsnCore.Types
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			resourceSerializer.WriteTypeId(Id, writer);
-			writer.Write(Name);
 			writer.Write((ushort)ParentTypes.Count);
 			foreach (var parent in ParentTypes)
 				resourceSerializer.WriteTypeId(parent, writer);
