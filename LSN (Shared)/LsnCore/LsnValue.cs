@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Types;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Syroot.BinaryData;
 using System.Collections;
 
@@ -13,7 +14,7 @@ namespace LsnCore
 {
 #pragma warning disable CS1718 // Comparison made to same variable
 #pragma warning disable RECS0088 // Comparing equal expression for equality is usually useless
-
+	[StructLayout( LayoutKind.Explicit)]
 	public /*unsafe*/ struct LsnValue : IExpression, IEquatable<LsnValue>
 	{
 		/// <summary>
@@ -21,10 +22,6 @@ namespace LsnCore
 		/// </summary>
 		public static readonly LsnValue Nil = new LsnValue(double.NaN, null);
 
-		/// <summary>
-		/// Value...
-		/// </summary>
-		public readonly ILsnValue Value;
 
 		public bool IsPure => true;
 
@@ -36,8 +33,23 @@ namespace LsnCore
 		/// <summary>
 		/// The numeric data.
 		/// </summary>
+		[FieldOffset(0)]
 		readonly double Data;
 
+		[FieldOffset(0)]
+		public readonly uint HandleData;
+
+		[FieldOffset(0)]
+		public readonly float X;
+
+		[FieldOffset(0)]
+		public readonly float Y;
+
+		/// <summary>
+		/// Value...
+		/// </summary>
+		[FieldOffset(8)]
+		public readonly ILsnValue Value;
 
 		/*/// <summary>
 		/// Unused
@@ -58,6 +70,7 @@ namespace LsnCore
 		/// <summary>
 		/// ...
 		/// </summary>
+		[FieldOffset(16)]
 		private readonly TypeId Id;
 		public TypeId Type => Id;
 #else
@@ -66,6 +79,9 @@ namespace LsnCore
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public LsnValue(double value)
 		{
+			HandleData = 0;
+			X = 0f;
+			Y = 0f;
 			Data = value;
 			Value = null;
 #if LSNR
@@ -76,6 +92,9 @@ namespace LsnCore
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public LsnValue(int value)
 		{
+			HandleData = 0;
+			X = 0f;
+			Y = 0f;
 			Data = value;
 			Value = null;
 #if LSNR
@@ -86,6 +105,9 @@ namespace LsnCore
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public LsnValue(ILsnValue value)
 		{
+			HandleData = 0;
+			X = 0f;
+			Y = 0f;
 			Data = double.NaN;
 			Value = value;
 #if LSNR
@@ -96,6 +118,9 @@ namespace LsnCore
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public LsnValue(bool value)
 		{
+			HandleData = 0;
+			X = 0f;
+			Y = 0f;
 			Data = value ? 1 : 0;
 			Value = null;
 #if LSNR
@@ -103,9 +128,40 @@ namespace LsnCore
 #endif
 		}
 
+		public LsnValue(uint handle
+#if LSNR
+			, TypeId type
+#endif
+			)
+		{
+			Data = 0;
+			X = 0f;
+			Y = 0f;
+			HandleData = handle;
+			Value = null;
+#if LSNR
+			Id = type;
+#endif
+		}
+
+		public LsnValue(float x, float y)
+		{
+			Data = 0;
+			HandleData = 0;
+			Value = null;
+			X = x;
+			Y = y;
+#if LSNR
+			Id = null;
+#endif
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		LsnValue(double d, ILsnValue v)
 		{
+			HandleData = 0;
+			X = 0f;
+			Y = 0f;
 			Data = d;
 			Value = v;
 #if LSNR
