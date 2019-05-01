@@ -22,6 +22,10 @@ namespace LSNr.LssParser
 		public (IExpression expression, int indexOfNextToken, ushort numTokensToRemoveFromLeft)
 			CreateExpression(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
+			var leftExpr = substitutions[tokens[index - 1]];
+			var colType = leftExpr.Type.Type as ICollectionType;
+			if (colType == null)
+				throw new LsnrParsingException(tokens[index], $"{leftExpr.Type.Name} is not a collection type so it cannot be indexed.", script.Path);
 			var j = index;
 			var ls = new List<Token>();
 			var balance = 1;
@@ -44,8 +48,9 @@ namespace LSNr.LssParser
 			}
 
 			var val = ExpressionParser.Parse(ls.ToArray(), script, substitutions);
-			var leftExpr = substitutions[tokens[index - 1]];
-			var expr = new CollectionValueAccessExpression(leftExpr, val, (leftExpr.Type.Type as ICollectionType).ContentsType.Id);
+			if (!colType.IndexType.Subsumes(val.Type.Type))
+				throw new LsnrParsingException(tokens[index + 1], $"{leftExpr.Type.Name} must be indexed with a(n) {colType.IndexType.Name}, cannot use a(n) {val.Type.Name}", script.Path);
+			var expr = new CollectionValueAccessExpression(leftExpr, val, colType.ContentsType.Id);
 			return (expr, j + 1, 1);
 		}
 	}

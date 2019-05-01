@@ -39,8 +39,6 @@ namespace LSNr
 		public static IExpression Express(IEnumerable<Token> tokens, IPreScript script/*, IExpressionContainer container*/)
 			=> Express(tokens.ToList(), script);
 
-		private static List<Variable> __variables = new List<Variable>();
-
 		/// <summary>
 		/// Create an expression.
 		/// </summary>
@@ -55,12 +53,11 @@ namespace LSNr
 				var token = list[0];
 				if (substitutions != null && substitutions.ContainsKey(token))
 					return substitutions[token];
-				var expr = SingleTokenExpress(token, script, null, __variables);
-				if(__variables.Count != 0)
-				{
-					__variables[0].AddUser(expr as IExpressionContainer);
-					__variables.Clear();
-				}
+				var vars = new List<Variable>();
+				var expr = SingleTokenExpress(token, script, null, vars);
+				if(vars.Count != 0)
+					vars[0].AddUser(expr as IExpressionContainer);
+
 				return expr;
 			}
 			return ExpressionParser.Parse(list, script, substitutions).Fold();
@@ -190,7 +187,7 @@ namespace LSNr
 			var x = CreateArgList(indexOfOpen, tokens, script);
 			var args = new IExpression[x.argTokens.Length];
 			for (int i = 0; i < x.argTokens.Length; i++)
-				args[i] = LssParser.ExpressionParser.Parse(x.argTokens[i], script, substitutions);
+				args[i] = ExpressionParser.Parse(x.argTokens[i], script, substitutions);
 			return (args, x.indexOfNextToken);
 		}
 	}

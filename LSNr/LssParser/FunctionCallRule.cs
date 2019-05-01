@@ -22,10 +22,10 @@ namespace LSNr.LssParser
 			CreateExpression(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
 			var fn = script.GetFunction(tokens[index].Value);
-			if(fn.Parameters.Count == 0)
+			if (fn.Parameters.Count == 0)
 			{
 				var next = index + 1;
-				if(next < tokens.Count && tokens[next].Value == "(")
+				if (next < tokens.Count && tokens[next].Value == "(")
 				{
 					++next;
 					if (next >= tokens.Count)
@@ -39,29 +39,7 @@ namespace LSNr.LssParser
 
 			var (args, nextIndex) = Create.CreateArgs(index + 1, tokens, script, substitutions);
 
-			if (fn.Parameters.Count != args.Length)
-			{
-				if(fn.Parameters.Count > args.Length)
-				{
-					var count = args.Length;
-					var old = args;
-					args = new IExpression[fn.Parameters.Count];
-					Array.Copy(old, args, old.Length);
-					for(int i = count; i < args.Length; i++)
-					{
-						if(fn.Parameters[i].DefaultValue.IsNull)
-							throw new LsnrParsingException(tokens[index], "Incorrect number of arguments...", script.Path);
-						args[i] = fn.Parameters[i].DefaultValue;
-					}
-				}
-				else
-					throw new LsnrParsingException(tokens[index], "Incorrect number of arguments...", script.Path);
-			}
-			for (int i = 0; i < args.Length; i++)
-			{
-				if (!fn.Parameters[i].Type.Subsumes(args[i].Type))
-					throw new LsnrParsingException(tokens[index], "Bad type", script.Path);
-			}
+			args = Utilities.Parameters.Check(tokens[index], fn.Parameters, args, script, $"fn {fn.Name}");
 
 			return (new FunctionCall(fn, args), nextIndex, 0);
 		}

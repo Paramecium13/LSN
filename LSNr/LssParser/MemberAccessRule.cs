@@ -127,14 +127,8 @@ namespace LSNr.LssParser
 				}
 				else if(method.Parameters.Count > 1)
 				{
-					var x = Create.CreateArgList(index + 2, tokens, script);
-					var argTokens = x.argTokens;
-					nextIndex = x.indexOfNextToken;
-
-					var a = new List<IExpression>(method.Parameters.Count);
-					a.Add(args[0]);
-					a.AddRange(argTokens.Select(ar => ExpressionParser.Parse(ar, script, substitutions)));
-					args = a.ToArray();
+					(args, nextIndex) = Utilities.Parameters.CreateArgs(index + 2, tokens, method.TypeId + "::" + memberName, method.Parameters, script,
+						leftExpr, substitutions);
 				}
 				expr = method.CreateMethodCall(args);
 			}

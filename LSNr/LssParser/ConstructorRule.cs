@@ -27,12 +27,18 @@ namespace LSNr.LssParser
 
 			var x = Create.CreateArgs(i, tokens, script, substitutions);
 
-			if (type is StructType)
+			if (type is StructType structType)
+			{
+				// ToDo: Check argument type and number!!!
 				return (new StructConstructor(type.Id, x.args), x.nextIndex, 0);
-			if (type is RecordType)
+			}
+			if (type is RecordType recordType)
+			{
+				// ToDo: Check argument type and number!!!
 				return (new RecordConstructor(type.Id, x.args), x.nextIndex, 0);
-			var lsTy = type as LsnListType;
-			if (lsTy != null)
+			}
+
+			if (type is LsnListType lsTy)
 				return (new ListConstructor(lsTy), x.nextIndex, 0);
 			throw new ApplicationException();
 		}

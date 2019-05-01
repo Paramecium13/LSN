@@ -79,7 +79,7 @@ namespace LSNr
 			return false;
 		}
 
-		public static bool TryGetValue(this JObject self,  out JToken token, StringComparison stringComparison, params string[] values)
+		public static bool TryGetValue(this JObject self, out JToken token, StringComparison stringComparison, params string[] values)
 		{
 			for (int i = 0; i < values.Length; i++)
 			{
@@ -88,6 +88,21 @@ namespace LSNr
 			}
 			token = null;
 			return false;
+		}
+
+		public static int IndexOf<T>(this IReadOnlyList<T> self, Predicate<T> pred)
+		{
+			if (self == null)
+				throw new ArgumentNullException(nameof(self));
+			if (pred == null)
+				throw new ArgumentNullException(nameof(pred));
+
+			for (int i = 0; i < self.Count; i++)
+			{
+				if (pred(self[i]))
+					return i;
+			}
+			return -1;
 		}
 	}
 }

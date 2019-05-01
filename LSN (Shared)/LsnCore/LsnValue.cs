@@ -15,7 +15,11 @@ namespace LsnCore
 #pragma warning disable CS1718 // Comparison made to same variable
 #pragma warning disable RECS0088 // Comparing equal expression for equality is usually useless
 	[StructLayout( LayoutKind.Explicit)]
-	public /*unsafe*/ struct LsnValue : IExpression, IEquatable<LsnValue>
+	public
+#if LSNR
+		unsafe
+#endif
+		struct LsnValue : IExpression, IEquatable<LsnValue>
 	{
 		/// <summary>
 		/// Nil
@@ -35,6 +39,16 @@ namespace LsnCore
 		[FieldOffset(0)]
 		readonly double Data;
 
+#if LSNR
+		public ulong RawData { get
+			{
+				fixed (double* x = &Data)
+				{
+					return *(ulong*)x;
+				}
+			}
+		}
+#endif
 		[FieldOffset(0)]
 		public readonly uint HandleData;
 
