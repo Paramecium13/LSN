@@ -57,7 +57,7 @@
 		#region Compare
 		Lt_I32,
 		Lt_F32,
-		Lt_64,
+		Lt_F64,
 
 		Lte_I32,
 		Lte_F32,

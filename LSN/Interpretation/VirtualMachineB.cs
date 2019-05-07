@@ -148,7 +148,7 @@ namespace LsnCore.Interpretation
 						else PushFalse();
 					}
 					break;
-				case OpCodeB.Lt_64:
+				case OpCodeB.Lt_F64:
 					{
 						var a = PopF64(); var b = PopF64();
 						if (a < b) PushTrue();
