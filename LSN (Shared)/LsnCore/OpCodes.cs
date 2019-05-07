@@ -2,7 +2,7 @@
 
 namespace LsnCore
 {
-	enum OpCode : short
+	enum OpCode : ushort
 	{
 		Nop,
 		#region Arithmetic
@@ -137,12 +137,17 @@ namespace LsnCore
 		#endregion
 		#region LSN
 		GoTo,
+		ComeFrom,
 		Say,
 		RegisterChoice,
 		CallChoice,
 		GiveItem,
 		GiveGold,
 		#endregion
+		Error,
+
+		CRN,
+		HCF = 0xF00F
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
