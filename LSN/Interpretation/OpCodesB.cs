@@ -3,7 +3,7 @@
 	// Operate on a stack machine...
 	// Bools are ints...
 	//		(Trinary value (F64): 1.0, 0.0, Nan)
-	enum OpCode
+	enum OpCodeB : short
 	{
 		// Most of these pop two args from the stack and push the result.
 		// Both have to be of the same type.
@@ -40,6 +40,12 @@
 		Neg_I32,
 		Neg_F32,
 		Neg_F64,
+		#endregion
+		#region Vec2
+		Vec2_GetX,
+		Vec2_GetY,
+		Construct_Vec2,
+		DotProduct_Vec2,
 		#endregion
 		#region String Arithmetic
 		Concat,
@@ -99,6 +105,7 @@
 
 		Cast_F32_I32,
 		Cast_F64_I32,
+		Cast_F64_F32,
 		#endregion
 		#region Jump/branch
 		/// <summary>Unconditional jump. Arg:[address]</summary>
@@ -121,6 +128,7 @@
 		// These instructions push a constant onto the stack
 		#region Load Const
 		LoadConst_I32,
+		LoadConst_I32_Short,
 		LoadConst_F32,
 		LoadConst_F64,
 		LoadConst_Vec2,
@@ -136,7 +144,7 @@
 		//LoadConst_Vec3,
 		LoadConst_Str,
 		LoadConst_Null,
-		LoadConst_NaN,
+		LoadConst_NaN_F64,
 		#endregion
 		Load_UniqueScriptClass,
 		// All these have an argument of the local index...
@@ -227,6 +235,10 @@
 		LoadStructField_F64,
 		LoadStructField_Vec2,
 		LoadStructField_Obj,
+		#endregion
+
+		#region Return
+		Ret,
 		#endregion
 	}
 }
