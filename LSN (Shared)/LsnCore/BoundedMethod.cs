@@ -23,6 +23,9 @@ namespace LsnCore
 #if CORE
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 			=> Bound(args);
+
+		public LsnValue Eval(LsnValue[] args)
+			=> Bound(args);
 #endif
 	}
 }

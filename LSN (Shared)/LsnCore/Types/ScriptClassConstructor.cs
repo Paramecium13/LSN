@@ -15,6 +15,9 @@ namespace LsnCore.Types
 		public Statement[] Code { get; set; }
 		public int StackSize { get; set; }
 		public string ResourceFilePath { get; }
+		/// <summary>
+		/// Will always have a 'self' parameter.
+		/// </summary>
 		public readonly Parameter[] Parameters;
 
 		public ScriptClassConstructor(string resourceFilePath, Parameter[] parameters)

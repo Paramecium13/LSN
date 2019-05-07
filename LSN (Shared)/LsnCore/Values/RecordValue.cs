@@ -10,7 +10,7 @@ namespace LsnCore
 {
 	public class RecordValue : ILsnValue, IHasFieldsValue
 	{
-		private readonly LsnValue[] Fields;
+		internal readonly LsnValue[] Fields;
 
 		public static bool IsPure => true;
 

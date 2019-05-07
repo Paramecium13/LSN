@@ -33,6 +33,8 @@ namespace LsnCore
 		public bool BoolValue =>
 			Data == Data ? Math.Abs(Data) > double.Epsilon : Value?.BoolValue ?? false;
 
+		public bool BoolValueSimple => IntValue != 0;
+
 		/// <summary>
 		/// The numeric data.
 		/// </summary>

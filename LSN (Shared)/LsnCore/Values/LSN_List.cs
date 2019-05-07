@@ -25,7 +25,7 @@ namespace LsnCore.Values
 		/// <summary>
 		/// ...
 		/// </summary>
-		/// <param name="type"></param>
+		/// <param name="type">The list type</param>
 		public LsnList(LsnListType type)
 		{
 			Type = type.Id;
@@ -35,7 +35,7 @@ namespace LsnCore.Values
 		/// <summary>
 		/// ...
 		/// </summary>
-		/// <param name="type"></param>
+		/// <param name="type">The list type</param>
 		/// <param name="values"></param>
 		public LsnList(LsnListType type, IEnumerable<LsnValue> values)
 		{
@@ -43,12 +43,20 @@ namespace LsnCore.Values
 			//_Type = type;
 			Values = values.ToList();
 		}
-
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="type">The list type</param>
 		public LsnList(TypeId type)
 		{
 			Type = type;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="type">The list type</param>
+		/// <param name="values"></param>
 		public LsnList(TypeId type, IEnumerable<LsnValue> values)
 		{
 			Type = type;

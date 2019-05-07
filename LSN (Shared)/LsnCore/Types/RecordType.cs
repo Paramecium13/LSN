@@ -12,9 +12,6 @@ namespace LsnCore.Types
 	/// </summary>
 	public class RecordType : LsnType, IHasFieldsType
 	{
-		private Dictionary<string, LsnType> _Fields = new Dictionary<string, LsnType>(); // TODO: Replace with TypeId?
-		public IReadOnlyDictionary<string, LsnType> Fields => _Fields;
-
 		private readonly Field[] _FieldsB;
 		public IReadOnlyCollection<Field> FieldsB => _FieldsB;
 

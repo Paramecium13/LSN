@@ -12,15 +12,16 @@ namespace LsnCore.Values
 	{
 		public override bool BoolValue { get { return true; } }
 
-		private readonly LsnValue[] Values;
+		internal readonly LsnValue[] Values;
 
 		public StructValue(TypeId id, LsnValue[] values)
 		{
 			Type = id;
-			int length = values.Length;
+			Values = values;
+			/*int length = values.Length;
 			Values = new LsnValue[length];
 			for (int i = 0; i < length; i++)
-				Values[i] = values[i].Clone();
+				Values[i] = values[i].Clone();*/
 		}
 
 		public StructValue(LsnValue[] values)
