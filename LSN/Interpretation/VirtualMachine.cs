@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LsnCore.Debug;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,9 +12,10 @@ namespace LsnCore.Interpretation
 		Instruction[] Code { get; }
 		ushort StackSize { get; }
 		FileEnvironment Environment { get; }
+		ProcedureLineInfo LineInfo { get; }
 	}
 
-	class LsnStackB
+	class LsnVMStack
 	{
 		protected readonly IResourceManager ResourceManager;
 
@@ -22,7 +24,7 @@ namespace LsnCore.Interpretation
 		private int Offset;
 		private readonly Stack<FrameInfo> Frames = new Stack<FrameInfo>();
 
-		public LsnStackB(IResourceManager resourceManager)
+		public LsnVMStack(IResourceManager resourceManager)
 		{
 			ResourceManager = resourceManager;
 			Frames.Push(new FrameInfo(-1, 0));
@@ -81,8 +83,11 @@ namespace LsnCore.Interpretation
 			}
 		}
 	}
+
 	class FileEnvironment
 	{
+		public string FileName { get; }
+
 		public LsnValue GetInt(ushort index) => throw new NotImplementedException();
 
 		public LsnValue GetDouble(ushort index) => throw new NotImplementedException();
@@ -106,11 +111,11 @@ namespace LsnCore.Interpretation
 
 		int NextStatement { get; set; }
 
-		readonly LsnStackB Stack;
+		readonly LsnVMStack Stack;
 
 		readonly Stack<LsnValue> EvalStack = new Stack<LsnValue>();
 
-		public VirtualMachine(IResourceManager resourceManager) { ResourceManager = resourceManager; Stack = new LsnStackB(ResourceManager); }
+		public VirtualMachine(IResourceManager resourceManager) { ResourceManager = resourceManager; Stack = new LsnVMStackB(ResourceManager); }
 
 		Instruction[] Code;
 		int CurrentStatement;

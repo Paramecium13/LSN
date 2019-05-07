@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\BoundedFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\BoundedMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Component.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Debug\ProcedureLineInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\BinaryExpression.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\CollectionValueAccessExpression.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Expressions\Expression.cs" />

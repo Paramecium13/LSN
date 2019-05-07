@@ -28,7 +28,7 @@ namespace LsnCore.Interpretation
 		public LsnType[] Types;
 	}
 
-	class LsnVMStack
+	class LsnVMStackB
 	{
 		public int GetI32(int i) => throw new NotImplementedException();
 		public void SetI32(int i, int val) => throw new NotImplementedException();
@@ -59,7 +59,7 @@ namespace LsnCore.Interpretation
 		readonly Stack<Vector2> Vec2Stack = new Stack<Vector2>();
 		readonly Stack<ILsnValue> ObjStack = new Stack<ILsnValue>();
 
-		LsnVMStack Locals;
+		LsnVMStackB Locals;
 		FileData CurrentFileData;
 
 		void PushTrue() => IntStack.Push(-1);
