@@ -190,6 +190,16 @@ namespace LsnCore
 		GiveItem,
 		GiveGold,
 		#endregion
+		#region Input
+		ReadString,
+		ReadInt,
+		ReadDouble,
+		#endregion
+		#region Random
+		Srand,
+		Rand,
+		RandInt,
+		#endregion
 		#region Debug
 		Error,
 		AssertHostReturnIs_I32, // Or bool

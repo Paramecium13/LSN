@@ -117,7 +117,8 @@ namespace LsnCore.Interpretation
 
 		readonly TypeId[] OneTypeArray = new TypeId[1];
 
-		public IResourceManager ResourceManager { get; set; }
+		readonly IResourceManager	ResourceManager;
+		readonly ILsnGameHost		GameHost;
 
 		int Target;
 
@@ -127,7 +128,10 @@ namespace LsnCore.Interpretation
 
 		readonly Stack<LsnValue> EvalStack = new Stack<LsnValue>();
 
-		public VirtualMachine(IResourceManager resourceManager) { ResourceManager = resourceManager; Stack = new LsnVMStack(ResourceManager); }
+		public VirtualMachine(IResourceManager resourceManager, ILsnGameHost gameHost)
+		{
+			ResourceManager = resourceManager; GameHost = gameHost; Stack = new LsnVMStack(ResourceManager);
+		}
 
 		readonly Stack<IProcedureB> ProcStack = new Stack<IProcedureB>();
 
@@ -362,6 +366,12 @@ namespace LsnCore.Interpretation
 				case OpCode.GiveGold:
 					throw new NotImplementedException();
 				#endregion
+				case OpCode.ReadString:		Push(GameHost.GetString(PopString()));			break;
+				case OpCode.ReadInt:		Push(GameHost.GetInt(PopString()));				break;
+				case OpCode.ReadDouble:		Push(GameHost.GetDouble(PopString()));			break;
+				case OpCode.Srand:			GameHost.RngSetSeed(PopI32());					break;
+				case OpCode.Rand:			Push(GameHost.RngGetDouble());					break;
+				case OpCode.RandInt:		Push(GameHost.RngGetInt(PopI32(), PopI32()));	break;
 				#region Debug
 				case OpCode.Error:
 				case OpCode.AssertHostReturnIs_I32:

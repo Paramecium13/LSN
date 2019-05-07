@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Interpretation\IInterpreter.cs" />
+    <Compile Include="Interpretation\ILsnGameHost.cs" />
     <Compile Include="Interpretation\Interpreter.cs" />
     <Compile Include="Interpretation\LsnStack.cs" />
     <Compile Include="Interpretation\OpCodesB.cs" />
