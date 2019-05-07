@@ -1,4 +1,6 @@
-﻿namespace LsnCore
+﻿using System.Runtime.InteropServices;
+
+namespace LsnCore
 {
 	enum OpCode : short
 	{
@@ -57,8 +59,25 @@
 		Set_Target,
 		#endregion
 		#region Call
+		// Data is index. Places index into a temp register(not preserved when calling).
+		// Used by instructions that need two indexes.
+		LoadIndex,
+		// index of file loaded by LoadIndex instruction, index of function in file is data
 		CallFn,
+		// index of file is first byte of data, index of function in file is second byte in data
+		CallFn_Short,
+		// file is the current file, index of fn is data.
+		CallFn_Local,
+		/// <summary>
+		/// Index of method name is data
+		/// </summary>
 		CallMethod,
+		/*// index of type loaded by LoadIndex. Index of method is data
+		CallMethod,
+		// index of type is first byte of data, index of method is second byte of data
+		CallMethod_Short,*/
+
+		// index of method name is data
 		CallHostInterfaceMethod,
 		#endregion
 		Ret,
@@ -126,10 +145,16 @@
 		#endregion
 	}
 
+	[StructLayout(LayoutKind.Explicit)]
 	struct Instruction
 	{
+		[FieldOffset(0)]
 		public readonly OpCode OpCode;
+		[FieldOffset(2)]
 		public readonly short Data;
-		public Instruction(OpCode opCode, short data) { OpCode = opCode; Data = data; }
+		[FieldOffset(2)]
+		public readonly ushort Index;
+		public Instruction(OpCode opCode, short data) { OpCode = opCode; Index = 0; Data = data; }
+		public Instruction(OpCode opCode, ushort index) { OpCode = opCode; Data = 0; Index = index; }
 	}
 }

@@ -89,6 +89,7 @@
     <Compile Include="Interpretation\Interpreter.cs" />
     <Compile Include="Interpretation\LsnStack.cs" />
     <Compile Include="Interpretation\OpCodesB.cs" />
+    <Compile Include="Interpretation\VirtualMachine.cs" />
     <Compile Include="Interpretation\VirtualMachineB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
