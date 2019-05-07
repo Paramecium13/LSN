@@ -70,7 +70,6 @@ namespace LSNr
 					_DependenciesFile.Write(DEP_FILE_PATH);
 			}
 
-
 			if (rTask.Status == TaskStatus.Faulted)
 				return 8;
 
