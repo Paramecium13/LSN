@@ -359,9 +359,10 @@ namespace LsnCore.Interpretation
 				#region LSN
 				case OpCode.GoTo:
 				case OpCode.ComeFrom:
-				case OpCode.Say:
-				case OpCode.RegisterChoice:
-				case OpCode.CallChoice:
+					throw new NotImplementedException();
+				case OpCode.Say:			GameHost.Say(PopString(), Pop(), PopString());		break;
+				case OpCode.RegisterChoice:	GameHost.RegisterChoice(PopString(), instr.Index);	break;
+				case OpCode.CallChoice:		NextInstruction = GameHost.DisplayChoices(); GameHost.ClearChoices(); break;
 				case OpCode.GiveItem:
 				case OpCode.GiveGold:
 					throw new NotImplementedException();
