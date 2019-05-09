@@ -278,6 +278,18 @@ namespace LsnCore
 		PostDec_Fld,
 		#endregion
 
+		#region WORDS
+		GetWord,
+		// ,word -> ,word
+		DECL,
+		// ,word, word -> ,word
+		DECL_LIKE,
+		// ,word -> ,word
+		CONJ,
+		// ,word, word -> ,word
+		CONJ_LIKE,
+		#endregion
+
 		// I might not implement these. Just thinking about it.
 		#region Registers?
 		/// <summary>$acc = 0</summary>
