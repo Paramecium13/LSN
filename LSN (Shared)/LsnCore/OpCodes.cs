@@ -8,6 +8,10 @@ namespace LsnCore
 		Nop,
 		/// <summary>Duplicate the value on top of the stack.</summary>
 		Dup,
+		/// <summary> ,b,a -> ,a,b</summary>
+		Swap,
+		/// <summary> ,b,a -> ,a,b,a</summary>
+		SwaDup,
 		/// <summary>Pop and forget</summary>
 		Pop,
 		#endregion
@@ -65,10 +69,16 @@ namespace LsnCore
 		Jump,
 		/// <summary>Conditional jump. Target is data</summary>
 		Jump_True,
+		Jump_False,
+
+		//https://llvm.org/docs/LangRef.html#switch-instruction
+		/// <summary>Not yet implemented. </summary>
+		Switch,
+
 		/// <summary>Unconditional jump to Target</summary>
-		Jump_Target,
+		JumpToTarget,
 		/// <summary>Set Target register to data</summary>
-		Set_Target,
+		SetTarget,
 		#endregion
 		#region Call
 		/// <summary>Data is index. Places index into a temp register(not preserved when calling).Used by instructions that need two indexes.</summary>
@@ -129,6 +139,7 @@ namespace LsnCore
 		#region Variables
 		// data is index
 		/// <summary> </summary>
+		LoadLocal_0,
 		LoadLocal,
 		/// <summary> </summary>
 		StoreLocal,
@@ -185,8 +196,13 @@ namespace LsnCore
 		GoTo,
 		ComeFrom,
 		Say,
+		/// <summary>Instruction index is data...</summary>
 		RegisterChoice,
-		CallChoice,
+		/// <summary>...</summary>
+		RegisterChoice_Pop,
+		CallChoices,
+		/// <summary>Call choice but instead of jumping, push result onto stack.</summary>
+		CallChoices_Push, // Maybe use same OpCode as CallChoices but depend on data...
 		GiveItem,
 		GiveGold,
 		#endregion
@@ -197,11 +213,16 @@ namespace LsnCore
 		#endregion
 		#region Random
 		Srand,
+		/// <summary>Set PRNG seed to pseudo-random value, e.g. system time (in ticks).</summary>
+		Srand_sysTime,
 		Rand,
 		RandInt,
 		#endregion
 		#region Debug
 		Error,
+		// LSNr cannot make sure that host interface methods actually return what they say they do.
+		// These runtime checks can be placed after a host interface call to make sure it returned
+		// what it is supposed to.
 		AssertHostReturnIs_I32, // Or bool
 		AssertHostReturnIs_F64,
 		// Data is index of type.
@@ -210,6 +231,63 @@ namespace LsnCore
 		AssertHostReturnIs_Option_F64,
 		// Data is index of type.
 		AssertHostReturnIs_Option_Type,
+		#endregion
+		#region More Math
+		/// <summary>,a,b -> Min(a,b)</summary>
+		Min,
+		/// <summary>,a,b -> Max(a,b)</summary>
+		Max,
+		Floor,
+		Ceil,
+		Round,
+		Abs,
+		Sqrt,
+		Sin,
+		Cos,
+		Tan,
+		ASin,
+		ACos,
+		ATan,
+
+		/// <summary>Increment var and push onto stack {++num}</summary>
+		PreInc_Var,
+		/// <summary>Increment element and push onto stack {++nums[i]}</summary>
+		PreInc_Elem,
+		/// <summary>Increment field and push onto stack {++foo.num}</summary>
+		PreInc_Fld,
+
+		/// <summary>Push var onto stack then increment {num++}</summary>
+		PostInc_Var,
+		/// <summary>Push element onto stack then increment {nums[i]++}</summary>
+		PostInc_Elem,
+		/// <summary>Push field onto stack then increment {foo.num++}</summary>
+		PostInc_Fld,
+
+		/// <summary>Decrement var and push onto stack {--num}</summary>
+		PreDec_Var,
+		/// <summary>Decrement element and push onto stack {--nums[i]}</summary>
+		PreDec_Elem,
+		/// <summary>Decrement field and push onto stack {--foo.num}</summary>
+		PreDec_Fld,
+
+		/// <summary>Push var onto stack then decrement {num--}</summary>
+		PostDec_Var,
+		/// <summary>Push element onto stack then increment {nums[i]--}</summary>
+		PostDec_Elem,
+		/// <summary>Push field onto stack then decrement {foo.num++--}</summary>
+		PostDec_Fld,
+		#endregion
+
+		// I might not implement these. Just thinking about it.
+		#region Registers?
+		/// <summary>$acc = 0</summary>
+		SetAcc_0,
+		/// <summary>$acc = pop</summary>
+		SetAcc,
+		/// <summary>$acc += pop</summary>
+		AddAcc,// Maybe the above 3 can share same insruction but differ on data.
+		/// <summary>Push $acc</summary>
+		PushAcc,
 		#endregion
 
 		CRN,

@@ -222,9 +222,10 @@ namespace LsnCore.Interpretation
 				#endregion
 				//case OpCode.Conv_I32_F64:break;
 				case OpCode.Jump:			NextInstruction = instr.Index;					break;
-				case OpCode.Jump_True:		if (PopBool()) NextInstruction = instr.Index;	break;
-				case OpCode.Jump_Target:	NextInstruction = Target;						break;
-				case OpCode.Set_Target:		Target = instr.Index;							break;
+				case OpCode.Jump_True:		if (PopBool())  NextInstruction = instr.Index;	break;
+				case OpCode.Jump_False:		if (!PopBool()) NextInstruction = instr.Index;	break;
+				case OpCode.JumpToTarget:	NextInstruction = Target;						break;
+				case OpCode.SetTarget:		Target = instr.Index;							break;
 				case OpCode.LoadIndex:		TmpIndex = instr.Index;							break;
 				case OpCode.CallFn:
 					EnterFunction(Environment.GetFile(TmpIndex).GetFunction(instr.Index));
@@ -362,7 +363,7 @@ namespace LsnCore.Interpretation
 					throw new NotImplementedException();
 				case OpCode.Say:			GameHost.Say(PopString(), Pop(), PopString());		break;
 				case OpCode.RegisterChoice:	GameHost.RegisterChoice(PopString(), instr.Index);	break;
-				case OpCode.CallChoice:		NextInstruction = GameHost.DisplayChoices(); GameHost.ClearChoices(); break;
+				case OpCode.CallChoices:		NextInstruction = GameHost.DisplayChoices(); GameHost.ClearChoices(); break;
 				case OpCode.GiveItem:
 				case OpCode.GiveGold:
 					throw new NotImplementedException();
