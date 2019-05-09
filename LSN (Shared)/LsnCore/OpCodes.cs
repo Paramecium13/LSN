@@ -303,6 +303,7 @@ namespace LsnCore
 		#endregion
 
 		CRN,
+		CFRN,
 		HCF = 0xF00F
 	}
 
