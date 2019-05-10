@@ -11,7 +11,7 @@ namespace LsnCore
 	{
 		string GetString(uint index);
 
-		bool LoadScriptClassReference(uint id, Action<LsnValue> setter);
+		bool LoadScriptObjectReference(uint id, Action<LsnValue> setter);
 
 		bool LoadReference(uint id, Action<LsnValue> setter);
 

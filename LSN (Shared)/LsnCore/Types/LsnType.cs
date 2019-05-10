@@ -151,5 +151,7 @@ namespace LsnCore
 		public abstract LsnValue CreateDefaultValue();
 
 		internal abstract bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter);
+
+		internal abstract void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer);
 	}
 }

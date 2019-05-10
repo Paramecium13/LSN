@@ -229,6 +229,11 @@ namespace LsnCore.Types
 		}
 
 		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
-			=> deserializer.LoadScriptClassReference(reader.ReadUInt32(), setter);
+			=> deserializer.LoadScriptObjectReference(reader.ReadUInt32(), setter);
+
+		internal override void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
+		{
+			writer.Write(serializer.SaveScriptObject(value.Value as ScriptObject));
+		}
 	}
 }

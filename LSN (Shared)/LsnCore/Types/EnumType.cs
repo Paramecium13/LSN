@@ -36,5 +36,10 @@ namespace LsnCore.Types
 			setter(new LsnValue(reader.ReadInt32()));
 			return true;
 		}
+
+		internal override void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
+		{
+			writer.Write(value.IntValue);
+		}
 	}
 }

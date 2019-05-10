@@ -1,4 +1,5 @@
-﻿using Syroot.BinaryData;
+﻿using LsnCore.Values;
+using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -104,5 +105,11 @@ namespace LsnCore.Types
 
 		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
 			=> deserializer.LoadHostInterface(reader.ReadUInt32(), (h) => setter(new LsnValue(h)));
+
+		internal override void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
+		{
+			var host = value.Value as IHostInterface;
+			writer.Write(host.NumericId);
+		}
 	}
 }

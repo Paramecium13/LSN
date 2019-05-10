@@ -22,6 +22,9 @@ namespace LsnCore.Types
 		{
 			setter(LsnValue.Nil); return true;
 		}
+
+		internal override void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
+		{ }
 	}
 
 	public sealed class OptionType : LsnType
@@ -45,6 +48,16 @@ namespace LsnCore.Types
 				return Contents.Type.LoadAsMember(deserializer, reader, setter);
 			setter(LsnValue.Nil);
 			return true;
+		}
+
+		internal override void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
+		{
+			if (value.IsNull)
+			{
+				writer.Write(false); return;
+			}
+			writer.Write(true);
+			Contents.Type.WriteAsMember(value, serializer, writer);
 		}
 	}
 

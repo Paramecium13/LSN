@@ -43,6 +43,11 @@ namespace LsnCore
 			setter(new LsnValue(reader.ReadInt32()));
 			return true;
 		}
+
+		internal override void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
+		{
+			writer.Write(value.IntValue);
+		}
 	}
 
 	class F64Type : LsnBoundedType<double>
@@ -55,6 +60,11 @@ namespace LsnCore
 			setter(new LsnValue(reader.ReadDouble()));
 			return true;
 		}
+
+		internal override void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
+		{
+			writer.Write(value.DoubleValue);
+		}
 	}
 
 	class StringType : LsnBoundedType<string>
@@ -65,5 +75,10 @@ namespace LsnCore
 
 		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
 			=> deserializer.LoadString(reader.ReadUInt32(), setter);
+
+		internal override void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
+		{
+			writer.Write(serializer.SaveString((value.Value as StringValue).Value));
+		}
 	}
 }

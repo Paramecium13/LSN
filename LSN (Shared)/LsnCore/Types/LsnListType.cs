@@ -111,6 +111,9 @@ namespace LsnCore
 
 		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
 			=> deserializer.LoadReference(reader.ReadUInt32(), setter);
+
+		internal override void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
+			=> writer.Write(serializer.SaveList(value.Value));
 	}
 
 	/// <summary>

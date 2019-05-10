@@ -19,6 +19,9 @@ namespace LsnCore
 			setter(new LsnValue(reader.ReadBoolean()));
 			return true;
 		}
+
+		internal override void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
+			=> writer.Write(value.BoolValue);
 	}
 
 }
