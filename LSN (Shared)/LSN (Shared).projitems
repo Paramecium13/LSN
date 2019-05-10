@@ -51,6 +51,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Method.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Serialization\ILsnDeserializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Serialization\ILsnSerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Serialization\SaveFileTypeSegment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Serialization\LsnSaveSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Serialization\ResourceDeserializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Serialization\ResourceSerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Settings.cs" />

@@ -118,6 +118,17 @@ namespace LsnCore
 
 		private readonly TypeId[] TypeIds;
 
+		public void LoadTypeIds(Dictionary<string,TypeId> ids)
+		{
+			foreach (var id in TypeIds)
+			{
+				if (!ids.ContainsKey(id.Name))
+				{
+					ids.Add(id.Name, id);
+				}
+			}
+		}
+
 		public LsnResourceThing(TypeId[] typeIds)
 		{
 			TypeIds = typeIds;
