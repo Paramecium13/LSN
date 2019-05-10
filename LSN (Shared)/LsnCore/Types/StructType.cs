@@ -63,5 +63,17 @@ namespace LsnCore.Types
 
 			return new StructType(typeContainer.GetTypeId(name), fields);
 		}
+
+		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
+		{
+			var vals = deserializer.GetArray(FieldCount);
+			var compl = true;
+			for (int i = 0; i < FieldCount; i++)
+			{
+				var j = i;
+				compl &= _Fields[i].Type.Type.LoadAsMember(deserializer, reader, (x) => vals[j] = x);
+			}
+			return compl;
+		}
 	}
 }

@@ -1,19 +1,20 @@
 ﻿using LsnCore.Types;
 using LsnCore.Values;
+using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace LsnCore
 {
-	public class VectorType : LsnType, ICollectionType
+	public class VectorType : LsnReferenceType, ICollectionType
 	{
 		static VectorType()
 		{
-			var vectorInt = VectorGeneric.Instance.GetType(new TypeId[] { int_.Id }) as VectorType;
-			var vectorDouble = VectorGeneric.Instance.GetType(new TypeId[] { double_.Id }) as VectorType;
+			var vectorInt = VectorGeneric.Instance.GetType(new TypeId[] { Int_.Id }) as VectorType;
+			var vectorDouble = VectorGeneric.Instance.GetType(new TypeId[] { Double_.Id }) as VectorType;
 
-			vectorInt._Methods.Add("Sum", new BoundedMethod(vectorInt, int_,
+			vectorInt._Methods.Add("Sum", new BoundedMethod(vectorInt, Int_,
 				(args) =>
 				{
 					int Σ = 0;
@@ -24,7 +25,7 @@ namespace LsnCore
 					return new LsnValue(Σ);
 				}, "Sum"
 			));
-			vectorInt._Methods.Add("Mean", new BoundedMethod(vectorInt, int_,
+			vectorInt._Methods.Add("Mean", new BoundedMethod(vectorInt, Int_,
 				(args) =>
 				{
 					int Σ = 0;
@@ -36,7 +37,7 @@ namespace LsnCore
 				}, "Mean"
 			));
 
-			vectorDouble._Methods.Add("Sum", new BoundedMethod(vectorDouble, double_,
+			vectorDouble._Methods.Add("Sum", new BoundedMethod(vectorDouble, Double_,
 				(args) =>
 				{
 					double Σ = 0;
@@ -47,7 +48,7 @@ namespace LsnCore
 					return new LsnValue(Σ);
 				}, "Sum"
 			));
-			vectorDouble._Methods.Add("Mean", new BoundedMethod(vectorDouble, double_,
+			vectorDouble._Methods.Add("Mean", new BoundedMethod(vectorDouble, Double_,
 				(args) =>
 				{
 					double Σ = 0.0;
@@ -67,7 +68,7 @@ namespace LsnCore
 		/// </summary>
 		public readonly TypeId GenericId;
 
-		public LsnType IndexType => int_;
+		public LsnType IndexType => Int_;
 
 		public LsnType ContentsType => GenericType;
 
@@ -84,7 +85,7 @@ namespace LsnCore
 
 		internal void SetupMethods()
 		{
-			_Methods.Add("Length", new BoundedMethod(this, int_,
+			_Methods.Add("Length", new BoundedMethod(this, Int_,
 				(args) => ((VectorInstance)args[0].Value).Length(), "Length"));
 			_Methods.Add("ToList",
 				new BoundedMethod(this,
@@ -100,6 +101,9 @@ namespace LsnCore
 		/// <returns></returns>
 		public override LsnValue CreateDefaultValue()
 			=> new LsnValue(new VectorInstance(this, new LsnValue[0]));
+
+		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
+			=> deserializer.LoadReference(reader.ReadUInt32(), setter);
 	}
 
 	public class VectorGeneric : GenericType

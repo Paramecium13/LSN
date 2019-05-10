@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Syroot.BinaryData;
 
 namespace LsnCore.Types
 {
@@ -16,6 +17,11 @@ namespace LsnCore.Types
 
 		public override LsnValue CreateDefaultValue()
 			=> LsnValue.Nil;
+
+		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
+		{
+			setter(LsnValue.Nil); return true;
+		}
 	}
 
 	public sealed class OptionType : LsnType
@@ -32,6 +38,14 @@ namespace LsnCore.Types
 
 		public override bool Subsumes(LsnType type) =>
 			type == NullType.Instance || (Contents?.Type?.Subsumes(type) ?? false) ? true : base.Subsumes(type);
+
+		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
+		{
+			if (reader.ReadBoolean())
+				return Contents.Type.LoadAsMember(deserializer, reader, setter);
+			setter(LsnValue.Nil);
+			return true;
+		}
 	}
 
 	public sealed class OptionGeneric : GenericType

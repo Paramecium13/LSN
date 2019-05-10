@@ -80,5 +80,11 @@ namespace LsnCore.Types
 
 			return new HandleType(id, parents);
 		}
+
+		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
+		{
+			setter(new LsnValue(reader.ReadUInt32()));
+			return true;
+		}
 	}
 }

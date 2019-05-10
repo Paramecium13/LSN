@@ -143,7 +143,7 @@ namespace LSNr.Converations
 
 		public void Parse()
 		{
-			JumpTargetVariable = CurrentScope.CreateVariable("Jump Target", LsnType.int_, true);
+			JumpTargetVariable = CurrentScope.CreateVariable("Jump Target", LsnType.Int_, true);
 			JumpTargetVariable.MarkAsUsed();
 
 			var flattener = new ComponentFlattener();

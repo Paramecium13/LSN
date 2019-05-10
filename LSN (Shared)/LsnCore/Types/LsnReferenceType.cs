@@ -4,7 +4,6 @@ using System.Text;
 
 namespace LsnCore
 {
-	[Serializable]
 	public abstract class LsnReferenceType : LsnType
 	{
 		

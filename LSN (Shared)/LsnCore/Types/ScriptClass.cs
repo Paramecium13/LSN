@@ -227,5 +227,8 @@ namespace LsnCore.Types
 			return new ScriptClass(type, h, fields, methods, listeners,
 				states, defaultStateId, unique, meta, constructor);
 		}
+
+		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
+			=> deserializer.LoadScriptClassReference(reader.ReadUInt32(), setter);
 	}
 }

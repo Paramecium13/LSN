@@ -11,11 +11,10 @@ namespace LsnCore
 {
 	public abstract class LsnType
 	{
-		public static LsnType int_ { get; } = new LsnBoundedType<int>("int", () => new LsnValue(0));
-		public static LsnType double_ { get; } = new LsnBoundedType<double>("double", () => new LsnValue(0.0));
-		public static LsnType string_ { get; } = new LsnBoundedType<string>("string", () => new LsnValue(new StringValue("")));
-		public static LsnType Bool_ { get; } = new BoolType("bool");
-		public static LsnType object_ { get; } = new LsnBoundedType<object>("object", () => LsnValue.Nil);
+		public static LsnType Int_ => I32Type.Instance;
+		public static LsnType Double_ => F64Type.Instance;
+		public static LsnType String_ => StringType.Instance;
+		public static LsnType Bool_ => BoolType.Instance;
 
 		static LsnType()
 		{
@@ -24,9 +23,9 @@ namespace LsnCore
 
 		private static void SetUpMethods()
 		{
-			int_._Methods.Add("Abs", new BoundedMethod(int_,int_,(args)=>new LsnValue((int)Math.Abs(args[0].IntValue)), "Abs"));
+			Int_._Methods.Add("Abs", new BoundedMethod(Int_,Int_,(args)=>new LsnValue((int)Math.Abs(args[0].IntValue)), "Abs"));
 
-			double_._Methods.Add("Abs", new BoundedMethod(double_, double_,
+			Double_._Methods.Add("Abs", new BoundedMethod(Double_, Double_,
 				(args) => new LsnValue
 				(
 					Math.Abs
@@ -36,7 +35,7 @@ namespace LsnCore
 				), "Abs"
 			));
 
-			double_._Methods.Add("Ceil", new BoundedMethod(double_, int_,
+			Double_._Methods.Add("Ceil", new BoundedMethod(Double_, Int_,
 				(args) => new LsnValue
 				(
 					(int)Math.Ceiling
@@ -46,14 +45,14 @@ namespace LsnCore
 				), "Ceil"
 			));
 
-			double_._Methods.Add("Floor", new BoundedMethod(double_, int_,
+			Double_._Methods.Add("Floor", new BoundedMethod(Double_, Int_,
 				(args) => new LsnValue
 				(
 					(int)args[0].DoubleValue
 				), "Floor"
 			));
 
-			double_._Methods.Add("Round", new BoundedMethod(double_, int_,
+			Double_._Methods.Add("Round", new BoundedMethod(Double_, Int_,
 				(args) => new LsnValue
 				(
 					(int)Math.Round
@@ -64,24 +63,24 @@ namespace LsnCore
 			));
 
 
-			string_._Methods.Add("Length", new BoundedMethod(string_, int_,
+			String_._Methods.Add("Length", new BoundedMethod(String_, Int_,
 				(args) => new LsnValue
 				(
 					((StringValue)args[0].Value).Value.Length
 				), "Length"
 			));
 
-			string_._Methods.Add("SubString", new BoundedMethod(string_, string_,
+			String_._Methods.Add("SubString", new BoundedMethod(String_, String_,
 				(args) => new LsnValue (
 					new StringValue (
 						((StringValue)args[0].Value).Value.Substring(args[1].IntValue,
 							args[2].IntValue)
 						)
 				), "SubString",
-				new List<Parameter> { new Parameter("start",int_,LsnValue.Nil,1), new Parameter("length", int_,LsnValue.Nil,2)})
+				new List<Parameter> { new Parameter("start",Int_,LsnValue.Nil,1), new Parameter("length", Int_,LsnValue.Nil,2)})
 			);
 
-			string_._Methods.Add("ToLower", new BoundedMethod(string_, string_,
+			String_._Methods.Add("ToLower", new BoundedMethod(String_, String_,
 				(args) => new LsnValue(new StringValue
 				(
 					((StringValue)args[0].Value).Value.ToLower()
@@ -97,9 +96,9 @@ namespace LsnCore
 		{
 			return new List<LsnType>
 			{
-				int_,
-				double_,
-				string_,
+				Int_,
+				Double_,
+				String_,
 				Bool_,
 				RangeType.Instance,
 				NullType.Instance
@@ -145,12 +144,12 @@ namespace LsnCore
 
 		public virtual bool Subsumes(LsnType type)
 		{
-			if (this == double_ && type == int_) return true;
+			if (this == Double_ && type == Int_) return true;
 			return Equals(type) || SubsumesList.Contains(type);
 		}
 
 		public abstract LsnValue CreateDefaultValue();
 
-		internal abstract void LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter);
+		internal abstract bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter);
 	}
 }

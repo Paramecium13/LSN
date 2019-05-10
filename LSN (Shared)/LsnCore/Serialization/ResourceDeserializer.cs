@@ -28,10 +28,10 @@ namespace LsnCore.Serialization
 
 		public ResourceDeserializer()
 		{
-			Types.Add("int", LsnType.int_);
-			Types.Add("double", LsnType.double_);
+			Types.Add("int", LsnType.Int_);
+			Types.Add("double", LsnType.Double_);
 			Types.Add("bool", LsnType.Bool_);
-			Types.Add("string", LsnType.string_);
+			Types.Add("string", LsnType.String_);
 		}
 
 		internal TypeId[] LoadTypeIds(BinaryDataReader reader)

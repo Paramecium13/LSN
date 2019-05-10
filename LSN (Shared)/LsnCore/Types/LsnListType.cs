@@ -1,5 +1,6 @@
 ﻿using LsnCore.Types;
 using LsnCore.Values;
+using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,10 @@ namespace LsnCore
 		static LsnListType()
 		{
 			// Set up methods
-			var listInt = LsnListGeneric.Instance.GetType(new TypeId[] { int_.Id }) as LsnListType;
-			var listDouble = LsnListGeneric.Instance.GetType(new TypeId[] { double_.Id }) as LsnListType;
+			var listInt = LsnListGeneric.Instance.GetType(new TypeId[] { Int_.Id }) as LsnListType;
+			var listDouble = LsnListGeneric.Instance.GetType(new TypeId[] { Double_.Id }) as LsnListType;
 
-			listInt._Methods.Add("Sum", new BoundedMethod(listInt, int_,
+			listInt._Methods.Add("Sum", new BoundedMethod(listInt, Int_,
 				(args) =>
 				{
 					var Σ = 0;
@@ -29,7 +30,7 @@ namespace LsnCore
 					return new LsnValue(Σ);
 				}, "Sum"
 			));
-			listInt._Methods.Add("Mean", new BoundedMethod(listInt, int_,
+			listInt._Methods.Add("Mean", new BoundedMethod(listInt, Int_,
 				(args) =>
 				{
 					var Σ = 0;
@@ -41,7 +42,7 @@ namespace LsnCore
 				}, "Mean"
 			));
 
-			listDouble._Methods.Add("Sum", new BoundedMethod(listDouble, double_,
+			listDouble._Methods.Add("Sum", new BoundedMethod(listDouble, Double_,
 				(args) =>
 				{
 					var Σ = 0.0;
@@ -52,7 +53,7 @@ namespace LsnCore
 					return new LsnValue(Σ);
 				}, "Sum"
 			));
-			listDouble._Methods.Add("Mean", new BoundedMethod(listDouble, double_,
+			listDouble._Methods.Add("Mean", new BoundedMethod(listDouble, Double_,
 				(args) =>
 				{
 					var Σ = 0.0;
@@ -78,7 +79,7 @@ namespace LsnCore
 
 		public readonly TypeId GenericId;
 
-		public LsnType IndexType => int_;
+		public LsnType IndexType => Int_;
 
 		public LsnType ContentsType => GenericType;
 
@@ -99,7 +100,7 @@ namespace LsnCore
 				}, "Add",
 				new List<Parameter> { new Parameter("self",this, LsnValue.Nil, 0), new Parameter("value",GenericId, LsnValue.Nil, 1)}
 			));
-			_Methods.Add("Length", new BoundedMethod(this, int_, (args) => ((LsnList)args[0].Value).Length(), "Length"));
+			_Methods.Add("Length", new BoundedMethod(this, Int_, (args) => ((LsnList)args[0].Value).Length(), "Length"));
 			var vtype = VectorGeneric.Instance.GetType(new TypeId[] { GenericId }) as VectorType;
 			_Methods.Add("ToVector", new BoundedMethod(this, vtype, (args) => new LsnValue(new VectorInstance(vtype, ((LsnList)args[0].Value).GetValues())), "ToVector"));
 			Id.Load(this);
@@ -107,6 +108,9 @@ namespace LsnCore
 
 		public override LsnValue CreateDefaultValue()
 			=> new LsnValue(new LsnList(this));
+
+		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
+			=> deserializer.LoadReference(reader.ReadUInt32(), setter);
 	}
 
 	/// <summary>

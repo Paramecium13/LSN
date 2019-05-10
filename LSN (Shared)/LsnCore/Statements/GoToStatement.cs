@@ -41,7 +41,7 @@ namespace LsnCore.Statements
 		{
 			if (ex0 == null) throw new ArgumentNullException();
 			Actor = actor; // Make sure its the right type.
-			if (ex0.Type.Type == LsnType.string_)
+			if (ex0.Type.Type == LsnType.String_)
 			{
 				/*if (hasKeywordLabel)
 				{
@@ -64,9 +64,9 @@ namespace LsnCore.Statements
 					return;
 				}*/
 
-				if (ex1.Type.Type == LsnType.int_) // It's of the form '(actor) goto <map> <x> <y>;'
+				if (ex1.Type.Type == LsnType.Int_) // It's of the form '(actor) goto <map> <x> <y>;'
 				{
-					if (ex2 == null || (ex2.Type.Type != LsnType.int_))
+					if (ex2 == null || (ex2.Type.Type != LsnType.Int_))
 						throw new ArgumentNullException();
 					X = ex1;
 					Y = ex2;
@@ -80,10 +80,10 @@ namespace LsnCore.Statements
 				throw new ArgumentException();
 			}
 
-			if (ex0.Type.Type == LsnType.int_)
+			if (ex0.Type.Type == LsnType.Int_)
 			{
 				if (ex1 == null) throw new ArgumentNullException();
-				if (ex1.Type.Type != LsnType.int_) throw new ArgumentException();
+				if (ex1.Type.Type != LsnType.Int_) throw new ArgumentException();
 				X = ex0;
 				Y = ex1;
 				MyForm = Form.XY;

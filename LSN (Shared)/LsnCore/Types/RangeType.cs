@@ -1,6 +1,8 @@
-﻿using System;
+﻿using LsnCore.Values;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using Syroot.BinaryData;
 
 namespace LsnCore.Types
 {
@@ -9,7 +11,7 @@ namespace LsnCore.Types
 		public static readonly RangeType Instance = new RangeType();
 
 		public IReadOnlyCollection<Field> FieldsB { get; }
-			= new List<Field>() { new Field(0,"Start",int_), new Field(1,"End",int_)};
+			= new List<Field>() { new Field(0,"Start",Int_), new Field(1,"End",Int_)};
 
 		public override LsnValue CreateDefaultValue() => new LsnValue(new Values.RangeValue(0, 0));
 
@@ -24,10 +26,16 @@ namespace LsnCore.Types
 			}
 		}
 
-		private RangeType()
+		RangeType()
 		{
 			Name = "Range";
 			Id = new TypeId(this);
+		}
+
+		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
+		{
+			setter(new LsnValue(new RangeValue(reader.ReadInt32(), reader.ReadInt32())));
+			return true;
 		}
 	}
 }

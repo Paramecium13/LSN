@@ -21,7 +21,7 @@ namespace LsnCore
 	/// </summary>
 	public sealed class StringValue : IBoundValue<string>
 	{
-		private static readonly TypeId id = LsnType.string_.Id;
+		private static readonly TypeId id = LsnType.String_.Id;
 
 		public TypeId Type { get { return id; } }
 

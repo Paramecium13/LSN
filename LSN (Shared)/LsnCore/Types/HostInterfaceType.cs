@@ -101,5 +101,8 @@ namespace LsnCore.Types
 
 			return new HostInterfaceType(type, methodDefs, eventDefs);
 		}
+
+		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
+			=> deserializer.LoadHostInterface(reader.ReadUInt32(), (h) => setter(new LsnValue(h)));
 	}
 }

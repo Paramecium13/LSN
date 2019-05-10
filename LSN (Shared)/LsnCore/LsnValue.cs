@@ -84,7 +84,7 @@ namespace LsnCore
 			Data = value;
 			Value = null;
 #if LSNR
-			Id = LsnType.double_.Id;
+			Id = LsnType.Double_.Id;
 #endif
 		}
 
@@ -97,7 +97,7 @@ namespace LsnCore
 			Data = value;
 			Value = null;
 #if LSNR
-			Id = LsnType.int_.Id;
+			Id = LsnType.Int_.Id;
 #endif
 		}
 

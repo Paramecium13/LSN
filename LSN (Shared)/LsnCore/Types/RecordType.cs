@@ -76,5 +76,8 @@ namespace LsnCore.Types
 
 			return new RecordType(typeContainer.GetTypeId(name), fields);
 		}
+
+		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
+			=> deserializer.LoadReference(reader.ReadUInt32(), setter);
 	}
 }

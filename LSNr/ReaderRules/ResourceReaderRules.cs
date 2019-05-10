@@ -67,16 +67,16 @@ namespace LSNr.ReaderRules
 				{
 					if (tokens[++i].Type == TokenType.String)
 					{
-						if (type != LsnType.string_.Id)
+						if (type != LsnType.String_.Id)
 							throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type string to a parameter of type {type.Name}", self.Path);
 						defaultValue = new LsnValue(new StringValue(tokens[i].Value));
 						if (i + 1 < tokens.Count) i++;
 					}
 					else if (tokens[i].Type == TokenType.Integer)
 					{
-						if (type != LsnType.int_.Id)
+						if (type != LsnType.Int_.Id)
 						{
-							if (type == LsnType.double_.Id)
+							if (type == LsnType.Double_.Id)
 							{
 								defaultValue = new LsnValue(tokens[i].IntValue);
 							}
@@ -88,7 +88,7 @@ namespace LSNr.ReaderRules
 					}
 					else if (tokens[i].Type == TokenType.Float)
 					{
-						if (type != LsnType.double_.Id)
+						if (type != LsnType.Double_.Id)
 							throw new LsnrParsingException(tokens[i], $"Error in parsing parameter {name}: cannot assign a default value of type double to a parameter of type {type.Name}", self.Path);
 						defaultValue = new LsnValue(tokens[i].DoubleValue);
 						if (i + 1 < tokens.Count) i++;

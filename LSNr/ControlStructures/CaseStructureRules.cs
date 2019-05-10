@@ -34,7 +34,7 @@ namespace LSNr.ControlStructures
 				throw LsnrParsingException.UnexpectedToken(res.tokens[2], ":", script.Path);
 			var cnd = res.substitutions[res.tokens[1]]; // Check if bool?
 			var str = res.substitutions[res.tokens[3]]; // Check if string?
-			if (str.Type != LsnType.string_.Id)
+			if (str.Type != LsnType.String_.Id)
 				throw new LsnrParsingException(head[0], "Improperly formatted conditional choice: The title must be an expression of type string.", script.Path);
 			var p = new Parser(body, script);
 			p.Parse();

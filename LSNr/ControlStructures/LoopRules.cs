@@ -34,7 +34,7 @@ namespace LSNr.ControlStructures
 			if (expr.Type.Type is ICollectionType collType)
 			{
 				script.CurrentScope = script.CurrentScope.CreateChild();
-				var index = script.CurrentScope.CreateVariable(vName + " index", LsnType.int_);
+				var index = script.CurrentScope.CreateVariable(vName + " index", LsnType.Int_);
 				IExpression collection;
 				AssignmentStatement state = null;
 				if (ForInCollectionLoop.CheckCollectionVariable(expr))
@@ -60,7 +60,7 @@ namespace LSNr.ControlStructures
 			if (expr.Type.Type == RangeType.Instance)
 			{
 				script.CurrentScope = script.CurrentScope.CreateChild();
-				var index = script.CurrentScope.CreateVariable(vName, LsnType.int_);
+				var index = script.CurrentScope.CreateVariable(vName, LsnType.Int_);
 				index.MarkAsUsed();
 				var p = new Parser(body, script);
 				p.Parse();
@@ -73,7 +73,7 @@ namespace LSNr.ControlStructures
 						{
 							loop.Start = new LsnValue(v1.IntValue);
 							// statement for end...
-							var endVar = script.CurrentScope.CreateVariable("# " + vName, LsnType.int_);
+							var endVar = script.CurrentScope.CreateVariable("# " + vName, LsnType.Int_);
 							endVar.MarkAsUsed();
 							var st1 = new AssignmentStatement(endVar.Index, rExp.End);
 							endVar.Assignment = st1;

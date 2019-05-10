@@ -52,7 +52,7 @@ namespace LSNr.Statements
 				if (expTokens[amountIndex].Type != TokenType.Substitution)
 					throw new LsnrParsingException(expTokens[1], "Improperly formatted give item statement.", script.Path);
 				amount = res.substitutions[expTokens[amountIndex]];
-				if (amount.Type != LsnType.int_.Id)
+				if (amount.Type != LsnType.Int_.Id)
 					throw new LsnrParsingException(tokens[0], "Improperly formatted give item statement: amount must be an int expression.", script.Path);
 			}
 			else amount = new LsnValue(1);

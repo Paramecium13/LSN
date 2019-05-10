@@ -74,7 +74,7 @@ namespace LsnCore.Statements
 
 		public SetTargetStatement(ushort index)
 		{
-			Variable = new Variable("Jump Target", LsnType.int_, index, true);
+			Variable = new Variable("Jump Target", LsnType.Int_, index, true);
 		}
 #else
 		int Index;

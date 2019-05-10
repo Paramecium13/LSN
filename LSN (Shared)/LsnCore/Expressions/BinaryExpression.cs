@@ -49,16 +49,16 @@ namespace LsnCore.Expressions
 					switch (argTypes)
 					{
 						case BinaryOperationArgsType.Int_Int:
-							Type = LsnType.int_.Id;
+							Type = LsnType.Int_.Id;
 							break;
 						case BinaryOperationArgsType.Int_Double:
 						case BinaryOperationArgsType.Double_Double:
 						case BinaryOperationArgsType.Double_Int:
-							Type = LsnType.double_.Id;
+							Type = LsnType.Double_.Id;
 							break;
 						case BinaryOperationArgsType.String_String:
 						case BinaryOperationArgsType.String_Int:
-							Type = LsnType.string_.Id;
+							Type = LsnType.String_.Id;
 							break;
 						case BinaryOperationArgsType.Bool_Bool:
 							Type = LsnType.Bool_.Id;

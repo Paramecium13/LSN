@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Syroot.BinaryData;
 
 namespace LsnCore.Types
 {
@@ -20,14 +21,20 @@ namespace LsnCore.Types
 			StoIDict = values.ToDictionary(p => p.Key, p => p.Value);
 			ItoSDict = values.ToDictionary(p => p.Value, p => p.Key);
 
-			_Methods.Add("GetName",new BoundedMethod(this, LsnType.string_, (a) => new LsnValue(new StringValue(ItoSDict[a[0].IntValue])), "GetName", null));
-			_Methods.Add("ToInt", new BoundedMethod(this, LsnType.int_, (a) => a[0], "ToInt"));
-			_Methods.Add("GetValue", new BoundedMethod(this, LsnType.int_, (a) => a[0], "GetValue"));
+			_Methods.Add("GetName",new BoundedMethod(this, LsnType.String_, (a) => new LsnValue(new StringValue(ItoSDict[a[0].IntValue])), "GetName", null));
+			_Methods.Add("ToInt", new BoundedMethod(this, LsnType.Int_, (a) => a[0], "ToInt"));
+			_Methods.Add("GetValue", new BoundedMethod(this, LsnType.Int_, (a) => a[0], "GetValue"));
 		}
 
 		public override LsnValue CreateDefaultValue()
 		{
 			return new LsnValue(DefaultValue);
+		}
+
+		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
+		{
+			setter(new LsnValue(reader.ReadInt32()));
+			return true;
 		}
 	}
 }

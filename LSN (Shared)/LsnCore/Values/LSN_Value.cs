@@ -12,12 +12,9 @@ namespace LsnCore
 	/// <summary>
 	/// An object representing an LSN value.
 	/// </summary>
-	[Serializable]
 	public abstract class LsnValueB : ILsnValue
 	{
-		private TypeId _Type;
-
-		public /*virtual*/ TypeId Type { get { return _Type; } protected set { _Type = value; } }
+		public /*virtual*/ TypeId Type { get; protected set; }
 		public abstract bool BoolValue { get; }
 
 		public abstract ILsnValue Clone();

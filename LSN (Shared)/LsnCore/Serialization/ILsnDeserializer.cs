@@ -11,8 +11,14 @@ namespace LsnCore
 	{
 		string GetString(uint index);
 
-		void LoadScriptClassReference(uint id, Action<LsnValue> setter);
+		bool LoadScriptClassReference(uint id, Action<LsnValue> setter);
 
-		void LoadReference(uint id, Action<LsnValue> setter);
+		bool LoadReference(uint id, Action<LsnValue> setter);
+
+		bool LoadString(uint id, Action<LsnValue> setter);
+
+		bool LoadHostInterface(uint id, Action<IHostInterface> setter);
+
+		LsnValue[] GetArray(int size);
 	}
 }

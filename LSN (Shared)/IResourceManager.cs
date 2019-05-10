@@ -161,83 +161,83 @@ namespace LsnCore
 				{
 					var v = d[0];
 					return new LsnValue(Math.Sqrt(v.DoubleValue));
-				}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sqrt"),
+				}, new List<Parameter> { new Parameter("x", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "Sqrt"),
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
 					return new LsnValue(Math.Sin(v.DoubleValue));
-				}, new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sin"),
+				}, new List<Parameter> { new Parameter("θ", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "Sin"),
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
 					return new LsnValue(Math.Cos(v.DoubleValue));
-				}, new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Cos"),
+				}, new List<Parameter> { new Parameter("θ", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "Cos"),
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
 					return new LsnValue(Math.Tan(v.DoubleValue));
-				}, new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Tan"),
+				}, new List<Parameter> { new Parameter("θ", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "Tan"),
 				new BoundedFunction(d =>
 				{
 					var x = d[0].DoubleValue;
 					var y = d[1].DoubleValue;
 					return new LsnValue(Math.Sqrt(x * x + y * y));
-				}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0),
-				new Parameter("y", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Hypot"),
+				}, new List<Parameter> { new Parameter("x", LsnType.Double_.Id, LsnValue.Nil, 0),
+				new Parameter("y", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "Hypot"),
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
 					return new LsnValue(Math.Asin(v.DoubleValue));
-				}, new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ASin"),
+				}, new List<Parameter> { new Parameter("θ", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "ASin"),
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
 					return new LsnValue(Math.Acos(v.DoubleValue));
-				}, new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ACos"),
+				}, new List<Parameter> { new Parameter("θ", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "ACos"),
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
 					return new LsnValue(Math.Atan(v.DoubleValue));
-				}, new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ATan"),
+				}, new List<Parameter> { new Parameter("θ", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "ATan"),
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
 					return new LsnValue(Math.Sinh(v.DoubleValue));
-				}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sinh"),
+				}, new List<Parameter> { new Parameter("x", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "Sinh"),
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
 
 					return new LsnValue(Math.Cosh(v.DoubleValue));
-				}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Cosh"),
+				}, new List<Parameter> { new Parameter("x", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "Cosh"),
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
 					return new LsnValue(Math.Tanh(v.DoubleValue));
-				}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Tanh"),
+				}, new List<Parameter> { new Parameter("x", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "Tanh"),
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
 					return new LsnValue(Math.Log(v.DoubleValue));
-				}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Log"),
+				}, new List<Parameter> { new Parameter("x", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "Log"),
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
 					return new LsnValue(Math.Log10(v.DoubleValue));
-				}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Log10"),
+				}, new List<Parameter> { new Parameter("x", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "Log10"),
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
 					return new LsnValue(Erf(v.DoubleValue));
-				}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ErrorFunction"),
+				}, new List<Parameter> { new Parameter("x", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "ErrorFunction"),
 				new BoundedFunction(d =>
 				{
 					var v = d[0];
 					return new LsnValue(Γ(v.DoubleValue));
-				}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Gamma")
+				}, new List<Parameter> { new Parameter("x", LsnType.Double_.Id, LsnValue.Nil, 0) }, LsnType.Double_, "Gamma")
 			};
 
-			return new LsnResourceThing(new TypeId[] { LsnType.int_.Id, LsnType.double_.Id})
+			return new LsnResourceThing(new TypeId[] { LsnType.Int_.Id, LsnType.Double_.Id})
 			{
 				HostInterfaces = new Dictionary<string, HostInterfaceType>(),
 				StructTypes = new Dictionary<string, StructType>(),
@@ -253,35 +253,35 @@ namespace LsnCore
 		{
 			var functions = new Function[]
 			{
-				new BoundedFunctionWithInterpreter((i,_) => new LsnValue(i.RngGetDouble()), new List<Parameter>(), LsnType.double_.Id, "Random"),
+				new BoundedFunctionWithInterpreter((i,_) => new LsnValue(i.RngGetDouble()), new List<Parameter>(), LsnType.Double_.Id, "Random"),
 				new BoundedFunctionWithInterpreter((i,d) =>
 				{
 					i.RngSetSeed(d[0].IntValue);
 					return LsnValue.Nil;
-				},new List<Parameter> {new Parameter("seed",LsnType.int_,new LsnValue(0),0)},null, "SetRandomSeed"),
+				},new List<Parameter> {new Parameter("seed",LsnType.Int_,new LsnValue(0),0)},null, "SetRandomSeed"),
 				new BoundedFunctionWithInterpreter((i,d) => new LsnValue(i.RngGetInt(d[0].IntValue,d[1].IntValue)),
-					new List<Parameter> {new Parameter("min",LsnType.int_,new LsnValue(0),0), new Parameter("max",LsnType.int_,new LsnValue(int.MaxValue),1)},
-					LsnType.int_.Id, "RandomInt"),
+					new List<Parameter> {new Parameter("min",LsnType.Int_,new LsnValue(0),0), new Parameter("max",LsnType.Int_,new LsnValue(int.MaxValue),1)},
+					LsnType.Int_.Id, "RandomInt"),
 				new BoundedFunctionWithInterpreter((i,d) => new LsnValue(i.RngGetDouble(d[0].DoubleValue, d[1].DoubleValue)),
-					new List<Parameter> {new Parameter("min",LsnType.double_,new LsnValue(0.0),0), new Parameter("max",LsnType.double_,new LsnValue(1.0),1)},
-					LsnType.double_.Id, "RandomDouble"),
+					new List<Parameter> {new Parameter("min",LsnType.Double_,new LsnValue(0.0),0), new Parameter("max",LsnType.Double_,new LsnValue(1.0),1)},
+					LsnType.Double_.Id, "RandomDouble"),
 				new BoundedFunctionWithInterpreter((i,d) => new LsnValue(i.RngGetNormal()),
-					new List<Parameter>(), LsnType.double_.Id, "StandardNormal"),
+					new List<Parameter>(), LsnType.Double_.Id, "StandardNormal"),
 				new BoundedFunctionWithInterpreter((i,d) => new LsnValue(i.RngGetCappedNormal(d[0].DoubleValue)),
-					new List<Parameter> {new Parameter("cap",LsnType.double_, new LsnValue(4.0),0)},
-					LsnType.double_.Id, "CappedStandardNormal"),
+					new List<Parameter> {new Parameter("cap",LsnType.Double_, new LsnValue(4.0),0)},
+					LsnType.Double_.Id, "CappedStandardNormal"),
 				new BoundedFunctionWithInterpreter((i,d) => new LsnValue(i.RngGetNormal(d[0].DoubleValue, d[1].DoubleValue)),
-					new List<Parameter> {new Parameter("mean",LsnType.double_,new LsnValue(0.0),0), new Parameter("standardDeviation",LsnType.double_,new LsnValue(1.0),1)},
-					LsnType.double_.Id, "Normal"),
+					new List<Parameter> {new Parameter("mean",LsnType.Double_,new LsnValue(0.0),0), new Parameter("standardDeviation",LsnType.Double_,new LsnValue(1.0),1)},
+					LsnType.Double_.Id, "Normal"),
 				new BoundedFunctionWithInterpreter((i,d) => new LsnValue(i.RngGetCappedNormal(d[0].DoubleValue, d[1].DoubleValue,d[2].DoubleValue)),
-					new List<Parameter> { new Parameter("mean", LsnType.double_, new LsnValue(0.0), 0),
-						new Parameter("standardDeviation", LsnType.double_, new LsnValue(1.0), 1),
-						new Parameter("cap",LsnType.double_, new LsnValue(4.0),2)},
-					LsnType.double_.Id, "CappedNormal"),
+					new List<Parameter> { new Parameter("mean", LsnType.Double_, new LsnValue(0.0), 0),
+						new Parameter("standardDeviation", LsnType.Double_, new LsnValue(1.0), 1),
+						new Parameter("cap",LsnType.Double_, new LsnValue(4.0),2)},
+					LsnType.Double_.Id, "CappedNormal"),
 
 				new BoundedFunctionWithInterpreter((i,d) => new LsnValue(i.RngGetDouble() < d[0].DoubleValue),
-					new List<Parameter> {new Parameter("percent",LsnType.double_,new LsnValue(50.0),0)},
-					LsnType.double_.Id, "PercentChance"),
+					new List<Parameter> {new Parameter("percent",LsnType.Double_,new LsnValue(50.0),0)},
+					LsnType.Double_.Id, "PercentChance"),
 
 
 			};
@@ -301,31 +301,31 @@ namespace LsnCore
 		{
 			var functions = new Function[]
 			{
-				new BoundedFunctionWithInterpreter(null, new List<Parameter>(), LsnType.double_.Id, "Random"),
-				new BoundedFunctionWithInterpreter(null,new List<Parameter> {new Parameter("seed",LsnType.int_,new LsnValue(0),0)},null, "SetRandomSeed"),
+				new BoundedFunctionWithInterpreter(null, new List<Parameter>(), LsnType.Double_.Id, "Random"),
+				new BoundedFunctionWithInterpreter(null,new List<Parameter> {new Parameter("seed",LsnType.Int_,new LsnValue(0),0)},null, "SetRandomSeed"),
 				new BoundedFunctionWithInterpreter(null,
-					new List<Parameter> {new Parameter("min",LsnType.int_,new LsnValue(0),0), new Parameter("max",LsnType.int_,new LsnValue(int.MaxValue),1)},
-					LsnType.int_.Id, "RandomInt"),
+					new List<Parameter> {new Parameter("min",LsnType.Int_,new LsnValue(0),0), new Parameter("max",LsnType.Int_,new LsnValue(int.MaxValue),1)},
+					LsnType.Int_.Id, "RandomInt"),
 				new BoundedFunctionWithInterpreter(null,
-					new List<Parameter> {new Parameter("min",LsnType.double_,new LsnValue(0.0),0), new Parameter("max",LsnType.double_,new LsnValue(1.0),1)},
-					LsnType.double_.Id, "RandomDouble"),
+					new List<Parameter> {new Parameter("min",LsnType.Double_,new LsnValue(0.0),0), new Parameter("max",LsnType.Double_,new LsnValue(1.0),1)},
+					LsnType.Double_.Id, "RandomDouble"),
 				new BoundedFunctionWithInterpreter(null,
-					new List<Parameter>(), LsnType.double_.Id, "StandardNormal"),
+					new List<Parameter>(), LsnType.Double_.Id, "StandardNormal"),
 				new BoundedFunctionWithInterpreter(null,
-					new List<Parameter> {new Parameter("cap",LsnType.double_, new LsnValue(4.0),0)},
-					LsnType.double_.Id, "CappedStandardNormal"),
+					new List<Parameter> {new Parameter("cap",LsnType.Double_, new LsnValue(4.0),0)},
+					LsnType.Double_.Id, "CappedStandardNormal"),
 				new BoundedFunctionWithInterpreter(null,
-					new List<Parameter> {new Parameter("mean",LsnType.double_,new LsnValue(0.0),0), new Parameter("standardDeviation",LsnType.double_,new LsnValue(1.0),1)},
-					LsnType.double_.Id, "Normal"),
+					new List<Parameter> {new Parameter("mean",LsnType.Double_,new LsnValue(0.0),0), new Parameter("standardDeviation",LsnType.Double_,new LsnValue(1.0),1)},
+					LsnType.Double_.Id, "Normal"),
 				new BoundedFunctionWithInterpreter(null,
-					new List<Parameter> { new Parameter("mean", LsnType.double_, new LsnValue(0.0), 0),
-						new Parameter("standardDeviation", LsnType.double_, new LsnValue(1.0), 1),
-						new Parameter("cap",LsnType.double_, new LsnValue(4.0),2)},
-					LsnType.double_.Id, "CappedNormal"),
+					new List<Parameter> { new Parameter("mean", LsnType.Double_, new LsnValue(0.0), 0),
+						new Parameter("standardDeviation", LsnType.Double_, new LsnValue(1.0), 1),
+						new Parameter("cap",LsnType.Double_, new LsnValue(4.0),2)},
+					LsnType.Double_.Id, "CappedNormal"),
 
 				new BoundedFunctionWithInterpreter(null,
-					new List<Parameter> {new Parameter("percent",LsnType.double_,new LsnValue(50.0),0)},
-					LsnType.double_.Id, "PercentChance"),
+					new List<Parameter> {new Parameter("percent",LsnType.Double_,new LsnValue(50.0),0)},
+					LsnType.Double_.Id, "PercentChance"),
 
 
 			};
@@ -408,15 +408,15 @@ namespace LsnCore
 #if CORE
 		private static LsnResourceThing LoadRead()
 		{
-			var prompt = new Parameter("prompt", LsnType.string_, LsnValue.Nil, 0);
+			var prompt = new Parameter("prompt", LsnType.String_, LsnValue.Nil, 0);
 			var functions = new Function[]
 			{
 				new BoundedFunctionWithInterpreter((i,v)=>new LsnValue(i.GetInt((v[0].Value as StringValue).Value)),
-					new List<Parameter>{prompt}, LsnType.int_.Id, "GetInt"),
+					new List<Parameter>{prompt}, LsnType.Int_.Id, "GetInt"),
 				new BoundedFunctionWithInterpreter((i,v)=>new LsnValue(new StringValue(i.GetString((v[0].Value as StringValue).Value))),
-					new List<Parameter>{prompt}, LsnType.string_.Id,"GetString"),
+					new List<Parameter>{prompt}, LsnType.String_.Id,"GetString"),
 				new BoundedFunctionWithInterpreter((i,v)=>new LsnValue(i.GetDouble((v[0].Value as StringValue).Value)),
-					new List<Parameter>{prompt}, LsnType.double_.Id, "GetDouble")
+					new List<Parameter>{prompt}, LsnType.Double_.Id, "GetDouble")
 			};
 
 			return new LsnResourceThing(new TypeId[0])
@@ -433,12 +433,12 @@ namespace LsnCore
 #else
 		private static LsnResourceThing LoadRead()
 		{
-			var prompt = new Parameter("prompt", LsnType.string_, LsnValue.Nil, 0);
+			var prompt = new Parameter("prompt", LsnType.String_, LsnValue.Nil, 0);
 			var functions = new Function[]
 			{
-				new BoundedFunctionWithInterpreter(null, new List<Parameter>{prompt}, LsnType.int_.Id, "GetInt"),
-				new BoundedFunctionWithInterpreter(null, new List<Parameter>{prompt}, LsnType.string_.Id, "GetString"),
-				new BoundedFunctionWithInterpreter(null, new List<Parameter>{prompt}, LsnType.double_.Id, "GetDouble")
+				new BoundedFunctionWithInterpreter(null, new List<Parameter>{prompt}, LsnType.Int_.Id, "GetInt"),
+				new BoundedFunctionWithInterpreter(null, new List<Parameter>{prompt}, LsnType.String_.Id, "GetString"),
+				new BoundedFunctionWithInterpreter(null, new List<Parameter>{prompt}, LsnType.Double_.Id, "GetDouble")
 			};
 
 			return new LsnResourceThing(new TypeId[0])

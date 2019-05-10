@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using Syroot.BinaryData;
 
 namespace LsnCore
 {
@@ -12,7 +13,7 @@ namespace LsnCore
 	/// Is bounded to a type in the underlying engine or the .NET Framework
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public class LsnBoundedType<T> : LsnType
+	public abstract class LsnBoundedType<T> : LsnType
 	{
 		/// <summary>
 		/// The .NET type that this type is bound to
@@ -25,14 +26,44 @@ namespace LsnCore
 
 		public LsnBoundedType(string name, Func<LsnValue> createDefault)
 		{
-			if (name == null)
-				throw new ArgumentNullException(nameof(name));
-			Name = name;
-			if (createDefault == null)
-				throw new ArgumentNullException(nameof(createDefault));
-			CreateDefault = createDefault;
+			Name = name ?? throw new ArgumentNullException(nameof(name));
+			CreateDefault = createDefault ?? throw new ArgumentNullException(nameof(createDefault));
 		}
 
 		public override LsnValue CreateDefaultValue() => CreateDefault();
+	}
+
+	class I32Type : LsnBoundedType<int>
+	{
+		public static readonly I32Type Instance = new I32Type();
+		I32Type() : base("int", () => new LsnValue(0)) { }
+
+		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
+		{
+			setter(new LsnValue(reader.ReadInt32()));
+			return true;
+		}
+	}
+
+	class F64Type : LsnBoundedType<double>
+	{
+		public static readonly F64Type Instance = new F64Type();
+		F64Type() : base("double", () => new LsnValue(0.0)) { }
+
+		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
+		{
+			setter(new LsnValue(reader.ReadDouble()));
+			return true;
+		}
+	}
+
+	class StringType : LsnBoundedType<string>
+	{
+		public static readonly StringType Instance = new StringType();
+		static readonly StringValue Empty = new StringValue("");
+		StringType():base("string",() => new LsnValue()){}
+
+		internal override bool LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter)
+			=> deserializer.LoadString(reader.ReadUInt32(), setter);
 	}
 }
