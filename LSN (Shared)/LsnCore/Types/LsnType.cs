@@ -1,5 +1,6 @@
 ﻿using LsnCore.Expressions;
 using LsnCore.Types;
+using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -149,5 +150,7 @@ namespace LsnCore
 		}
 
 		public abstract LsnValue CreateDefaultValue();
+
+		internal abstract void LoadAsMember(ILsnDeserializer deserializer, BinaryDataReader reader, Action<LsnValue> setter);
 	}
 }
