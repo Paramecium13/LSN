@@ -107,6 +107,28 @@ namespace LsnCore
 
 		internal override void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
 			=> writer.Write(serializer.SaveVector(value.Value));
+
+		internal void WriteValue(VectorInstance value, ILsnSerializer serializer, BinaryDataWriter writer)
+		{
+			var len = value.GetLength();
+			writer.Write(len);
+			for (int i = 0; i < len; i++)
+			{
+				GenericType.WriteAsMember(value.GetValue(i), serializer, writer);
+			}
+		}
+
+		internal VectorInstance LoadValue(ILsnDeserializer deserializer, BinaryDataReader reader)
+		{
+			var len = reader.ReadInt32();
+			var vals = new LsnValue[len];
+			for (int i = 0; i < len; i++)
+			{
+				var j = i;
+				GenericType.LoadAsMember(deserializer, reader, (x) => vals[i] = x);
+			}
+			return new VectorInstance(this, vals);
+		}
 	}
 
 	public class VectorGeneric : GenericType

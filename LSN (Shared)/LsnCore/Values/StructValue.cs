@@ -17,18 +17,20 @@ namespace LsnCore.Values
 		public StructValue(TypeId id, LsnValue[] values)
 		{
 			Type = id;
-			int length = values.Length;
+			Values = values;
+			/*int length = values.Length;
 			Values = new LsnValue[length];
 			for (int i = 0; i < length; i++)
-				Values[i] = values[i].Clone();
+				Values[i] = values[i].Clone();*/
 		}
 
 		public StructValue(LsnValue[] values)
 		{
-			int length = values.Length;
+			Values = values;
+			/*int length = values.Length;
 			Values = new LsnValue[length];
 			for (int i = 0; i < length; i++)
-				Values[i] = values[i].Clone();
+				Values[i] = values[i].Clone();*/
 		}
 
 		public override ILsnValue Clone() => new StructValue(Type, Values.Select(v=>v.Clone()).ToArray());

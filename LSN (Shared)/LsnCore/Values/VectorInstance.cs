@@ -33,7 +33,9 @@ namespace LsnCore.Values
 		public LsnValue this [int index] { get { return Values[index].Clone(); } }
 
 		public VectorInstance(VectorType type, LsnValue[] values)
-			:this(type.Id,type.GenericId,values) {}
+		{
+			Type = type.Id; GenericId = type.GenericId; Values = values;
+		}
 
 		public VectorInstance(TypeId type, TypeId genericType, IEnumerable<LsnValue> values)
 		{

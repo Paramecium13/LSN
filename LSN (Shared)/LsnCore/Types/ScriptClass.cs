@@ -235,5 +235,24 @@ namespace LsnCore.Types
 		{
 			writer.Write(serializer.SaveScriptObject(value.Value as ScriptObject));
 		}
+
+		internal void WriteValue(ScriptObject value, ILsnSerializer serializer, BinaryDataWriter writer)
+		{
+			writer.Write(value.CurrentState);
+			for (int i = 0; i < Fields.Count; i++)
+				Fields[i].Type.Type.WriteAsMember(value.GetFieldValue(i), serializer, writer);
+		}
+
+		internal ScriptObject LoadValue(ILsnDeserializer deserializer, BinaryDataReader reader, IHostInterface host)
+		{
+			var state = reader.ReadInt32();
+			var fields = deserializer.GetArray(Fields.Count);
+			for(int i = 0; i< Fields.Count; i++)
+			{
+				var j = i;
+				Fields[i].Type.Type.LoadAsMember(deserializer, reader, (v) => fields[j] = v);
+			}
+			return new ScriptObject(fields, this, state, host);
+		}
 	}
 }

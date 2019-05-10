@@ -18,7 +18,9 @@ namespace LsnCore.Values
 		private IHostInterface Host;
 
 		private int CurrentStateIndex;
-		private ScriptClassState CurrentState;
+		private ScriptClassState _CurrentState;
+
+		internal int CurrentState => CurrentStateIndex;
 
 		public bool BoolValue => true;
 		public bool IsPure => false;
@@ -33,7 +35,7 @@ namespace LsnCore.Values
 		{
 			Fields = fields; Type = type.Id; ScriptClass = type; CurrentStateIndex = currentState;
 			if (type._States.Count > 0)
-				CurrentState = ScriptClass.GetState(CurrentStateIndex);
+				_CurrentState = ScriptClass.GetState(CurrentStateIndex);
 			if (host != null)
 			{
 				// Check types
@@ -46,8 +48,8 @@ namespace LsnCore.Values
 				// Subscribe to events.
 				foreach (var evName in (host.Type.Type as HostInterfaceType).EventDefinitions.Keys)
 				{
-					if ((CurrentState?.HasEventListener(evName) ?? false))
-						host.SubscribeToEvent(evName, this, CurrentState.GetEventListener(evName).Priority);
+					if ((_CurrentState?.HasEventListener(evName) ?? false))
+						host.SubscribeToEvent(evName, this, _CurrentState.GetEventListener(evName).Priority);
 					else if (ScriptClass.HasEventListener(evName))
 						host.SubscribeToEvent(evName, this, GetEventListener(evName).Priority);
 				}
@@ -92,8 +94,8 @@ namespace LsnCore.Values
 				var method = ScriptClass.GetMethod(methodName);
 				if (method.IsVirtual)
 				{
-					if (CurrentState?.HasMethod(methodName) ?? false)
-						return CurrentState.GetMethod(methodName);
+					if (_CurrentState?.HasMethod(methodName) ?? false)
+						return _CurrentState.GetMethod(methodName);
 					if (!method.IsAbstract)
 						return method;
 					throw new ApplicationException("...");
@@ -112,8 +114,8 @@ namespace LsnCore.Values
 
 		public EventListener GetEventListener(string name)
 		{
-			if (CurrentState?.HasEventListener(name) ?? false)
-				return CurrentState.GetEventListener(name);
+			if (_CurrentState?.HasEventListener(name) ?? false)
+				return _CurrentState.GetEventListener(name);
 			if (ScriptClass.HasEventListener(name))
 				return ScriptClass.GetEventListener(name);
 			throw new ArgumentException("", nameof(name));
@@ -122,7 +124,7 @@ namespace LsnCore.Values
 		internal void SetState(int index)
 		{
 			var nextState = ScriptClass.GetState(index);
-			var expiringSubscriptions = CurrentState.EventsListenedTo;//.Except(nextState.EventsListenedTo);
+			var expiringSubscriptions = _CurrentState.EventsListenedTo;//.Except(nextState.EventsListenedTo);
 			var newSubscriptions = nextState.EventsListenedTo;//.Except(CurrentState.EventsListenedTo);
 
 			// Unsubscribe from old state's event subscriptions (if valid). Run old state exit method.
@@ -131,12 +133,12 @@ namespace LsnCore.Values
 					Host.UnsubscribeToEvent(subscription, this);
 
 			CurrentStateIndex = index;
-			CurrentState = nextState;
+			_CurrentState = nextState;
 
 			// Subscribe to new state's event subscriptions (if valid). Run new state Start method.
 			if (Host != null)
 				foreach (var subscription in newSubscriptions)
-					Host.SubscribeToEvent(subscription, this,CurrentState.GetEventListener(subscription).Priority);
+					Host.SubscribeToEvent(subscription, this,_CurrentState.GetEventListener(subscription).Priority);
 		}
 
 		// Serialization?
@@ -220,7 +222,7 @@ namespace LsnCore.Values
 
 		public void Detach()
 		{
-			foreach (var name in ScriptClass.EventListeners.Keys.Union(CurrentState.EventsListenedTo).Distinct())
+			foreach (var name in ScriptClass.EventListeners.Keys.Union(_CurrentState.EventsListenedTo).Distinct())
 				Host.UnsubscribeToEvent(name, this);
 			Host.DetachScriptObject(this);
 			Host = null;

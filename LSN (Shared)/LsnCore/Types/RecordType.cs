@@ -12,10 +12,7 @@ namespace LsnCore.Types
 	/// </summary>
 	public class RecordType : LsnType, IHasFieldsType
 	{
-		private Dictionary<string, LsnType> _Fields = new Dictionary<string, LsnType>(); // TODO: Replace with TypeId?
-		public IReadOnlyDictionary<string, LsnType> Fields => _Fields;
-
-		private readonly Field[] _FieldsB;
+		readonly Field[] _FieldsB;
 		public IReadOnlyCollection<Field> FieldsB => _FieldsB;
 
 		public int FieldCount => _FieldsB.Length;
@@ -83,6 +80,26 @@ namespace LsnCore.Types
 		internal override void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
 		{
 			writer.Write(serializer.SaveRecord(value.Value));
+		}
+
+		internal void WriteValue(RecordValue value, ILsnSerializer serializer, BinaryDataWriter writer)
+		{
+			for (int i = 0; i < _FieldsB.Length; i++)
+			{
+				var j = i;
+				_FieldsB[i].Type.Type.WriteAsMember(value.GetFieldValue(i), serializer, writer);
+			}
+		}
+
+		internal RecordValue LoadValue(ILsnDeserializer deserializer, BinaryDataReader reader)
+		{
+			var fields = deserializer.GetArray(FieldCount);
+			for (int i = 0; i < _FieldsB.Length; i++)
+			{
+				var j = i;
+				_FieldsB[i].Type.Type.LoadAsMember(deserializer, reader, (x) => fields[j] = x);
+			}
+			return new RecordValue(fields, Id);
 		}
 	}
 }

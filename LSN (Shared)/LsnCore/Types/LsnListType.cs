@@ -114,6 +114,29 @@ namespace LsnCore
 
 		internal override void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
 			=> writer.Write(serializer.SaveList(value.Value));
+
+		internal void WriteValue(LsnList value, ILsnSerializer serializer, BinaryDataWriter writer)
+		{
+			var len = value.GetLength();
+			writer.Write(len);
+			for (int i = 0; i < len; i++)
+			{
+				GenericType.WriteAsMember(value.GetValue(i), serializer, writer);
+			}
+		}
+
+		internal LsnList LoadValue(ILsnDeserializer deserializer, BinaryDataReader reader)
+		{
+			var len = reader.ReadInt32();
+			var lst = new List<LsnValue>(len);
+			for (int i = 0; i < len; i++)
+			{
+				lst.Add(LsnValue.Nil);
+				var j = i;
+				GenericType.LoadAsMember(deserializer, reader, (x) => lst[i] = x);
+			}
+			return new LsnList(this, lst);
+		}
 	}
 
 	/// <summary>

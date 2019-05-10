@@ -49,6 +49,12 @@ namespace LsnCore.Values
 			Type = type;
 		}
 
+		public LsnList(LsnListType type, List<LsnValue> values)
+		{
+			Type = type.Id;
+			Values = values;
+		}
+
 		public LsnList(TypeId type, IEnumerable<LsnValue> values)
 		{
 			Type = type;
