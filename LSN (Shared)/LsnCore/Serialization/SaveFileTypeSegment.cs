@@ -9,16 +9,23 @@ namespace LsnCore.Serialization
 {
 	class SaveFileTypeSegment
 	{
-		readonly string[] UsedFiles;
+		readonly List<string> UsedFiles;
 
-		readonly string[] TypeNames;
+		readonly List<string> TypeNames;
 
-		readonly TypeId[] TypeIds;
+		readonly List<TypeId> TypeIds;
+
+		/// <summary>
+		/// Were types added or removed since the last save?
+		/// </summary>
+		internal bool Changed { get; private set; }
+
+		readonly Dictionary<TypeId, uint> Lookup = new Dictionary<TypeId, uint>();
 
 		SaveFileTypeSegment(string[] files, string[] types)
 		{
-			UsedFiles = files; TypeNames = types;
-			TypeIds = new TypeId[TypeNames.Length];
+			UsedFiles = files.ToList(); TypeNames = types.ToList();
+			TypeIds = new List<TypeId>();
 		}
 
 		void LoadTypes(Func<string, LsnResourceThing> fileLoader)
@@ -29,10 +36,55 @@ namespace LsnCore.Serialization
 				var res = fileLoader(path);
 				res.LoadTypeIds(types);
 			}
-			for (int i = 0; i < TypeNames.Length; i++)
+			for (int i = 0; i < TypeNames.Count; i++)
 			{
-				TypeIds[i] = types[TypeNames[i]];
+				TypeIds.Add(types[TypeNames[i]]);
 			}
+			// we could clear TypeNames here until it is needed.
+		}
+
+		internal TypeId GetTypeId(uint index) => TypeIds[(int)index];
+
+		internal uint GetIndex(TypeId id, bool useLookup = true)
+		{
+			int index;
+			if (useLookup)
+			{
+				if (!Lookup.ContainsKey(id))
+				{
+					index = TypeIds.IndexOf(id);
+					if (index < 0)
+					{
+						Lookup.Add(id, (uint)TypeIds.Count);
+						// ToDo: Check if its files is in the list...
+						TypeIds.Add(id);
+						Changed = true;
+					}
+					else Lookup.Add(id, (uint)index);
+					return (uint)index;
+				}
+				return Lookup[id];
+			}
+			index = TypeIds.IndexOf(id);
+			if (index < 0)
+			{
+				TypeIds.Add(id);
+				// ToDo: Check if its files is in the list...
+				Changed = true;
+				return ((uint)TypeIds.Count - 1);
+			}
+			return (uint)index;
+		}
+
+		internal void FlushLookup() => Lookup.Clear();
+
+		internal void Save(BinaryDataWriter writer)
+		{
+			Changed = false;
+			writer.Write((ushort)UsedFiles.Count);
+			writer.Write(UsedFiles);
+			writer.Write((ushort)TypeIds.Count);
+			writer.Write(TypeIds.Select(t => t.Name));
 		}
 
 		internal static SaveFileTypeSegment Load(BinaryDataReader reader, Func<string, LsnResourceThing> fileLoader)
