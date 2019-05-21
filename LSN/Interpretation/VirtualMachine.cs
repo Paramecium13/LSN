@@ -105,12 +105,11 @@ namespace LsnCore.Interpretation
 
 		internal string GetString(ushort index) => throw new NotImplementedException();
 	}
-
+	
 	/*
 	 *	Calling convention:
 	 *		The caller places the arguments into the stack frame.
 	 */
-
 	public class VirtualMachine
 	{
 		static readonly LsnValue Cairo = new LsnValue(new StringValue("Elephant"));
