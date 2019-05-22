@@ -13,7 +13,7 @@ namespace LsnCore.Values
 	{
 		private readonly LsnValue[] Fields;
 
-		private readonly ScriptClass ScriptClass;
+		internal readonly ScriptClass ScriptClass;
 
 		private IHostInterface Host;
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Syroot.BinaryData;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using LsnCore.Values;
@@ -14,14 +15,86 @@ namespace LsnCore.Serialization
 
 	}
 
+	/// <summary>
+	/// 1. Save attached script objects by host.
+	/// 2. Save unattached unique script objects.
+	/// 3. Save unattached non-unique script objects,
+	///	   records, lists, and vectors.
+	/// 4. Save strings.
+	/// </summary>
+
 	public class LsnSerializer : ILsnSerializer
 	{
+		class HostsSegment
+		{
+			readonly BinaryDataWriter Writer;
+
+			uint Count;
+
+			readonly Offset Offset;
+
+			internal HostsSegment(BinaryDataWriter writer)
+			{
+				Writer = writer;
+				Offset = Writer.ReserveOffset();
+			}
+
+			void Write(IHostInterface host, LsnSerializer serializer)
+			{
+				Writer.Write(host.NumericId);										// Id
+				var scripts = host.GetScripts();
+				Writer.Write((ushort)scripts.Length);								// Num scripts
+				foreach (var script in scripts)
+				{
+					Writer.Write(serializer.TypeSegment.GetIndex(script.Type));
+					script.ScriptClass.WriteValue(script, serializer, Writer);      // Scripts
+				}
+			}
+
+			internal void Finish()
+			{
+				Offset.Satisfy((int)Count);
+			}
+		}
+
+		class FreeObjectsSegment
+		{
+			readonly BinaryDataWriter Writer;
+			uint Count;
+
+			internal FreeObjectsSegment(BinaryDataWriter writer) { Writer = writer; }
+		}
+
 		uint NextId;
 		readonly Dictionary<ILsnValue, uint> Ids = new Dictionary<ILsnValue, uint>();
 
 		//readonly HashSet<uint> Serialized = new HashSet<uint>();
 
 		readonly Queue<ILsnValue> SaveQueue = new Queue<ILsnValue>();
+
+		uint NextStringId;
+		readonly Dictionary<string, uint> Strings = new Dictionary<string, uint>();
+
+		readonly List<IHostInterface> SavedHosts = new List<IHostInterface>();
+
+		readonly Queue<IHostInterface> HostsToSerializeNext = new Queue<IHostInterface>();
+
+		readonly SaveFileTypeSegment TypeSegment;
+
+		internal LsnSerializer(SaveFileTypeSegment typeSegment) { TypeSegment = typeSegment; }
+
+		uint GetId(ILsnValue value)
+		{
+			if (Ids.ContainsKey(value)) return Ids[value];
+			var id = NextId++;
+			Ids.Add(value, id);
+			return id;
+		}
+
+		void WriteHost(IHostInterface host)
+		{
+			throw new NotImplementedException();
+		}
 
 		public uint SaveList(ILsnValue list)
 		{
@@ -55,7 +128,8 @@ namespace LsnCore.Serialization
 		
 		public uint SaveScriptObject(ScriptObject scriptObject)
 		{
-			if(scriptObject.GetHost().Value == null)
+			var h = scriptObject.GetHost().Value;
+			if (h == null)
 			{
 				if (!Ids.ContainsKey(scriptObject))
 				{
@@ -64,13 +138,28 @@ namespace LsnCore.Serialization
 				}
 				return Ids[scriptObject];
 			}
-
-			throw new NotImplementedException();
+			if (!Ids.ContainsKey(scriptObject))
+				RegisterHostForSave(h as IHostInterface);
+			return Ids[scriptObject];
 		}
 
 		public uint SaveString(string value)
 		{
-			throw new NotImplementedException();
+			if (!Strings.ContainsKey(value))
+			{
+				var id = NextStringId++;
+				Strings.Add(value, id);
+				return id;
+			}
+			return Strings[value];
 		}
+
+		public void RegisterHostForSave(IHostInterface hostInterface)
+		{
+			if (!SavedHosts.Contains(hostInterface))
+				WriteHost(hostInterface);
+		}
+
+
 	}
 }

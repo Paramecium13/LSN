@@ -21,5 +21,7 @@ namespace LsnCore.Values
 		void SubscribeToEvent(string eventName, ScriptObject eventListener, int priority);
 
 		void UnsubscribeToEvent(string eventName, ScriptObject eventListener);
+
+		ScriptObject[] GetScripts();
 	}
 }

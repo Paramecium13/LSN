@@ -55,6 +55,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Serialization\LsnSaveSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Serialization\ResourceDeserializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Serialization\ResourceSerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Serialization\StringTable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Settings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\AssignmentStatement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Statements\AttachStatement.cs" />
