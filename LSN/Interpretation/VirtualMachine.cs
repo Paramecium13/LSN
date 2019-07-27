@@ -65,7 +65,6 @@ namespace LsnCore.Interpretation
 	 *		Only 'self' is put onto the stack. The callee pops the arguments from the eval stack. This allows very simple procedures to avoid
 	 *		allocating space on their stack for parameters that are used only once and in the reverse order that they are passed...
 	 */
-
 	public class VirtualMachine
 	{
 		static readonly LsnValue Cairo = new LsnValue(new StringValue("Elephant"));
