@@ -198,28 +198,6 @@ namespace LsnCore.Values
 			}
 		}
 
-		public void SerializeScriptObject(BinaryDataWriter writer, bool writeHostId)
-		{
-			if (writeHostId)
-			{
-				switch (Settings.HostInterfaceIdType)
-				{
-					case IdentifierType.Numeric:
-						writer.Write(Host?.NumericId ?? 0);
-						break;
-					case IdentifierType.Text:
-						writer.Write(Host?.TextId ?? "");
-						break;
-					default:
-						break;
-				}
-			}
-			writer.Write(Type.Name);
-			writer.Write(CurrentStateIndex);
-			for (int i = 0; i < Fields.Length; i++)
-				Fields[i].Serialize(writer);
-		}
-
 		public void Detach()
 		{
 			foreach (var name in ScriptClass.EventListeners.Keys.Union(_CurrentState.EventsListenedTo).Distinct())

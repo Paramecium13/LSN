@@ -83,7 +83,7 @@ namespace LsnCore.Serialization
 			Changed = false;
 			writer.Write((ushort)UsedFiles.Count);
 			writer.Write(UsedFiles);
-			writer.Write((ushort)TypeIds.Count);
+			writer.Write(TypeIds.Count);
 			writer.Write(TypeIds.Select(t => t.Name));
 		}
 

@@ -9,6 +9,7 @@ namespace LsnCore.Types
 	[Serializable]
 	public class TypeId : IEquatable<TypeId>
 	{
+		//ToDo: Add a field for its file...
 		public readonly string Name;
 
 		[NonSerialized]

@@ -41,14 +41,18 @@ namespace LsnCore.Serialization
 
 			void Write(IHostInterface host, LsnSerializer serializer)
 			{
-				Writer.Write(host.NumericId);										// Id
+				Writer.Write(host.NumericId);                                       // Id
+				var lengthField = Writer.ReserveOffset();
+				var startPos = Writer.Position;
 				var scripts = host.GetScripts();
 				Writer.Write((ushort)scripts.Length);								// Num scripts
 				foreach (var script in scripts)
 				{
+					Writer.Write(serializer.Ids[script]);
 					Writer.Write(serializer.TypeSegment.GetIndex(script.Type));
 					script.ScriptClass.WriteValue(script, serializer, Writer);      // Scripts
 				}
+				lengthField.Satisfy((int)Writer.Position - (int)lengthField.Position - 4);
 			}
 
 			internal void Finish()
