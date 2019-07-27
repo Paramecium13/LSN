@@ -3,7 +3,7 @@
 	// Operate on a stack machine...
 	// Bools are ints...
 	//		(Trinary value (F64): 1.0, 0.0, Nan)
-	enum OpCodeB : short
+	enum OpCodeB : ushort
 	{
 		// Most of these pop two args from the stack and push the result.
 		// Both have to be of the same type.

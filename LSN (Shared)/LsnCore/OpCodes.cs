@@ -90,6 +90,8 @@ namespace LsnCore
 		/// <summary>file is the current file, index of fn is data.</summary>
 		CallFn_Local,
 
+
+		SetMethodObjectRegister,
 		/// <summary>
 		/// Data is index of method name. Not for int, double or bool!
 		/// {, arg_0,..., arg_N, object -> , result (if it returns a value) }

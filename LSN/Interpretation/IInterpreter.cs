@@ -1,7 +1,6 @@
 ﻿using LsnCore.Types;
 using LsnCore.Values;
 using System;
-using System.Collections.Generic;
 
 namespace LsnCore
 {
@@ -18,6 +17,7 @@ namespace LsnCore
 		int NextStatement { get; set; }
 
 		void RunProcedure(IProcedure procedure);
+
 		void RunProcedure(IProcedure procedure, LsnValue[] args);
 
 		/// <summary>

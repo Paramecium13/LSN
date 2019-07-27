@@ -89,6 +89,7 @@
     <Compile Include="Interpretation\ILsnGameHost.cs" />
     <Compile Include="Interpretation\Interpreter.cs" />
     <Compile Include="Interpretation\LsnStack.cs" />
+    <Compile Include="Interpretation\LsnVMStack.cs" />
     <Compile Include="Interpretation\OpCodesB.cs" />
     <Compile Include="Interpretation\VirtualMachine.cs" />
     <Compile Include="Interpretation\VirtualMachineB.cs" />

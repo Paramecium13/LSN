@@ -18,75 +18,6 @@ namespace LsnCore.Interpretation
 		ProcedureLineInfo LineInfo { get; }
 	}
 
-	class LsnVMStack
-	{
-		protected readonly IResourceManager ResourceManager;
-
-		private LsnValue[] Values = new LsnValue[8];
-		private int Count => Offset + Frames.Peek().StackSize;
-		private int Offset;
-		private readonly Stack<FrameInfo> Frames = new Stack<FrameInfo>();
-
-		public LsnVMStack(IResourceManager resourceManager)
-		{
-			ResourceManager = resourceManager;
-			Frames.Push(new FrameInfo(-1, 0));
-		}
-
-		public LsnValue GetVariable(int index) => Values[Offset + index];
-
-		public void SetVariable(int index, LsnValue value) => Values[Offset + index] = value;
-
-		public void EnterProcedure(int nextStatement, IProcedureB procedure, LsnValue[] args)
-		{
-			Offset += Frames.Peek().StackSize;
-			Frames.Push(new FrameInfo(nextStatement, procedure));
-			if (Count > Values.Length) Grow();
-			for (int i = 0; i < args.Length; i++)
-				Values[i + Offset] = args[i];
-		}
-
-		public void EnterProcedure(int nextStatement, IProcedureB procedure)
-		{
-			Offset += Frames.Peek().StackSize;
-			Frames.Push(new FrameInfo(nextStatement, procedure));
-			if (Count > Values.Length) Grow();
-		}
-
-		public int ExitProcedure()
-		{
-			var frame = Frames.Pop();
-			Array.Clear(Values, Offset, Count - Offset);
-			Offset -= Frames.Peek().StackSize;
-			return frame.NextStatement;
-		}
-
-		private void Grow()
-		{
-			var newStack = new LsnValue[Values.Length << 1];
-			Array.Copy(Values, newStack, Values.Length);
-			var old = Values;
-			Values = newStack;
-			Array.Clear(old, 0, old.Length);
-		}
-
-		private struct FrameInfo
-		{
-			internal readonly int NextStatement;
-			internal readonly int StackSize;
-
-			internal FrameInfo(int nxt, IProcedureB proc)
-			{
-				NextStatement = nxt; StackSize = proc.StackSize;
-			}
-
-			internal FrameInfo(int nxt, int sz)
-			{
-				NextStatement = nxt; StackSize = sz;
-			}
-		}
-	}
-
 	public class FileEnvironment
 	{
 		public string FileName { get; }
@@ -99,16 +30,40 @@ namespace LsnCore.Interpretation
 
 		internal LsnType GetType(ushort index) => throw new NotImplementedException();
 
+		internal LsnType GetType(string name) => throw new NotImplementedException();
+
 		internal IProcedureB GetFunction(ushort index) => throw new NotImplementedException();
+
+		internal IProcedureB GetFunction(string name) => throw new NotImplementedException();
 
 		internal FileEnvironment GetFile(ushort index) => throw new NotImplementedException();
 
+		/// <summary>
+		/// Gets a string that is the name of something
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
 		internal string GetString(ushort index) => throw new NotImplementedException();
 	}
 
+	struct VMRegisterFile
+	{
+		public int NextInstruction;
+
+		public int Target;
+
+		public ILsnValue MethodObject;
+
+		internal IProcedureB CurrentProcedure;
+	}
+
 	/*
-	 *	Calling convention:
+	 *	Old calling convention:
 	 *		The caller places the arguments into the stack frame.
+	 *		
+	 *	New calling convention:
+	 *		Only 'self' is put onto the stack. The callee pops the arguments from the eval stack. This allows very simple procedures to avoid
+	 *		allocating space on their stack for parameters that are used only once and in the reverse order that they are passed...
 	 */
 
 	public class VirtualMachine
@@ -120,9 +75,19 @@ namespace LsnCore.Interpretation
 		readonly IResourceManager	ResourceManager;
 		readonly ILsnGameHost		GameHost;
 
-		int Target;
+		VMRegisterFile RegisterFile = new VMRegisterFile();
 
-		int NextInstruction { get; set; }
+		int Target
+		{
+			get => RegisterFile.Target;
+			set => RegisterFile.Target = value;
+		}
+
+		int NextInstruction
+		{
+			get => RegisterFile.NextInstruction;
+			set => RegisterFile.NextInstruction = value;
+		}
 
 		readonly LsnVMStack Stack;
 
@@ -133,9 +98,11 @@ namespace LsnCore.Interpretation
 			ResourceManager = resourceManager; GameHost = gameHost; Stack = new LsnVMStack(ResourceManager);
 		}
 
-		readonly Stack<IProcedureB> ProcStack = new Stack<IProcedureB>();
-
-		IProcedureB CurrentProcedure;
+		IProcedureB CurrentProcedure
+		{
+			get => RegisterFile.CurrentProcedure;
+			set => RegisterFile.CurrentProcedure = value;
+		}
 		Instruction[] Code => CurrentProcedure.Instructions;
 		FileEnvironment Environment => CurrentProcedure.Environment;
 
@@ -160,8 +127,9 @@ namespace LsnCore.Interpretation
 		public LsnValue Enter(IProcedureB procedure, LsnValue[] args)
 		{
 			Push(Cairo);
+			NextInstruction = -1;
+			Stack.EnterProcedure(RegisterFile, procedure);
 			CurrentProcedure = procedure;
-			Stack.EnterProcedure(-1, procedure);
 			NextInstruction = 0;
 			CurrentInstruction = 0;
 
@@ -228,7 +196,8 @@ namespace LsnCore.Interpretation
 				case OpCode.SetTarget:		Target = instr.Index;							break;
 				case OpCode.LoadIndex:		TmpIndex = instr.Index;							break;
 				case OpCode.CallFn:
-					EnterFunction(Environment.GetFile(TmpIndex).GetFunction(instr.Index));
+					//EnterFunction(Environment.GetFile(TmpIndex).GetFunction(instr.Index));
+					EnterFunction(Environment.GetFile(TmpIndex).GetFunction(Environment.GetString(instr.Index)));
 					break;
 				case OpCode.CallFn_Short:
 					EnterFunction(Environment.GetFile((ushort)(instr.Index & 0xFF)).GetFunction((ushort)(instr.Index >> 8)));
@@ -269,8 +238,7 @@ namespace LsnCore.Interpretation
 						throw new NotImplementedException();
 					}
 				case OpCode.Ret:
-					NextInstruction = Stack.ExitProcedure();
-					CurrentProcedure = ProcStack.Pop();
+					RegisterFile = Stack.ExitProcedure();
 					break;
 				case OpCode.LoadConst_I32_short:		Push(instr.Data);								break;
 				case OpCode.LoadConst_I32:				Push(Environment.GetInt(instr.Index));			break;
@@ -395,8 +363,7 @@ namespace LsnCore.Interpretation
 
 		void EnterFunction(IProcedureB procedure)
 		{
-			ProcStack.Push(CurrentProcedure);
-			Stack.EnterProcedure(NextInstruction, procedure);
+			Stack.EnterProcedure(RegisterFile, procedure);
 			CurrentProcedure = procedure;
 			// Place args in stack frame...
 			for (int i = CurrentProcedure.NumberOfParameters - 1; i >= 0; i--)
@@ -406,8 +373,7 @@ namespace LsnCore.Interpretation
 
 		void EnterMethod(IProcedureB procedure)
 		{
-			ProcStack.Push(CurrentProcedure);
-			Stack.EnterProcedure(NextInstruction, procedure);
+			Stack.EnterProcedure(RegisterFile, procedure);
 			CurrentProcedure = procedure;
 			// Place args in stack frame...
 			Stack.SetVariable(0, Pop());
