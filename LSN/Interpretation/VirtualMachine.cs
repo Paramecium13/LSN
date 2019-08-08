@@ -16,39 +16,7 @@ namespace LsnCore.Interpretation
 		ushort StackSize { get; }
 		LsnObjectFile Environment { get; }
 		ProcedureLineInfo LineInfo { get; }
-	}
-
-	public class LsnObjectFile
-	{
-		public string FileName { get; }
-
-		internal LsnValue GetInt(ushort index) => throw new NotImplementedException();
-
-		internal LsnValue GetDouble(ushort index) => throw new NotImplementedException();
-
-		internal LsnValue GetObject(ushort index) => throw new NotImplementedException();
-
-		internal LsnType GetUsedType(ushort index) => throw new NotImplementedException();
-
-		internal LsnType GetContainedType(string name) => throw new NotImplementedException();
-
-		/// <summary>
-		/// Get a procedure called by code in this file.
-		/// </summary>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		internal IProcedureB GetProcedure(ushort index) => throw new NotImplementedException();
-
-		internal IProcedureB GetContainedFunction(string name) => throw new NotImplementedException();
-
-		internal LsnObjectFile GetFile(ushort index) => throw new NotImplementedException();
-
-		/// <summary>
-		/// Gets a string that is the name of something
-		/// </summary>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		internal string GetString(ushort index) => throw new NotImplementedException();
+		ProcedureInfo Info { get; }
 	}
 
 	struct VMRegisterFile
@@ -57,16 +25,12 @@ namespace LsnCore.Interpretation
 
 		public int Target;
 
-		internal IProcedureB CurrentProcedure;
+		internal ProcedureInfo CurrentProcedure;
 	}
 
 	/*
-	 *	Old calling convention:
-	 *		The caller places the arguments into the stack frame.
-	 *		
-	 *	New calling convention:
-	 *		Only 'self' is put onto the stack. The callee pops the arguments from the eval stack. This allows very simple procedures to avoid
-	 *		allocating space on their stack for parameters that are used only once and in the reverse order that they are passed...
+	 *	Calling convention:
+	 *		For non-virtual calls, the callee pops its arguments from the eval stack as it sees fit...
 	 */
 	public class VirtualMachine
 	{
@@ -100,13 +64,13 @@ namespace LsnCore.Interpretation
 			ResourceManager = resourceManager; GameHost = gameHost; Stack = new LsnVMStack(ResourceManager);
 		}
 
-		IProcedureB CurrentProcedure
+		ProcedureInfo CurrentProcedure
 		{
 			get => RegisterFile.CurrentProcedure;
 			set => RegisterFile.CurrentProcedure = value;
 		}
-		Instruction[] Code => CurrentProcedure.Instructions;
-		LsnObjectFile Environment => CurrentProcedure.Environment;
+		Instruction[] Code => CurrentProcedure.File.Code;
+		LsnObjectFile Environment => CurrentProcedure.File;
 
 		int CurrentInstruction;
 
@@ -118,15 +82,15 @@ namespace LsnCore.Interpretation
 		void Push(LsnValue v)  => EvalStack.Push(v);
 		void Push(ILsnValue v) => EvalStack.Push(new LsnValue(v));
 
-		LsnValue Pop()     => EvalStack.Pop();
-		int PopI32()       => EvalStack.Pop().IntValue;
-		uint PopUI32()     => EvalStack.Pop().HandleData;
-		double PopF64()    => EvalStack.Pop().DoubleValue;
-		bool PopBool()     => EvalStack.Pop().BoolValueSimple;
-		string PopString() => (EvalStack.Pop().Value as StringValue).Value;
+		LsnValue Pop()         => EvalStack.Pop();
+		int      PopI32()      => EvalStack.Pop().IntValue;
+		uint     PopUI32()     => EvalStack.Pop().HandleData;
+		double   PopF64()      => EvalStack.Pop().DoubleValue;
+		bool     PopBool()     => EvalStack.Pop().BoolValueSimple;
+		string   PopString()   => (EvalStack.Pop().Value as StringValue).Value;
 
 		LsnValue Peek() => EvalStack.Peek();
-		public LsnValue Enter(IProcedureB procedure, LsnValue[] args)
+		public LsnValue Enter(ProcedureInfo procedure, LsnValue[] args)
 		{
 			Push(Cairo);
 			NextInstruction = -1;
@@ -154,6 +118,18 @@ namespace LsnCore.Interpretation
 			{
 				case OpCode.Nop:                                                  break;
 				case OpCode.Dup:	 Push(Peek());                                break;
+				case OpCode.Swap:
+					{
+						var a = Pop();
+						var b = Pop();
+						Push(a); Push(b);
+					}break;
+				case OpCode.SwaDup:
+					{
+						var a = Pop();
+						var b = Pop();
+						Push(a); Push(b); Push(a);
+					}break;
 				case OpCode.Pop:	 Pop();                                       break;
 				#region Arithmetic
 				case OpCode.Add:     Push(LsnValue.DoubleSum(Pop(), Pop()));      break;
@@ -177,6 +153,9 @@ namespace LsnCore.Interpretation
 				case OpCode.Neq_I32:		Push(PopI32() != PopI32());								break;
 				case OpCode.Neq_F64:		Push(Math.Abs(PopF64() - PopF64()) < double.Epsilon);	break;
 				case OpCode.Neq_Str:		Push(PopString() != PopString());						break;
+				case OpCode.Eq_F64_epsilon:
+				case OpCode.Neq_F64_epsilon:
+					throw new NotImplementedException();
 				case OpCode.NonNull:		Push(!Pop().IsNull);									break;
 				case OpCode.NonNull_NoPop:	Push(!Peek().IsNull);									break;
 				case OpCode.Lt:				Push(PopF64() < PopF64());								break;
@@ -191,11 +170,14 @@ namespace LsnCore.Interpretation
 				case OpCode.Not:	Push(!PopBool());				break;
 				#endregion
 				//case OpCode.Conv_I32_F64:break;
+				#region Control Flow
 				case OpCode.Jump:			NextInstruction = instr.Index;					break;
 				case OpCode.Jump_True:		if (PopBool())  NextInstruction = instr.Index;	break;
 				case OpCode.Jump_False:		if (!PopBool()) NextInstruction = instr.Index;	break;
+				case OpCode.Switch:			throw new NotImplementedException();
 				case OpCode.JumpToTarget:	NextInstruction = Target;						break;
 				case OpCode.SetTarget:		Target = instr.Index;							break;
+				#endregion
 				#region Call
 				case OpCode.LoadIndex:		TmpIndex = instr.Index;							break;
 				case OpCode.CallFn_Short:
@@ -213,21 +195,9 @@ namespace LsnCore.Interpretation
 							Push(method.Eval(EvalStack));
 						else method.Eval(EvalStack);
 					} break;
-				case OpCode.CallLsnMethod:
-					{
-						/*var type = Environment.GetUsedType(TmpIndex);
-						var proc = (IProcedureB)type.Methods[Environment.GetString(instr.Index)];*/
-						EnterFunction(Environment.GetProcedure(instr.Index));
-					}
-					break;
 				case OpCode.CallScObjMethod:
-					{
-						/*var type = (ScriptClass)Environment.GetUsedType(TmpIndex);
-						var method = type.GetMethod(Environment.GetString(instr.Index));
-						var obj = Peek().Value as ScriptObject;
-						var proc = (IProcedureB)obj.GetMethod(Environment.GetString(instr.Index));*/
-						EnterFunction(Environment.GetProcedure(instr.Index));
-					}
+				case OpCode.CallLsnMethod:
+					EnterFunction(Environment.GetProcedure(instr.Index));
 					break;
 				case OpCode.CallScObjVirtualMethod:
 					{
@@ -243,6 +213,7 @@ namespace LsnCore.Interpretation
 					RegisterFile = Stack.ExitProcedure();
 					break;
 				#endregion
+				#region Constants
 				case OpCode.LoadConst_I32_short:		Push(instr.Data);								break;
 				case OpCode.LoadConst_I32:				Push(Environment.GetInt(instr.Index));			break;
 				case OpCode.LoadConst_F64:				Push(Environment.GetDouble(instr.Index));		break;
@@ -253,27 +224,136 @@ namespace LsnCore.Interpretation
 				case OpCode.Load_UniqueScriptClass:
 					Push(ResourceManager.GetUniqueScriptObject(Environment.GetUsedType(instr.Index) as ScriptClass));
 					break;
-				case OpCode.LoadLocal: Push(Stack.GetVariable(instr.Index)); break;
-				case OpCode.StoreLocal: Stack.SetVariable(instr.Index, Pop()); break;
+				#endregion
+				#region Variables, fields, and elements
+				case OpCode.LoadLocal:		Push(Stack.GetVariable(instr.Index));		break;
+				case OpCode.StoreLocal:		Stack.SetVariable(instr.Index, Pop());		break;
 				case OpCode.LoadElement: {
+						var index = PopI32();
 						var col = Pop().Value as ICollectionValue;
-						Push(col.GetValue(Pop().IntValue));
+						Push(col.GetValue(index));
 					} break;
 				case OpCode.StoreElement: {
-						var col = Pop().Value as IWritableCollectionValue;
-						var index = Pop().IntValue; var val = Pop(); col.SetValue(index, val);
+						var val = Pop();
+						var index = PopI32();
+						var col = Pop().Value as IMutableCollectionValue; col.SetValue(index, val);
 					} break;
+				case OpCode.LoadField: Push((Pop().Value as IHasFieldsValue).GetFieldValue(instr.Index)); break;
+				case OpCode.StoreField: {
+						var obj = Pop().Value as IHasMutableFieldsValue;
+						obj.SetFieldValue(instr.Index, Pop());
+					} break;
+				#endregion
+				#region INC and DEC
+				case OpCode.PreInc_Var:
+					{
+						var val = new LsnValue(Stack.GetVariable(instr.Index).IntValue + 1);
+						Stack.SetVariable(instr.Index, val);
+						Push(val);
+					}
+					break;
+				case OpCode.PreInc_Elem:
+					{
+						var index = PopI32();
+						var col = Pop().Value as IMutableCollectionValue;
+						var val = new LsnValue(col.GetValue(index).IntValue + 1);
+						Push(val);
+						col.SetValue(index, val);
+					}
+					break;
+				case OpCode.PreInc_Fld:
+					{
+						var obj = Pop().Value as IHasMutableFieldsValue;
+						var val = new LsnValue(obj.GetFieldValue(instr.Index).IntValue + 1);
+						obj.SetFieldValue(instr.Index, val);
+						Push(val);
+					}
+					break;
+				case OpCode.PostInc_Var:
+					{
+						var val = Stack.GetVariable(instr.Index);
+						Push(val);
+						Stack.SetVariable(instr.Index, new LsnValue(val.IntValue + 1));
+					}
+					break;
+				case OpCode.PostInc_Elem:
+					{
+						var index = PopI32();
+						var col = Pop().Value as IMutableCollectionValue;
+						var val = col.GetValue(index);
+						Push(val);
+						val = new LsnValue(val.IntValue + 1);
+						col.SetValue(index, val);
+					}
+					break;
+				case OpCode.PostInc_Fld:
+					{
+						var obj = Pop().Value as IHasMutableFieldsValue;
+						var val = obj.GetFieldValue(instr.Index);
+						Push(val);
+						val = new LsnValue(val.IntValue + 1);
+						obj.SetFieldValue(instr.Index, val);
+					}
+					break;
+				case OpCode.PreDec_Var:
+					{
+						var val = new LsnValue(Stack.GetVariable(instr.Index).IntValue - 1);
+						Stack.SetVariable(instr.Index, val);
+						Push(val);
+					}
+					break;
+				case OpCode.PreDec_Elem:
+					{
+						var index = PopI32();
+						var col = Pop().Value as IMutableCollectionValue;
+						var val = new LsnValue(col.GetValue(index).IntValue - 1);
+						Push(val);
+						col.SetValue(index, val);
+					}
+					break;
+				case OpCode.PreDec_Fld:
+					{
+						var obj = Pop().Value as IHasMutableFieldsValue;
+						var val = new LsnValue(obj.GetFieldValue(instr.Index).IntValue - 1);
+						obj.SetFieldValue(instr.Index, val);
+						Push(val);
+					}
+					break;
+				case OpCode.PostDec_Var:
+					{
+						var val = Stack.GetVariable(instr.Index);
+						Push(val);
+						Stack.SetVariable(instr.Index, new LsnValue(val.IntValue - 1));
+					}
+					break;
+				case OpCode.PostDec_Elem:
+					{
+						var index = PopI32();
+						var col = Pop().Value as IMutableCollectionValue;
+						var val = col.GetValue(index);
+						Push(val);
+						val = new LsnValue(val.IntValue - 1);
+						col.SetValue(index, val);
+					}
+					break;
+				case OpCode.PostDec_Fld:
+					{
+						var obj = Pop().Value as IHasMutableFieldsValue;
+						var val = obj.GetFieldValue(instr.Index);
+						Push(val);
+						val = new LsnValue(val.IntValue - 1);
+						obj.SetFieldValue(instr.Index, val);
+					}
+					break;
+				#endregion
+				#region Vectors and Lists
 				case OpCode.ConstructList:
 					Push(new LsnList((LsnListType)Environment.GetUsedType(instr.Index)));
 					break;
 				case OpCode.InitializeList:
 				case OpCode.InitializeVector:
 					throw new NotImplementedException();
-				case OpCode.LoadField: Push((Pop().Value as IHasFieldsValue).GetFieldValue(instr.Index)); break;
-				case OpCode.StoreField: {
-						var obj = Pop().Value as IHasMutableFieldsValue;
-						obj.SetFieldValue(instr.Index, Pop());
-					} break;
+				#endregion
 				case OpCode.ConstructStruct: {
 						var type = Environment.GetUsedType(instr.Index) as StructType;
 						var fCount = type.FieldCount;
@@ -302,15 +382,14 @@ namespace LsnCore.Interpretation
 				case OpCode.FreeRecord:{
 						var rec = Pop().Value as RecordValue;
 						var fCount = instr.Index;//(rec.Type.Type as RecordType)
+						FreeArray(rec.Fields, fCount);
 					} break;
 				#region Script Class
 				case OpCode.ConstructScriptClass:
 					{
 						var scriptClass = Environment.GetUsedType(instr.Index) as ScriptClass;
 						var cstor = scriptClass.Constructor;
-						/*Push(new ScriptObject(new LsnValue[scriptClass.Fields.Count], scriptClass, scriptClass.DefaultStateId, null));
-						Push(Peek());// This way it's the return value...*/
-						EnterFunction((IProcedureB)cstor);
+						EnterFunction(((IProcedureB)cstor).Info);
 					} break;
 				case OpCode.CreateScriptClass:
 					{
@@ -338,19 +417,27 @@ namespace LsnCore.Interpretation
 				case OpCode.GoTo:
 				case OpCode.ComeFrom:
 					throw new NotImplementedException();
-				case OpCode.Say:			GameHost.Say(PopString(), Pop(), PopString());		break;
-				case OpCode.RegisterChoice:	GameHost.RegisterChoice(PopString(), instr.Index);	break;
-				case OpCode.CallChoices:		NextInstruction = GameHost.DisplayChoices(); GameHost.ClearChoices(); break;
+				case OpCode.Say:				GameHost.Say(PopString(), Pop(), PopString());							break;
+
+				case OpCode.RegisterChoice_Pop:
+				case OpCode.RegisterChoice:		GameHost.RegisterChoice(PopString(), instr.Index);						break;
+				case OpCode.CallChoices:		NextInstruction = GameHost.DisplayChoices(); GameHost.ClearChoices();	break;
+				case OpCode.CallChoices_Push:	Push(GameHost.DisplayChoices()); GameHost.ClearChoices();				break;
 				case OpCode.GiveItem:
 				case OpCode.GiveGold:
 					throw new NotImplementedException();
 				#endregion
+				#region Input
 				case OpCode.ReadString:		Push(GameHost.GetString(PopString()));			break;
 				case OpCode.ReadInt:		Push(GameHost.GetInt(PopString()));				break;
 				case OpCode.ReadDouble:		Push(GameHost.GetDouble(PopString()));			break;
+				#endregion
+				#region Rand
 				case OpCode.Srand:			GameHost.RngSetSeed(PopI32());					break;
+				case OpCode.Srand_sysTime:	throw new NotImplementedException();
 				case OpCode.Rand:			Push(GameHost.RngGetDouble());					break;
 				case OpCode.RandInt:		Push(GameHost.RngGetInt(PopI32(), PopI32()));	break;
+				#endregion
 				#region Debug
 				case OpCode.Error:
 				case OpCode.AssertHostReturnIs_I32:
@@ -361,8 +448,23 @@ namespace LsnCore.Interpretation
 				case OpCode.AssertHostReturnIs_Option_Type:
 					throw new NotImplementedException();
 				#endregion
+				#region Math
+				case OpCode.Min:	 Push(Math.Min(PopF64(), PopF64()));		break;
+				case OpCode.Max:	 Push(Math.Max(PopF64(), PopF64()));		break;
+				case OpCode.Floor:	 Push(Math.Floor(PopF64()));				break;
+				case OpCode.Ceil:	 Push(Math.Ceiling(PopF64()));				break;
+				case OpCode.Round:	 Push(Math.Round(PopF64()));				break;
+				case OpCode.Abs:	 Push(Math.Abs(PopF64()));					break;
+				case OpCode.Sqrt:	 Push(Math.Sqrt(PopF64()));					break;
+				case OpCode.Sin:	 Push(Math.Sin(PopF64()));					break;
+				case OpCode.Cos:	 Push(Math.Cos(PopF64()));					break;
+				case OpCode.Tan:	 Push(Math.Tan(PopF64()));					break;
+				case OpCode.ASin:	 Push(Math.Asin(PopF64()));					break;
+				case OpCode.ACos:	 Push(Math.Acos(PopF64()));					break;
+				case OpCode.ATan:	 Push(Math.Atan(PopF64()));					break;
+				#endregion
 				case OpCode.CRN:
-					throw new NotImplementedException();
+				case OpCode.CFRN:
 				case OpCode.HCF:
 					throw new NotImplementedException();
 				default:
@@ -370,26 +472,14 @@ namespace LsnCore.Interpretation
 			}
 		}
 
-		void EnterFunction(IProcedureB procedure)
+		void EnterFunction(ProcedureInfo procedure)
 		{
 			Stack.EnterProcedure(RegisterFile, procedure);
 			CurrentProcedure = procedure;
 			// Place args in stack frame...
 			/*for (int i = CurrentProcedure.NumberOfParameters - 1; i >= 0; i--)
 				Stack.SetVariable(i, Pop());*/
-			NextInstruction = 0; // All procedures start at 0;
-		}
-
-		// Used by script class constructors...
-		void EnterMethod(IProcedureB procedure)
-		{
-			Stack.EnterProcedure(RegisterFile, procedure);
-			CurrentProcedure = procedure;
-			// Place args in stack frame...
-			Stack.SetVariable(0, Pop());
-			for (int i = CurrentProcedure.NumberOfParameters - 1; i > 0; i--)
-				Stack.SetVariable(i, Pop());
-			NextInstruction = 0; // All procedures start at 0;
+			NextInstruction = procedure.CodeOffset;
 		}
 
 		//private static int NearestPower(int i) => 1 << (int)Math.Ceiling(Math.Log(i, 2));

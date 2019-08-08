@@ -25,7 +25,7 @@ namespace LsnCore.Interpretation
 
 		public void SetVariable(int index, LsnValue value) => Values[Offset + index] = value;
 
-		public void EnterProcedure(VMRegisterFile registerFile, IProcedureB procedure, LsnValue[] args)
+		public void EnterProcedure(VMRegisterFile registerFile, ProcedureInfo procedure, LsnValue[] args)
 		{
 			Offset += Frames.Peek().StackSize;
 			Frames.Push(new FrameInfo(registerFile, procedure));
@@ -34,7 +34,7 @@ namespace LsnCore.Interpretation
 				Values[i + Offset] = args[i];
 		}
 
-		public void EnterProcedure(VMRegisterFile registerFile, IProcedureB procedure)
+		public void EnterProcedure(VMRegisterFile registerFile, ProcedureInfo procedure)
 		{
 			Offset += Frames.Peek().StackSize;
 			Frames.Push(new FrameInfo(registerFile, procedure));
@@ -63,7 +63,7 @@ namespace LsnCore.Interpretation
 			internal readonly VMRegisterFile RegisterFile;
 			internal readonly int StackSize;
 
-			internal FrameInfo(VMRegisterFile registerFile, IProcedureB proc)
+			internal FrameInfo(VMRegisterFile registerFile, ProcedureInfo proc)
 			{
 				RegisterFile = registerFile; StackSize = proc.StackSize;
 			}

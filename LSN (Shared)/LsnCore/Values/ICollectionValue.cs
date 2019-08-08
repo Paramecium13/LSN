@@ -21,7 +21,7 @@ namespace LsnCore.Values
 
 		public bool MoveNext()
 		{
-			if(++currentIndex >= length) return false;
+			if (++currentIndex >= length) return false;
 			Current = Collection.GetValue(currentIndex);
 			return true;
 		}

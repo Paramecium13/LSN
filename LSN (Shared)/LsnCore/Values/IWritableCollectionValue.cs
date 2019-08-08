@@ -9,7 +9,7 @@ namespace LsnCore.Values
 	/// <summary>
 	/// A(n) LSN collection value whose values can also be written.
 	/// </summary>
-	public interface IWritableCollectionValue : ICollectionValue
+	public interface IMutableCollectionValue : ICollectionValue
 	{
 
 		void SetValue(int index, LsnValue value);

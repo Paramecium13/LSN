@@ -24,7 +24,7 @@ namespace LsnCore.Statements
 #if CORE
 		public override InterpretValue Interpret(IInterpreter i)
 		{
-			(Collection.Eval(i).Value as IWritableCollectionValue).SetValue(Index.Eval(i).IntValue, Value.Eval(i));
+			(Collection.Eval(i).Value as IMutableCollectionValue).SetValue(Index.Eval(i).IntValue, Value.Eval(i));
 			return InterpretValue.Base;
 		}
 #endif

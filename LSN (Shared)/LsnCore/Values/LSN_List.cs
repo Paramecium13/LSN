@@ -7,7 +7,7 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Values
 {
-	public class LsnList : LsnValueB, ICollectionValue, IWritableCollectionValue
+	public class LsnList : LsnValueB, IMutableCollectionValue
 	{
 		private readonly List<LsnValue> Values = new List<LsnValue>();
 

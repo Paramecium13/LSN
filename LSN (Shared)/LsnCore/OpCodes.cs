@@ -119,11 +119,11 @@ namespace LsnCore
 		MakeRange,
 		#region Logic
 		And,
-		Nand,
+		//Nand,
 		Or,
-		Xor,
-		Nor,
-		Xnor,
+		//Xor,
+		//Nor,
+		//Xnor,
 		Not,
 		#endregion
 		#region Convert
@@ -216,23 +216,52 @@ namespace LsnCore
 		// data is index of type id...
 		Load_UniqueScriptClass,
 
-		#region Variables
-		// data is index
-		/// <summary> </summary>
-		LoadLocal_0,
+		#region Variables, fields, and elements
+		//LoadLocal_0,
+		/// <summary> data is index</summary>
 		LoadLocal,
-		/// <summary> </summary>
+		/// <summary> data is index</summary>
 		StoreLocal,
-		#endregion
-
-		#region Vectors and Lists
-		/// <summary>,index, collection -> ,value</summary>
+		/// <summary>, collection, index -> ,value</summary>
 		LoadElement,
 		// for lists of a struct type, loading an element but not storing it doesn't copy it...
 		//		e.g. in 'ls[0].Foo = 1;', the expression 'ls[0]' does not make a copy.
 
-		/// <summary>, value, index, collection -> ,</summary>
+		/// <summary>, collection, index, value -> ,</summary>
 		StoreElement,
+		LoadField,
+		StoreField,
+		#endregion
+		#region INC and DEC
+		/// <summary>Increment var and push onto stack {++num}</summary>
+		PreInc_Var,
+		/// <summary>Increment element and push onto stack {++nums[i]}</summary>
+		PreInc_Elem,
+		/// <summary>Increment field and push onto stack {++foo.num}</summary>
+		PreInc_Fld,
+
+		/// <summary>Push var onto stack then increment {num++}</summary>
+		PostInc_Var,
+		/// <summary>Push element onto stack then increment {nums[i]++}</summary>
+		PostInc_Elem,
+		/// <summary>Push field onto stack then increment {foo.num++}</summary>
+		PostInc_Fld,
+
+		/// <summary>Decrement var and push onto stack {--num}</summary>
+		PreDec_Var,
+		/// <summary>Decrement element and push onto stack {--nums[i]}</summary>
+		PreDec_Elem,
+		/// <summary>Decrement field and push onto stack {--foo.num}</summary>
+		PreDec_Fld,
+
+		/// <summary>Push var onto stack then decrement {num--}</summary>
+		PostDec_Var,
+		/// <summary>Push element onto stack then increment {nums[i]--}</summary>
+		PostDec_Elem,
+		/// <summary>Push field onto stack then decrement {foo.num++--}</summary>
+		PostDec_Fld,
+		#endregion
+		#region Vectors and Lists
 		// data is index of type?
 		ConstructList,
 		// data is number of values on the eval stack to put into the list
@@ -240,8 +269,6 @@ namespace LsnCore
 		// data is number of values on the eval stack to put into the vector
 		InitializeVector,
 		#endregion
-		LoadField,
-		StoreField,
 		/// <summary>
 		/// Data is index of type.
 		/// {, arg_0,..., arg_N -> , struct }
@@ -287,7 +314,7 @@ namespace LsnCore
 		Say,
 		/// <summary>Instruction index is data...</summary>
 		RegisterChoice,
-		/// <summary>...</summary>
+		/// <summary>???</summary>
 		RegisterChoice_Pop,
 		CallChoices,
 		/// <summary>Call choice but instead of jumping, push result onto stack.</summary>
@@ -337,36 +364,8 @@ namespace LsnCore
 		ASin,
 		ACos,
 		ATan,
-
-		/// <summary>Increment var and push onto stack {++num}</summary>
-		PreInc_Var,
-		/// <summary>Increment element and push onto stack {++nums[i]}</summary>
-		PreInc_Elem,
-		/// <summary>Increment field and push onto stack {++foo.num}</summary>
-		PreInc_Fld,
-
-		/// <summary>Push var onto stack then increment {num++}</summary>
-		PostInc_Var,
-		/// <summary>Push element onto stack then increment {nums[i]++}</summary>
-		PostInc_Elem,
-		/// <summary>Push field onto stack then increment {foo.num++}</summary>
-		PostInc_Fld,
-
-		/// <summary>Decrement var and push onto stack {--num}</summary>
-		PreDec_Var,
-		/// <summary>Decrement element and push onto stack {--nums[i]}</summary>
-		PreDec_Elem,
-		/// <summary>Decrement field and push onto stack {--foo.num}</summary>
-		PreDec_Fld,
-
-		/// <summary>Push var onto stack then decrement {num--}</summary>
-		PostDec_Var,
-		/// <summary>Push element onto stack then increment {nums[i]--}</summary>
-		PostDec_Elem,
-		/// <summary>Push field onto stack then decrement {foo.num++--}</summary>
-		PostDec_Fld,
 		#endregion
-
+		
 		#region WORDS
 		GetWord,
 		// ,word -> ,word
