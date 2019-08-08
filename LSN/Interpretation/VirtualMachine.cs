@@ -14,11 +14,11 @@ namespace LsnCore.Interpretation
 		Instruction[] Instructions { get; }
 		ushort NumberOfParameters { get; }
 		ushort StackSize { get; }
-		FileEnvironment Environment { get; }
+		LsnObjectFile Environment { get; }
 		ProcedureLineInfo LineInfo { get; }
 	}
 
-	public class FileEnvironment
+	public class LsnObjectFile
 	{
 		public string FileName { get; }
 
@@ -28,15 +28,20 @@ namespace LsnCore.Interpretation
 
 		internal LsnValue GetObject(ushort index) => throw new NotImplementedException();
 
-		internal LsnType GetType(ushort index) => throw new NotImplementedException();
+		internal LsnType GetUsedType(ushort index) => throw new NotImplementedException();
 
-		internal LsnType GetType(string name) => throw new NotImplementedException();
+		internal LsnType GetContainedType(string name) => throw new NotImplementedException();
 
-		internal IProcedureB GetFunction(ushort index) => throw new NotImplementedException();
+		/// <summary>
+		/// Get a procedure called by code in this file.
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		internal IProcedureB GetProcedure(ushort index) => throw new NotImplementedException();
 
-		internal IProcedureB GetFunction(string name) => throw new NotImplementedException();
+		internal IProcedureB GetContainedFunction(string name) => throw new NotImplementedException();
 
-		internal FileEnvironment GetFile(ushort index) => throw new NotImplementedException();
+		internal LsnObjectFile GetFile(ushort index) => throw new NotImplementedException();
 
 		/// <summary>
 		/// Gets a string that is the name of something
@@ -51,8 +56,6 @@ namespace LsnCore.Interpretation
 		public int NextInstruction;
 
 		public int Target;
-
-		public ILsnValue MethodObject;
 
 		internal IProcedureB CurrentProcedure;
 	}
@@ -103,7 +106,7 @@ namespace LsnCore.Interpretation
 			set => RegisterFile.CurrentProcedure = value;
 		}
 		Instruction[] Code => CurrentProcedure.Instructions;
-		FileEnvironment Environment => CurrentProcedure.Environment;
+		LsnObjectFile Environment => CurrentProcedure.Environment;
 
 		int CurrentInstruction;
 
@@ -193,43 +196,43 @@ namespace LsnCore.Interpretation
 				case OpCode.Jump_False:		if (!PopBool()) NextInstruction = instr.Index;	break;
 				case OpCode.JumpToTarget:	NextInstruction = Target;						break;
 				case OpCode.SetTarget:		Target = instr.Index;							break;
+				#region Call
 				case OpCode.LoadIndex:		TmpIndex = instr.Index;							break;
-				case OpCode.CallFn:
-					//EnterFunction(Environment.GetFile(TmpIndex).GetFunction(instr.Index));
-					EnterFunction(Environment.GetFile(TmpIndex).GetFunction(Environment.GetString(instr.Index)));
-					break;
 				case OpCode.CallFn_Short:
-					EnterFunction(Environment.GetFile((ushort)(instr.Index & 0xFF)).GetFunction((ushort)(instr.Index >> 8)));
-					break;
+				case OpCode.CallFn:
+					EnterFunction(Environment.GetProcedure(instr.Index)); break;
 				case OpCode.CallFn_Local:
-					EnterFunction(Environment.GetFunction(instr.Index));
-					break;
+					//EnterFunction(Environment.GetProcedure(instr.Index));break;
+					throw new NotImplementedException();
 				case OpCode.CallNativeMethod:
 					{
-						var method = (BoundedMethod)Peek().Value.Type.Type.Methods[Environment.GetString(instr.Index)];
-						var argc = method.Parameters.Count;
-						var args = GetArray(argc);
-						args[0] = Pop();
-						for (var i = argc - 1; i > 0; i--)
-							args[i] = Pop();
+						var methodName = Environment.GetString(instr.Index);
+						var type = Environment.GetUsedType(TmpIndex);
+						var method = (BoundedMethod)type.Methods[methodName];
 						if (method.ReturnType != null && method.ReturnType.Name != "void")
-							Push(method.Eval(args));
-						else method.Eval(args);
+							Push(method.Eval(EvalStack));
+						else method.Eval(EvalStack);
 					} break;
 				case OpCode.CallLsnMethod:
 					{
-						var type = Peek().Value.Type.Type;
-						var proc = (IProcedureB)type.Methods[Environment.GetString(instr.Index)];
-						EnterFunction(proc);
+						/*var type = Environment.GetUsedType(TmpIndex);
+						var proc = (IProcedureB)type.Methods[Environment.GetString(instr.Index)];*/
+						EnterFunction(Environment.GetProcedure(instr.Index));
 					}
 					break;
 				case OpCode.CallScObjMethod:
 					{
+						/*var type = (ScriptClass)Environment.GetUsedType(TmpIndex);
+						var method = type.GetMethod(Environment.GetString(instr.Index));
 						var obj = Peek().Value as ScriptObject;
-						var proc = (IProcedureB)obj.GetMethod(Environment.GetString(instr.Index));
-						EnterMethod(proc);
+						var proc = (IProcedureB)obj.GetMethod(Environment.GetString(instr.Index));*/
+						EnterFunction(Environment.GetProcedure(instr.Index));
 					}
 					break;
+				case OpCode.CallScObjVirtualMethod:
+					{
+						throw new NotImplementedException();
+					}
 				case OpCode.CallHostInterfaceMethod:
 					{
 						var obj = Peek().Value as IHostInterface;
@@ -239,6 +242,7 @@ namespace LsnCore.Interpretation
 				case OpCode.Ret:
 					RegisterFile = Stack.ExitProcedure();
 					break;
+				#endregion
 				case OpCode.LoadConst_I32_short:		Push(instr.Data);								break;
 				case OpCode.LoadConst_I32:				Push(Environment.GetInt(instr.Index));			break;
 				case OpCode.LoadConst_F64:				Push(Environment.GetDouble(instr.Index));		break;
@@ -247,7 +251,7 @@ namespace LsnCore.Interpretation
 				case OpCode.LoadConst_Obj:				Push(Environment.GetObject(instr.Index));		break;
 				case OpCode.LoadConst_Nil:				Push(LsnValue.Nil);								break;
 				case OpCode.Load_UniqueScriptClass:
-					Push(ResourceManager.GetUniqueScriptObject(Environment.GetType(instr.Index) as ScriptClass));
+					Push(ResourceManager.GetUniqueScriptObject(Environment.GetUsedType(instr.Index) as ScriptClass));
 					break;
 				case OpCode.LoadLocal: Push(Stack.GetVariable(instr.Index)); break;
 				case OpCode.StoreLocal: Stack.SetVariable(instr.Index, Pop()); break;
@@ -260,7 +264,7 @@ namespace LsnCore.Interpretation
 						var index = Pop().IntValue; var val = Pop(); col.SetValue(index, val);
 					} break;
 				case OpCode.ConstructList:
-					Push(new LsnList((LsnListType)Environment.GetType(instr.Index)));
+					Push(new LsnList((LsnListType)Environment.GetUsedType(instr.Index)));
 					break;
 				case OpCode.InitializeList:
 				case OpCode.InitializeVector:
@@ -271,7 +275,7 @@ namespace LsnCore.Interpretation
 						obj.SetFieldValue(instr.Index, Pop());
 					} break;
 				case OpCode.ConstructStruct: {
-						var type = Environment.GetType(instr.Index) as StructType;
+						var type = Environment.GetUsedType(instr.Index) as StructType;
 						var fCount = type.FieldCount;
 						var vals = GetArray(fCount);
 						for (int i = fCount - 1; i >= 0; i++)
@@ -288,7 +292,7 @@ namespace LsnCore.Interpretation
 						FreeArray(str.Values, fCount);
 					} break;
 				case OpCode.ConstructRecord: {
-						var type = Environment.GetType(instr.Index) as RecordType;
+						var type = Environment.GetUsedType(instr.Index) as RecordType;
 						var fCount = type.FieldCount;
 						var vals = GetArray(fCount);
 						for (int i = fCount - 1; i >= 0; i++)
@@ -302,24 +306,30 @@ namespace LsnCore.Interpretation
 				#region Script Class
 				case OpCode.ConstructScriptClass:
 					{
-						var scriptClass = Environment.GetType(instr.Index) as ScriptClass;
+						var scriptClass = Environment.GetUsedType(instr.Index) as ScriptClass;
 						var cstor = scriptClass.Constructor;
-						var argc = cstor.Parameters.Length;
-						Push(new ScriptObject(new LsnValue[scriptClass.Fields.Count], scriptClass, scriptClass.DefaultStateId, null));
-						Push(Peek());// This way it's the return value...
-						EnterMethod((IProcedureB)cstor);
+						/*Push(new ScriptObject(new LsnValue[scriptClass.Fields.Count], scriptClass, scriptClass.DefaultStateId, null));
+						Push(Peek());// This way it's the return value...*/
+						EnterFunction((IProcedureB)cstor);
 					} break;
-				case OpCode.ConstructAndAttachScriptClass:
+				case OpCode.CreateScriptClass:
 					{
-						var scriptClass = Environment.GetType(instr.Index) as ScriptClass;
-						var cstor = scriptClass.Constructor;
-						var argc = cstor.Parameters.Length;
-						var host = Pop().Value as IHostInterface;
-						Push(new ScriptObject(new LsnValue[scriptClass.Fields.Count], scriptClass, scriptClass.DefaultStateId, host));
-						Push(Peek());// This way it's the return value...
-						EnterMethod((IProcedureB)cstor);
+						var scriptClass = Environment.GetUsedType(instr.Index) as ScriptClass;
+						var scrObj = new ScriptObject(new LsnValue[scriptClass.Fields.Count], scriptClass, scriptClass.DefaultStateId, null);
+						break;
 					}
-					break;
+				case OpCode.CreateAndAttachScriptClass:
+					{
+						var scriptClass = Environment.GetUsedType(instr.Index) as ScriptClass;
+						var scrObj = new ScriptObject(new LsnValue[scriptClass.Fields.Count], scriptClass, scriptClass.DefaultStateId, Pop().Value as IHostInterface, false);
+						break;
+					}
+				case OpCode.RegisterScriptObjectForEvents:
+					{
+						var scrObj = Stack.GetVariable(0).Value as ScriptObject;
+						scrObj.RegisterForEvents();
+						break;
+					}
 				case OpCode.SetState:	(Stack.GetVariable(0).Value as ScriptObject).SetState(instr.Data);	break;
 				case OpCode.Detach:		(Stack.GetVariable(0).Value as ScriptObject).Detach();				break;
 				case OpCode.GetHost:	Push((Stack.GetVariable(0).Value as ScriptObject).GetHost());		break;
@@ -365,11 +375,12 @@ namespace LsnCore.Interpretation
 			Stack.EnterProcedure(RegisterFile, procedure);
 			CurrentProcedure = procedure;
 			// Place args in stack frame...
-			for (int i = CurrentProcedure.NumberOfParameters - 1; i >= 0; i--)
-				Stack.SetVariable(i, Pop());
+			/*for (int i = CurrentProcedure.NumberOfParameters - 1; i >= 0; i--)
+				Stack.SetVariable(i, Pop());*/
 			NextInstruction = 0; // All procedures start at 0;
 		}
 
+		// Used by script class constructors...
 		void EnterMethod(IProcedureB procedure)
 		{
 			Stack.EnterProcedure(RegisterFile, procedure);

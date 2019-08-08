@@ -2,6 +2,57 @@
 
 namespace LsnCore
 {
+
+	/*
+	 * File Structure Proposal
+	 *	Header:
+	 *		Info about this file...
+	 *	Data Section (May be shared by multiple files to save space...?):
+	 *		Id Strings segment:
+	 *			...
+	 *		Constant Pools:
+	 *			WORD Pool:
+	 *				...
+	 *			LONG Pool:
+	 *				...
+	 *			String Pool:
+	 *				...
+	 *	Link Section
+	 *		Usings Segment:
+	 *			Index of name in Id Strings segment
+	 *		Used Types Segment:
+	 *			Index of containing file + 2 (0 is system, 1 is this file)
+	 *			Index of name in Id Strings segment
+	 *			Type of type [enum...]
+	 *			Number of generics
+	 *			generics[number of generics]:
+	 *				index of generic parameter in used types segment.
+	 *			...
+	 *	Info Section
+	 *		Non-Local Procedure Stubs:
+	 *			Index of type in types segment
+	 *			Index of name in Id Strings segment
+	 *		Exported Types Segment:
+	 *			Index of entry in used types segment...?
+	 *			...
+	 *		Procedures Segment:
+	 *			Index of name in id strings segment
+	 *			stack size
+	 *			number of parameters
+	 *			parameters:
+	 *				Index of name
+	 *				Index of type
+	 *				Usage info bit-flags?
+	 *			index of return type
+	 *			offset of first instruction in code segment
+	 *			attributes:
+	 *				???
+	 *		Local Types Segment?:
+	 *			...
+	 *	Code Section
+	 */
+
+
 	enum OpCode : ushort
 	{
 		#region Basic
@@ -42,8 +93,18 @@ namespace LsnCore
 
 		Neq_I32,
 		Neq_F64,
-		//Neq_F64_epsilon,
 		Neq_Str,
+
+		/// <summary>
+		/// if data != 0, data is 1 + index of epsilon in the file's F64 const storage. Otherwise use default System.Double.EPSILON.
+		/// </summary>
+		Eq_F64_epsilon,
+		/// <summary>
+		/// if data != 0, data is 1 + index of epsilon in the file's F64 const storage. Otherwise use default System.Double.EPSILON.
+		/// </summary>
+		Neq_F64_epsilon,
+
+
 		//NonNan_F64,
 		NonNull,
 		/// <summary>Doesn't pop from the eval stack.</summary>
@@ -58,7 +119,11 @@ namespace LsnCore
 		MakeRange,
 		#region Logic
 		And,
+		Nand,
 		Or,
+		Xor,
+		Nor,
+		Xnor,
 		Not,
 		#endregion
 		#region Convert
@@ -83,34 +148,47 @@ namespace LsnCore
 		#region Call
 		/// <summary>Data is index. Places index into a temp register(not preserved when calling).Used by instructions that need two indexes.</summary>
 		LoadIndex,
-		/// <summary>index of file loaded by LoadIndex instruction, index of function in file is data</summary>
+
+		/* Two potential styles of non-local procedure indexing:
+		 *	(1): Index of file containing procedure is loaded by LoadIndex, index of procedure name is data
+		 * 
+		 *	(2): Data is index of procedure stub. Procedure stubs are stored in the file, they contain:
+		 *			* The index of the file containing the procedure.
+		 *			* The name of the procedure.
+		 *			* The offset of that procedure in its file's code segment. This is resolved at load time or when it is first called.
+		 */
+
+		/// <summary>index of file loaded by LoadIndex instruction, index of function name is data</summary>
 		CallFn,
-		/// <summary>index of file is first byte of data, index of function in file is second byte in data</summary>
+		/// <summary>index of file is first byte of data, index of function name is second byte in data</summary>
 		CallFn_Short,
 		/// <summary>file is the current file, index of fn is data.</summary>
 		CallFn_Local,
 
-
-		SetMethodObjectRegister,
 		/// <summary>
-		/// Data is index of method name. Not for int, double or bool!
-		/// {, arg_0,..., arg_N, object -> , result (if it returns a value) }
+		/// Loaded index is index of type. Data is index of method name. Not for int, double or bool! Also not for methods that have corresponding instructions...
+		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
 		/// </summary>
 		CallNativeMethod,
 		/// <summary>
-		/// Data is index of method name.
-		/// {, arg_0,..., arg_N, object -> , result (if it returns a value) }
+		/// Loaded index is index of type. Data is index of method name.
+		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
 		/// </summary>
 		CallLsnMethod,
 		/// <summary>
-		/// Call ScriptObject method. Data is index of method name.
-		/// {, arg_0,..., arg_N, object -> , result (if it returns a value) }
+		/// Call ScriptObject method. Loaded index is index of type. Data is index of method name.
+		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
 		/// </summary>
 		CallScObjMethod,
-		/*// index of type loaded by LoadIndex. Index of method is data
-		CallMethod,
-		// index of type is first byte of data, index of method is second byte of data
-		CallMethod_Short,*/
+		/// <summary>
+		/// Call virtual ScriptObject method. Loaded index is index of type. Data is index of method name.
+		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
+		/// </summary>
+		CallScObjVirtualMethod,
+		/*/// <summary>
+		/// Loaded index is index of type. Data is index of method name.
+		/// </summary>
+		CallMethod,*/
 
 		/// <summary>
 		/// Data is index of method name.
@@ -184,11 +262,20 @@ namespace LsnCore
 		#region ScriptClass
 		/// <summary>Data is state; local[0] is script class.</summary>
 		SetState,
-		/// <summary>Stack: , arg_0, ..., arg_N -> ,script object</summary>
+		/// <summary>
+		/// Call the constructor for the script class
+		/// Stack: , arg_0, ..., arg_N, (host) -> ,script object
+		/// </summary>
 		ConstructScriptClass,
-		//ConstructScriptClass_NoConstructor,
-		/// <summary>Stack: ,arg_0, ..., arg_N, host -> ,script object</summary>
-		ConstructAndAttachScriptClass,
+
+		/// <summary>Called in the beginning of the constructor... Puts it in stack[0]</summary>
+		CreateScriptClass,
+		/// <summary>Called in the beginning of the constructor... Puts it in stack[0]</summary>
+		CreateAndAttachScriptClass,
+		/// <summary>Called at the end of the constructor of a script class that listens to its hosts events...</summary>
+		RegisterScriptObjectForEvents,
+			// This happens at the end of the constructor so that all of the script object's fields are initialized before any of its code is run.
+
 		/// <summary>Local[0] is script class.</summary>
 		Detach,
 		/// <summary>Local[0] is script class.</summary>

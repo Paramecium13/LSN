@@ -29,7 +29,7 @@ namespace LsnCore.Values
 
 		public string TextId { get; private set; }
 
-		public ScriptObject(LsnValue[] fields, ScriptClass type, int currentState, IHostInterface host = null)
+		public ScriptObject(LsnValue[] fields, ScriptClass type, int currentState, IHostInterface host = null, bool registerForEvents = true)
 		{
 			Fields = fields; Type = type.Id; ScriptClass = type; CurrentStateIndex = currentState;
 			if (type._States.Count > 0)
@@ -40,17 +40,11 @@ namespace LsnCore.Values
 				if (ScriptClass.HostInterface == null)
 					throw new ArgumentException("This type of ScriptObject does not have a host.", nameof(host));
 				if (!ScriptClass.HostInterface.Equals(host.Type))
-					throw new ArgumentException($"Invalid HostInterface type. Expected {ScriptClass.HostInterface.Name}. Recieved {host.Type.Name}.", nameof(host));
+					throw new ArgumentException($"Invalid HostInterface type. Expected {ScriptClass.HostInterface.Name}. Received {host.Type.Name}.", nameof(host));
 
 				Host = host;
 				// Subscribe to events.
-				foreach (var evName in (host.Type.Type as HostInterfaceType).EventDefinitions.Keys)
-				{
-					if ((CurrentState?.HasEventListener(evName) ?? false))
-						host.SubscribeToEvent(evName, this, CurrentState.GetEventListener(evName).Priority);
-					else if (ScriptClass.HasEventListener(evName))
-						host.SubscribeToEvent(evName, this, GetEventListener(evName).Priority);
-				}
+				if (registerForEvents) RegisterForEvents();
 
 				string str;
 				if (Settings.ScriptObjectIdFormat == ScriptObjectIdFormat.Host_Self)
@@ -62,6 +56,17 @@ namespace LsnCore.Values
 			}
 			else if (ScriptClass.HostInterface != null)
 				throw new ArgumentException("This type of ScriptObject cannot survive without a host.", nameof(host));
+		}
+
+		internal void RegisterForEvents()
+		{
+			foreach (var evName in (Host.Type.Type as HostInterfaceType).EventDefinitions.Keys)
+			{
+				if ((CurrentState?.HasEventListener(evName) ?? false))
+					Host.SubscribeToEvent(evName, this, CurrentState.GetEventListener(evName).Priority);
+				else if (ScriptClass.HasEventListener(evName))
+					Host.SubscribeToEvent(evName, this, GetEventListener(evName).Priority);
+			}
 		}
 
 		public LsnValue GetFieldValue(int index)

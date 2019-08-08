@@ -26,6 +26,9 @@ namespace LsnCore
 
 		public LsnValue Eval(LsnValue[] args)
 			=> Bound(args);
+
+		public LsnValue Eval(Stack<LsnValue> evalStack)
+			=> throw new NotImplementedException();
 #endif
 	}
 }
