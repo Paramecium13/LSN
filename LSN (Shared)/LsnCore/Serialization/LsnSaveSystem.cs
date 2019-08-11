@@ -1,6 +1,7 @@
 ﻿using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using LsnCore.Values;
 using LsnCore.Types;
@@ -22,7 +23,6 @@ namespace LsnCore.Serialization
 	///	   records, lists, and vectors.
 	/// 4. Save strings.
 	/// </summary>
-
 	public class LsnSerializer : ILsnSerializer
 	{
 		class HostsSegment
@@ -39,7 +39,7 @@ namespace LsnCore.Serialization
 				Offset = Writer.ReserveOffset();
 			}
 
-			void Write(IHostInterface host, LsnSerializer serializer)
+			internal void Write(IHostInterface host, LsnSerializer serializer)
 			{
 				Writer.Write(host.NumericId);                                       // Id
 				var lengthField = Writer.ReserveOffset();
@@ -53,6 +53,7 @@ namespace LsnCore.Serialization
 					script.ScriptClass.WriteValue(script, serializer, Writer);      // Scripts
 				}
 				lengthField.Satisfy((int)Writer.Position - (int)lengthField.Position - 4);
+				Count++;
 			}
 
 			internal void Finish()
@@ -60,14 +61,35 @@ namespace LsnCore.Serialization
 				Offset.Satisfy((int)Count);
 			}
 		}
+		readonly HostsSegment Hosts;
 
 		class FreeObjectsSegment
 		{
 			readonly BinaryDataWriter Writer;
 			uint Count;
+			readonly Offset Offset;
 
-			internal FreeObjectsSegment(BinaryDataWriter writer) { Writer = writer; }
+			internal FreeObjectsSegment(BinaryDataWriter writer)
+			{
+				Writer = writer;
+				Offset = Writer.ReserveOffset();
+			}
+
+			internal void Write(ILsnValue value, LsnSerializer serializer)
+			{
+				var id = serializer.Ids[value];
+				Writer.Write(id);
+				var type = (LsnReferenceType)value.Type.Type;
+				type.WriteValue(value, serializer, Writer);
+				Count++;
+			}
+
+			internal void Finish()
+			{
+				Offset.Satisfy((int)Count);
+			}
 		}
+		readonly FreeObjectsSegment FreeObjects;
 
 		uint NextId;
 		readonly Dictionary<ILsnValue, uint> Ids = new Dictionary<ILsnValue, uint>();
@@ -79,13 +101,22 @@ namespace LsnCore.Serialization
 		uint NextStringId;
 		readonly Dictionary<string, uint> Strings = new Dictionary<string, uint>();
 
-		readonly List<IHostInterface> SavedHosts = new List<IHostInterface>();
-
-		readonly Queue<IHostInterface> HostsToSerializeNext = new Queue<IHostInterface>();
+		readonly HashSet<IHostInterface> SavedHosts = new HashSet<IHostInterface>();
 
 		readonly SaveFileTypeSegment TypeSegment;
 
-		internal LsnSerializer(SaveFileTypeSegment typeSegment) { TypeSegment = typeSegment; }
+		readonly MemoryStream HostsData;
+
+		readonly MemoryStream FreeObjData;
+
+		internal LsnSerializer(SaveFileTypeSegment typeSegment)
+		{
+			TypeSegment = typeSegment;
+			HostsData = new MemoryStream();
+			Hosts = new HostsSegment(new BinaryDataWriter(HostsData, true));
+			FreeObjData = new MemoryStream();
+			FreeObjects = new FreeObjectsSegment(new BinaryDataWriter(FreeObjData, true));
+		}
 
 		uint GetId(ILsnValue value)
 		{
@@ -97,7 +128,8 @@ namespace LsnCore.Serialization
 
 		void WriteHost(IHostInterface host)
 		{
-			throw new NotImplementedException();
+			SavedHosts.Add(host);
+			Hosts.Write(host, this);
 		}
 
 		public uint SaveList(ILsnValue list)
@@ -143,7 +175,7 @@ namespace LsnCore.Serialization
 				return Ids[scriptObject];
 			}
 			if (!Ids.ContainsKey(scriptObject))
-				RegisterHostForSave(h as IHostInterface);
+				SaveHost(h as IHostInterface);
 			return Ids[scriptObject];
 		}
 
@@ -158,12 +190,38 @@ namespace LsnCore.Serialization
 			return Strings[value];
 		}
 
-		public void RegisterHostForSave(IHostInterface hostInterface)
+		public void SaveHost(IHostInterface hostInterface)
 		{
-			if (!SavedHosts.Contains(hostInterface))
+			if (hostInterface.HasScripts && !SavedHosts.Contains(hostInterface))
 				WriteHost(hostInterface);
 		}
 
+		public void SaveFreeObjects()
+		{
+			while (SaveQueue.Count != 0)
+				FreeObjects.Write(SaveQueue.Dequeue(), this);
+		}
+
+		/// <summary>
+		/// Call this after saving all the hosts.
+		/// </summary>
+		public void Save(Stream stream)
+		{
+			SaveFreeObjects();
+			Hosts.Finish();
+			HostsData.WriteTo(stream);
+			FreeObjects.Finish();
+			FreeObjData.WriteTo(stream);
+			using (var writer = new BinaryDataWriter(stream,true))
+			{
+				writer.Write((uint)Strings.Count);
+				foreach (var pair in Strings)
+				{
+					writer.Write(pair.Value);
+					writer.Write(pair.Key);
+				}
+			}
+		}
 
 	}
 }

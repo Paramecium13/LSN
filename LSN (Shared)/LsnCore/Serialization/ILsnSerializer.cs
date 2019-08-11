@@ -16,5 +16,7 @@ namespace LsnCore
 		uint SaveVector(ILsnValue vector);
 
 		uint SaveRecord(ILsnValue record);
+
+		void SaveHost(IHostInterface hostInterface);
 	}
 }

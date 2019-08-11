@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace LsnCore.Types
 {
-	public sealed class ScriptClass : LsnType, IHasFieldsType
+	public sealed class ScriptClass : LsnReferenceType, IHasFieldsType
 	{
 		public readonly bool Unique;
 
@@ -236,6 +236,15 @@ namespace LsnCore.Types
 			writer.Write(serializer.SaveScriptObject(value.Value as ScriptObject));
 		}
 
+		internal override void WriteValue(ILsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
+			=> WriteValue((ScriptObject)value, serializer, writer);
+
+		/// <summary>
+		/// Does not have a host...
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="serializer"></param>
+		/// <param name="writer"></param>
 		internal void WriteValue(ScriptObject value, ILsnSerializer serializer, BinaryDataWriter writer)
 		{
 			writer.Write(value.CurrentState);

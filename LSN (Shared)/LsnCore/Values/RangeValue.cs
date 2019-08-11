@@ -21,6 +21,9 @@ namespace LsnCore.Values
 		public bool MoveNext() => ++current <= Range.End;
 	}
 
+	/// <summary>
+	/// Represents a range of integers.
+	/// </summary>
 	public class RangeValue : ILsnValue, ILsnEnumerable, IHasFieldsValue
 	{
 		public readonly int Start;

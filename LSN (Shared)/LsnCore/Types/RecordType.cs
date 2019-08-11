@@ -7,10 +7,10 @@ using System.Text;
 namespace LsnCore.Types
 {
 	/// <summary>
-	/// This type repressents a struct type, it has strongly typed members, which are LSN_Values,
+	/// This type represents a record type, it has strongly typed members, which are LSN_Values,
 	/// that are accessed by name. It's instances are passed by value.
 	/// </summary>
-	public class RecordType : LsnType, IHasFieldsType
+	public class RecordType : LsnReferenceType, IHasFieldsType
 	{
 		readonly Field[] _FieldsB;
 		public IReadOnlyCollection<Field> FieldsB => _FieldsB;
@@ -78,9 +78,10 @@ namespace LsnCore.Types
 			=> deserializer.LoadReference(reader.ReadUInt32(), setter);
 
 		internal override void WriteAsMember(LsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
-		{
-			writer.Write(serializer.SaveRecord(value.Value));
-		}
+			=> writer.Write(serializer.SaveRecord(value.Value));
+
+		internal override void WriteValue(ILsnValue value, ILsnSerializer serializer, BinaryDataWriter writer)
+			=> WriteValue((RecordValue)value, serializer, writer);
 
 		internal void WriteValue(RecordValue value, ILsnSerializer serializer, BinaryDataWriter writer)
 		{

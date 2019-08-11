@@ -11,6 +11,7 @@ namespace LsnCore.Values
 		uint NumericId { get; }
 
 		string TextId { get; }
+		bool HasScripts { get; }
 
 		uint AttachScriptObject(ScriptObject scriptObject, out string strId);
 
