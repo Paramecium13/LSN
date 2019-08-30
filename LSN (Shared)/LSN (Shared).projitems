@@ -110,6 +110,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\ILsnEnumerable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\ILSN_Value.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\IWritableCollectionValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\LazyHostInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\LSN_List.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\LSN_Reference.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\LSN_Value.cs" />

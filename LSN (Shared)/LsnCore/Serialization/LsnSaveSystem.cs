@@ -224,4 +224,9 @@ namespace LsnCore.Serialization
 		}
 
 	}
+
+	public class LsnDeserializer
+	{
+
+	}
 }
