@@ -70,167 +70,18 @@ namespace LsnCore
 		// don't need type conversions b/c i32 is stored as a f64...
 		Add,
 		Sub,
-		Mul_I32,
-		Mul_F64,
+		//Mul_I32,
+		Mul,
 		Div_I32,
 		Div_F64,
 
 		/// <summary>Remainder</summary>
-		Rem,
-		Pow_F64,
+		Rem_I32,
+		Rem_F64,
+		Pow,
 
 		// Unary - operator...
 		Neg,
-		#endregion
-		#region String Arithmetic
-		Concat,
-		IntToString,
-		#endregion
-		#region Compare
-		Eq_I32,
-		Eq_F64,
-		Eq_Str,
-
-		Neq_I32,
-		Neq_F64,
-		Neq_Str,
-
-		/// <summary>
-		/// if data != 0, data is 1 + index of epsilon in the file's F64 const storage. Otherwise use default System.Double.EPSILON.
-		/// </summary>
-		Eq_F64_epsilon,
-		/// <summary>
-		/// if data != 0, data is 1 + index of epsilon in the file's F64 const storage. Otherwise use default System.Double.EPSILON.
-		/// </summary>
-		Neq_F64_epsilon,
-
-
-		//NonNan_F64,
-		NonNull,
-		/// <summary>Doesn't pop from the eval stack.</summary>
-		NonNull_NoPop,
-
-		Lt,
-		Lte,
-		Gte,
-		Gt,
-		#endregion
-		/// <summary>,end, start -> ,range</summary>
-		MakeRange,
-		#region Logic
-		And,
-		//Nand,
-		Or,
-		//Xor,
-		//Nor,
-		//Xnor,
-		Not,
-		#endregion
-		#region Convert
-		//Conv_I32_F64,
-		#endregion
-		#region Jump/Branch
-		/// <summary>Unconditional jump. Target is data</summary>
-		Jump,
-		/// <summary>Conditional jump. Target is data</summary>
-		Jump_True,
-		Jump_False,
-
-		//https://llvm.org/docs/LangRef.html#switch-instruction
-		/// <summary>Not yet implemented. </summary>
-		Switch,
-
-		/// <summary>Unconditional jump to Target</summary>
-		JumpToTarget,
-		/// <summary>Set Target register to data</summary>
-		SetTarget,
-		#endregion
-		#region Call
-		/// <summary>Data is index. Places index into a temp register(not preserved when calling).Used by instructions that need two indexes.</summary>
-		LoadIndex,
-
-		/* Two potential styles of non-local procedure indexing:
-		 *	(1): Index of file containing procedure is loaded by LoadIndex, index of procedure name is data
-		 * 
-		 *	(2): Data is index of procedure stub. Procedure stubs are stored in the file, they contain:
-		 *			* The index of the file containing the procedure.
-		 *			* The name of the procedure.
-		 *			* The offset of that procedure in its file's code segment. This is resolved at load time or when it is first called.
-		 */
-
-		/// <summary>index of file loaded by LoadIndex instruction, index of function name is data</summary>
-		CallFn,
-		/// <summary>index of file is first byte of data, index of function name is second byte in data</summary>
-		CallFn_Short,
-		/// <summary>file is the current file, index of fn is data.</summary>
-		CallFn_Local,
-
-		/// <summary>
-		/// Loaded index is index of type. Data is index of method name. Not for int, double or bool! Also not for methods that have corresponding instructions...
-		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
-		/// </summary>
-		CallNativeMethod,
-		/// <summary>
-		/// Loaded index is index of type. Data is index of method name.
-		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
-		/// </summary>
-		CallLsnMethod,
-		/// <summary>
-		/// Call ScriptObject method. Loaded index is index of type. Data is index of method name.
-		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
-		/// </summary>
-		CallScObjMethod,
-		/// <summary>
-		/// Call virtual ScriptObject method. Loaded index is index of type. Data is index of method name.
-		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
-		/// </summary>
-		CallScObjVirtualMethod,
-		/*/// <summary>
-		/// Loaded index is index of type. Data is index of method name.
-		/// </summary>
-		CallMethod,*/
-
-		/// <summary>
-		/// Data is index of method name.
-		/// {, arg_0,..., arg_N, object -> , result (if it returns a value) }
-		/// </summary>
-		CallHostInterfaceMethod,
-		#endregion
-		Ret,
-		#region Load Const
-		/// <summary> </summary>
-		LoadConst_I32_short,
-		/// <summary> </summary>
-		LoadConst_I32,
-		/// <summary> </summary>
-		LoadConst_F64,
-		/// <summary> </summary>
-		LoadConst_F64_short,
-		/// <summary> Push (index) /((double)ushort.MaxValue)</summary>
-		LoadConst_F64_ShortRatio,
-		/// <summary> </summary>
-		LoadConst_Obj,
-		/// <summary> </summary>
-		LoadConst_Nil,
-		#endregion
-		// data is index of type id...
-		Load_UniqueScriptClass,
-
-		#region Variables, fields, and elements
-		//LoadLocal_0,
-		/// <summary> data is index</summary>
-		LoadLocal,
-		/// <summary> data is index</summary>
-		StoreLocal,
-		/// <summary>, collection, index -> ,value</summary>
-		LoadElement,
-		// for lists of a struct type, loading an element but not storing it doesn't copy it...
-		//		e.g. in 'ls[0].Foo = 1;', the expression 'ls[0]' does not make a copy.
-
-		/// <summary>, collection, index, value -> ,</summary>
-		StoreElement,
-		LoadField,
-		StoreField,
 		#endregion
 		#region INC and DEC
 		/// <summary>Increment var and push onto stack {++num}</summary>
@@ -261,14 +112,164 @@ namespace LsnCore
 		/// <summary>Push field onto stack then decrement {foo.num++--}</summary>
 		PostDec_Fld,
 		#endregion
-		#region Vectors and Lists
-		// data is index of type?
-		ConstructList,
-		// data is number of values on the eval stack to put into the list
-		InitializeList,
-		// data is number of values on the eval stack to put into the vector
-		InitializeVector,
+		#region Logic
+		And,
+		//Nand,
+		Or,
+		//Xor,
+		//Nor,
+		//Xnor,
+		Not,
 		#endregion
+		#region Convert
+		//Conv_I32_F64,
+		#endregion
+		#region String Arithmetic
+		Concat,
+		IntToString,
+		#endregion
+		#region Compare
+		Eq_I32,
+		Eq_F64,
+		Eq_Str,
+		Eq_Obj,
+
+		Neq_I32,
+		Neq_F64,
+		Neq_Str,
+		Neq_Obj,
+
+		/// <summary>
+		/// if data != 0, data is 1 + index of epsilon in the file's F64 const storage. Otherwise use default System.Double.EPSILON.
+		/// </summary>
+		//Eq_F64_epsilon,
+		/// <summary>
+		/// if data != 0, data is 1 + index of epsilon in the file's F64 const storage. Otherwise use default System.Double.EPSILON.
+		/// </summary>
+		//Neq_F64_epsilon,
+
+
+		//NonNan_F64,
+		NonNull,
+		/// <summary>Doesn't pop from the eval stack.</summary>
+		NonNull_NoPop,
+
+		Lt,
+		Lte,
+		Gte,
+		Gt,
+		#endregion
+		/// <summary>,end, start -> ,range</summary>
+		MakeRange,
+		#region Jump/Branch
+		/// <summary>Unconditional jump. Target is data</summary>
+		Jump,
+		/// <summary>Conditional jump. Target is data</summary>
+		Jump_True,
+		Jump_True_NoPop,
+		Jump_False,
+		Jump_False_NoPop,
+
+		//https://llvm.org/docs/LangRef.html#switch-instruction
+		/// <summary>Not yet implemented. </summary>
+		Switch,
+
+		/// <summary>Set Target register to data</summary>
+		SetTarget,
+		/// <summary>Unconditional jump to Target</summary>
+		JumpToTarget,
+		#endregion
+		#region Call
+		/// <summary>Data is index. Places index into a temp register(not preserved when calling).Used by instructions that need two indexes.</summary>
+		LoadIndex,
+
+		/* Two potential styles of non-local procedure indexing:
+		 *	(1): Index of file containing procedure is loaded by LoadIndex, index of procedure name is data
+		 * 
+		 *	(2): Data is index of procedure stub. Procedure stubs are stored in the file, they contain:
+		 *			* The index of the file containing the procedure.
+		 *			* The name of the procedure.
+		 *			* The offset of that procedure in its file's code segment. This is resolved at load time or when it is first called.
+		 */
+
+		/// <summary>index of file loaded by LoadIndex instruction, index of function name is data</summary>
+		CallFn,
+		/// <summary>index of file is first byte of data, index of function name is second byte in data</summary>
+		CallFn_Short,
+		/// <summary>file is the current file, index of fn is data.</summary>
+		CallFn_Local,
+
+		/// <summary>
+		/// Loaded index is index of type. Data is index of method name. Not for int, double or bool! Also not for methods that have corresponding instructions...
+		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
+		/// </summary>
+		CallNativeMethod,
+		/// <summary>
+		/// Loaded index is index of type. Data is index of method name.
+		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
+		/// </summary>
+		//CallLsnMethod,
+		/// <summary>
+		/// Call ScriptObject method. Loaded index is index of type. Data is index of method name.
+		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
+		/// </summary>
+		CallScObjMethod,
+		/// <summary>
+		/// Call virtual ScriptObject method. Loaded index is index of type. Data is index of method name.
+		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
+		/// </summary>
+		CallScObjVirtualMethod,
+		/*/// <summary>
+		/// Loaded index is index of type. Data is index of method name.
+		/// </summary>
+		CallMethod,*/
+
+		/// <summary>
+		/// Data is index of method name.
+		/// {, arg_0,..., arg_N, object -> , result (if it returns a value) }
+		/// </summary>
+		CallHostInterfaceMethod,
+		Ret,
+		#endregion
+		#region Load Const
+		/// <summary> </summary>
+		LoadConst_I32_short,
+		/// <summary> </summary>
+		LoadConst_I32,
+		/// <summary> </summary>
+		LoadConst_F64,
+		/// <summary> </summary>
+		//LoadConst_F64_short,
+		/// <summary> Push (index) /((double)ushort.MaxValue)</summary>
+		LoadConst_F64_ShortRatio,
+		/// <summary> </summary>
+		LoadConst_Obj,
+		/// <summary> </summary>
+		LoadConst_Nil,
+		#endregion
+		// data is index of type id...
+		Load_UniqueScriptClass,
+
+		#region Variables, fields, and elements
+		//LoadLocal_0,
+		/// <summary> data is index</summary>
+		LoadLocal,
+		/// <summary> data is index</summary>
+		StoreLocal,
+		/// <summary>, collection, index -> ,value</summary>
+		LoadElement,
+		// for lists of a struct type, loading an element but not storing it doesn't copy it...
+		//		e.g. in 'ls[0].Foo = 1;', the expression 'ls[0]' does not make a copy.
+
+		/// <summary>, collection, index, value -> ,</summary>
+		StoreElement,
+		LoadField,
+		StoreField,
+		#endregion
+		#region Atomic Field Operations
+
+		#endregion
+
 		/// <summary>
 		/// Data is index of type.
 		/// {, arg_0,..., arg_N -> , struct }
@@ -286,6 +287,14 @@ namespace LsnCore
 		ConstructRecord,
 		/// <summary>Data is number of fields.</summary>
 		FreeRecord,
+		#region Vectors and Lists
+		// data is index of type?
+		ConstructList,
+		// data is number of values on the eval stack to put into the list
+		InitializeList,
+		// data is number of values on the eval stack to put into the vector
+		InitializeVector,
+		#endregion
 		#region ScriptClass
 		/// <summary>Data is state; local[0] is script class.</summary>
 		SetState,
@@ -385,7 +394,7 @@ namespace LsnCore
 		/// <summary>$acc = pop</summary>
 		SetAcc,
 		/// <summary>$acc += pop</summary>
-		AddAcc,// Maybe the above 3 can share same insruction but differ on data.
+		AddAcc,// Maybe the above 3 can share same instruction but differ on data.
 		/// <summary>Push $acc</summary>
 		PushAcc,
 		#endregion

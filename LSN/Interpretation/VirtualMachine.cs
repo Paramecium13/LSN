@@ -134,12 +134,13 @@ namespace LsnCore.Interpretation
 				#region Arithmetic
 				case OpCode.Add:     Push(LsnValue.DoubleSum(Pop(), Pop()));      break;
 				case OpCode.Sub:     Push(LsnValue.DoubleDiff(Pop(), Pop()));     break;
-				case OpCode.Mul_I32: Push(LsnValue.IntProduct(Pop(), Pop()));     break;
-				case OpCode.Mul_F64: Push(LsnValue.DoubleProduct(Pop(), Pop()));  break;
+				//case OpCode.Mul_I32: Push(LsnValue.IntProduct(Pop(), Pop()));     break;
+				case OpCode.Mul:     Push(LsnValue.DoubleProduct(Pop(), Pop()));  break;
 				case OpCode.Div_I32: Push(LsnValue.IntQuotient(Pop(), Pop()));    break;
 				case OpCode.Div_F64: Push(LsnValue.DoubleQuotient(Pop(), Pop())); break;
-				case OpCode.Rem:     Push(LsnValue.IntMod(Pop(), Pop()));         break;
-				case OpCode.Pow_F64: Push(LsnValue.DoublePow(Pop(), Pop()));      break;
+				case OpCode.Rem_I32: Push(LsnValue.IntMod(Pop(), Pop()));         break;
+				case OpCode.Rem_F64: Push(LsnValue.DoubleMod(Pop(), Pop()));      break;
+				case OpCode.Pow:	 Push(LsnValue.DoublePow(Pop(), Pop()));      break;
 				case OpCode.Neg:     Push(-Pop().DoubleValue);                    break;
 				#endregion
 				#region Strings
@@ -153,9 +154,9 @@ namespace LsnCore.Interpretation
 				case OpCode.Neq_I32:		Push(PopI32() != PopI32());								break;
 				case OpCode.Neq_F64:		Push(Math.Abs(PopF64() - PopF64()) < double.Epsilon);	break;
 				case OpCode.Neq_Str:		Push(PopString() != PopString());						break;
-				case OpCode.Eq_F64_epsilon:
-				case OpCode.Neq_F64_epsilon:
-					throw new NotImplementedException();
+				//case OpCode.Eq_F64_epsilon:
+				//case OpCode.Neq_F64_epsilon:
+				//	throw new NotImplementedException();
 				case OpCode.NonNull:		Push(!Pop().IsNull);									break;
 				case OpCode.NonNull_NoPop:	Push(!Peek().IsNull);									break;
 				case OpCode.Lt:				Push(PopF64() < PopF64());								break;
@@ -196,7 +197,7 @@ namespace LsnCore.Interpretation
 						else method.Eval(EvalStack);
 					} break;
 				case OpCode.CallScObjMethod:
-				case OpCode.CallLsnMethod:
+				//case OpCode.CallLsnMethod:
 					EnterFunction(Environment.GetProcedure(instr.Index));
 					break;
 				case OpCode.CallScObjVirtualMethod:
@@ -217,7 +218,7 @@ namespace LsnCore.Interpretation
 				case OpCode.LoadConst_I32_short:		Push(instr.Data);								break;
 				case OpCode.LoadConst_I32:				Push(Environment.GetInt(instr.Index));			break;
 				case OpCode.LoadConst_F64:				Push(Environment.GetDouble(instr.Index));		break;
-				case OpCode.LoadConst_F64_short:		Push((double)instr.Data);						break;
+				//case OpCode.LoadConst_F64_short:		Push((double)instr.Data);						break;
 				case OpCode.LoadConst_F64_ShortRatio:	Push(instr.Index / ((double)ushort.MaxValue));	break;
 				case OpCode.LoadConst_Obj:				Push(Environment.GetObject(instr.Index));		break;
 				case OpCode.LoadConst_Nil:				Push(LsnValue.Nil);								break;
