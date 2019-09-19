@@ -92,7 +92,6 @@
     <Compile Include="Interpretation\LsnStack.cs" />
     <Compile Include="Interpretation\LsnVMStack.cs" />
     <Compile Include="Interpretation\LsnVmTask.cs" />
-    <Compile Include="Interpretation\LsnVmTaskCompletionSource.cs" />
     <Compile Include="Interpretation\OpCodesB.cs" />
     <Compile Include="Interpretation\VirtualMachine.cs" />
     <Compile Include="Interpretation\VirtualMachineB.cs" />
