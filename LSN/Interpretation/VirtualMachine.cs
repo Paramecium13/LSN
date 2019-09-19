@@ -57,7 +57,7 @@ namespace LsnCore.Interpretation
 
 		readonly LsnVMStack Stack;
 
-		readonly Stack<LsnValue> EvalStack = new Stack<LsnValue>();
+		readonly LsnVmEvalStack EvalStack = new LsnVmEvalStack();
 
 		public VirtualMachine(IResourceManager resourceManager, ILsnGameHost gameHost)
 		{

@@ -90,11 +90,13 @@
     <Compile Include="Interpretation\Interpreter.cs" />
     <Compile Include="Interpretation\LsnObjectFile.cs" />
     <Compile Include="Interpretation\LsnStack.cs" />
+    <Compile Include="Interpretation\LsnVmCallBack.cs" />
     <Compile Include="Interpretation\LsnVMStack.cs" />
     <Compile Include="Interpretation\LsnVmTask.cs" />
     <Compile Include="Interpretation\OpCodesB.cs" />
     <Compile Include="Interpretation\VirtualMachine.cs" />
     <Compile Include="Interpretation\VirtualMachineB.cs" />
+    <Compile Include="Interpretation\LsnVmEvalStack.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

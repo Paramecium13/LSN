@@ -7,15 +7,24 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Interpretation
 {
-	public sealed class LsnVmTask
+	public sealed class LsnVmTask : IDisposable
 	{
 		internal readonly object Lock = new object();
 
-		Action<LsnValue> Continuation;
+		ManualResetEventSlim WaitHandle = new ManualResetEventSlim(false);
+
+		LsnVmCallBack Continuation;
 
 		LsnValue Result;
 
-		public TaskStatus Status { get; private set; } = TaskStatus.Created;
+		Exception Exception;
+
+		//public TaskStatus Status { get; private set; } = TaskStatus.Created;
+		TaskStatus Status = TaskStatus.Created;
+
+		internal bool Disposed { get; set; } // To detect redundant calls
+
+		internal LsnVmTask() {}
 
 		public class CompletionSource
 		{
@@ -28,12 +37,22 @@ namespace LsnCore.Interpretation
 				{
 					Task.Result = value;
 					Task.Status = TaskStatus.RanToCompletion;
-					Task.Continuation?.Invoke(Task.Result);
+					Task.Continuation.Invoke(Task.Result);
+					Task.WaitHandle.Set();
+				}
+			}
+
+			public void SetException(Exception e)
+			{
+				lock (Task.Lock)
+				{
+					Task.Exception = e;
+					Task.WaitHandle.Set();
 				}
 			}
 		}
 
-		public void ContinueWith(Action<LsnValue> continuation)
+		internal void ContinueWith(LsnVmCallBack continuation)
 		{
 			lock (Lock)
 			{
@@ -46,25 +65,53 @@ namespace LsnCore.Interpretation
 					case TaskStatus.Running:
 					case TaskStatus.WaitingForChildrenToComplete:
 						if (Continuation != null)
-							Continuation += continuation;
+							throw new InvalidOperationException("This LsnVmTask already has a continuation.");
 						Continuation = continuation;
 						break;
 					case TaskStatus.RanToCompletion:
-						continuation(Result);
+						continuation.Invoke(Result);
 						break;
 					case TaskStatus.Canceled:
-					case TaskStatus.Faulted:
 						throw new NotImplementedException();
+					case TaskStatus.Faulted:
+						throw Exception;
 				}
 			}
 		}
 
 		internal void Pool()
 		{
+			if (Disposed)
+				throw new ObjectDisposedException("Cannot return a disposed LsnVmTask to the pool.");
 			Status = TaskStatus.Created;
 			Continuation = null;
 			Result = LsnValue.Nil;
+			Exception = null;
+			WaitHandle.Reset();
 		}
+
+		public void Wait() => WaitHandle.Wait();
+
+		#region IDisposable Support
+
+		void Dispose(bool disposing)
+		{
+			if (!Disposed)
+			{
+				if (disposing)
+				{
+					WaitHandle.Dispose();
+				}
+				Continuation = null;
+				Result = LsnValue.Nil;
+				Disposed = true;
+			}
+		}
+		public void Dispose()
+		{
+			Dispose(true);
+		}
+		#endregion
 
 	}
 }
