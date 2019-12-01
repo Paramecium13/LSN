@@ -7,13 +7,11 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Interpretation
 {
-	public sealed class LsnVmTask : IDisposable
+	public sealed class LsnVmTask// : IDisposable
 	{
 		internal readonly object Lock = new object();
 
-		ManualResetEventSlim WaitHandle = new ManualResetEventSlim(false);
-
-		LsnVmCallBack Continuation;
+		LsnVmCallback Continuation;
 
 		LsnValue Result;
 
@@ -22,9 +20,16 @@ namespace LsnCore.Interpretation
 		//public TaskStatus Status { get; private set; } = TaskStatus.Created;
 		TaskStatus Status = TaskStatus.Created;
 
-		internal bool Disposed { get; set; } // To detect redundant calls
+		/*ManualResetEventSlim WaitHandle = new ManualResetEventSlim(false);
+		internal bool Disposed { get; set; } // To detect redundant calls*/
 
-		internal LsnVmTask() {}
+		internal readonly CompletionSource Completion;
+		
+
+		internal LsnVmTask()
+		{
+			Completion = new CompletionSource(this);
+		}
 
 		public class CompletionSource
 		{
@@ -38,7 +43,7 @@ namespace LsnCore.Interpretation
 					Task.Result = value;
 					Task.Status = TaskStatus.RanToCompletion;
 					Task.Continuation.Invoke(Task.Result);
-					Task.WaitHandle.Set();
+					//Task.WaitHandle.Set();
 				}
 			}
 
@@ -47,12 +52,12 @@ namespace LsnCore.Interpretation
 				lock (Task.Lock)
 				{
 					Task.Exception = e;
-					Task.WaitHandle.Set();
+					//Task.WaitHandle.Set();
 				}
 			}
 		}
 
-		internal void ContinueWith(LsnVmCallBack continuation)
+		internal void ContinueWith(LsnVmCallback continuation)
 		{
 			lock (Lock)
 			{
@@ -81,16 +86,16 @@ namespace LsnCore.Interpretation
 
 		internal void Pool()
 		{
-			if (Disposed)
+			/*if (Disposed)
 				throw new ObjectDisposedException("Cannot return a disposed LsnVmTask to the pool.");
+			WaitHandle.Reset();*/
 			Status = TaskStatus.Created;
 			Continuation = null;
 			Result = LsnValue.Nil;
 			Exception = null;
-			WaitHandle.Reset();
 		}
 
-		public void Wait() => WaitHandle.Wait();
+		/*public void Wait() => WaitHandle.Wait();
 
 		#region IDisposable Support
 
@@ -112,6 +117,6 @@ namespace LsnCore.Interpretation
 			Dispose(true);
 		}
 		#endregion
-
+		*/
 	}
 }

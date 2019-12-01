@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LsnCore</RootNamespace>
     <AssemblyName>LSN</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,7 +25,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RegisterForComInterop>false</RegisterForComInterop>
-    <LangVersion>7</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -35,7 +36,7 @@
     <DefineConstants>TRACE;CORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet />
@@ -51,7 +52,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <LangVersion>7</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
@@ -64,7 +65,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <LangVersion>7</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
@@ -90,9 +91,10 @@
     <Compile Include="Interpretation\Interpreter.cs" />
     <Compile Include="Interpretation\LsnObjectFile.cs" />
     <Compile Include="Interpretation\LsnStack.cs" />
-    <Compile Include="Interpretation\LsnVmCallBack.cs" />
+    <Compile Include="Interpretation\LsnVmCallback.cs" />
     <Compile Include="Interpretation\LsnVMStack.cs" />
     <Compile Include="Interpretation\LsnVmTask.cs" />
+    <Compile Include="Interpretation\LsnVmTaskPool.cs" />
     <Compile Include="Interpretation\OpCodesB.cs" />
     <Compile Include="Interpretation\VirtualMachine.cs" />
     <Compile Include="Interpretation\VirtualMachineB.cs" />
