@@ -23,7 +23,7 @@ namespace LsnCore
 
 		private static void SetUpMethods()
 		{
-			int_._Methods.Add("Abs", new BoundedMethod(int_,int_,(args)=>new LsnValue((int)Math.Abs(args[0].IntValue)), "Abs"));
+			int_._Methods.Add("Abs", new BoundedMethod(int_,int_,(args)=>new LsnValue(Math.Abs(args[0].IntValue)), "Abs"));
 
 			double_._Methods.Add("Abs", new BoundedMethod(double_, double_,
 				(args) => new LsnValue

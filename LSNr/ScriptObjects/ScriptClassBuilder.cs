@@ -247,7 +247,7 @@ namespace LSNr.ScriptObjects
 		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
 		{
 			var ls = new List<Parameter> { new Parameter("self", Id, LsnValue.Nil, 0) };
-			var additional = ((IFunctionContainer)this).BaseParseParameters(tokens, 1);
+			var additional = this.BaseParseParameters(tokens, 1);
 			ls.AddRange(additional);
 			return ls;
 		}

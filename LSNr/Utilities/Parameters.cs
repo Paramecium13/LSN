@@ -178,7 +178,7 @@ namespace LSNr.Utilities
 				}
 
 				if (isMember && exprIndex == 0)
-					throw new LsnrParsingException(arg[0], $"Cannot provide a value for the parameter 'self'.", script.Path);
+					throw new LsnrParsingException(arg[0], "Cannot provide a value for the parameter 'self'.", script.Path);
 				var param = parameters[exprIndex];
 				if (argExprs[exprIndex] != null)
 					throw new LsnrParsingException(arg[0], $"The parameter {param.Name} of {procTitle} has already been given a value.", script.Path);

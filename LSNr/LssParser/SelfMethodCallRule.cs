@@ -37,6 +37,7 @@ namespace LSNr.LssParser
 			}
 			else if (method.Parameters.Count > 1)
 			{
+				// ToDo: Why not just use `Utilities.Parameters.CreateArgs`?
 				(args, nextIndex) = Utilities.Parameters.CreateArgs(index + 1, tokens, method.TypeId.Name + "::" + method.Name,
 					method.Parameters, script, new VariableExpression(0), substitutions);
 				var (argTokens, indexOfNextToken) = Create.CreateArgList(index + 1, tokens, script);

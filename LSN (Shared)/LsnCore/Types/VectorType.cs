@@ -10,8 +10,8 @@ namespace LsnCore
 	{
 		static VectorType()
 		{
-			var vectorInt = VectorGeneric.Instance.GetType(new TypeId[] { int_.Id }) as VectorType;
-			var vectorDouble = VectorGeneric.Instance.GetType(new TypeId[] { double_.Id }) as VectorType;
+			var vectorInt = VectorGeneric.Instance.GetType(new[] { int_.Id }) as VectorType;
+			var vectorDouble = VectorGeneric.Instance.GetType(new[] { double_.Id }) as VectorType;
 
 			vectorInt._Methods.Add("Sum", new BoundedMethod(vectorInt, int_,
 				(args) =>
@@ -88,7 +88,7 @@ namespace LsnCore
 				(args) => ((VectorInstance)args[0].Value).Length(), "Length"));
 			_Methods.Add("ToList",
 				new BoundedMethod(this,
-					LsnListGeneric.Instance.GetType(new TypeId[] { GenericId }),
+					LsnListGeneric.Instance.GetType(new[] { GenericId }),
 					(args) => new LsnValue(((VectorInstance)args[0].Value).ToLsnList())
 				, "ToList")
 			);

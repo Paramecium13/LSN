@@ -572,7 +572,7 @@ namespace LsnCore.Serialization
 					break;
 				case IdentifierType.Text:
 					var txtId = reader.ReadString();
-					if ((txtId?.Length ?? 0) > 0)
+					if (txtId.Length > 0)
 						host = resourceManager.GetHostInterface(txtId);
 					break;
 				default:

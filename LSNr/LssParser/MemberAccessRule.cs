@@ -27,7 +27,7 @@ namespace LSNr.LssParser
 		{
 			IExpression expr = null;
 			ushort numLeft = 1;
-			int nextIndex = -1;
+			var nextIndex = -1;
 
 			var left = tokens[index - 1];
 			var right = tokens[index + 1];

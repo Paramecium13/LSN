@@ -38,7 +38,7 @@ namespace LsnCore.Types
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
-			writer.Write((int)Id);
+			writer.Write(Id);
 
 			writer.Write((ushort)ScriptObjectMethods.Count);
 			foreach (var method in ScriptObjectMethods.Values)

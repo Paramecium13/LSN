@@ -294,6 +294,6 @@ namespace LSNr.ReaderRules
 			Usings = Usings
 		};
 
-		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens) => ((IFunctionContainer)this).BaseParseParameters(tokens);
+		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens) => this.BaseParseParameters(tokens);
 	}
 }

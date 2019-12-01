@@ -98,8 +98,8 @@ namespace LSNr.ScriptObjects
 
 		protected TypeId ParseReturnType(Indexer<Token> index, string memberTypeName, string memberName)
 		{
+			if (!index.MoveForward() || index.Current.Value == ";" || index.Current.Value == "{") return null;
 			TypeId ret = null;
-			if (!index.MoveForward() || index.Current.Value == ";" || index.Current.Value == "{") return ret;
 			if (index.Current.Value != "->" || !index.MoveForward())
 				throw new LsnrParsingException(index.Current, $"Error parsing {memberTypeName} {memberName}: Expected '->' or end of definition; received '{index.Current.Value}'.",
 					ScriptClass.Path);

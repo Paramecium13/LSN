@@ -73,7 +73,7 @@ namespace LSNr.Statements
 			if(tokens[0].Type == TokenType.Substitution)
 			...*/
 			IExpression actor = null;
-			IReadOnlyList<Token> tokens0 = null;
+			IReadOnlyList<Token> tokens0;
 			if (tokens[0].Value == "goto")
 				tokens0 = tokens;
 			else
@@ -84,7 +84,7 @@ namespace LSNr.Statements
 			}
 
 			var metaCommaCount = tokens0.Count(t => t.Value == "`");
-			IExpression expr0 = null;
+			IExpression expr0;
 			IExpression expr1 = null;
 			IExpression expr2 = null;
 			switch (metaCommaCount)
