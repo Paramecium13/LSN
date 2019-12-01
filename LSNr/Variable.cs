@@ -18,20 +18,18 @@ namespace LSNr
 		private int _index;
 		public int Index
 		{
-			get { return _index; }
+			get => _index;
 			set
 			{
-				if(_index != value)
+				if (_index == value) return;
+				_index = value;
+				if (Assignment != null)
+					Assignment.Index = value;
+				if (AccessExpression is VariableExpression v)
+					v.Index = value;
+				foreach (var re in Reassignments)
 				{
-					_index = value;
-					if (Assignment != null)
-						Assignment.Index = value;
-					if (AccessExpression is VariableExpression v)
-						v.Index = value;
-					foreach (var re in Reassignments)
-					{
-						re.Index = value;
-					}
+					re.Index = value;
 				}
 			}
 		}
@@ -58,7 +56,7 @@ namespace LSNr
 		private AssignmentStatement _assignment;
 		public AssignmentStatement Assignment
 		{
-			get { return _assignment; }
+			get => _assignment;
 			set { _assignment = value; Used = true; }
 		}
 

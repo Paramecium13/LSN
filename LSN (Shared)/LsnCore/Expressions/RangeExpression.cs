@@ -51,11 +51,9 @@ namespace LsnCore.Expressions
 #if LSNR
 			Start = Start.Fold();
 			End = End.Fold();
-			var s = Start as LsnValue?;
-			var e = End as LsnValue?;
-			if (s.HasValue && e.HasValue)
-				return new LsnValue(new RangeValue(s.Value.IntValue, e.Value.IntValue));
-			else return this;
+			if (Start is LsnValue s && End is LsnValue e)
+				return new LsnValue(new RangeValue(s.IntValue, e.IntValue));
+			return this;
 #else
 			throw new InvalidOperationException();
 #endif

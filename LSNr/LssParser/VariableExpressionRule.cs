@@ -33,23 +33,21 @@ namespace LSNr.LssParser
 				case TokenType.Keyword:
 					var str = token.Value;
 					var preScFn = script as PreScriptClassFunction;
-					if (str == "self")
+					switch (str)
 					{
-						if (script is PreFunction || preScFn != null)
-							return true;
-						return false; // or throw exception...
-					}
-					if (str == "host")
-					{
-						if (preScFn != null)
+						case "self":
+							return script is PreFunction || preScFn != null;
+						case "host" when preScFn != null:
 						{
 							if (preScFn.Parent.Host != null)
 								return true;
 							throw new LsnrParsingException(token, "The keyword 'host' cannot be used in a script class without a host.", script.Path);
 						}
-						throw new LsnrParsingException(token, "The keyword 'host' cannot be used outside of a script class.", script.Path);
+						case "host":
+							throw new LsnrParsingException(token, "The keyword 'host' cannot be used outside of a script class.", script.Path);
+						default:
+							return false;
 					}
-					return false;
 				default:
 					return false;
 			}
@@ -85,12 +83,17 @@ namespace LSNr.LssParser
 					}
 					break;
 				case TokenType.Keyword:
-					if (str == "host")
-						expr = new HostInterfaceAccessExpression(((PreScriptClassFunction)script).Parent.HostId);
-					else if (str == "self")
-						expr = script.CurrentScope.GetVariable("self").AccessExpression;
-					else
-						throw new ApplicationException();
+					switch (str)
+					{
+						case "host":
+							expr = new HostInterfaceAccessExpression(((PreScriptClassFunction)script).Parent.HostId);
+							break;
+						case "self":
+							expr = script.CurrentScope.GetVariable("self").AccessExpression;
+							break;
+						default:
+							throw new ApplicationException();
+					}
 					break;
 				default:
 					throw new ApplicationException();

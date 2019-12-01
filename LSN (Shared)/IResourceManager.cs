@@ -100,20 +100,14 @@ namespace LsnCore
 			switch (path)
 			{
 				case "Math":
-					if(LsnMath == null)
-						LsnMath = LoadMath();
-					return LsnMath;
+					return LsnMath ?? (LsnMath = LoadMath());
 				case "Random":
-					if (LsnRandom == null)
-						LsnRandom = LoadRandom();
-					return LsnRandom;
+					return LsnRandom ?? (LsnRandom = LoadRandom());
 				case "Regex":
 				case "RegEx":
 					throw new NotImplementedException();
 				case "Read":
-					if (LsnRead == null)
-						LsnRead = LoadRead();
-					return LsnRead;
+					return LsnRead ?? (LsnRead = LoadRead());
 				default:
 					throw new ApplicationException("Standard file not found.");
 			}
@@ -129,17 +123,11 @@ namespace LsnCore
 			switch (path)
 			{
 				case "Math":
-					if (LsnMath == null)
-						LsnMath = LoadMath();
-					return LsnMath;
+					return LsnMath ?? (LsnMath = LoadMath());
 				case "Random":
-					if (LsnRandom == null)
-						LsnRandom = LoadRandom();
-					return LsnRandom;
+					return LsnRandom ?? (LsnRandom = LoadRandom());
 				case "Read":
-					if (LsnRead == null)
-						LsnRead = LoadRead();
-					return LsnRead;
+					return LsnRead ?? (LsnRead = LoadRead());
 				case "Regex":
 				case "RegEx":
 					throw new NotImplementedException();
@@ -345,17 +333,17 @@ namespace LsnCore
 		/// The golden ratio
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "φ")]
-		public readonly static double φ = (1 + Math.Sqrt(5)) / 2;
+		public static readonly double φ = (1 + Math.Sqrt(5)) / 2;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "γ")]
-		public readonly static double γ = 0.57721566490153286060651209008240243104215933593992;
+		public static readonly double γ = 0.57721566490153286060651209008240243104215933593992;
 
-		public readonly static double Sqrt2Pi = Math.Sqrt(2 * Math.PI);
+		public static readonly double Sqrt2Pi = Math.Sqrt(2 * Math.PI);
 
 		/// <summary>
 		/// The square root of 2
 		/// </summary>
-		public readonly static double Sqrt2 = Math.Sqrt(2);
+		public static readonly double Sqrt2 = Math.Sqrt(2);
 
 		private static readonly double[] p = { 676.5203681218851, -1259.1392167224028, 771.32342877765313,
 			-176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7 };
@@ -400,7 +388,7 @@ namespace LsnCore
 			if (x < 0.5) return Math.PI / (Math.Sin(Math.PI * x) * Γ(1 - x));
 			x -= 1;
 			var y = 0.99999999999980993;
-			for (int i = 0; i < 8; i++)
+			for (var i = 0; i < 8; i++)
 				y += p[i] / (x + i + 1);
 			var t = x + 8 - 0.5;
 			return Sqrt2Pi * Math.Pow(t, x + 0.5) * Math.Exp(-t) * y;

@@ -13,8 +13,7 @@ namespace LSNr.Optimization
 	{
 		public void Walk(Component c)
 		{
-			var cs = c as ControlStructure;
-			if (cs != null)
+			if (c is ControlStructure cs)
 				Walk(cs);
 			else View((Statement)c);
 		}
@@ -97,7 +96,7 @@ namespace LSNr.Optimization
 		{
 			View(c);
 			var length = c.Choices.Count;
-			for (int i = 0; i < length; i++)
+			for (var i = 0; i < length; i++)
 				WalkChioce(c.Choices[i]);
 		}
 
@@ -115,9 +114,9 @@ namespace LSNr.Optimization
 		{
 			View(f);
 			Walk(f.Body);
-			for(int i = 0; i < f.Elsifs.Count; i++)
+			foreach (var elsif in f.Elsifs)
 			{
-				WalkElsif(f.Elsifs[i]);
+				WalkElsif(elsif);
 			}
 			Walk(f.ElseBlock);
 		}
@@ -135,8 +134,8 @@ namespace LSNr.Optimization
 		protected virtual void WalkMatchStructure(MatchStructure ms)
 		{
 			View(ms);
-			for (int i = 0; i < ms.Cases.Count; i++)
-				WalkCaseStructure(ms.Cases[i]);
+			foreach (var @case in ms.Cases)
+				WalkCaseStructure(@case);
 		}
 
 		protected virtual void View(MatchStructure c) { }

@@ -14,19 +14,18 @@ namespace LsnCore.Expressions
 	{
 		public bool IsPure => false;
 
-		private readonly TypeId _Type;
-		public TypeId Type => _Type;
+		public TypeId Type { get; }
 
 		private readonly string Name;
 
 		private IExpression HostInterface;
 
-		private IExpression[] Arguments;
+		private readonly IExpression[] Arguments;
 
 
 		public HostInterfaceMethodCall(FunctionSignature def, IExpression hostInterface, IExpression[] args)
 		{
-			_Type = def.ReturnType; Name = def.Name; HostInterface = hostInterface; Arguments = args;
+			Type = def.ReturnType; Name = def.Name; HostInterface = hostInterface; Arguments = args;
 		}
 
 		public HostInterfaceMethodCall(string name, IExpression hostInterface, IExpression[] args)

@@ -27,12 +27,12 @@ namespace LSNr.Statements
 			// (c)	give cat [to bob];
 			// (d)	give 10 cat [to bob]
 			IExpression amount; var amountIndex = 0;
-			IExpression id; int idIndex;
+			int idIndex;
 			IExpression receiver = LsnValue.Nil;
 
-			var res = LssParser.ExpressionParser.MultiParse(tokens, script);
-			var len = res.tokens.Length;
-			var expTokens = Slice<Token>.Create(res.tokens, 0, len);
+			var (tokens1, substitutions) = LssParser.ExpressionParser.MultiParse(tokens, script);
+			var len = tokens1.Length;
+			var expTokens = Slice<Token>.Create(tokens1, 0, len);
 			if (expTokens[1].Type == TokenType.Substitution)
 			{ // It's not type (b)
 				if (len == 2 || len > 2 && expTokens[2].Value == "to")
@@ -51,7 +51,7 @@ namespace LSNr.Statements
 			{
 				if (expTokens[amountIndex].Type != TokenType.Substitution)
 					throw new LsnrParsingException(expTokens[1], "Improperly formatted give item statement.", script.Path);
-				amount = res.substitutions[expTokens[amountIndex]];
+				amount = substitutions[expTokens[amountIndex]];
 				if (amount.Type != LsnType.int_.Id)
 					throw new LsnrParsingException(tokens[0], "Improperly formatted give item statement: amount must be an int expression.", script.Path);
 			}
@@ -59,29 +59,27 @@ namespace LSNr.Statements
 
 			if (expTokens[idIndex].Type != TokenType.Substitution)
 				throw new LsnrParsingException(expTokens[1], "Improperly formatted give item statement.", script.Path);
-			id = res.substitutions[expTokens[idIndex]];
+			var id = substitutions[expTokens[idIndex]];
 
 			var toIndex = idIndex + 1;
-			if (len > toIndex)
+			if (len <= toIndex) return new GiveItemStatement(id, amount, receiver);
+			if (expTokens[toIndex].Value != "to")
 			{
-				if (expTokens[toIndex].Value != "to")
-				{
-					if (expTokens[toIndex].Type == TokenType.Substitution)
-						throw new LsnrParsingException(tokens[0], "Improperly formatted give item statement: expected 'to' or ';' received expression.", script.Path);
-					throw LsnrParsingException.UnexpectedToken(expTokens[toIndex], "'to' or ';'", script.Path);
-				}
-				if (len == toIndex + 1)
-					throw new LsnrParsingException(expTokens[toIndex], "Improperly formatted give item statement: unexpected end of statement.", script.Path);
-				if (len != toIndex + 2)
-				{
-					if (expTokens[toIndex + 2].Type == TokenType.Substitution)
-						throw new LsnrParsingException(tokens[0], "Improperly formatted give item statement: expected ';' received expression.", script.Path);
-					throw LsnrParsingException.UnexpectedToken(expTokens[toIndex + 2], ";", script.Path);
-				}
-				if (expTokens[toIndex + 1].Type != TokenType.Substitution)
-					throw LsnrParsingException.UnexpectedToken(expTokens[toIndex + 1], "an expression", script.Path);
-				receiver = res.substitutions[expTokens[toIndex + 1]];
+				if (expTokens[toIndex].Type == TokenType.Substitution)
+					throw new LsnrParsingException(tokens[0], "Improperly formatted give item statement: expected 'to' or ';' received expression.", script.Path);
+				throw LsnrParsingException.UnexpectedToken(expTokens[toIndex], "'to' or ';'", script.Path);
 			}
+			if (len == toIndex + 1)
+				throw new LsnrParsingException(expTokens[toIndex], "Improperly formatted give item statement: unexpected end of statement.", script.Path);
+			if (len != toIndex + 2)
+			{
+				if (expTokens[toIndex + 2].Type == TokenType.Substitution)
+					throw new LsnrParsingException(tokens[0], "Improperly formatted give item statement: expected ';' received expression.", script.Path);
+				throw LsnrParsingException.UnexpectedToken(expTokens[toIndex + 2], ";", script.Path);
+			}
+			if (expTokens[toIndex + 1].Type != TokenType.Substitution)
+				throw LsnrParsingException.UnexpectedToken(expTokens[toIndex + 1], "an expression", script.Path);
+			receiver = substitutions[expTokens[toIndex + 1]];
 			return new GiveItemStatement(id, amount, receiver);
 		}
 	}

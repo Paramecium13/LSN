@@ -93,12 +93,9 @@ namespace LSNr.Optimization
 				PreStatements.Add(new PreStatement(new ReturnStatement(null)) { Label = NextLabel });*/
 			foreach (var pre in PreStatements)
 			{
-				if(pre.Label != null)
-				{
-					var foo = pre.Label.FirstOrDefault(l => LabelAliases.ContainsKey(l));
-					if (foo != null)
-						pre.Label[pre.Label.IndexOf(foo)] = LabelAliases[foo];
-				}
+				var foo = pre.Label?.FirstOrDefault(l => LabelAliases.ContainsKey(l));
+				if (foo != null)
+					pre.Label[pre.Label.IndexOf(foo)] = LabelAliases[foo];
 				if (pre.Target != null && LabelAliases.ContainsKey(pre.Target))
 					pre.Target = LabelAliases[pre.Target];
 			}

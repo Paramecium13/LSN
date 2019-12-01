@@ -57,7 +57,7 @@ namespace LsnCore.Serialization
 				if (GenericTypes.ContainsKey(names[0]))
 				{
 					var generic = GenericTypes[names[0]];
-					return generic.GetType(names.Skip(1).Select(n => GetType(n)).Select(t => t.Id).ToArray());
+					return generic.GetType(names.Skip(1).Select(GetType).Select(t => t.Id).ToArray());
 				}
 				throw new ApplicationException();
 			}
@@ -499,7 +499,6 @@ namespace LsnCore.Serialization
 				default:
 					throw new ApplicationException();
 			}
-			throw new ApplicationException();
 		}
 
 		public static ScriptObject ReadScriptObjectReference(BinaryDataReader reader, IResourceManager resourceManager)

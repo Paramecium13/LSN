@@ -26,9 +26,7 @@ namespace LsnCore.Expressions
 
 		public bool Equals(IExpression other)
 		{
-			var o = other as HostInterfaceAccessExpression;
-			if (o == null) return false;
-			return true;
+			return other is HostInterfaceAccessExpression;
 		}
 
 #if CORE

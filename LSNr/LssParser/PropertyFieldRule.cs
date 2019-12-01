@@ -33,9 +33,7 @@ namespace LSNr.LssParser
 		{
 			if (index < 2)
 				return true;
-			if (tokens[index - 1].Value == ".")	// It's not a member access expression.
-				return false;
-			return true;
+			return tokens[index - 1].Value != ".";
 		}
 
 		public (IExpression expression, int indexOfNextToken, ushort numTokensToRemoveFromLeft)

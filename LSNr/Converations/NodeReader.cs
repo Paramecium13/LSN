@@ -91,9 +91,7 @@ namespace LSNr.Converations
 			if (head[0].Value == "start") return true;
 			if (head.Length < 2)
 				return false;
-			if (head[0].Value == "fn" && head[1].Value == "start")
-				return true;
-			return false;
+			return head[0].Value == "fn" && head[1].Value == "start";
 		}
 
 		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)

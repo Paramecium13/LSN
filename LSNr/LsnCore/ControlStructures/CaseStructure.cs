@@ -9,11 +9,11 @@ namespace LsnCore.ControlStructures
 {
 	public class CaseStructure : ControlStructure
 	{
-		private IExpression _Value;
-		public IExpression Value { get { return _Value; } private set { _Value = value; } }
+		public IExpression Value { get; private set; }
+
 		public readonly IReadOnlyList<Component> Components;
 
-		public CaseStructure(IExpression value, List<Component> components)
+		public CaseStructure(IExpression value, IReadOnlyList<Component> components)
 		{
 			Value = value; Components = components;
 		}

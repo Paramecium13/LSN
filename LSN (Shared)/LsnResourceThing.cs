@@ -125,8 +125,7 @@ namespace LsnCore
 
 		public LsnEnvironment GetEnvironment(IResourceManager resourceManager)
 		{
-			if (Environment == null) Environment = new LsnEnvironment(this, resourceManager);
-			return Environment;
+			return Environment ?? (Environment = new LsnEnvironment(this, resourceManager));
 		}
 
 		public void Serialize(Stream stream)
