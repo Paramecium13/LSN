@@ -95,7 +95,7 @@ namespace LSNr.ScriptObjects
 			}
 			if (i > tokens.Count)
 				throw new LsnrParsingException(tokens[i - 1], $"Error parsing method definition '{name}': Expected ';' or '->'.", PreHostInterface.Path);
-			 PreHostInterface.RegisterMethod(new FunctionSignature(parameters, name, returnType));
+			PreHostInterface.RegisterMethod(new FunctionSignature(parameters, name, returnType));
 		}
 	}
 
@@ -122,7 +122,6 @@ namespace LSNr.ScriptObjects
 			i++; // 'i' Points to the thing after the closing parenthesis.
 			if (i > tokens.Count)
 				throw new LsnrParsingException(tokens[i >= tokens.Count ? i - 1 : i], $"Error parsing event definition '{name}': Expected ';'.", PreHostInterface.Path);
-			i++; // 'i' now points to the thing after the ';'.
 
 			PreHostInterface.RegisterEvent(new EventDefinition(name, parameters));
 		}

@@ -92,11 +92,11 @@ namespace LSNr.ReaderRules
 					Type.AddParent(hty);
 				}
 				catch (InvalidCastException)
-					{ throw new LsnrParsingException(parent, $"The type '{parent.Value}' is not a handle type.", preResource.Path); }
+				{ throw new LsnrParsingException(parent, $"The type '{parent.Value}' is not a handle type.", preResource.Path); }
 				catch (ApplicationException e)
-					{ throw new LsnrParsingException(parent, e.Message, preResource.Path); }
+				{ throw new LsnrParsingException(parent, e.Message, preResource.Path); }
 				catch (Exception e)
-					{ throw new LsnrParsingException(parent, $"Error parsing handle type '{Type.Name}'.", e, preResource.Path); }
+				{ throw new LsnrParsingException(parent, $"Error parsing handle type '{Type.Name}'.", e, preResource.Path); }
 			}
 		}
 	}

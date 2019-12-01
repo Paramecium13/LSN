@@ -164,7 +164,7 @@ namespace LsnCore
 		private void WriteGameValues(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((ushort)(GameValues?.Count ?? 0));
-			if(GameValues != null)
+			if (GameValues == null) return;
 			foreach (var gameValue in GameValues.Values)
 				gameValue.Serialize(writer, resourceSerializer);
 		}

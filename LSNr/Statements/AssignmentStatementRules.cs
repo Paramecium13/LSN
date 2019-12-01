@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Expressions;
 using LsnCore.Types;
@@ -92,7 +89,7 @@ namespace LSNr.Statements
 							throw new LsnrParsingException(lTokens[0], $"Cannot reassign variable '{v.Variable.Name}' as it has not been marked as mutable.", script.Path);
 						if (!v.Type.Subsumes(rValue.Type))
 							throw LsnrParsingException.TypeMismatch(lTokens[0], v.Type.Name, rValue.Type.Name, script.Path);
-							var r = new AssignmentStatement(v.Index, rValue);
+						var r = new AssignmentStatement(v.Index, rValue);
 						v.Variable.AddReasignment(r);
 						return r;
 					}
