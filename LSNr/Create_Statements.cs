@@ -56,19 +56,18 @@ namespace LSNr
 		private static GiveGoldStatement GiveGold(ISlice<Token> tokens, IPreScript script)
 		{
 			// ToDo: Change to like GiveItem(...).
-			IExpression Amount;
+			IExpression amount;
 			IExpression receiver = LsnValue.Nil;
 
-			int indexOfKeywordGold = tokens.Select(t => t.Value).ToList().IndexOf("gold");
+			var indexOfKeywordGold = tokens.Select(t => t.Value).ToList().IndexOf("gold");
 			if(tokens.Any(t => t.Value == "to"))
 			{
-				int i;
-				Amount = GetExpression(tokens, "to", out i, script);
+				amount = GetExpression(tokens, "to", out var i, script);
 				receiver = Express(tokens.Skip(i + 1), script);
 			}
 			else
-				Amount = Express(tokens.Skip(1).Take(indexOfKeywordGold - 1).ToList(), script);
-			return new GiveGoldStatement(Amount,receiver);
+				amount = Express(tokens.Skip(1).Take(indexOfKeywordGold - 1).ToList(), script);
+			return new GiveGoldStatement(amount,receiver);
 		}
 	}
 }

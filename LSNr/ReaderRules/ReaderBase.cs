@@ -7,14 +7,14 @@ namespace LSNr
 	{
 		private readonly ISlice<Token> Tokens;
 
-		int TokenIndex;
-		int CurrentHeadStart;
-		int CurrentHeadCount;
-		int CurrentBodyStart;
-		int CurrentBodyCount;
-		int Balance;
+		private int TokenIndex;
+		private int CurrentHeadStart;
+		private int CurrentHeadCount;
+		private int CurrentBodyStart;
+		private int CurrentBodyCount;
+		private int Balance;
 
-		IReadToken TokenReader;
+		private IReadToken TokenReader;
 
 		protected ReaderBase(ISlice<Token> tokens) {
 			Tokens = tokens;
@@ -45,35 +45,35 @@ namespace LSNr
 				TokenReader.Read(Tokens[TokenIndex], this);
 		}
 
-		ISlice<Token> GetHeader() => Slice<Token>.Create(Tokens, CurrentHeadStart, CurrentBodyStart-CurrentHeadStart);
+		private ISlice<Token> GetHeader() => Slice<Token>.Create(Tokens, CurrentHeadStart, CurrentBodyStart-CurrentHeadStart);
 
-		ISlice<Token> GetStatement() => Slice<Token>.Create(Tokens, CurrentHeadStart, CurrentHeadCount);
+		private ISlice<Token> GetStatement() => Slice<Token>.Create(Tokens, CurrentHeadStart, CurrentHeadCount);
 
-		void ResetHead()
+		private void ResetHead()
 		{
 			CurrentHeadStart = TokenIndex + 1;
 			CurrentHeadCount = -1;
 			CurrentBodyCount = 0;
 		}
 
-		ISlice<Token>[] PopAttributes()
+		private ISlice<Token>[] PopAttributes()
 		{
 			var attributes = CurrentAttributes.ToArray();
 			CurrentAttributes.Clear();
 			return attributes;
 		}
 
-		readonly IReadToken AttrBaseReader = new BaseAttributeReadToken(new string[] { "unique"});
+		private readonly IReadToken AttrBaseReader = new BaseAttributeReadToken(new string[] { "unique"});
 
-		interface IReadToken
+		private interface IReadToken
 		{
 			void Read(Token token, ReaderBase reader);
 		}
 
-		class StatementReadToken : IReadToken
+		private class StatementReadToken : IReadToken
 		{
 			internal static readonly StatementReadToken Instance = new StatementReadToken();
-			StatementReadToken() { }
+			private StatementReadToken() { }
 			public void Read(Token token, ReaderBase reader)
 			{
 				reader.CurrentHeadCount++;
@@ -103,10 +103,10 @@ namespace LSNr
 			}
 		}
 
-		class BodyReadToken : IReadToken
+		private class BodyReadToken : IReadToken
 		{
 			internal static readonly BodyReadToken Instance = new BodyReadToken();
-			BodyReadToken() { }
+			private BodyReadToken() { }
 			public void Read(Token token, ReaderBase reader)
 			{
 				if (token.Type == TokenType.SyntaxSymbol)
@@ -138,11 +138,11 @@ namespace LSNr
 			}
 		}
 
-		List<ISlice<Token>> CurrentAttributes = new List<ISlice<Token>>();
+		private readonly List<ISlice<Token>> CurrentAttributes = new List<ISlice<Token>>();
 
-		class BaseAttributeReadToken : IReadToken
+		private class BaseAttributeReadToken : IReadToken
 		{
-			readonly HashSet<string> FreeAttributeNames;
+			private readonly HashSet<string> FreeAttributeNames;
 
 			public BaseAttributeReadToken(IEnumerable<string> freeAttrNames)
 			{
@@ -171,15 +171,16 @@ namespace LSNr
 			}
 		}
 
-		class AttributeReadToken : IReadToken
+		private class AttributeReadToken : IReadToken
 		{
 			/// <summary>
 			/// The index of the token right after the opening '['.
 			/// </summary>
-			readonly int Start;
-			int Count;
-			int Balance = 1;
-			IReadToken BaseAttrReadToken;
+			private readonly int Start;
+
+			private int Count;
+			private int Balance = 1;
+			private readonly IReadToken BaseAttrReadToken;
 
 			public AttributeReadToken(int start, IReadToken baseReadToken)
 			{

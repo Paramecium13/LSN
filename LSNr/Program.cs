@@ -25,7 +25,7 @@ namespace LSNr
 		private static MainFile _MainFile;
 
 		internal static MainFile MainFile => _MainFile;
-		private static EventWaitHandle MyWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+		private static readonly EventWaitHandle MyWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
 		private static DependenciesFile _DependenciesFile;
 
 		static int Main(string[] args)

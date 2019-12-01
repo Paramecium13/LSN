@@ -58,9 +58,7 @@ namespace LSNr.Converations
 		public SetNodeStatement(string node, Variable v)
 		{
 			Node = node;
-			if (v == null)
-				throw new ArgumentNullException(nameof(v));
-			Variable = v;
+			Variable = v ?? throw new ArgumentNullException(nameof(v));
 		}
 
 		public override IEnumerator<IExpression> GetEnumerator()

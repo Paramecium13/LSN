@@ -114,14 +114,14 @@ namespace LSNr
 		{
 			var json = (JObject)JToken.Parse(File.ReadAllText(path));
 			var deps = new Dictionary<string, IList<string>>();
-			List<string> ls;
 			foreach (var item in json)
 			{
+				List<string> ls;
 				if (item.Value.Type == JTokenType.String)
 					ls = new List<string> { item.Value.Value<string>() };
 				else if (item.Value.Type == JTokenType.Array)
 				{
-					if(!item.Value.All(v => v.Type == JTokenType.String))
+					if(item.Value.Any(v => v.Type != JTokenType.String))
 						throw new ApplicationException("Invalid Dependencies File");
 					ls = item.Value.Values<string>().ToList();
 				}

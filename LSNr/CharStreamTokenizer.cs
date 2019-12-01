@@ -650,8 +650,7 @@ namespace LSNr
 					break;
 				case TokenizerState.StringU3:
 					UEscStrB.Append(c);
-					int i;
-					if (int.TryParse(UEscStrB.ToString(), System.Globalization.NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out i))
+					if (int.TryParse(UEscStrB.ToString(), System.Globalization.NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var i))
 						Push((char)i);
 					else
 						throw new ApplicationException();

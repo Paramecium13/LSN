@@ -64,7 +64,7 @@ namespace LSNr
 		{
 			// Putting Value comparison first to improve performance by short circuiting becaues it is
 			// most likely to fail and I think it is easier to do.
-			return a.Value == b.Value && a.GetType().Equals(b.GetType());
+			return a.Value == b.Value && a.Type == b.Type;
 		}
 
 	}

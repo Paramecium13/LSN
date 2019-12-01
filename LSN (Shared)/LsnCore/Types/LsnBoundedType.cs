@@ -25,12 +25,8 @@ namespace LsnCore
 
 		public LsnBoundedType(string name, Func<LsnValue> createDefault)
 		{
-			if (name == null)
-				throw new ArgumentNullException(nameof(name));
-			Name = name;
-			if (createDefault == null)
-				throw new ArgumentNullException(nameof(createDefault));
-			CreateDefault = createDefault;
+			Name = name ?? throw new ArgumentNullException(nameof(name));
+			CreateDefault = createDefault ?? throw new ArgumentNullException(nameof(createDefault));
 		}
 
 		public override LsnValue CreateDefaultValue() => CreateDefault();

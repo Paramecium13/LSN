@@ -56,7 +56,7 @@ namespace LSNr
 				var vars = new List<Variable>();
 				var expr = SingleTokenExpress(token, script, null, vars);
 				if(vars.Count != 0)
-					vars[0].AddUser(expr as IExpressionContainer);
+					vars[0].AddUser(expr);
 
 				return expr;
 			}
@@ -144,7 +144,7 @@ namespace LSNr
 			if (j >= tokens.Count || tokens[j].Value != "(")
 				throw new LsnrParsingException(tokens[j], "...", script.Path);
 
-			void pop()
+			void Pop()
 			{
 				argTokens.Add(currentList.ToArray());
 				currentList.Clear();
@@ -169,14 +169,14 @@ namespace LSNr
 				else if (t.Value == ",")
 				{
 					if (balance == 1)
-						pop();
+						Pop();
 					else
 						currentList.Add(t);
 				}
 				else currentList.Add(t);
 			}
 			if (currentList.Count != 0)
-				pop();
+				Pop();
 
 			return (argTokens.ToArray(), j + 1);
 		}
@@ -184,11 +184,11 @@ namespace LSNr
 		public static (IExpression[] args, int nextIndex)
 			CreateArgs(int indexOfOpen, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions = null)
 		{
-			var x = CreateArgList(indexOfOpen, tokens, script);
-			var args = new IExpression[x.argTokens.Length];
-			for (int i = 0; i < x.argTokens.Length; i++)
-				args[i] = ExpressionParser.Parse(x.argTokens[i], script, substitutions);
-			return (args, x.indexOfNextToken);
+			var (argTokens, indexOfNextToken) = CreateArgList(indexOfOpen, tokens, script);
+			var args = new IExpression[argTokens.Length];
+			for (var i = 0; i < argTokens.Length; i++)
+				args[i] = ExpressionParser.Parse(argTokens[i], script, substitutions);
+			return (args, indexOfNextToken);
 		}
 	}
 }

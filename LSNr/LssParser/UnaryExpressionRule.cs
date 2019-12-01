@@ -25,7 +25,7 @@ namespace LSNr.LssParser
 			=> token.Value == OperatorValue;
 
 		public bool CheckContext(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
-			=> ContextCheck != null ? ContextCheck(index, tokens, script, substitutions) : true;
+			=> ContextCheck == null || ContextCheck(index, tokens, script, substitutions);
 
 		public (IExpression expression, int indexOfNextToken, ushort numTokensToRemoveFromLeft)
 			CreateExpression(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)

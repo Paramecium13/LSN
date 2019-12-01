@@ -92,7 +92,7 @@ namespace LSNr.Converations
 
 		public override void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes)
 		{
-			var exprTokens = tokens.CreateSliceSkipTake(2, tokens.Length - 3); ;
+			var exprTokens = tokens.CreateSliceSkipTake(2, tokens.Length - 3);
 
 			Branch.ParsingBodies += (script) =>
 			{

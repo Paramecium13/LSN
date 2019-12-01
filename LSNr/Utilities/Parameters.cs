@@ -148,20 +148,20 @@ namespace LSNr.Utilities
 		{
 			var isMember = self != null;
 
-			var x = CreateArgList(indexOfOpen, tokens, script);
+			var (argTokens, indexOfNextToken) = CreateArgList(indexOfOpen, tokens, script);
 
 			var argExprs = new IExpression[parameters.Count];
 
 			if (isMember) argExprs[0] = self;
 
 			var exprIndex = isMember ? 1 : 0;
-			for (int i = 0; i < x.argTokens.Length; i++)
+			foreach (var arg in argTokens)
 			{
-				var arg = x.argTokens[i];
 				IExpression expr;
 				if (arg.TestAt(1, (t) => t.Value == ":"))
 				{
-					exprIndex = parameters.IndexOf(p => p.Name == arg[0].Value);
+					var arg1 = arg;
+					exprIndex = parameters.IndexOf(p => p.Name == arg1[0].Value);
 					if (exprIndex < 0)
 						throw new LsnrParsingException(arg[0], $"{procTitle} does not have a parameter named {arg[0].Value}", script.Path);
 					expr = ExpressionParser.Parse(arg.CreateSliceAt(2), script, substitutions);
@@ -193,7 +193,7 @@ namespace LSNr.Utilities
 
 			// default values.
 
-			return (argExprs, x.indexOfNextToken);
+			return (argExprs, indexOfNextToken);
 		}
 
 		// Parse parameters (replace Create.CreateArgs())

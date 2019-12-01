@@ -122,13 +122,12 @@ namespace LsnCore
 		public override LsnType GetType(TypeId[] types)
 		{
 			var name = GetGenericName(types);
-			LsnType type = null;
-			if (Types.TryGetValue(name, out type))
+			if (Types.TryGetValue(name, out var type))
 				return type;
 			type = CreateType(types);
 			if (!Types.ContainsKey(name)) // For some reason this double check is needed to avoid adding duplicate keys.
 				Types.Add(name, type);
-			(type as VectorType).SetupMethods();
+			((VectorType) type).SetupMethods();
 			return Types[name];
 		}
 	}

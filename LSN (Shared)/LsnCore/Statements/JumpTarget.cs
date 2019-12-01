@@ -63,13 +63,11 @@ namespace LsnCore.Statements
 #if LSNR
 		public readonly Variable Variable;
 
-		int Index => Variable.Index;
+		private int Index => Variable.Index;
 
 		public SetTargetStatement(Variable variable)
 		{
-			if (variable == null)
-				throw new ArgumentNullException(nameof(variable));
-			Variable = variable;
+			Variable = variable ?? throw new ArgumentNullException(nameof(variable));
 		}
 
 		public SetTargetStatement(ushort index)
@@ -93,20 +91,18 @@ namespace LsnCore.Statements
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 #if LSNR
-			if (Variable.Name == "Jump Target" && oldExpr is VariableExpression vOld && vOld.Index == Index)
+			if (Variable.Name != "Jump Target" || !(oldExpr is VariableExpression vOld) || vOld.Index != Index) return;
+			switch (newExpr)
 			{
-				switch (newExpr)
-				{
-					case VariableExpression vNew:
-						Variable.Index = vNew.Index;
-						//vNew.Variable.AddUser(this);
-						break;
-					case LsnValue val:
-						Variable.Index = val.IntValue;
-						break;
-					default:
-						throw new InvalidOperationException();
-				}
+				case VariableExpression vNew:
+					Variable.Index = vNew.Index;
+					//vNew.Variable.AddUser(this);
+					break;
+				case LsnValue val:
+					Variable.Index = val.IntValue;
+					break;
+				default:
+					throw new InvalidOperationException();
 			}
 #endif
 		}

@@ -205,7 +205,7 @@ namespace LSNr.Statements
 					}
 					else
 					{
-						if (!scClassType.FieldsB.Any(f => f.Name == name))
+						if (scClassType.FieldsB.All(f => f.Name != name))
 							throw new LsnrParsingException(ls[0], $"Field '{name}' cannot be given two values.", script.Path);
 						var field = scClassType.FieldsB.First(f => f.Name == name);
 						index = field.Index;

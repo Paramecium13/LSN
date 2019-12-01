@@ -40,7 +40,7 @@ namespace LsnCore.Types
 		{
 			if (MethodDefinitions.ContainsKey(name))
 				return MethodDefinitions[name];
-			throw new ArgumentException($"No method named {name} exists.", "name");
+			throw new ArgumentException($"No method named {name} exists.", nameof(name));
 		}
 
 		/// <summary>
@@ -60,7 +60,7 @@ namespace LsnCore.Types
 		{
 			if (EventDefinitions.ContainsKey(name))
 				return EventDefinitions[name];
-			throw new ArgumentException($"No event named {name} exists.", "name");
+			throw new ArgumentException($"No event named {name} exists.", nameof(name));
 		}
 
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
