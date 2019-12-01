@@ -31,11 +31,9 @@ namespace LSNr.ReaderRules
 		{
 			foreach (var rule in BodyRules)
 			{
-				if(rule.Check(headTokens))
-				{
-					rule.Apply(headTokens, bodyTokens, attributes);
-					return;
-				}
+				if (!rule.Check(headTokens)) continue;
+				rule.Apply(headTokens, bodyTokens, attributes);
+				return;
 			}
 			throw new NoValidRuleException();
 		}
@@ -44,11 +42,9 @@ namespace LSNr.ReaderRules
 		{
 			foreach (var rule in StatementRules)
 			{
-				if (rule.Check(tokens))
-				{
-					rule.Apply(tokens, attributes);
-					return;
-				}
+				if (!rule.Check(tokens)) continue;
+				rule.Apply(tokens, attributes);
+				return;
 			}
 			throw new NoValidRuleException();
 		}

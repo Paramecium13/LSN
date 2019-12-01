@@ -77,28 +77,26 @@ namespace LSNr
 			public void Read(Token token, ReaderBase reader)
 			{
 				reader.CurrentHeadCount++;
-				if(token.Type == TokenType.SyntaxSymbol)
+				if (token.Type != TokenType.SyntaxSymbol) return;
+				switch (token.Value)
 				{
-					switch (token.Value)
-					{
-						case ";":
-							if (reader.CurrentHeadCount > 0)
-								reader.OnReadStatement(reader.GetStatement(), reader.PopAttributes());
-							else
-								reader.OnReadAdjSemiColon(reader.PopAttributes());
-							reader.ResetHead();
-							reader.CurrentHeadCount++;
-							reader.TokenReader = reader.AttrBaseReader;
-							return;
-						case "{":
-							reader.CurrentBodyStart = reader.TokenIndex + 1;
-							// The body does not include the opening '{'.
-							reader.Balance = 1;
-							reader.TokenReader = BodyReadToken.Instance;
-							return;
-						default:
-							break;
-					}
+					case ";":
+						if (reader.CurrentHeadCount > 0)
+							reader.OnReadStatement(reader.GetStatement(), reader.PopAttributes());
+						else
+							reader.OnReadAdjSemiColon(reader.PopAttributes());
+						reader.ResetHead();
+						reader.CurrentHeadCount++;
+						reader.TokenReader = reader.AttrBaseReader;
+						return;
+					case "{":
+						reader.CurrentBodyStart = reader.TokenIndex + 1;
+						// The body does not include the opening '{'.
+						reader.Balance = 1;
+						reader.TokenReader = BodyReadToken.Instance;
+						return;
+					default:
+						break;
 				}
 			}
 		}

@@ -21,7 +21,7 @@ namespace LSNr
 		private int TempCount;
 
 		internal List<Component> Components = new List<Component>();
-		private IPreScript Script;
+		private readonly IPreScript Script;
 
 		public Parser(IReadOnlyList<Token> tokens, IPreScript script)
 		{

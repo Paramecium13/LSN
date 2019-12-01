@@ -23,22 +23,20 @@ namespace LSNr
 				Usings.Add(path, new HashSet<string>());
 		}
 
-		void AddDependency(string user, string used, string firstUsed)
+		private void AddDependency(string user, string used, string firstUsed)
 		{
 			if (user == used) throw new ApplicationException($"Circular dependency from '{user}' to '{firstUsed}'!!!");
 			if (!Usings.ContainsKey(user))
 				Usings.Add(user, new HashSet<string>());
 			if (!Usings.ContainsKey(used))
 				Usings.Add(used, new HashSet<string>());
-			if (!Usings[user].Contains(used))
+			if (Usings[user].Contains(used)) return;
+			Usings[user].Add(used);
+			foreach (var item in File.GetUsed(used))
 			{
-				Usings[user].Add(used);
-				foreach (var item in File.GetUsed(used))
-				{
-					AddDependency(user, item, firstUsed);
-					if (Tasks.ContainsKey(item))
-						Tasks[item].Wait();
-				}
+				AddDependency(user, item, firstUsed);
+				if (Tasks.ContainsKey(item))
+					Tasks[item].Wait();
 			}
 		}
 

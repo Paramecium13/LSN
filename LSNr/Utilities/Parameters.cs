@@ -16,36 +16,34 @@ namespace LSNr.Utilities
 		public static string GetSignature(this IReadOnlyList<Parameter> self)
 		{
 			var str = new StringBuilder();
-			void parse(Parameter param)
+			void Parse(Parameter param)
 			{
 				str.Append(param.Name)
 					.Append(": ")
 					.Append(param.Type);
-				if (!param.DefaultValue.IsNull)
-				{
-					// default value;
-					str.Append(" = ");
-					if (param.Type == LsnType.Bool_.Id)
-						str.Append(param.DefaultValue.BoolValue.ToString());
-					else if (param.Type == LsnType.double_.Id)
-						str.Append(param.DefaultValue.DoubleValue.ToString());
-					else if (param.Type == LsnType.int_.Id)
-						str.Append(param.DefaultValue.IntValue.ToString());
-					else if (param.Type == LsnType.string_.Id)
-						str.Append('"')
-							.Append((param.DefaultValue.Value as StringValue).Value);
-					else
-						str	.Append("<<DEFAULT = ")
-							.Append(param.DefaultValue.Value != null ? param.DefaultValue.Value.ToString() : param.DefaultValue.RawData.ToString("X"))
-							.Append(" >>");
-				}
+				if (param.DefaultValue.IsNull) return;
+				// default value;
+				str.Append(" = ");
+				if (param.Type == LsnType.Bool_.Id)
+					str.Append(param.DefaultValue.BoolValue.ToString());
+				else if (param.Type == LsnType.double_.Id)
+					str.Append(param.DefaultValue.DoubleValue.ToString());
+				else if (param.Type == LsnType.int_.Id)
+					str.Append(param.DefaultValue.IntValue.ToString());
+				else if (param.Type == LsnType.string_.Id)
+					str.Append('"')
+						.Append((param.DefaultValue.Value as StringValue).Value);
+				else
+					str	.Append("<<DEFAULT = ")
+						.Append(param.DefaultValue.Value != null ? param.DefaultValue.Value.ToString() : param.DefaultValue.RawData.ToString("X"))
+						.Append(" >>");
 			}
 			for (var i = 0; i < self.Count - 1; i++)
 			{
-				parse(self[i]);
+				Parse(self[i]);
 				str.Append(", ");
 			}
-			parse(self[self.Count - 1]);
+			Parse(self[self.Count - 1]);
 
 			return str.ToString();
 		}

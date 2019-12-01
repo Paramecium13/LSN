@@ -40,17 +40,14 @@ namespace LSNr.LssParser
 			public (IExpression expression, int indexOfNextToken, ushort numTokensToRemoveFromLeft)
 			CreateExpression(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
-			IExpression left, right;
 			if (index == 0)
 				throw new ApplicationException();
-
-			left = null;
-			right = null;
-
+			IExpression left;
 			if (substitutions.ContainsKey(tokens[index - 1]))
 				left = substitutions[tokens[index - 1]];
 			else left = Create.SingleTokenExpress(tokens[index - 1], script);
 
+			IExpression right;
 			if (substitutions.ContainsKey(tokens[index + 1]))
 				right = substitutions[tokens[index + 1]];
 			else right = Create.SingleTokenExpress(tokens[index + 1], script);

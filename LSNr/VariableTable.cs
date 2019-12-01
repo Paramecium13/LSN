@@ -183,14 +183,12 @@ namespace LSNr
 		/// <param name="index">The index of the variable that was removed.</param>
 		private void ParentVariableRemoved(int index)
 		{
-			if(index < Offset)
-			{
-				Offset--;
-				foreach (var v in Variables)
-					v.ChangeIndex(v.Index - 1);
-				foreach (var child in Children)
-					child.ParentVariableRemoved(index);
-			}
+			if (index >= Offset) return;
+			Offset--;
+			foreach (var v in Variables)
+				v.ChangeIndex(v.Index - 1);
+			foreach (var child in Children)
+				child.ParentVariableRemoved(index);
 		}
 
 		public IScope CreateChild()

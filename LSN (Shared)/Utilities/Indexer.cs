@@ -64,10 +64,8 @@ namespace LsnCore.Utilities
 				throw new ArgumentNullException(nameof(pred));
 			while (pred(Current))
 			{
-				if(!MoveForward())
-				{
-					reachedEnd = true; Index++; break;
-				}
+				if (MoveForward()) continue;
+				reachedEnd = true; Index++; break;
 			}
 			return Slice<T>.Create(Collection, start, Index - start);
 		}

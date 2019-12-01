@@ -54,25 +54,21 @@ namespace LsnCore.Expressions
 		{
 			var c = Collection.Fold();
 			var i = Index.Fold();
-			if(i != Index || c != Collection)
+			if (i == Index && c == Collection) return this;
+			IExpression expr;       // typeof(ICollectionValue).IsAssignableFrom(c.GetType())
+			if (i.IsReifyTimeConst() && c is LsnValue val && val.Value is ICollectionValue cl)
 			{
-				IExpression expr;       // typeof(ICollectionValue).IsAssignableFrom(c.GetType())
-				var cl = c as ICollectionValue;
-				if (i.IsReifyTimeConst() && cl != null)
+				try
 				{
-					try
-					{
-						expr = cl.GetValue(((LsnValue)i).IntValue);
-					}
-					catch (Exception)
-					{
-						expr = new CollectionValueAccessExpression(c, i, Type);
-					}
+					expr = cl.GetValue(((LsnValue)i).IntValue);
 				}
-				else expr = new CollectionValueAccessExpression(c, i, Type);
-				return expr;
+				catch (Exception)
+				{
+					expr = new CollectionValueAccessExpression(c, i, Type);
+				}
 			}
-			return this;
+			else expr = new CollectionValueAccessExpression(c, i, Type);
+			return expr;
 		}
 
 		public override bool IsReifyTimeConst()

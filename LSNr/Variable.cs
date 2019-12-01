@@ -38,7 +38,7 @@ namespace LSNr
 
 		public IExpression InitialValue { get; private set; }
 
-		private List<IExpression> _SubsequentValues = new List<IExpression>();
+		private readonly List<IExpression> _SubsequentValues = new List<IExpression>();
 
 		public IReadOnlyList<IExpression> SubsequentValues => _SubsequentValues;
 
@@ -49,7 +49,7 @@ namespace LSNr
 		public bool Reassigned => _Reassignments.Count != 0;
 
 		// The int item is the length of _SubsequentValues -1 at the time the user was added.
-		private List<IExpressionContainer> _Users = new List<IExpressionContainer>();
+		private readonly List<IExpressionContainer> _Users = new List<IExpressionContainer>();
 
 		public IReadOnlyList<IExpressionContainer> Users => _Users;
 

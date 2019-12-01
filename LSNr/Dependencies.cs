@@ -84,23 +84,22 @@ namespace LSNr
 					grandparents = Dependencies[parent].ToArray();
 				}
 			}
-			if(updated)
+
+			if (!updated) return;
+			var children = Dependents[parent];
+			lock (children)
 			{
-				var children = Dependents[parent];
-				lock (children)
-				{
-					children.Add(child);
-				}
-				if (!Dependents.ContainsKey(child))
-					Dependents.TryAdd(child, new List<string>());
-				foreach (var grandchild in Dependents[child].ToArray())
-				{
-					RegisterDependency(grandchild, parent, parent);
-				}
-				foreach (var grandparent in grandparents)
-				{
-					RegisterDependency(child, grandparent, parent);
-				}
+				children.Add(child);
+			}
+			if (!Dependents.ContainsKey(child))
+				Dependents.TryAdd(child, new List<string>());
+			foreach (var grandchild in Dependents[child].ToArray())
+			{
+				RegisterDependency(grandchild, parent, parent);
+			}
+			foreach (var grandparent in grandparents)
+			{
+				RegisterDependency(child, grandparent, parent);
 			}
 
 			// Dependencies[child] contains parent

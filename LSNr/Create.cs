@@ -48,26 +48,22 @@ namespace LSNr
 		/// <returns></returns>
 		public static IExpression Express(IReadOnlyList<Token> list, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions = null)
 		{
-			if(list.Count == 1)
-			{
-				var token = list[0];
-				if (substitutions != null && substitutions.ContainsKey(token))
-					return substitutions[token];
-				var vars = new List<Variable>();
-				var expr = SingleTokenExpress(token, script, null, vars);
-				if(vars.Count != 0)
-					vars[0].AddUser(expr);
+			if (list.Count != 1) return ExpressionParser.Parse(list, script, substitutions).Fold();
+			var token = list[0];
+			if (substitutions != null && substitutions.ContainsKey(token))
+				return substitutions[token];
+			var vars = new List<Variable>();
+			var expr = SingleTokenExpress(token, script, null, vars);
+			if(vars.Count != 0)
+				vars[0].AddUser(expr);
 
-				return expr;
-			}
-			return ExpressionParser.Parse(list, script, substitutions).Fold();
+			return expr;
 		}
 
 		public static IExpression SingleTokenExpress(Token token, IPreScript script, IExpressionContainer container = null, IList<Variable> variables = null)
 		{
 			var val = token.Value;
 			var symType = script.CheckSymbol(val);
-			IExpression expr;
 			var preScrFn = script as IPreFunction;
 			IBasePreScriptClass preScCl = null;
 			if (preScrFn != null)
@@ -78,7 +74,7 @@ namespace LSNr
 					var v = script.CurrentScope.GetVariable(val);
 					if (!v.Mutable && (v.InitialValue?.IsReifyTimeConst() ?? false))
 						return v.InitialValue.Fold();
-					expr = v.AccessExpression;//new VariableExpression(v.Name, v.Type);
+					var expr = v.AccessExpression;
 					if (container != null)
 						v.AddUser(container);
 					else

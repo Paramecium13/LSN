@@ -13,7 +13,7 @@ namespace LsnCore.ControlStructures
 		public IExpression Title { get; private set; }
 		public IExpression Condition;
 
-		public Choice(IExpression title, List<Component> components, IExpression condition = null)
+		public Choice(IExpression title, IList<Component> components, IExpression condition = null)
 		{
 			Components = components; Title = title; Condition = condition;
 		}

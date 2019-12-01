@@ -49,7 +49,7 @@ namespace LSNr
 			var changedFiles = GetChangedFiles();
 			var deps =  _DependenciesFile.RegirsterChangedFiles(changedFiles);
 			var tasks = new Dictionary<string, Task>();
-			foreach (var path in changedFiles.Union(deps).Where(s => s != null && s.Length > 0)) // deps may contain empty strings for some reason...
+			foreach (var path in changedFiles.Union(deps).Where(s => !string.IsNullOrEmpty(s))) // deps may contain empty strings for some reason...
 				tasks[new string(path.Skip(4).Take(path.Length - 8).ToArray())] = Task.Run(() => Reify(path));
 			DependencyWaiter = new DependencyWaiter(_DependenciesFile, tasks);
 			MyWaitHandle.Set();
@@ -116,16 +116,14 @@ namespace LSNr
 			{
 				rawPath = new string(rawPath.Skip(4).ToArray());
 			}
-			if (Path.HasExtension(rawPath))
-			{
-				if (Path.GetExtension(rawPath) != _MainFile.ObjectFileExtension)
-				{
-					rawPath = new string(rawPath.Take(rawPath.Length - Path.GetExtension(rawPath).Length).Concat(_MainFile.ObjectFileExtension).ToArray());
-				}
-				return Path.Combine("obj", rawPath);
-			}
 
-			return Path.Combine("obj", rawPath + _MainFile.ObjectFileExtension);
+			if (!Path.HasExtension(rawPath)) return Path.Combine("obj", rawPath + _MainFile.ObjectFileExtension);
+			if (Path.GetExtension(rawPath) != _MainFile.ObjectFileExtension)
+			{
+				rawPath = new string(rawPath.Take(rawPath.Length - Path.GetExtension(rawPath).Length).Concat(_MainFile.ObjectFileExtension).ToArray());
+			}
+			return Path.Combine("obj", rawPath);
+
 		}
 
 		public static string GetSourcePath(string rawPath)

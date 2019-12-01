@@ -26,23 +26,21 @@ namespace LsnCore.Statements
 #endif
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
-	#if LSNR
-			if(oldExpr is VariableExpression vOld && vOld.Index == Index)
+#if LSNR
+			if (!(oldExpr is VariableExpression vOld) || vOld.Index != Index) return;
+			switch (newExpr)
 			{
-				switch (newExpr)
-				{
-					case VariableExpression vNew:
-						Index = vNew.Index;
-						//vNew.Variable.AddUser(this);
-						break;
-					case LsnValue val:
-						Index = val.IntValue;
-						break;
-					default:
-						throw new InvalidOperationException();
-				}
+				case VariableExpression vNew:
+					Index = vNew.Index;
+					//vNew.Variable.AddUser(this);
+					break;
+				case LsnValue val:
+					Index = val.IntValue;
+					break;
+				default:
+					throw new InvalidOperationException();
 			}
-	#endif
+#endif
 		}
 
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)

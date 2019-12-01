@@ -48,17 +48,15 @@ namespace LsnCore.Types
 			else if (IsVirtual)
 				b = 1;
 			writer.Write(b);
-			if(!IsAbstract)
-			{
-				writer.Write((ushort)StackSize);
-				var offset = writer.ReserveOffset();
+			if (IsAbstract) return;
+			writer.Write((ushort)StackSize);
+			var offset = writer.ReserveOffset();
 
-				writer.Write((ushort)Code.Length);
-				for (int i = 0; i < Code.Length; i++)
-					Code[i].Serialize(writer, resourceSerializer);
+			writer.Write((ushort)Code.Length);
+			foreach (var statement in Code)
+				statement.Serialize(writer, resourceSerializer);
 
-				offset.Satisfy((int)writer.Position - (int)offset.Position -4);
-			}
+			offset.Satisfy((int)writer.Position - (int)offset.Position -4);
 		}
 
 		internal static ScriptClassMethod Read(BinaryDataReader reader, ITypeIdContainer typeContainer, TypeId type, string resourceFilePath, ResourceDeserializer resourceDeserializer)
@@ -73,13 +71,12 @@ namespace LsnCore.Types
 				StackSize = stackSize
 			};
 
-			if (!isAbstract)
-			{
-				stackSize = reader.ReadUInt16();
-				var codeSize = reader.ReadInt32();
-				resourceDeserializer.RegisterCodeBlock(method, reader.ReadBytes(codeSize));
-			}
+			if (isAbstract) return method;
+			stackSize = reader.ReadUInt16();
+			var codeSize = reader.ReadInt32();
+			resourceDeserializer.RegisterCodeBlock(method, reader.ReadBytes(codeSize));
 
+			method.StackSize = stackSize;
 			return method;
 		}
 

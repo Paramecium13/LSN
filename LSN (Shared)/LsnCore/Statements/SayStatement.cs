@@ -66,12 +66,11 @@ namespace LsnCore.Statements
 				foreach (var expr in _Graphic.SelectMany(e => e))
 					yield return expr;
 			}
-			if(_Title != null && !_Title.Equals(LsnValue.Nil))
-			{
-				yield return _Title;
-				foreach (var expr in _Title.SelectMany(e => e))
-					yield return expr;
-			}
+
+			if (_Title == null || _Title.Equals(LsnValue.Nil)) yield break;
+			yield return _Title;
+			foreach (var expr in _Title.SelectMany(e => e))
+				yield return expr;
 		}
 	}
 }

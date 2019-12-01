@@ -8,8 +8,8 @@ namespace LsnCore.Values
 {
 	public class RangeEnumerator : ILsnEnumerator
 	{
-		RangeValue Range;
-		int current;
+		private readonly RangeValue Range;
+		private int current;
 		public LsnValue Current => new LsnValue(current);
 
 		public RangeEnumerator(RangeValue range)

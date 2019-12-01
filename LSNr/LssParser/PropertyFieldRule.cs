@@ -15,18 +15,15 @@ namespace LSNr.LssParser
 
 		public bool CheckToken(Token token, IPreScript script)
 		{
-			if(token.Type == TokenType.Identifier)
+			if (token.Type != TokenType.Identifier) return false;
+			switch (script.CheckSymbol(token.Value))
 			{
-				switch (script.CheckSymbol(token.Value))
-				{
-					case SymbolType.Field:
-					case SymbolType.Property:
-						return true;
-					default:
-						return false;
-				}
+				case SymbolType.Field:
+				case SymbolType.Property:
+					return true;
+				default:
+					return false;
 			}
-			return false;
 		}
 
 		public bool CheckContext(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)

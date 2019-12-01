@@ -704,14 +704,11 @@ namespace LSNr
 			switch (TokenType)
 			{
 				case TokenizerTokenType.Unknown:
-					if(string.IsNullOrEmpty(str))
-					{
-						TokenType = TokenizerTokenType.Unknown;
-						State = TokenizerState.Base;
-						StrB.Clear();
-						return;
-					}
-					throw new ApplicationException();
+					if (!string.IsNullOrEmpty(str)) throw new ApplicationException();
+					TokenType = TokenizerTokenType.Unknown;
+					State = TokenizerState.Base;
+					StrB.Clear();
+					return;
 				case TokenizerTokenType.Word:
 					if (Keywords.Contains(str.ToLower()))
 						token = new Token(str.ToLower(), LineNumber, LSNr.TokenType.Keyword);

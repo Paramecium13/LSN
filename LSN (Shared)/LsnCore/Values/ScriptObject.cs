@@ -87,20 +87,20 @@ namespace LsnCore.Values
 			//Else
 			//	Return the type's implementation.
 
-			if (ScriptClass.HasMethod(methodName))
+			if (!ScriptClass.HasMethod(methodName))
+				throw new ArgumentException(
+					$"The ScriptObject type \"{ScriptClass.Name}\" does not have a method named \"{methodName}\".",
+					nameof(methodName));
+			var method = ScriptClass.GetMethod(methodName);
+			if (method.IsVirtual)
 			{
-				var method = ScriptClass.GetMethod(methodName);
-				if (method.IsVirtual)
-				{
-					if (CurrentState?.HasMethod(methodName) ?? false)
-						return CurrentState.GetMethod(methodName);
-					if (!method.IsAbstract)
-						return method;
-					throw new ApplicationException("...");
-				}
-				return method;
+				if (CurrentState?.HasMethod(methodName) ?? false)
+					return CurrentState.GetMethod(methodName);
+				if (!method.IsAbstract)
+					return method;
+				throw new ApplicationException("...");
 			}
-			throw new ArgumentException($"The ScriptObject type \"{ScriptClass.Name}\" does not have a method named \"{methodName}\".", nameof(methodName));
+			return method;
 		}
 
 		public LsnValue ExecuteHostInterfaceMethod(string name, LsnValue[] values)
@@ -134,9 +134,11 @@ namespace LsnCore.Values
 			CurrentState = nextState;
 
 			// Subscribe to new state's event subscriptions (if valid). Run new state Start method.
-			if (Host != null)
-				foreach (var subscription in newSubscriptions)
-					Host.SubscribeToEvent(subscription, this,CurrentState.GetEventListener(subscription).Priority);
+			if (Host == null) return;
+			
+			foreach (var subscription in newSubscriptions)
+				Host.SubscribeToEvent(subscription, this,CurrentState.GetEventListener(subscription).Priority);
+			
 		}
 
 		// Serialization?

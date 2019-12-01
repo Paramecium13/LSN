@@ -14,10 +14,9 @@ namespace LsnCore.Expressions
 		public RecordConstructor(RecordType type, IDictionary<string,IExpression> args)
 		{
 			Args = new IExpression[type.FieldCount];
-			var i = -1;
 			foreach (var pair in args)
 			{
-				i = type.GetIndex(pair.Key);
+				var i = type.GetIndex(pair.Key);
 				Args[i] = pair.Value;
 			}
 		}

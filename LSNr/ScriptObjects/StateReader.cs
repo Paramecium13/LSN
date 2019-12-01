@@ -72,23 +72,21 @@ namespace LSNr.ScriptObjects
 		protected TypeId ParseReturnType(Indexer<Token> index, string memberTypeName, string memberName)
 		{
 			TypeId ret = null;
-			if (index.MoveForward() && index.Current.Value != "{")
+			if (!index.MoveForward() || index.Current.Value == "{") return null;
+			if (index.Current.Value != "->" || !index.MoveForward())
+				throw new LsnrParsingException(index.Current, $"Error parsing {memberTypeName} {memberName}: Expected '->' or end of definition; received '{index.Current.Value}'.",
+					State.Path);
+			if (index.Current.Value == "(")
 			{
-				if (index.Current.Value != "->" || !index.MoveForward())
-					throw new LsnrParsingException(index.Current, $"Error parsing {memberTypeName} {memberName}: Expected '->' or end of definition; received '{index.Current.Value}'.",
-						State.Path);
-				if (index.Current.Value == "(")
-				{
-					if (!index.MoveForward() || index.Current.Value != ")")
-						throw new LsnrParsingException(index.Current, "...", State.Path);
-				}
-				else
-				{
-					var tTokens = index.SliceWhile(t => t.Value != ";" && t.Value != "{", out bool err);
-					ret = State.ParseTypeId(tTokens, 0, out int x);
-					if (ret == null)
-						throw new LsnrParsingException(index.Current, "Type not found...", State.Path);
-				}
+				if (!index.MoveForward() || index.Current.Value != ")")
+					throw new LsnrParsingException(index.Current, "...", State.Path);
+			}
+			else
+			{
+				var tTokens = index.SliceWhile(t => t.Value != ";" && t.Value != "{", out bool err);
+				ret = State.ParseTypeId(tTokens, 0, out int x);
+				if (ret == null)
+					throw new LsnrParsingException(index.Current, "Type not found...", State.Path);
 			}
 			return ret;
 		}

@@ -54,12 +54,9 @@ namespace LsnCore.Serialization
 			if (typeName.Contains('`'))
 			{
 				var names = typeName.Split('`');
-				if (GenericTypes.ContainsKey(names[0]))
-				{
-					var generic = GenericTypes[names[0]];
-					return generic.GetType(names.Skip(1).Select(GetType).Select(t => t.Id).ToArray());
-				}
-				throw new ApplicationException();
+				if (!GenericTypes.ContainsKey(names[0])) throw new ApplicationException();
+				var generic = GenericTypes[names[0]];
+				return generic.GetType(names.Skip(1).Select(GetType).Select(t => t.Id).ToArray());
 			}
 			if (Types.ContainsKey(typeName))
 				return Types[typeName];
@@ -564,24 +561,22 @@ namespace LsnCore.Serialization
 
 		public static ScriptObject ReadScriptObject(BinaryDataReader reader, IResourceManager resourceManager, bool canHaveHost)
 		{
+			if (!canHaveHost) return ReadScriptObject(reader, resourceManager, null);
 			IHostInterface host = null;
-			if(canHaveHost)
+			switch (Settings.HostInterfaceIdType)
 			{
-				switch (Settings.HostInterfaceIdType)
-				{
-					case IdentifierType.Numeric:
-						var numId = reader.ReadUInt32();
-						if (numId != 0)
-							host = resourceManager.GetHostInterface(numId);
-						break;
-					case IdentifierType.Text:
-						var txtId = reader.ReadString();
-						if ((txtId?.Length ?? 0) > 0)
-							host = resourceManager.GetHostInterface(txtId);
-						break;
-					default:
-						throw new Exception("Unexpected Case");
-				}
+				case IdentifierType.Numeric:
+					var numId = reader.ReadUInt32();
+					if (numId != 0)
+						host = resourceManager.GetHostInterface(numId);
+					break;
+				case IdentifierType.Text:
+					var txtId = reader.ReadString();
+					if ((txtId?.Length ?? 0) > 0)
+						host = resourceManager.GetHostInterface(txtId);
+					break;
+				default:
+					throw new Exception("Unexpected Case");
 			}
 			return ReadScriptObject(reader, resourceManager, host);
 		}

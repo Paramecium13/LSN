@@ -19,7 +19,7 @@ namespace LSNr.LssParser
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
 		private readonly IReadOnlyList<Token> InitialTokens;
 #endif
-		private List<Token> CurrentTokens;
+		private readonly List<Token> CurrentTokens;
 		private int SubCount;
 		private readonly IPreScript Script;
 
@@ -31,13 +31,11 @@ namespace LSNr.LssParser
 			CurrentTokens = new List<Token>(tokens);
 			Script = script;
 			Substitutions = new Dictionary<Token, IExpression>();
-			if (substitutions != null)
+			if (substitutions == null) return;
+			SubCount = substitutions.Count;
+			foreach (var pair in substitutions)
 			{
-				SubCount = substitutions.Count;
-				foreach (var pair in substitutions)
-				{
-					Substitutions.Add(pair.Key, pair.Value);
-				}
+				Substitutions.Add(pair.Key, pair.Value);
 			}
 		}
 
