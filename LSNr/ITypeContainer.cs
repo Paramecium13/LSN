@@ -1,5 +1,6 @@
 ﻿using LsnCore;
 using LsnCore.Types;
+using LsnCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,7 +67,12 @@ namespace LSNr
 			if (self.TypeExists(tName))
 			{
 				endIndex = i + 1;
-				return self.GetTypeId(tokens[i].Value);
+				var type = self.GetTypeId(tokens[i].Value);
+				if(tokens.TestAt(i+1, t => t.Value == "["))
+				{
+					// ToDo: Arrays...
+					throw new NotImplementedException("Arrays");
+				}
 			}
 			if (self.GenericTypeExists(tName))
 			{
