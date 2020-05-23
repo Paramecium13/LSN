@@ -7,11 +7,34 @@ namespace LSNr
 	{
 		private readonly ISlice<Token> Tokens;
 
+		/// <summary>
+		/// The index of the current token.
+		/// </summary>
 		private int TokenIndex;
+
+		/// <summary>
+		/// 
+		/// </summary>
 		private int CurrentHeadStart;
+
+		/// <summary>
+		/// The number of tokens in the current head.
+		/// </summary>
 		private int CurrentHeadCount;
+
+		/// <summary>
+		/// The first token after the opening { of the current body.
+		/// </summary>
 		private int CurrentBodyStart;
+
+		/// <summary>
+		/// The number of tokens in the current body.
+		/// </summary>
 		private int CurrentBodyCount;
+
+		/// <summary>
+		/// The balance of { and } tokens
+		/// </summary>
 		private int Balance;
 
 		private IReadToken TokenReader;
@@ -67,13 +90,21 @@ namespace LSNr
 
 		private interface IReadToken
 		{
+			/// <summary>
+			/// Reads the specified token.
+			/// </summary>
+			/// <param name="token">The token at <see cref="TokenIndex"/>.</param>
+			/// <param name="reader">The reader.</param>
 			void Read(Token token, ReaderBase reader);
 		}
 
 		private class StatementReadToken : IReadToken
 		{
 			internal static readonly StatementReadToken Instance = new StatementReadToken();
+			
 			private StatementReadToken() { }
+
+			///<inheritdoc/>
 			public void Read(Token token, ReaderBase reader)
 			{
 				reader.CurrentHeadCount++;
@@ -104,7 +135,10 @@ namespace LSNr
 		private class BodyReadToken : IReadToken
 		{
 			internal static readonly BodyReadToken Instance = new BodyReadToken();
+			
 			private BodyReadToken() { }
+
+			///<inheritdoc/>
 			public void Read(Token token, ReaderBase reader)
 			{
 				if (token.Type == TokenType.SyntaxSymbol)

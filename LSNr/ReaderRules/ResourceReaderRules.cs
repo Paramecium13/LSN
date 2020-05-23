@@ -270,7 +270,7 @@ namespace LSNr.ReaderRules
 
 		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{
-			if (head.Count > 3 || head.Count < 2)
+			if (head.Count != 2)
 				throw new LsnrParsingException(head[0], "Invalid struct...", PreResource.Path);
 			var id = new TypeId(head[1].Value);
 			PreResource.RegisterTypeId(id);

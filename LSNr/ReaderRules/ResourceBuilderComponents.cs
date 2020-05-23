@@ -6,10 +6,26 @@ using System.Collections.Generic;
 
 namespace LSNr.ReaderRules
 {
+	/// <summary>
+	/// Builds simple types, namely <see cref="RecordType"/>s and <see cref="StructType"/>s.
+	/// </summary>
 	public abstract class SimpleTypeBuilder
 	{
+		/// <summary>
+		/// The type identifier.
+		/// </summary>
 		protected readonly TypeId Id;
+
+		/// <summary>
+		/// The tokens of the declaration (includes the type name???)
+		/// </summary>
 		protected readonly ISlice<Token> Tokens;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SimpleTypeBuilder"/> class.
+		/// </summary>
+		/// <param name="id">The identifier.</param>
+		/// <param name="tokens">The tokens.</param>
 		protected SimpleTypeBuilder(TypeId id, ISlice<Token> tokens)
 		{
 			Id = id; Tokens = tokens;
