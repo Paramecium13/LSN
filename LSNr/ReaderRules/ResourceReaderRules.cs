@@ -114,12 +114,24 @@ namespace LSNr.ReaderRules
 		}
 	}
 
+	/// <summary>
+	/// A base statement rule class for <see cref="ResourceReader"/>
+	/// </summary>
+	/// <seealso cref="IReaderStatementRule" />
 	public abstract class ResourceReaderStatementRule : IReaderStatementRule
 	{
+		/// <summary>
+		/// The pre resource
+		/// </summary>
 		protected readonly IPreResource PreResource;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ResourceReaderStatementRule"/> class.
+		/// </summary>
+		/// <param name="pre">The pre-resource.</param>
 		protected ResourceReaderStatementRule(IPreResource pre) { PreResource = pre; }
 
+		///<inheritdoc/>
 		public abstract bool Check(ISlice<Token> tokens);
 
 		/// <summary>
@@ -130,11 +142,13 @@ namespace LSNr.ReaderRules
 		public abstract void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes);
 	}
 
+	/// <summary>
+	/// A rule for parsing using statements.
+	/// </summary>
+	/// <seealso cref="ResourceReaderStatementRule" />
 	sealed class ResourceUsingStatementRule : ResourceReaderStatementRule
 	{
-		readonly DependencyWaiter Waiter;
-		public ResourceUsingStatementRule(IPreResource pre, DependencyWaiter waiter) : base(pre)
-		{ Waiter = waiter; }
+		public ResourceUsingStatementRule(IPreResource pre) : base(pre){ }
 
 		public override void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes)
 		{
@@ -151,6 +165,7 @@ namespace LSNr.ReaderRules
 	{
 		public ResourceHandleTypeStatementRule(IPreResource pre) : base(pre) { }
 
+		///<inheritdoc/>
 		public override void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes)
 		{
 			if (tokens[1].Type != TokenType.Identifier)
@@ -198,6 +213,7 @@ namespace LSNr.ReaderRules
 			PreResource.ParseSignaturesA += builder.OnParsingSignatures;
 		}
 
+		///<inheritdoc/>
 		public override bool Check(ISlice<Token> tokens)
 			=> tokens.Length >= 3 && tokens[0].Value == "handle";
 	}
@@ -208,7 +224,10 @@ namespace LSNr.ReaderRules
 
 		protected ResourceReaderBodyRule(IPreResource pre) { PreResource = pre; }
 
+		///<inheritdoc/>
 		public abstract bool Check(ISlice<Token> head);
+
+		///<inheritdoc/>
 		public abstract void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes);
 	}
 

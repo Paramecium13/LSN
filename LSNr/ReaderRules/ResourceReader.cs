@@ -21,11 +21,11 @@ namespace LSNr
 
 		internal bool Valid => PreResource.Valid;
 
-		ResourceReader(string path, ISlice<Token> tokens, DependencyWaiter waiter) : base(tokens)
+		ResourceReader(string path, ISlice<Token> tokens) : base(tokens)
 		{
 			PreResource = new ResourceBuilder(path);
 			_StatementRules = new ResourceReaderStatementRule[] {
-				new ResourceUsingStatementRule(PreResource, waiter),
+				new ResourceUsingStatementRule(PreResource),
 				new ResourceHandleTypeStatementRule(PreResource)
 			};
 			_BodyRules = new ResourceReaderBodyRule[]
@@ -45,8 +45,8 @@ namespace LSNr
 			return PreResource.Parse();
 		}
 
-		public static ResourceReader OpenResource(string src, string path, DependencyWaiter waiter)
-			=> new ResourceReader(path, new CharStreamTokenizer().Tokenize(src), waiter);
+		public static ResourceReader OpenResource(string src, string path)
+			=> new ResourceReader(path, new CharStreamTokenizer().Tokenize(src));
 
 		protected override void OnReadAdjSemiColon(ISlice<Token>[] attributes) {}
 	}

@@ -16,14 +16,14 @@ namespace LSNr.ReaderRules
 		/// <summary>
 		/// Checks if the specified tokens satisfy this rule.
 		/// </summary>
-		/// <param name="tokens">The tokens.</param>
+		/// <param name="tokens">The tokens, including the terminal ;.</param>
 		/// <returns></returns>
 		bool Check(ISlice<Token> tokens);
 
 		/// <summary>
 		/// Applies this rule using the specified tokens.
 		/// </summary>
-		/// <param name="tokens">The tokens.</param>
+		/// <param name="tokens">The tokens, including the terminal ;.</param>
 		/// <param name="attributes">The attributes.</param>
 		void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes);
 	}

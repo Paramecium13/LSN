@@ -142,7 +142,7 @@ namespace LSNr
 			MyWaitHandle.WaitOne();
 
 			// Parse the file
-			var rs = ResourceReader.OpenResource(File.ReadAllText(GetSourcePath(path)), path, DependencyWaiter);
+			var rs = ResourceReader.OpenResource(File.ReadAllText(GetSourcePath(path)), path);
 			var res = rs.Read();
 			if (!rs.Valid)
 			{
