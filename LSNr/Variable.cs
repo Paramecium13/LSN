@@ -109,6 +109,15 @@ namespace LSNr
 			_index = index; AccessExpression = new VariableExpression(Index, type.Id, this);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Variable"/> class.
+		/// </summary>
+		/// <remarks>
+		/// I guess this is a pseudo-variable in that it is just a shortcut for 'collection[indexVariable]'.
+		/// </remarks>
+		/// <param name="name">The name.</param>
+		/// <param name="indexVariable">The index variable.</param>
+		/// <param name="collection">The collection expression.</param>
 		public Variable(string name, Variable indexVariable, IExpression collection)
 		{
 			Name = name;

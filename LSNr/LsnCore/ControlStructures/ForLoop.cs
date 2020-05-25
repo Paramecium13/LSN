@@ -58,10 +58,10 @@ namespace LsnCore.ControlStructures
 		}
 
 		/// <summary>
-		/// Can this expression be used as is or does it need to be stored in a variable
+		/// Can this expression be used as is or does it need to be stored in a variable?
 		/// </summary>
 		/// <param name="expr"></param>
-		/// <param name="recCount"></param>
+		/// <param name="recCount">The count of recursive calls. Deeply nested fields cannot be directly used.</param>
 		/// <returns></returns>
 		internal static bool CheckCollectionVariable(IExpression expr, int recCount = 0)
 		{
@@ -71,10 +71,10 @@ namespace LsnCore.ControlStructures
 				case FieldAccessExpression f:
 					return CheckCollectionVariable(f.Value, recCount + 1);
 				case VariableExpression varExp:
-					return !varExp.Variable.Mutable;
-				case GlobalVariableAccessExpression gVar:
-				case UniqueScriptObjectAccessExpression unique:
-				case LsnValue val:
+					return !varExp.Variable.Mutable; // If it's mutable, it could be changed inside the loop.
+				case GlobalVariableAccessExpression _:
+				case UniqueScriptObjectAccessExpression _:
+				case LsnValue _:
 					return true;
 				case CollectionValueAccessExpression coll:
 					return CheckCollectionVariable(coll.Index, recCount + 1)

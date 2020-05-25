@@ -109,6 +109,7 @@ namespace LSNr
 			return v;
 		}
 
+		/// <inheritdoc/>
 		public Variable CreateIteratorVariable(string name, IExpression collection, Variable index)
 		{
 			var v = new Variable(name, index, collection);
@@ -118,6 +119,7 @@ namespace LSNr
 
 		private const int MaxUsersForReplacement = 2;
 
+		/// <inheritdoc/>
 		public IScope Pop(List<Component> components)
 		{
 			// Optimize contained variables...

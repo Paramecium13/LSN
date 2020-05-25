@@ -31,7 +31,7 @@ namespace LSNr.ControlStructures
 				throw LsnrParsingException.UnexpectedToken(head[i], "in", script.Path);
 			i++; // i == 3; points to expression.
 			var expr = Create.Express(head.Skip(3), script);
-			if (expr.Type.Type is ICollectionType collType)
+			if (expr.Type.Type is ICollectionType)
 			{
 				script.CurrentScope = script.CurrentScope.CreateChild();
 				var index = script.CurrentScope.CreateVariable(vName + " index", LsnType.int_);

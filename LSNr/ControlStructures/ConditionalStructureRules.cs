@@ -35,22 +35,21 @@ namespace LSNr.ControlStructures
 				throw new LsnrParsingException(head[4], "The value of an if let structure must be of an option type.", script.Path);
 
 			script.CurrentScope = script.CurrentScope.CreateChild();
-			Variable variable;
 			AssignmentStatement assignment = null;
 			if (ForInCollectionLoop.CheckCollectionVariable(expr))
 			{
-				variable = script.CurrentScope.CreateMaskVariable(vName, new HiddenCastExpression(expr, exprType.Contents), exprType.Contents.Type);
+				script.CurrentScope.CreateMaskVariable(vName, new HiddenCastExpression(expr, exprType.Contents), exprType.Contents.Type);
 			}
 			else
 			{
-				variable = script.CurrentScope.CreateVariable(vName, exprType.Contents.Type);
+				var variable = script.CurrentScope.CreateVariable(vName, exprType.Contents.Type);
 				assignment = new AssignmentStatement(variable.Index, new HiddenCastExpression(expr, exprType.Contents));
 				variable.Assignment = assignment;
 			}
 			var p = new Parser(body, script);
 			p.Parse();
 			var components = new List<Component>();
-			if (assignment != null) components.Add(assignment);
+			if (assignment != null) components.Insert(0, assignment);
 			components.AddRange(Parser.Consolidate(p.Components));
 
 			return new IfControl(expr, components);
