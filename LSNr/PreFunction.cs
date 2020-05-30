@@ -54,7 +54,7 @@ namespace LSNr
 
 		public IScope CurrentScope { get; set; } = new VariableTable();
 
-		public bool Valid {get { return Resource.Valid; } set { Resource.Valid = value; } }
+		public bool Valid {get => Resource.Valid; set => Resource.Valid = value;}
 
 		public bool Mutable								=> Resource.Mutable;
 		public bool GenericTypeExists(string name)		=> Resource.GenericTypeExists(name);
@@ -65,10 +65,7 @@ namespace LSNr
 		public string Path								=> Resource.Path;
 		public TypeId GetTypeId(string name)			=> Resource.GetTypeId(name);
 
-		public void GenericTypeUsed(TypeId typeId)
-		{
-			Resource.GenericTypeUsed(typeId);
-		}
+		public void GenericTypeUsed(TypeId typeId) 		=> Resource.GenericTypeUsed(typeId);
 
 		public SymbolType CheckSymbol(string name)
 		{

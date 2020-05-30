@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LSNr.Converations
 {
-	interface INode : ITypeContainer
+	internal interface INode : ITypeContainer
 	{
 		string Name { get; }
 		string Path { get; }

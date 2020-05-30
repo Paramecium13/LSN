@@ -11,12 +11,18 @@ using System.Threading.Tasks;
 
 namespace LsnCore
 {
+	/// <summary>
+	/// A container of <see cref="TypeId"/>s. Used in serialization and deserialization of object files. 
+	/// </summary>
 	public interface ITypeIdContainer
 	{
 		TypeId GetTypeId(string name);
 		TypeId GetTypeId(ushort index);
 	}
 
+	/// <summary>
+	/// A container of <see cref="TypeId"/>s. Used in serialization and deserialization of object files. 
+	/// </summary>
 	public class TypeIdContainer : ITypeIdContainer
 	{
 		readonly IDictionary<string, TypeId> TypeIdDictionary;
@@ -96,13 +102,48 @@ namespace LsnCore
 		}
 	}
 
+	/// <summary>
+	/// Contains <see cref="LsnType"/>s...
+	/// </summary>
 	public interface ITypeContainer
 	{
+		/// <summary>
+		/// Gets the <see cref="LsnType"/> named <paramref name="name"/>.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
 		LsnType GetType(string name);
+
+		/// <summary>
+		/// Gets the <see cref="TypeId"/> for the <see cref="LsnType"/> named <paramref name="name"/>.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
 		TypeId GetTypeId(string name);
+
+		/// <summary>
+		/// Does an <see cref="LsnType"/> named <paramref name="name"/> exist?
+		/// </summary>
+		/// <param name="name">The name.</param>
 		bool TypeExists(string name);
+
+		/// <summary>
+		/// Does a <see cref="GenericType"/> named <paramref name="name"/> exist?
+		/// </summary>
+		/// <param name="name">The name.</param>
 		bool GenericTypeExists(string name);
+
+		/// <summary>
+		/// Gets the <see cref="GenericType"/> named <paramref name="name"/>.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
 		GenericType GetGenericType(string name);
+
+		/// <summary>
+		/// Marks the bound generic type as being used.
+		/// </summary>
+		/// <param name="typeId">The type identifier.</param>
 		void GenericTypeUsed(TypeId typeId);
 	}
 
