@@ -133,7 +133,7 @@ namespace LSNr.Converations
 
 		public void OnParsingSignatures(IFunctionContainer resource)
 		{
-			CurrentScope = new VariableTable(new List<Variable>());
+			CurrentScope = new VariableTable();
 			// Get parameters, add to scope.
 			var args = Parent.ParseParameters(Args);
 			foreach (var arg in args)

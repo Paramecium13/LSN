@@ -52,7 +52,7 @@ namespace LSNr
 
 		public IReadOnlyList<ControlStructureRule> ControlStructureRules => _ControlStructureRules;
 
-		public IScope CurrentScope { get; set; } = new VariableTable(new List<Variable>());
+		public IScope CurrentScope { get; set; } = new VariableTable();
 
 		public bool Valid {get { return Resource.Valid; } set { Resource.Valid = value; } }
 

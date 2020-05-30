@@ -29,7 +29,7 @@ namespace LSNr
 			Parent = parent; IsConstructor = isConstructor;
 		}
 
-		public IScope CurrentScope { get; set; } = new VariableTable(new List<Variable>());
+		public IScope CurrentScope { get; set; } = new VariableTable();
 
 		public bool Valid { get { return Parent.Valid; } set { Parent.Valid = value; } }
 

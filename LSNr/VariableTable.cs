@@ -9,10 +9,19 @@ using System.Threading.Tasks;
 
 namespace LSNr
 {
+	/// <summary>
+	/// The implementation of <see cref="IScope"/>.
+	/// </summary>
 	public class VariableTable : IScope
 	{
+		/// <summary>
+		/// The parent scope.
+		/// </summary>
 		private readonly VariableTable Parent;
 
+		/// <summary>
+		/// Gets the maximum number of variables in this scope.
+		/// </summary>
 		public int MaxSize
 		{
 			get
@@ -27,10 +36,14 @@ namespace LSNr
 		/// </summary>
 		private int Offset;
 
+		/// <summary>
+		/// The variables in this scope.
+		/// </summary>
 		private readonly List<Variable> Variables = new List<Variable>();
 
-		private readonly IList<Variable> MasterVariableList; // ToDo: Remove?
-
+		/// <summary>
+		/// This scope's child scopes.
+		/// </summary>
 		private readonly IList<VariableTable> Children = new List<VariableTable>();
 
 		/// <summary>
@@ -48,16 +61,15 @@ namespace LSNr
 		/// </summary>
 		public int NextOffset => Offset + Count - ConstCount;
 
-		public VariableTable(IList<Variable> masterVarList)
+		public VariableTable()
 		{
-			Offset = 0; MasterVariableList = masterVarList;
+			Offset = 0;
 		}
 
-		public VariableTable(VariableTable parent, IList<Variable> masterVarList)
+		public VariableTable(VariableTable parent)
 		{
 			Parent = parent;
 			Offset = Parent.NextOffset;
-			MasterVariableList = masterVarList;
 			ConstCount = parent.ConstCount;
 		}
 
@@ -78,6 +90,8 @@ namespace LSNr
 		{
 			var v = new Variable(name, mutable, init, NextOffset);
 			Variables.Add(v);
+			if (v.Const())
+				ConstCount++;
 			return v;
 		}
 
@@ -87,7 +101,7 @@ namespace LSNr
 			var v = new Variable(param);
 			Variables.Add(v);
 			if (v.Const())
-				ConstCount++;
+				ConstCount++;// ???
 			return v;
 		}
 
@@ -114,6 +128,7 @@ namespace LSNr
 		{
 			var v = new Variable(name, index, collection);
 			Variables.Add(v);
+			ConstCount++;
 			return v;
 		}
 
@@ -193,9 +208,10 @@ namespace LSNr
 				child.ParentVariableRemoved(index);
 		}
 
+		/// <inheritdoc/>
 		public IScope CreateChild()
 		{
-			var child = new VariableTable(this, MasterVariableList);
+			var child = new VariableTable(this);
 			Children.Add(child);
 			return child;
 		}
