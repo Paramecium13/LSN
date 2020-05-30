@@ -38,8 +38,7 @@ namespace LsnCore
 		/// <summary>
 		/// The numeric data.
 		/// </summary>
-		[FieldOffset(0)]
-		readonly double Data;
+		[FieldOffset(0)] private readonly double Data;
 
 #if LSNR
 		public ulong RawData { get
@@ -172,7 +171,7 @@ namespace LsnCore
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		LsnValue(double d, ILsnValue v)
+		private LsnValue(double d, ILsnValue v)
 		{
 			HandleData = 0;
 			X = 0f;

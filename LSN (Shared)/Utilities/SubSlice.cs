@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Utilities
 {
-	class SubSlice<T> : Slice<T>
+	internal class SubSlice<T> : Slice<T>
 	{
 		public override T this[int index]
 		{

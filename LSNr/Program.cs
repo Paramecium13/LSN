@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace LSNr
 {
-	static class Program
+	internal static class Program
 	{
 		private const int NO_FILE = -1;
 		private const int FILE_NOT_FOUND = -2;
@@ -28,7 +28,7 @@ namespace LSNr
 		private static readonly EventWaitHandle MyWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
 		private static DependenciesFile _DependenciesFile;
 
-		static int Main(string[] args)
+		private static int Main(string[] args)
 		{
 			/*if (args.Length == 0 || string.Equals(args[0], "setup", StringComparison.OrdinalIgnoreCase)) // Set up the workspace.
 			{

@@ -9,19 +9,19 @@ using LSNr.ReaderRules;
 
 namespace LSNr
 {
-	class ResourceReader : RuledReader<ResourceReaderStatementRule, ResourceReaderBodyRule>
+	internal class ResourceReader : RuledReader<ResourceReaderStatementRule, ResourceReaderBodyRule>
 	{
-		readonly IPreResource PreResource;
+		private readonly IPreResource PreResource;
 
-		readonly ResourceReaderStatementRule[] _StatementRules;
+		private readonly ResourceReaderStatementRule[] _StatementRules;
 		protected override IEnumerable<ResourceReaderStatementRule> StatementRules => _StatementRules;
 
-		readonly ResourceReaderBodyRule[] _BodyRules;
+		private readonly ResourceReaderBodyRule[] _BodyRules;
 		protected override IEnumerable<ResourceReaderBodyRule> BodyRules => _BodyRules;
 
 		internal bool Valid => PreResource.Valid;
 
-		ResourceReader(string path, ISlice<Token> tokens) : base(tokens)
+		private ResourceReader(string path, ISlice<Token> tokens) : base(tokens)
 		{
 			PreResource = new ResourceBuilder(path);
 			_StatementRules = new ResourceReaderStatementRule[] {

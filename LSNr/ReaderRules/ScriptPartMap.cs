@@ -8,7 +8,7 @@ using LsnCore.Utilities;
 
 namespace LSNr.ReaderRules
 {
-	class ScriptPartMap<TPart, TSrc> : IEnumerable<(string name, TPart Part, TSrc Source)>
+	internal class ScriptPartMap<TPart, TSrc> : IEnumerable<(string name, TPart Part, TSrc Source)>
 	{
 		private class Entry
 		{

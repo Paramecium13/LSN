@@ -13,8 +13,8 @@ namespace LSNr.ScriptObjects
 {
 	public sealed class ScriptClassMethodComponent
 	{
-		readonly ScriptClassMethod Method;
-		readonly ISlice<Token> Body;
+		private readonly ScriptClassMethod Method;
+		private readonly ISlice<Token> Body;
 
 		public ScriptClassMethodComponent(ScriptClassMethod method, ISlice<Token> body)
 		{
@@ -55,9 +55,9 @@ namespace LSNr.ScriptObjects
 
 	public sealed class ScriptClassEventListenerComponent
 	{
-		readonly EventListener Event;
-		readonly ISlice<Token> Body;
-		readonly Token First;
+		private readonly EventListener Event;
+		private readonly ISlice<Token> Body;
+		private readonly Token First;
 
 		public ScriptClassEventListenerComponent(EventListener e, ISlice<Token> body, Token first)
 		{
@@ -111,8 +111,8 @@ namespace LSNr.ScriptObjects
 
 	public sealed class ScriptClassConstructorComponent
 	{
-		readonly ScriptClassConstructor Constructor;
-		readonly ISlice<Token> Body;
+		private readonly ScriptClassConstructor Constructor;
+		private readonly ISlice<Token> Body;
 
 		public ScriptClassConstructorComponent(ScriptClassConstructor c, ISlice<Token> body)
 		{

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Utilities
 {
-	abstract class ListSliceBase<T,TList> : Slice<T>
+	internal abstract class ListSliceBase<T,TList> : Slice<T>
 		where TList : IList<T>
 	{
 		public override T this[int index]
@@ -37,7 +37,7 @@ namespace LsnCore.Utilities
 		}
 	}
 
-	class ListSlice<T> : ListSliceBase<T,List<T>>
+	internal class ListSlice<T> : ListSliceBase<T,List<T>>
 	{
 		public ListSlice(List<T> list, int start, int length) : base(list, start, length) {}
 
@@ -55,7 +55,7 @@ namespace LsnCore.Utilities
 		}
 	}
 
-	class ListSliceI<T> : ListSliceBase<T, IList<T>>
+	internal class ListSliceI<T> : ListSliceBase<T, IList<T>>
 	{
 		public ListSliceI(IList<T> list, int start, int length) : base(list, start, length) {}
 
@@ -87,7 +87,7 @@ namespace LsnCore.Utilities
 		}
 	}
 
-	class ListSliceIR<T> : Slice<T>
+	internal class ListSliceIR<T> : Slice<T>
 	{
 		public override T this[int index]
 		{

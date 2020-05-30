@@ -215,7 +215,7 @@ namespace LSNr.Optimization
 			InnerMostLoopEndLabels.Pop();
 		}
 
-		int ChoiceCount;
+		private int ChoiceCount;
 
 		protected override void WalkCbc(ChoicesBlockControl c)
 		{

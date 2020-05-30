@@ -8,7 +8,7 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-	sealed class SomeExpression : Expression
+	internal sealed class SomeExpression : Expression
 	{
 		private IExpression Contents;
 

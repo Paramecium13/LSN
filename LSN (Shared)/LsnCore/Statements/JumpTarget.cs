@@ -11,7 +11,7 @@ namespace LsnCore.Statements
 {
 	public class JumpToTargetStatement : Statement
 	{
-		int Index;
+		private int Index;
 
 		public JumpToTargetStatement(int index)
 		{
@@ -73,7 +73,7 @@ namespace LsnCore.Statements
 			Variable = new Variable("Jump Target", LsnType.int_, index, true);
 		}
 #else
-		int Index;
+		private int Index;
 
 		public SetTargetStatement(int index)
 		{

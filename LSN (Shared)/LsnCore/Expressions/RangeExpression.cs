@@ -14,14 +14,14 @@ namespace LsnCore.Expressions
 #if LSNR
 		public
 #else
-		readonly
+		private readonly
 #endif
 		IExpression Start;
 
 #if LSNR
 		public
 #else
-		readonly
+		private readonly
 #endif
 		IExpression End;
 

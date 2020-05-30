@@ -128,8 +128,8 @@ namespace LSNr.Statements
 
 	public sealed class BinExprReassignStatementRule : ReasignmentStatementRule
 	{
-		readonly string Value;
-		readonly BinaryOperation Operation;
+		private readonly string Value;
+		private readonly BinaryOperation Operation;
 
 		public BinExprReassignStatementRule(string val, BinaryOperation op) { Value = val; Operation = op; }
 

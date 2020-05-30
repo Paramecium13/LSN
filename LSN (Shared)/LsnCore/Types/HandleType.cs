@@ -6,7 +6,7 @@ namespace LsnCore.Types
 {
 	public class HandleType : LsnType
 	{
-		readonly HashSet<TypeId> ParentTypes;
+		private readonly HashSet<TypeId> ParentTypes;
 
 		internal HandleType(TypeId id, TypeId[] parents)
 		{
