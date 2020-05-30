@@ -31,92 +31,93 @@ namespace LSNr.ControlStructures
 				throw LsnrParsingException.UnexpectedToken(head[i], "in", script.Path);
 			i++; // i == 3; points to expression.
 			var expr = Create.Express(head.Skip(3), script);
+			Variable index;
+			List<Component> components;
+			Parser parser;
+			script.CurrentScope = script.CurrentScope.CreateChild();
 			if (expr.Type.Type is ICollectionType)
 			{
-				script.CurrentScope = script.CurrentScope.CreateChild();
-				var index = script.CurrentScope.CreateVariable(vName + " index", LsnType.int_);
+				index = script.CurrentScope.CreateVariable(vName + " index", LsnType.int_);
 				IExpression collection;
 				AssignmentStatement state = null;
 				if (ForInCollectionLoop.CheckCollectionVariable(expr))
 					collection = expr;
 				else
 				{
+					// ToDo: Move this logic into AssignmentStatement, IScope, or Variable.
 					var collVar = script.CurrentScope.CreateVariable(vName + " collection", expr.Type.Type);
-					collection = collVar.AccessExpression;
 					state = new AssignmentStatement(collVar.Index, expr);
 					collVar.Assignment = state;
-					collVar.AddUser(state);
-					collVar.MarkAsUsed();
+					
+					collection = collVar.AccessExpression;
 				}
-				var iterator = script.CurrentScope.CreateIteratorVariable(vName, collection, index);
-				iterator.MarkAsUsed();
-				var p = new Parser(body, script);
-				p.Parse();
-				var components = Parser.Consolidate(p.Components);
+				script.CurrentScope.CreateIteratorVariable(vName, collection, index);
+				parser = new Parser(body, script);
+				parser.Parse();
+				components = Parser.Consolidate(parser.Components);
 				script.CurrentScope = script.CurrentScope.Pop(components);
 				return new ForInCollectionLoop(index, collection, components)
 				{ Statement = state };
 			}
-			if (expr.Type.Type == RangeType.Instance)
-			{
-				script.CurrentScope = script.CurrentScope.CreateChild();
-				var index = script.CurrentScope.CreateVariable(vName, LsnType.int_);
-				index.MarkAsUsed();
-				var p = new Parser(body, script);
-				p.Parse();
-				var components = Parser.Consolidate(p.Components);
-				var loop = new ForInRangeLoop(index, components);
-				switch (expr)
-				{
-					case RangeExpression rExp:
-						if (rExp.Start is LsnValue v1)
-						{
-							loop.Start = new LsnValue(v1.IntValue);
-							// statement for end...
-							var endVar = script.CurrentScope.CreateVariable("# " + vName, LsnType.int_);
-							endVar.MarkAsUsed();
-							var st1 = new AssignmentStatement(endVar.Index, rExp.End);
-							endVar.Assignment = st1;
-							loop.Statement = st1;
-							endVar.AddUser(st1);
-							loop.End = endVar.AccessExpression;
-						}
-						else if (rExp.End is LsnValue v2)
-						{
-							loop.End = v2;
-							loop.Start = rExp.Start;
-						}
-						else goto default;
-						break;
-					case LsnValue val:
-						var range = val.Value as RangeValue;
-						loop.Start = new LsnValue(range.Start);
-						loop.End = new LsnValue(range.End);
-						break;
-					case VariableExpression v:
-						loop.Start = new FieldAccessExpression(v, 0);
-						loop.End = new FieldAccessExpression(v, 1);
-						v.Variable.AddUser(loop.Start);
-						v.Variable.AddUser(loop.End);
-						break;
-					default:
-						var rVar = script.CurrentScope.CreateVariable("# " + vName, RangeType.Instance);
-						rVar.MarkAsUsed();
-						var st = new AssignmentStatement(rVar.Index, expr);
-						rVar.AddUser(st);
-						rVar.Assignment = st;
-						loop.Statement = st;
 
-						loop.Start = new FieldAccessExpression(rVar.AccessExpression, 0);
-						loop.End = new FieldAccessExpression(rVar.AccessExpression, 1);
-						rVar.AddUser(loop.Start);
-						rVar.AddUser(loop.End);
-						break;
-				}
-				script.CurrentScope = script.CurrentScope.Pop(components);
-				return loop;
+			if (expr.Type.Type != RangeType.Instance)
+				throw new LsnrParsingException(head[3], "...", script.Path);
+			
+			index = script.CurrentScope.CreateVariable(vName, LsnType.int_);
+			index.MarkAsUsed();
+			parser = new Parser(body, script);
+			parser.Parse();
+			components = Parser.Consolidate(parser.Components);
+			var loop = new ForInRangeLoop(index, components);
+			switch (expr)
+			{
+				case RangeExpression rExp:
+					if (rExp.Start is LsnValue v1)
+					{
+						loop.Start = new LsnValue(v1.IntValue);
+						// statement for end...
+						var endVar = script.CurrentScope.CreateVariable("# " + vName, LsnType.int_);
+						endVar.MarkAsUsed();
+						var st1 = new AssignmentStatement(endVar.Index, rExp.End);
+						endVar.Assignment = st1;
+						loop.Statement = st1;
+						endVar.AddUser(st1);
+						loop.End = endVar.AccessExpression;
+					}
+					else if (rExp.End is LsnValue v2)
+					{
+						loop.End = v2;
+						loop.Start = rExp.Start;
+					}
+					else goto default;
+					break;
+				case LsnValue val:
+					var range = val.Value as RangeValue;
+					loop.Start = new LsnValue(range.Start);
+					loop.End = new LsnValue(range.End);
+					break;
+				case VariableExpression v:
+					loop.Start = new FieldAccessExpression(v, 0);
+					loop.End = new FieldAccessExpression(v, 1);
+					v.Variable.AddUser(loop.Start);
+					v.Variable.AddUser(loop.End);
+					break;
+				default:
+					var rVar = script.CurrentScope.CreateVariable("# " + vName, RangeType.Instance);
+					rVar.MarkAsUsed();
+					var st = new AssignmentStatement(rVar.Index, expr);
+					rVar.AddUser(st);
+					rVar.Assignment = st;
+					loop.Statement = st;
+
+					loop.Start = new FieldAccessExpression(rVar.AccessExpression, 0);
+					loop.End = new FieldAccessExpression(rVar.AccessExpression, 1);
+					rVar.AddUser(loop.Start);
+					rVar.AddUser(loop.End);
+					break;
 			}
-			throw new LsnrParsingException(head[3], "...", script.Path);
+			script.CurrentScope = script.CurrentScope.Pop(components);
+			return loop;
 		}
 	}
 }

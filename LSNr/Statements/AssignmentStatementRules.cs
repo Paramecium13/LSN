@@ -56,9 +56,14 @@ namespace LSNr.Statements
 				throw LsnrParsingException.UnexpectedToken(tokens[i], "=", script.Path);
 			i++;
 			var val = Create.Express(tokens.CreateSliceAt(i), script);
+			
+			
+			// ToDo: Move this logic into AssignmentStatement, IScope, or Variable.
 			var variable = script.CurrentScope.CreateVariable(name, mut, val);
 			var st = new AssignmentStatement(variable.Index, val);
 			variable.Assignment = st;
+
+
 			return st;
 		}
 	}

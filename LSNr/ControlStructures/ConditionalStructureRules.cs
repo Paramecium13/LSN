@@ -52,6 +52,7 @@ namespace LSNr.ControlStructures
 			}
 			else
 			{
+				// ToDo: Move this logic into AssignmentStatement, IScope, or Variable.
 				var variable = script.CurrentScope.CreateVariable(vName, exprType.Contents.Type);
 				assignment = new AssignmentStatement(variable.Index, new HiddenCastExpression(expr, exprType.Contents));
 				variable.Assignment = assignment;

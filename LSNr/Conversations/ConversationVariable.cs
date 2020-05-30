@@ -50,10 +50,14 @@ namespace LSNr.Converations
 				default:
 					break;
 			}
+
+			// ToDo: Move this logic into AssignmentStatement, IScope, or Variable.
 			var v = script.CurrentScope.CreateVariable(Name, Mutable, expr);
 			var let = new AssignmentStatement(v.Index, expr);
 			v.Assignment = let;
-			v.AddUser(let);
+			//v.AddUser(let); //??
+			
+			
 			flattener.ConvPartialFlatten(new List<Component> { let }, "", null);
 		}
 
