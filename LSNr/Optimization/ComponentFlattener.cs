@@ -360,10 +360,12 @@ namespace LSNr.Optimization
 			}*/
 
 			// [label?] init index
+			// ToDo: Use fc.Statement
 			var initPreSt = new PreStatement(new AssignmentStatement(fc.Index.Index, new LsnValue(0))) { Label = PopNextLabel() };
 			PreStatements.Add(initPreSt);
 			// if (collection is empty) jmp end
-			var length = new MethodCall(fc.Collection.Type.Type.Methods["Length"], new IExpression[] { fc.Collection });
+			// ToDo: ?????
+			var length = new MethodCall(fc.Collection.Type.Type.Methods["Length"], new[] { fc.Collection });
 			var stCond = new BinaryExpression(length, new LsnValue(0), BinaryOperation.Equal, BinaryOperationArgsType.Int_Int);
 
 			InnerMostLoopContinueLabels.Push(continueLabel);

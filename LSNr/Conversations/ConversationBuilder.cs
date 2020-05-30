@@ -81,7 +81,7 @@ namespace LSNr.Converations
 
 		public IReadOnlyList<ControlStructureRule> ControlStructureRules => _ControlStructureRules;
 
-		public bool IsVirtual { get; private set; }
+		public bool IsVirtual { get; }
 
 		public ConversationBuilder(IFunctionContainer res, string name, ISlice<Token> args, bool isVirtual = false)
 		{

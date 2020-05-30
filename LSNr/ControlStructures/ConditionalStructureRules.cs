@@ -12,13 +12,23 @@ using LsnCore.Utilities;
 
 namespace LSNr.ControlStructures
 {
+	/// <summary>
+	/// A <see cref="ControlStructureRule"/> for 'If-Let' control structures.
+	/// </summary>
+	/// <remarks>
+	/// Returns a <see cref="IfControl"/>, with a scope including the variable from the 'If-Let', potentially with an <see cref="AssignmentStatement"/>.
+	/// </remarks>
+	/// <seealso cref="IfStructureRule" />
 	public sealed class IfLetStructureRule : ControlStructureRule
 	{
+		/// <inheritdoc/>
 		public override bool PreCheck(Token t) => t.Value == "if";
 
+		/// <inheritdoc/>
 		public override bool Check(ISlice<Token> tokens, IPreScript script)
 			=> tokens.TestAt(1, t => t.Value == "let");
 
+		/// <inheritdoc/>
 		public override ControlStructure Apply(ISlice<Token> head, ISlice<Token> body, IPreScript script)
 		{
 			// if  let  x  =  ...    {
@@ -49,7 +59,7 @@ namespace LSNr.ControlStructures
 			var p = new Parser(body, script);
 			p.Parse();
 			var components = new List<Component>();
-			if (assignment != null) components.Insert(0, assignment);
+			if (assignment != null) components.Add(assignment);
 			components.AddRange(Parser.Consolidate(p.Components));
 
 			return new IfControl(expr, components);
@@ -58,12 +68,16 @@ namespace LSNr.ControlStructures
 
 	public sealed class IfStructureRule : ControlStructureRule
 	{
+		/// <inheritdoc/>
 		public override int Order => ControlStructureRuleOrders.ElsIf;
 
+		/// <inheritdoc/>
 		public override bool PreCheck(Token t) => t.Value == "if";
 
+		/// <inheritdoc/>
 		public override bool Check(ISlice<Token> tokens, IPreScript script) => true;
 
+		/// <inheritdoc/>
 		public override ControlStructure Apply(ISlice<Token> head, ISlice<Token> body, IPreScript script)
 		{
 			var cnd = Create.Express(head.Skip(1).ToList(), script);
@@ -78,13 +92,17 @@ namespace LSNr.ControlStructures
 
 	public sealed class ElsIfStructureRule : ControlStructureRule
 	{
+		/// <inheritdoc/>
 		public override int Order => ControlStructureRuleOrders.ElsIf;
 
+		/// <inheritdoc/>
 		public override bool PreCheck(Token t) => t.Value == "else" || t.Value == "elsif";
 
+		/// <inheritdoc/>
 		public override bool Check(ISlice<Token> tokens, IPreScript script)
 			=> tokens[0].Value == "elsif" || tokens.TestAt(1,t => t.Value == "if");
 
+		/// <inheritdoc/>
 		public override ControlStructure Apply(ISlice<Token> head, ISlice<Token> body, IPreScript script)
 		{
 			var offset = head[0].Value == "else" ? 1 : 0;
@@ -99,12 +117,16 @@ namespace LSNr.ControlStructures
 
 	public sealed class ElseStructureRule : ControlStructureRule
 	{
+		/// <inheritdoc/>
 		public override int Order => ControlStructureRuleOrders.Else;
 
+		/// <inheritdoc/>
 		public override bool PreCheck(Token t) => t.Value == "else";
 
+		/// <inheritdoc/>
 		public override bool Check(ISlice<Token> tokens, IPreScript script) => true;
 
+		/// <inheritdoc/>
 		public override ControlStructure Apply(ISlice<Token> head, ISlice<Token> body, IPreScript script)
 		{
 			script.CurrentScope = script.CurrentScope.CreateChild();
@@ -121,10 +143,13 @@ namespace LSNr.ControlStructures
 
 	public sealed class ChooseStructureRule : ControlStructureRule
 	{
+		/// <inheritdoc/>
 		public override bool PreCheck(Token t) => t.Value == "choose" || t.Value == "choice";
 
+		/// <inheritdoc/>
 		public override bool Check(ISlice<Token> tokens, IPreScript script) => true;
 
+		/// <inheritdoc/>
 		public override ControlStructure Apply(ISlice<Token> head, ISlice<Token> body, IPreScript script)
 		{
 			var p = new Parser(body, script);

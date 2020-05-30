@@ -9,15 +9,15 @@ namespace LSNr
 {
 	public class CharStreamTokenizer
 	{
-		private readonly static char[] OtherOperators = {
+		private static readonly char[] OtherOperators = {
 			'^','~','∈','∊','∋','∍','⊂','⊃'
 		};
 
-		private readonly static char[] Symbols = {
+		private static readonly char[] Symbols = {
 			'+','-','*','/','%','>','<','~','!','?','@',/*'$',*/'=','|','&'
 		};
 
-		private readonly static char[] SyntaxSymbols = {
+		private static readonly char[] SyntaxSymbols = {
 			'(',')','{','}','[',']',',',';',':','`'
 		};
 
@@ -126,7 +126,7 @@ namespace LSNr
 
 		//protected IToken PreviousToken;
 
-		protected bool CanBeNegativeSign = false;
+		protected bool CanBeNegativeSign;
 
 		protected readonly StringBuilder StrB = new StringBuilder();
 
@@ -650,7 +650,7 @@ namespace LSNr
 					break;
 				case TokenizerState.StringU3:
 					UEscStrB.Append(c);
-					if (int.TryParse(UEscStrB.ToString(), System.Globalization.NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var i))
+					if (int.TryParse(UEscStrB.ToString(), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var i))
 						Push((char)i);
 					else
 						throw new ApplicationException();

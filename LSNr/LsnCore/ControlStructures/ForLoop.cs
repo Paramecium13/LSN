@@ -37,13 +37,19 @@ namespace LsnCore.ControlStructures
 		}
 	}
 
+
 	public class ForInCollectionLoop : ControlStructure
 	{
-		public Variable Index { get; private set; }
-		public IExpression Collection { get; private set; }
+		public Variable Index { get; }
+		
+		public IExpression Collection { get; }
 
+		/// <summary>
+		/// [Optional] The statement that stores the value being looped over in a variable.
+		/// </summary>
 		public Statement Statement { get; set; }
 
+		
 		public readonly ICollection<Component> Body;
 
 		public ForInCollectionLoop(Variable index, IExpression collection, IEnumerable<Component> body)

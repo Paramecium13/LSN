@@ -21,13 +21,14 @@ namespace LsnCore.Values
 		private ScriptClassState CurrentState;
 
 		public bool BoolValue => true;
-		public bool IsPure => false;
-		public TypeId Type { get; private set; }
+		
+		public TypeId Type { get; }
+		
 		public ILsnValue Clone() => this;
 
-		public uint NumericId { get; private set; }
+		public uint NumericId { get; }
 
-		public string TextId { get; private set; }
+		public string TextId { get; }
 
 		public ScriptObject(LsnValue[] fields, ScriptClass type, int currentState, IHostInterface host = null)
 		{
@@ -44,7 +45,7 @@ namespace LsnCore.Values
 
 				Host = host;
 				// Subscribe to events.
-				foreach (var evName in (host.Type.Type as HostInterfaceType).EventDefinitions.Keys)
+				foreach (var evName in ((HostInterfaceType) host.Type.Type).EventDefinitions.Keys)
 				{
 					if ((CurrentState?.HasEventListener(evName) ?? false))
 						host.SubscribeToEvent(evName, this, CurrentState.GetEventListener(evName).Priority);
@@ -52,13 +53,12 @@ namespace LsnCore.Values
 						host.SubscribeToEvent(evName, this, GetEventListener(evName).Priority);
 				}
 
-				string str;
 				if (Settings.ScriptObjectIdFormat == ScriptObjectIdFormat.Host_Self)
 				{
-					NumericId = host.AttachScriptObject(this, out str);
+					NumericId = host.AttachScriptObject(this, out var str);
 					TextId = str;
 				}
-				else host.AttachScriptObject(this, out str);
+				else host.AttachScriptObject(this, out _);
 			}
 			else if (ScriptClass.HostInterface != null)
 				throw new ArgumentException("This type of ScriptObject cannot survive without a host.", nameof(host));
