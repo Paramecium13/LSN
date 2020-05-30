@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace LSNr
 {
 	[Serializable]
-	class LsnrParsingException : LsnrException
+	internal class LsnrParsingException : LsnrException
 	{
 		public Token Token { get; private set; }
 

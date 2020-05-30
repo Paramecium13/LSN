@@ -9,7 +9,7 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-	class RangeExpression : IExpression
+	internal class RangeExpression : IExpression
 	{
 #if LSNR
 		public

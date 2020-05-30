@@ -25,10 +25,10 @@ namespace LsnCore
 	/// </summary>
 	public class TypeIdContainer : ITypeIdContainer
 	{
-		readonly IDictionary<string, TypeId> TypeIdDictionary;
-		readonly IDictionary<string, TypeId> GenericInstances = new Dictionary<string, TypeId>();
-		readonly IReadOnlyDictionary<string, GenericType> Generics;
-		readonly TypeId[] TypeIds;
+		private readonly IDictionary<string, TypeId> TypeIdDictionary;
+		private readonly IDictionary<string, TypeId> GenericInstances = new Dictionary<string, TypeId>();
+		private readonly IReadOnlyDictionary<string, GenericType> Generics;
+		private readonly TypeId[] TypeIds;
 
 		public TypeIdContainer(TypeId[] typeIds)
 		{
