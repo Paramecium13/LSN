@@ -15,24 +15,24 @@ namespace LsnCore.Utilities
 			{
 				if (index >= Count || index < 0)
 					throw new IndexOutOfRangeException();
-				return m_list[Start + index];
+				return List[Start + index];
 			}
 		}
 
-		protected readonly TList m_list;
+		protected readonly TList List;
 
 		protected ListSliceBase(TList list, int start, int length) : base(start, length)
 		{
 			if (start + length > list.Count)
 				throw new ArgumentOutOfRangeException(nameof(length));
-			m_list = list;
+			List = list;
 		}
 
 		public override IEnumerator<T> GetEnumerator()
 		{
-			for (int i = Start; i < Start + Count; i++)
+			for (var i = Start; i < Start + Count; i++)
 			{
-				yield return m_list[i];
+				yield return List[i];
 			}
 		}
 	}
@@ -42,16 +42,16 @@ namespace LsnCore.Utilities
 		public ListSlice(List<T> list, int start, int length) : base(list, start, length) {}
 
 		public override int IndexOf(T value)
-			=> m_list.FindIndex(Start, Count, ((T x) => x.Equals(value)));
+			=> List.FindIndex(Start, Count, ((T x) => x.Equals(value)));
 
 		public override int IndexOf(T value, int start, int count)
-			=> m_list.FindIndex(Start + start, Math.Min(count, Count), ((T x) => x.Equals(value)));
+			=> List.FindIndex(Start + start, Math.Min(count, Count), ((T x) => x.Equals(value)));
 
 		public override ISlice<T> CreateSubSlice(int start, int count)
 		{
 			if(start + count > Count)
 				throw new ArgumentOutOfRangeException();
-			return new ListSlice<T>(m_list, Start + start, count);
+			return new ListSlice<T>(List, Start + start, count);
 		}
 	}
 
@@ -61,9 +61,9 @@ namespace LsnCore.Utilities
 
 		public override int IndexOf(T value)
 		{
-			for(int i = Start; i < Start + Count; i++)
+			for(var i = Start; i < Start + Count; i++)
 			{
-				if (m_list[i].Equals(value))
+				if (List[i].Equals(value))
 					return i - Start;
 			}
 			return -1;
@@ -71,9 +71,9 @@ namespace LsnCore.Utilities
 
 		public override int IndexOf(T value, int start, int count)
 		{
-			for (int i = Start + start; i < Start + Math.Min(count, Count); i++)
+			for (var i = Start + start; i < Start + Math.Min(count, Count); i++)
 			{
-				if (m_list[i].Equals(value))
+				if (List[i].Equals(value))
 					return i - Start;
 			}
 			return -1;
@@ -83,7 +83,7 @@ namespace LsnCore.Utilities
 		{
 			if(start + count > Count)
 				throw new ArgumentOutOfRangeException();
-			return new ListSliceI<T>(m_list, Start + start, count);
+			return new ListSliceI<T>(List, Start + start, count);
 		}
 	}
 
@@ -110,7 +110,7 @@ namespace LsnCore.Utilities
 
 		public override IEnumerator<T> GetEnumerator()
 		{
-			for (int i = Start; i < Start + Count; i++)
+			for (var i = Start; i < Start + Count; i++)
 			{
 				yield return m_list[i];
 			}
@@ -118,7 +118,7 @@ namespace LsnCore.Utilities
 
 		public override int IndexOf(T value)
 		{
-			for (int i = Start; i < Start + Count; i++)
+			for (var i = Start; i < Start + Count; i++)
 			{
 				if (m_list[i].Equals(value))
 					return i - Start;
@@ -128,7 +128,7 @@ namespace LsnCore.Utilities
 
 		public override int IndexOf(T value, int start, int count)
 		{
-			for (int i = Start + start; i < Start + Math.Min(count, Count); i++)
+			for (var i = Start + start; i < Start + Math.Min(count, Count); i++)
 			{
 				if (m_list[i].Equals(value))
 					return i - Start;

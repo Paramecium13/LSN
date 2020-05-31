@@ -29,7 +29,6 @@ namespace LSNr.Converations
 		public TypeId GetTypeId(string name) => _Conversation.GetTypeId(name);
 		public bool TypeExists(string name) => _Conversation.TypeExists(name);
 		public bool NodeExists(string name) => _Conversation.NodeExists(name);
-		public bool Mutable => _Conversation.Mutable;
 		public bool Valid { get => _Conversation.Valid; set => _Conversation.Valid = value; }
 		public string Path => _Conversation.Path;
 
@@ -62,11 +61,9 @@ namespace LSNr.Converations
 		{
 			if (StartBlockTokens == null || StartBlockTokens.Length == 0)
 				return new List<Component>();
-			CurrentScope = CurrentScope.CreateChild();
-			var parser = new Parser(StartBlockTokens, this);
-			parser.Parse();
-			var res = Parser.Consolidate(parser.Components);
-			CurrentScope = CurrentScope.Pop(res);
+			this.PushScope();
+			var res = Parser.Parse(StartBlockTokens, this);
+			this.PopScope(res);
 			return res;
 		}
 
@@ -100,11 +97,9 @@ namespace LSNr.Converations
 			flattener.ConvPartialFlatten(GetChoiceSegment(), Name + " ", Name);
 			foreach (var branch in Branches)
 			{
-				CurrentScope = CurrentScope.CreateChild();
-				var parser = new Parser(branch.ActionTokens, this);
-				parser.Parse();
-				var res = Parser.Consolidate(parser.Components);
-				CurrentScope = CurrentScope.Pop(res);
+				this.PushScope();
+				var res = Parser.Parse(branch.ActionTokens, this);
+				this.PopScope(res);
 				var label = Name + " " + branch.Name;
 				flattener.ConvPartialFlatten(res, label + " ", label);
 				flattener.AddOptionalJumpToTargetStatement(_Conversation.JumpTargetVariable);

@@ -32,7 +32,7 @@ namespace LSNr
 		{
 			var parser = new Parser(tokens, Script);
 			parser.Parse();
-			Script.CurrentScope.Pop(parser.Components);
+			Script.PopScope(parser.Components);
 			if (!Script.Valid) return;
 			var cmps = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
 			StackSize = (Script.CurrentScope as VariableTable)?.MaxSize ?? -1;

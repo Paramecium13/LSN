@@ -56,7 +56,6 @@ namespace LSNr.Converations
 		public TypeId GetTypeId(string name) => Parent.GetTypeId(name);
 		public bool TypeExists(string name) => Parent.TypeExists(name);
 
-		public bool Mutable => false;
 		public bool Valid { get => Parent.Valid; set => Parent.Valid = value; }
 		public string Path => Parent.Path;
 		public Function GetFunction(string name) => Parent.GetFunction(name);
@@ -123,11 +122,9 @@ namespace LSNr.Converations
 		{
 			if (StartTokens == null || StartTokens.Length == 0)
 				return new List<Component>();
-			CurrentScope = CurrentScope.CreateChild();
-			var parser = new Parser(StartTokens, this);
-			parser.Parse();
-			var res = Parser.Consolidate(parser.Components);
-			CurrentScope = CurrentScope.Pop(res);
+			this.PushScope();
+			var res = Parser.Parse(StartTokens, this);
+			this.PopScope(res);
 			return res;
 		}
 

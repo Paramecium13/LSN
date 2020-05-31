@@ -40,7 +40,6 @@ namespace LSNr.ReaderRules
 		public IPreScript Script => this;
 
 		public IScope CurrentScope { get => throw new InvalidOperationException(); set => throw new InvalidOperationException(); }
-		public bool Mutable => false;
 		public bool Valid { get; set; } = true;
 
 		public IReadOnlyList<IStatementRule> StatementRules

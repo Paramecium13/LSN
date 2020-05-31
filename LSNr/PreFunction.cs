@@ -56,7 +56,6 @@ namespace LSNr
 
 		public bool Valid {get => Resource.Valid; set => Resource.Valid = value;}
 
-		public bool Mutable								=> Resource.Mutable;
 		public bool GenericTypeExists(string name)		=> Resource.GenericTypeExists(name);
 		public Function GetFunction(string name)		=> Resource.GetFunction(name);
 		public GenericType GetGenericType(string name)	=> Resource.GetGenericType(name);

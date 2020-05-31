@@ -12,7 +12,7 @@ using Syroot.BinaryData;
 
 namespace LSNr.Converations
 {
-	class ConversationReturnStatementRule : IStatementRule
+	internal class ConversationReturnStatementRule : IStatementRule
 	{
 		public int Order => StatementRuleOrders.Base;
 
@@ -32,7 +32,7 @@ namespace LSNr.Converations
 		public bool Check(ISlice<Token> tokens, IPreScript script) => true;
 	}
 
-	class EndConversationStatementRule : IStatementRule
+	internal class EndConversationStatementRule : IStatementRule
 	{
 		public int Order => StatementRuleOrders.Base;
 
@@ -50,7 +50,7 @@ namespace LSNr.Converations
 			=> tokens[0].Value == "endconversation" || (tokens.Length > 1 && tokens[1].Value == "conversation");
 	}
 
-	class SetNodeStatement : Statement
+	internal class SetNodeStatement : Statement
 	{
 		public readonly string Node;
 		public readonly Variable Variable;
@@ -74,7 +74,7 @@ namespace LSNr.Converations
 		}
 	}
 
-	class SetNodeStatementRule : IStatementRule
+	internal class SetNodeStatementRule : IStatementRule
 	{
 		public int Order => StatementRuleOrders.Base;
 

@@ -23,6 +23,13 @@ namespace LSNr
 		internal List<Component> Components = new List<Component>();
 		private readonly IPreScript Script;
 
+		public static List<Component> Parse(IReadOnlyList<Token> tokens, IPreScript script)
+		{
+			var parser = new Parser(tokens, script);
+			parser.Parse();
+			return Consolidate(parser.Components);
+		}
+
 		public Parser(IReadOnlyList<Token> tokens, IPreScript script)
 		{
 			Tokens = tokens;

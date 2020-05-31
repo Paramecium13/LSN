@@ -43,6 +43,7 @@ namespace LSNr.ScriptObjects
 				//var x = st != null ? $"state {st.StateName} of " : "";
 				Logging.Log($"method '{Method.Name}' in {/*x*/""}script class {pre.Id.Name}", e);
 			}
+#pragma warning disable CA1031 // Do not catch general exception types
 			catch (Exception e)
 			{
 				pre.Valid = false;
@@ -50,6 +51,7 @@ namespace LSNr.ScriptObjects
 				var x = "";//st != null ? $"state {st.StateName} of " : "";
 				Logging.Log($"method '{Method.Name}' in {x}script class {pre.Id.Name}", e, pre.Path);
 			}
+#pragma warning restore CA1031 // Do not catch general exception types
 		}
 	}
 
@@ -99,6 +101,7 @@ namespace LSNr.ScriptObjects
 				var x = "";//st != null ? $"state {st.StateName} of " : "";
 				Logging.Log($"event listener '{Event.Definition.Name}' in {x}script object {pre.Id.Name}", e);
 			}
+#pragma warning disable CA1031 // Do not catch general exception types
 			catch (Exception e)
 			{
 				pre.Valid = false;
@@ -106,6 +109,7 @@ namespace LSNr.ScriptObjects
 				var x = "";//st != null ? $"state {st.StateName} of " : "";
 				Logging.Log($"event listener '{Event.Definition.Name}' in {x}script object {pre.Id.Name}", e, pre.Path);
 			}
+#pragma warning restore CA1031 // Do not catch general exception types
 		}
 	}
 
@@ -139,11 +143,13 @@ namespace LSNr.ScriptObjects
 				sc.Valid = false;
 				Logging.Log($"constructor for script class {sc.Id.Name}", e);
 			}
+#pragma warning disable CA1031 // Do not catch general exception types
 			catch (Exception e)
 			{
 				sc.Valid = false;
 				Logging.Log($"consructor for script class {sc.Id.Name}", e, sc.Path);
 			}
+#pragma warning restore CA1031 // Do not catch general exception types
 		}
 	}
 }

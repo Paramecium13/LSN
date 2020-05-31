@@ -30,6 +30,10 @@ namespace LsnCore
 		private readonly IReadOnlyDictionary<string, GenericType> Generics;
 		private readonly TypeId[] TypeIds;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TypeIdContainer"/> class.
+		/// </summary>
+		/// <param name="typeIds">The type ids.</param>
 		public TypeIdContainer(TypeId[] typeIds)
 		{
 			TypeIds = typeIds;
@@ -42,6 +46,7 @@ namespace LsnCore
 			TypeIds.Add(LsnType.string_.Id.Name, LsnType.string_.Id);*/
 		}
 
+		/// <inheritdoc/>
 		public TypeId GetTypeId(string name)
 		{
 			if (GenericInstances.ContainsKey(name))
@@ -94,6 +99,7 @@ namespace LsnCore
 			return Bar(generic, name.Substring(i + 1), out string z, name);
 		}
 
+		/// <inheritdoc/>
 		public TypeId GetTypeId(ushort index)
 		{
 			if (index < TypeIds.Length)

@@ -160,11 +160,13 @@ namespace LSNr.ReaderRules
 				Logging.Log("function", Function.Name, e);
 				resource.Valid = false;
 			}
+#pragma warning disable CA1031 // Do not catch general exception types
 			catch (Exception e)
 			{
 				Logging.Log("function", Function.Name, e, resource.Path);
 				resource.Valid = false;
 			}
+#pragma warning restore CA1031 // Do not catch general exception types
 		}
 	}
 }

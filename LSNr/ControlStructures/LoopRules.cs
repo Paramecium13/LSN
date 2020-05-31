@@ -34,7 +34,7 @@ namespace LSNr.ControlStructures
 			Variable index;
 			List<Component> components;
 			Parser parser;
-			script.CurrentScope = script.CurrentScope.CreateChild();
+			script.PushScope();
 			if (expr.Type.Type is ICollectionType)
 			{
 				index = script.CurrentScope.CreateVariable(vName + " index", LsnType.int_);
@@ -52,10 +52,8 @@ namespace LSNr.ControlStructures
 					collection = collVar.AccessExpression;
 				}
 				script.CurrentScope.CreateIteratorVariable(vName, collection, index);
-				parser = new Parser(body, script);
-				parser.Parse();
-				components = Parser.Consolidate(parser.Components);
-				script.CurrentScope = script.CurrentScope.Pop(components);
+				components = Parser.Parse(body, script);
+				script.PopScope(components);
 				return new ForInCollectionLoop(index, collection, components)
 				{ Statement = state };
 			}
@@ -65,9 +63,7 @@ namespace LSNr.ControlStructures
 			
 			index = script.CurrentScope.CreateVariable(vName, LsnType.int_);
 			index.MarkAsUsed();
-			parser = new Parser(body, script);
-			parser.Parse();
-			components = Parser.Consolidate(parser.Components);
+			components = Parser.Parse(body,script);
 			var loop = new ForInRangeLoop(index, components);
 			switch (expr)
 			{
@@ -116,7 +112,7 @@ namespace LSNr.ControlStructures
 					rVar.AddUser(loop.End);
 					break;
 			}
-			script.CurrentScope = script.CurrentScope.Pop(components);
+			script.PopScope(components);
 			return loop;
 		}
 	}
