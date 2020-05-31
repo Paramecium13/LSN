@@ -13,12 +13,18 @@ using LsnCore.Values;
 
 namespace LSNr.ControlStructures
 {
+	/// <summary>
+	/// <see cref="ControlStructureRule"/> for parsing For Loops
+	/// </summary>
 	public sealed class ForLoopStructureRule : ControlStructureRule
 	{
+		/// <inheritdoc/>
 		public override bool PreCheck(Token t) => t.Value == "for";
 
+		/// <inheritdoc/>
 		public override bool Check(ISlice<Token> tokens, IPreScript script) => true;
 
+		/// <inheritdoc/>
 		public override ControlStructure Apply(ISlice<Token> head, ISlice<Token> body, IPreScript script)
 		{
 			var i = 1;

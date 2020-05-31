@@ -24,7 +24,7 @@ namespace LSNr.LssParser
 		{
 			var i = index + 1;
 			var type = script.ParseType(tokens, i, out i);
-
+			// ToDo: Support for positional arguments.
 			var (args, nextIndex) = Create.CreateArgs(i, tokens, script, substitutions);
 
 			switch (type)

@@ -76,7 +76,7 @@ namespace LSNr
 				i++;
 			} while (balance != 0);
 			var x = Slice<Token>.Create(Tokens, start + 1, count - 1);// Skips opening and closing braces...
-			var comp = Create.ControlStructure(TempTokens, x, Script);
+			var comp = Script.ControlStructure(TempTokens, x);
 			if (comp != null)
 				Components.Add(comp);
 			else

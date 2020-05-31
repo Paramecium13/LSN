@@ -3,6 +3,8 @@ using LsnCore.Types;
 using LSNr.ControlStructures;
 using LSNr.Statements;
 using System.Collections.Generic;
+using LsnCore.ControlStructures;
+using LsnCore.Utilities;
 
 namespace LSNr
 {
@@ -77,6 +79,24 @@ namespace LSNr
 		public static void PopScope(this IPreScript script, List<Component> components)
 		{
 			script.CurrentScope = script.CurrentScope.Pop(components);
+		}
+
+		/// <summary>
+		/// Creates a control structure.
+		/// </summary>
+		/// <param name="script"> The script.</param>
+		/// <param name="head"> The head tokens.</param>
+		/// <param name="body"> The body tokens.</param>
+		/// <returns></returns>
+		public static ControlStructure ControlStructure(this IPreScript script, ISlice<Token> head, ISlice<Token> body)
+		{
+			var first = head[0];
+			foreach (var rule in script.ControlStructureRules)
+			{
+				if (rule.PreCheck(first) && rule.Check(head, script))
+					return rule.Apply(head, body, script);
+			}
+			throw new LsnrParsingException(first, "Not a valid control structure.", script.Path);
 		}
 	}
 }
