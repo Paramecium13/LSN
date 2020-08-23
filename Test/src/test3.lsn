@@ -48,14 +48,14 @@ fn HelloRanges(value: int)
 	}
 }
 
-fn GetNames(dogs : Vector<Dog>) -> Vector<string>
+fn GetNames(dogs : Dog[]) -> string[]
 {
 	let names = new List<string>();
 	for dog in dogs
 	{
 		names.Add(dog.Name);
 	}
-	return names.ToVector();
+	return names.ToArray();
 }
 
 
@@ -105,12 +105,10 @@ unique ScriptClass TestA
 		{
 			say str;
 		}
-	
 	}
 	
 	auto state StateA
 	{
-		
 		fn ValueChange()->()
 		{
 			Value = Value + 5;
@@ -125,8 +123,6 @@ unique ScriptClass TestA
 	
 	state StateB
 	{
-		
-		
 		fn ValueChange()->()
 		{
 			Value = Value - 3;

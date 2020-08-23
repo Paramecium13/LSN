@@ -9,10 +9,19 @@ using System.Threading.Tasks;
 
 namespace LSNr
 {
+	/// <summary>
+	/// The implementation of <see cref="IScope"/>.
+	/// </summary>
 	public class VariableTable : IScope
 	{
+		/// <summary>
+		/// The parent scope.
+		/// </summary>
 		private readonly VariableTable Parent;
 
+		/// <summary>
+		/// Gets the maximum number of variables in this scope.
+		/// </summary>
 		public int MaxSize
 		{
 			get
@@ -27,10 +36,14 @@ namespace LSNr
 		/// </summary>
 		private int Offset;
 
+		/// <summary>
+		/// The variables in this scope.
+		/// </summary>
 		private readonly List<Variable> Variables = new List<Variable>();
 
-		private readonly IList<Variable> MasterVariableList; // ToDo: Remove?
-
+		/// <summary>
+		/// This scope's child scopes.
+		/// </summary>
 		private readonly IList<VariableTable> Children = new List<VariableTable>();
 
 		/// <summary>
@@ -48,51 +61,51 @@ namespace LSNr
 		/// </summary>
 		public int NextOffset => Offset + Count - ConstCount;
 
-		public VariableTable(IList<Variable> masterVarList)
+		public VariableTable()
 		{
-			Offset = 0; MasterVariableList = masterVarList;
+			Offset = 0;
 		}
 
-		public VariableTable(VariableTable parent, IList<Variable> masterVarList)
+		public VariableTable(VariableTable parent)
 		{
 			Parent = parent;
 			Offset = Parent.NextOffset;
-			MasterVariableList = masterVarList;
 			ConstCount = parent.ConstCount;
 		}
 
+		/// <inheritdoc/>
 		public bool HasVariable(string name)
 			=> Variables.Any(v => v.Name == name);
 
+		/// <inheritdoc/>
 		public bool VariableExists(string name)
 			=> HasVariable(name) || (Parent?.VariableExists(name) ?? false);
 
+		/// <inheritdoc/>
 		public Variable GetVariable(string name)
 			=> Variables.FirstOrDefault(v => v.Name == name) ?? Parent?.GetVariable(name) ?? throw new KeyNotFoundException($"No variable named '{name}' exists.");
 
-		public IExpression GetAccessExpression(string name, IExpressionContainer container)
-		{
-			var v = GetVariable(name);
-			v.AddUser(container);
-			return v.AccessExpression;
-		}
-
+		/// <inheritdoc/>
 		public Variable CreateVariable(string name, bool mutable, IExpression init)
 		{
 			var v = new Variable(name, mutable, init, NextOffset);
-			Variables.Add(v);
-			return v;
-		}
-
-		public Variable CreateVariable(Parameter param)
-		{
-			var v = new Variable(param);
 			Variables.Add(v);
 			if (v.Const())
 				ConstCount++;
 			return v;
 		}
 
+		/// <inheritdoc/>
+		public Variable CreateVariable(Parameter param)
+		{
+			var v = new Variable(param);
+			Variables.Add(v);
+			if (v.Const())
+				ConstCount++;// ???
+			return v;
+		}
+
+		/// <inheritdoc/>
 		public Variable CreateVariable(string name, LsnType type, bool mutable = false)
 		{
 			var v = new Variable(name, type, NextOffset, mutable);
@@ -102,6 +115,7 @@ namespace LSNr
 			return v;
 		}
 
+		/// <inheritdoc/>
 		public Variable CreateMaskVariable(string name, IExpression accessExpression, LsnType type)
 		{
 			var v = new Variable(name, accessExpression, type);
@@ -109,20 +123,23 @@ namespace LSNr
 			return v;
 		}
 
+		/// <inheritdoc/>
 		public Variable CreateIteratorVariable(string name, IExpression collection, Variable index)
 		{
 			var v = new Variable(name, index, collection);
 			Variables.Add(v);
+			ConstCount++;
 			return v;
 		}
 
 		private const int MaxUsersForReplacement = 2;
 
+		/// <inheritdoc/>
 		public IScope Pop(List<Component> components)
 		{
 			// Optimize contained variables...
 			var deadVars = new List<Variable>();
-			int downShift = 0;
+			var downShift = 0;
 			foreach (var variable in Variables)
 			{
 				if (!variable.Used && variable.Assignment != null)
@@ -130,7 +147,7 @@ namespace LSNr
 					components.Remove(variable.Assignment);
 					deadVars.Add(variable);
 					downShift++; // Shift index to account for dead variable.
-					int i = variable.Index;
+					var i = variable.Index;
 					foreach (var child in Children)
 						child.ParentVariableRemoved(i);
 				}
@@ -140,13 +157,13 @@ namespace LSNr
 					components.Remove(variable.Assignment);
 					deadVars.Add(variable);
 					downShift++;
-					int i = variable.Index;
+					var i = variable.Index;
 					foreach (var child in Children)
 						child.ParentVariableRemoved(i);
 					variable.Replace(variable.InitialValue); // Replace uses of this variable with it's initial value.
 				}
 				else if(downShift != 0)
-					variable.ChangeIndex(variable.Index - downShift);
+					variable.Index -= downShift;
 			}
 			foreach (var v in deadVars)
 				Variables.Remove(v);
@@ -163,13 +180,13 @@ namespace LSNr
 					components.Remove(variable.Assignment);
 					deadVars.Add(variable);
 					downShift++;
-					int i = variable.Index;
+					var i = variable.Index;
 					foreach (var child in Children)
 						child.ParentVariableRemoved(i);
 					variable.Replace(variable.InitialValue); // Replace uses of this variable with it's initial value.
 				}
 				else if (downShift != 0)
-					variable.ChangeIndex(variable.Index - downShift);
+					variable.Index -= downShift;
 			}
 			foreach (var v in deadVars)
 				Variables.Remove(v);
@@ -183,19 +200,18 @@ namespace LSNr
 		/// <param name="index">The index of the variable that was removed.</param>
 		private void ParentVariableRemoved(int index)
 		{
-			if(index < Offset)
-			{
-				Offset--;
-				foreach (var v in Variables)
-					v.ChangeIndex(v.Index - 1);
-				foreach (var child in Children)
-					child.ParentVariableRemoved(index);
-			}
+			if (index >= Offset) return;
+			Offset--;
+			foreach (var v in Variables)
+				v.Index -= 1;
+			foreach (var child in Children)
+				child.ParentVariableRemoved(index);
 		}
 
+		/// <inheritdoc/>
 		public IScope CreateChild()
 		{
-			var child = new VariableTable(this, MasterVariableList);
+			var child = new VariableTable(this);
 			Children.Add(child);
 			return child;
 		}

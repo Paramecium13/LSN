@@ -31,13 +31,11 @@ namespace LsnCore.Statements
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
-			if(Value != null)
-			{
-				if (oldExpr.Equals(Value))
-					Value = newExpr;
-				else
-					Value.Replace(oldExpr, newExpr);
-			}
+			if (Value == null) return;
+			if (oldExpr.Equals(Value))
+				Value = newExpr;
+			else
+				Value.Replace(oldExpr, newExpr);
 		}
 
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
@@ -53,12 +51,10 @@ namespace LsnCore.Statements
 
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
-			if (!Value?.Equals(LsnValue.Nil) ?? false)
-			{
-				yield return Value;
-				foreach (var expr in Value.SelectMany(e => e))
-					yield return expr;
-			}
+			if (!(!Value?.Equals(LsnValue.Nil) ?? false)) yield break;
+			yield return Value;
+			foreach (var expr in Value.SelectMany(e => e))
+				yield return expr;
 		}
 	}
 }

@@ -16,7 +16,7 @@ namespace LsnCore.Statements
 
 		public int Target { get; set; } = -1;
 #if LSNR
-		public string Label { get; private set; }
+		public string Label { get; }
 
 		internal RegisterChoiceStatement(IExpression condition, IExpression choiceText, string label):this(condition, choiceText)
 		{

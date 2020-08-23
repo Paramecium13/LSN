@@ -27,7 +27,7 @@ namespace LSNr.LssParser
 		{
 			IExpression expr = null;
 			ushort numLeft = 1;
-			int nextIndex = -1;
+			var nextIndex = -1;
 
 			var left = tokens[index - 1];
 			var right = tokens[index + 1];
@@ -58,16 +58,16 @@ namespace LSNr.LssParser
 			var scType		= leftExpr.Type.Type	as ScriptClass;
 			var fieldType	= leftExpr.Type.Type	as IHasFieldsType;
 
+			IExpression[] args;
 			if (hiType != null) // It's a host interface method call.
 			{
 				if (!hiType.HasMethod(memberName))
 					throw new LsnrParsingException(right, "...", script.Path);
 				var def = hiType.MethodDefinitions[memberName];
-				IExpression[] args = null;
 
 				if (def.Parameters.Count == 0)
 				{
-					args = new IExpression[0];
+					args = Array.Empty<IExpression>();
 					if (index + 2 < tokens.Count && tokens[index + 2].Value == "(")
 					{
 						if (index + 3 >= tokens.Count || tokens[index + 3].Value != ")")
@@ -77,9 +77,8 @@ namespace LSNr.LssParser
 				}
 				else
 				{
-					var x = Create.CreateArgList(index + 2, tokens, script);
-					nextIndex = x.indexOfNextToken;
-					var argTokens = x.argTokens;
+					var (argTokens, indexOfNextToken) = Create.CreateArgList(index + 2, tokens, script);
+					nextIndex = indexOfNextToken;
 
 					args = argTokens
 						.Select(a => ExpressionParser.Parse(a, script, substitutions))
@@ -111,28 +110,27 @@ namespace LSNr.LssParser
 				}
 			}
 
-			if(expr == null) // It's a method call.
+			if (expr != null) return (expr, nextIndex, numLeft);
+			
+			args = new[] { leftExpr };
+			var type = leftExpr.Type.Type;
+			if (!type.Methods.ContainsKey(memberName))
+				throw new LsnrParsingException(right, $"'{leftExpr.Type.Name}' does not have a method (or any member) named '{memberName}'.", script.Path);
+
+			var method = type.Methods[memberName];
+			if (method.Parameters.Count == 1 && index + 2 < tokens.Count && tokens[index + 2].Value == "(")
 			{
-				var args = new IExpression[] { leftExpr };
-				var type = leftExpr.Type.Type;
-				if (!type.Methods.ContainsKey(memberName))
-					throw new LsnrParsingException(right, $"'{leftExpr.Type.Name}' does not have a method (or any member) named '{memberName}'.", script.Path);
-
-				var method = type.Methods[memberName];
-				if (method.Parameters.Count == 1 && index + 2 < tokens.Count && tokens[index + 2].Value == "(")
-				{
-					if (index + 3 >= tokens.Count || tokens[index + 3].Value != ")")
-						throw new LsnrParsingException(tokens[index + 2], "...", script.Path);
-					nextIndex = index + 4; // Skip over the parenthesis.
-				}
-				else if(method.Parameters.Count > 1)
-				{
-					(args, nextIndex) = Utilities.Parameters.CreateArgs(index + 2, tokens, method.TypeId + "::" + memberName, method.Parameters, script,
-						leftExpr, substitutions);
-				}
-				expr = method.CreateMethodCall(args);
+				if (index + 3 >= tokens.Count || tokens[index + 3].Value != ")")
+					throw new LsnrParsingException(tokens[index + 2], "...", script.Path);
+				nextIndex = index + 4; // Skip over the parenthesis.
 			}
-
+			else if(method.Parameters.Count > 1)
+			{
+				(args, nextIndex) = Utilities.Parameters.CreateArgs(index + 2, tokens, method.TypeId + "::" + memberName, method.Parameters, script,
+					leftExpr, substitutions);
+			}
+			expr = method.CreateMethodCall(args);
+			
 			return (expr, nextIndex, numLeft);
 		}
 	}

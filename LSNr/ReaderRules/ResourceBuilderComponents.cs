@@ -6,10 +6,26 @@ using System.Collections.Generic;
 
 namespace LSNr.ReaderRules
 {
+	/// <summary>
+	/// Builds simple types, namely <see cref="RecordType"/>s and <see cref="StructType"/>s.
+	/// </summary>
 	public abstract class SimpleTypeBuilder
 	{
+		/// <summary>
+		/// The type identifier.
+		/// </summary>
 		protected readonly TypeId Id;
+
+		/// <summary>
+		/// The tokens of the declaration (includes the type name???)
+		/// </summary>
 		protected readonly ISlice<Token> Tokens;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SimpleTypeBuilder"/> class.
+		/// </summary>
+		/// <param name="id">The identifier.</param>
+		/// <param name="tokens">The tokens.</param>
 		protected SimpleTypeBuilder(TypeId id, ISlice<Token> tokens)
 		{
 			Id = id; Tokens = tokens;
@@ -92,11 +108,11 @@ namespace LSNr.ReaderRules
 					Type.AddParent(hty);
 				}
 				catch (InvalidCastException)
-					{ throw new LsnrParsingException(parent, $"The type '{parent.Value}' is not a handle type.", preResource.Path); }
+				{ throw new LsnrParsingException(parent, $"The type '{parent.Value}' is not a handle type.", preResource.Path); }
 				catch (ApplicationException e)
-					{ throw new LsnrParsingException(parent, e.Message, preResource.Path); }
+				{ throw new LsnrParsingException(parent, e.Message, preResource.Path); }
 				catch (Exception e)
-					{ throw new LsnrParsingException(parent, $"Error parsing handle type '{Type.Name}'.", e, preResource.Path); }
+				{ throw new LsnrParsingException(parent, $"Error parsing handle type '{Type.Name}'.", e, preResource.Path); }
 			}
 		}
 	}
@@ -144,11 +160,13 @@ namespace LSNr.ReaderRules
 				Logging.Log("function", Function.Name, e);
 				resource.Valid = false;
 			}
+#pragma warning disable CA1031 // Do not catch general exception types
 			catch (Exception e)
 			{
 				Logging.Log("function", Function.Name, e, resource.Path);
 				resource.Valid = false;
 			}
+#pragma warning restore CA1031 // Do not catch general exception types
 		}
 	}
 }

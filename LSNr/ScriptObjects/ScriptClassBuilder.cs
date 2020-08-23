@@ -141,24 +141,22 @@ namespace LSNr.ScriptObjects
 			var c = 0;
 			foreach (var pair in mdict)
 			{
-				if (AbstractMethods.Any(m => m.Name == pair.Key))
+				var abm = AbstractMethods.FirstOrDefault(m => m.Name == pair.Key);
+				if (abm != null)
 				{
-					var m = AbstractMethods.First(x => x.Name == pair.Key);
-					if (!m.Signature.Equals(pair.Value.Signature))
-						throw new ApplicationException("...");
+					if (!abm.Signature.Equals(pair.Value.Signature))
+						throw new ApplicationException("Signature mismatch...");
 					c++;
 					continue;
 				}
-				if(NonAbstractMethods.Any(m => m.Name == pair.Key))
-				{
-					var m = NonAbstractMethods.First(x => x.Name == pair.Key);
-					if(!m.IsVirtual)
-						throw new ApplicationException("Not virtual...");
-					if (!m.Signature.Equals(pair.Value.Signature))
-						throw new ApplicationException("...");
-					continue;
-				}
-				throw new ApplicationException("...");
+
+				var method = NonAbstractMethods.FirstOrDefault(m => m.Name == pair.Key);
+				if (method == null)
+					throw new ApplicationException("State method must be virtual method of script class...");
+				if(!method.IsVirtual)
+					throw new ApplicationException("Not virtual...");
+				if (!method.Signature.Equals(pair.Value.Signature))
+					throw new ApplicationException("Signature mismatch...");
 			}
 			if (c != AbstractMethods.Count)
 				throw new ApplicationException("Not all abstract methods implemented...");
@@ -184,7 +182,7 @@ namespace LSNr.ScriptObjects
 
 		public bool MethodExists(string value) => AbstractMethods.Any(m => m.Name == value) || NonAbstractMethods.Any(m => m.Name == value);
 
-		void GenerateConstructor()
+		private void GenerateConstructor()
 		{
 			var code = new Statement[Fields.Count];
 			var parameters = new Parameter[Fields.Count + 1];
@@ -201,21 +199,19 @@ namespace LSNr.ScriptObjects
 			Constructor = new ScriptClassConstructor(code, Fields.Count + 1, Path, parameters);
 		}
 
-		void ValidateConstructor()
+		private void ValidateConstructor()
 		{
 			var assignments = Enumerable.Repeat(-1, Fields.Count).ToArray();
-			string checkFields(IEnumerable<IExpression> expressions, out int field)
+			string CheckFields(IEnumerable<IExpression> expressions, out int field)
 			{
 				field = -1;
 				if (assignments.All(a => a >= 0))
 					return null;
 				foreach (var expr in expressions.OfType<FieldAccessExpression>())
 				{
-					if (assignments[expr.Index] < 0)
-					{
-						field = expr.Index;
-						return $"In the constructor for {Id.Name}, field '{Fields[field].Name}' is used before it is assigned a value";
-					}
+					if (assignments[expr.Index] >= 0) continue;
+					field = expr.Index;
+					return $"In the constructor for {Id.Name}, field '{Fields[field].Name}' is used before it is assigned a value";
 				}
 				if (expressions.OfType<MethodCall>().Any(m => m.Args[0] is VariableExpression v && v.Index == 0))
 					return $"In the constructor for {Id.Name}, a method on 'self' is being called before all of its fields have values.";
@@ -229,7 +225,7 @@ namespace LSNr.ScriptObjects
 				var statement = Constructor.Code[i];
 				if(statement is FieldAssignmentStatement a && a.FieldedValue is VariableExpression v && v.Index == 0 && assignments[a.Index] == -1)
 				{
-					var x = checkFields(a.ValueToAssign, out int f);
+					var x = CheckFields(a.ValueToAssign, out int f);
 					if (x != null)
 					{
 						if (f == a.Index)
@@ -240,7 +236,7 @@ namespace LSNr.ScriptObjects
 				}
 				else
 				{
-					var x = checkFields(statement, out int field);
+					var x = CheckFields(statement, out int field);
 					if (x != null)
 						throw new ApplicationException(x);
 				}
@@ -251,7 +247,7 @@ namespace LSNr.ScriptObjects
 		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
 		{
 			var ls = new List<Parameter> { new Parameter("self", Id, LsnValue.Nil, 0) };
-			var additional = ((IFunctionContainer)this).BaseParseParameters(tokens, 1);
+			var additional = this.BaseParseParameters(tokens, 1);
 			ls.AddRange(additional);
 			return ls;
 		}

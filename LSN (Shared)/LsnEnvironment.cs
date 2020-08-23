@@ -17,13 +17,13 @@ namespace LsnCore
 
 		public static readonly LsnEnvironment Default = new LsnEnvironment();
 
-		private Dictionary<string, Function> _Functions = new Dictionary<string, Function>();
+		private readonly Dictionary<string, Function> _Functions = new Dictionary<string, Function>();
 		/// <summary>
 		/// ...
 		/// </summary>
-		public IReadOnlyDictionary<string, Function> Functions { get { return _Functions; }}
+		public IReadOnlyDictionary<string, Function> Functions => _Functions;
 
-		private Dictionary<string, ScriptClass> _ScriptClasses = new Dictionary<string, ScriptClass>();
+		private readonly Dictionary<string, ScriptClass> _ScriptClasses = new Dictionary<string, ScriptClass>();
 		public IReadOnlyDictionary<string, ScriptClass> ScriptClasses => _ScriptClasses;
 
 		private readonly HashSet<string> LoadedResources = new HashSet<string>();
@@ -51,11 +51,9 @@ namespace LsnCore
 				_ScriptClasses.Add(pair.Key, pair.Value);
 			foreach (var res in script.Usings)
 			{
-				if (!LoadedResources.Contains(res))
-				{
-					LoadedResources.Add(res);
-					Load(fileManager.GetResource(res), fileManager);
-				}
+				if (LoadedResources.Contains(res)) continue;
+				LoadedResources.Add(res);
+				Load(fileManager.GetResource(res), fileManager);
 			}
 		}
 	}

@@ -19,28 +19,16 @@ namespace LSNr
 	static partial class Create
 	{
 		/// <summary>
-		/// Creates a control structure.
+		/// Create an <see cref="IExpression"/> from the provided <see cref="Token"/>s.
 		/// </summary>
-		/// <param name="head"> The head tokens.</param>
-		/// <param name="body"> The body tokens.</param>
-		/// <param name="script"> The script.</param>
+		/// <param name="tokens">The tokens.</param>
+		/// <param name="script">The script.</param>
 		/// <returns></returns>
-		public static ControlStructure ControlStructure(ISlice<Token> head, ISlice<Token> body, IPreScript script)
-		{
-			var first = head[0];
-			foreach (var rule in script.ControlStructureRules)
-			{
-				if (rule.PreCheck(first) && rule.Check(head, script))
-					return rule.Apply(head, body, script);
-			}
-			throw new LsnrParsingException(first, "Not a valid control structure.", script.Path);
-		}
-
 		public static IExpression Express(IEnumerable<Token> tokens, IPreScript script/*, IExpressionContainer container*/)
 			=> Express(tokens.ToList(), script);
 
 		/// <summary>
-		/// Create an expression.
+		/// Create an <see cref="IExpression"/> from the provided <see cref="Token"/>s.
 		/// </summary>
 		/// <param name="list"> The list of tokens.</param>
 		/// <param name="script"> The script.</param>
@@ -48,26 +36,29 @@ namespace LSNr
 		/// <returns></returns>
 		public static IExpression Express(IReadOnlyList<Token> list, IPreScript script, IReadOnlyDictionary<Token,IExpression> substitutions = null)
 		{
-			if(list.Count == 1)
-			{
-				var token = list[0];
-				if (substitutions != null && substitutions.ContainsKey(token))
-					return substitutions[token];
-				var vars = new List<Variable>();
-				var expr = SingleTokenExpress(token, script, null, vars);
-				if(vars.Count != 0)
-					vars[0].AddUser(expr as IExpressionContainer);
+			if (list.Count != 1) return ExpressionParser.Parse(list, script, substitutions).Fold();
+			var token = list[0];
+			if (substitutions != null && substitutions.ContainsKey(token))
+				return substitutions[token];
+			var vars = new List<Variable>();
+			var expr = SingleTokenExpress(token, script, null, vars);
+			if(vars.Count != 0)
+				vars[0].AddUser(expr);
 
-				return expr;
-			}
-			return ExpressionParser.Parse(list, script, substitutions).Fold();
+			return expr;
 		}
 
+		/// <summary>
+		/// Creates an <see cref="IExpression"/> from a single <see cref="Token"/>.
+		/// </summary>
+		/// <param name="token">The token.</param>
+		/// <param name="script">The script.</param>
+		/// <param name="container">The container.</param>
+		/// <param name="variables">The variables.</param>
 		public static IExpression SingleTokenExpress(Token token, IPreScript script, IExpressionContainer container = null, IList<Variable> variables = null)
 		{
 			var val = token.Value;
 			var symType = script.CheckSymbol(val);
-			IExpression expr;
 			var preScrFn = script as IPreFunction;
 			IBasePreScriptClass preScCl = null;
 			if (preScrFn != null)
@@ -78,7 +69,7 @@ namespace LSNr
 					var v = script.CurrentScope.GetVariable(val);
 					if (!v.Mutable && (v.InitialValue?.IsReifyTimeConst() ?? false))
 						return v.InitialValue.Fold();
-					expr = v.AccessExpression;//new VariableExpression(v.Name, v.Type);
+					var expr = v.AccessExpression;
 					if (container != null)
 						v.AddUser(container);
 					else
@@ -136,6 +127,15 @@ namespace LSNr
 			}
 		}
 
+		/// <summary>
+		/// Creates an array of arrays of tokens from the given <see cref="Token"/>s.
+		/// Also returns the index of the next token after the procedure call (i.e. the token after the closing parenthesis).
+		/// </summary>
+		/// <param name="indexOfOpen">The index of the opening parenthesis.</param>
+		/// <param name="tokens">The tokens.</param>
+		/// <param name="script">The script.</param>
+		/// <returns></returns>
+		/// <exception cref="LsnrParsingException">...</exception>
 		public static (Token[][] argTokens, int indexOfNextToken) CreateArgList(int indexOfOpen, IReadOnlyList<Token> tokens, IPreScript script)
 		{
 			var argTokens = new List<Token[]>();
@@ -144,7 +144,7 @@ namespace LSNr
 			if (j >= tokens.Count || tokens[j].Value != "(")
 				throw new LsnrParsingException(tokens[j], "...", script.Path);
 
-			void pop()
+			void Pop()
 			{
 				argTokens.Add(currentList.ToArray());
 				currentList.Clear();
@@ -169,26 +169,35 @@ namespace LSNr
 				else if (t.Value == ",")
 				{
 					if (balance == 1)
-						pop();
+						Pop();
 					else
 						currentList.Add(t);
 				}
 				else currentList.Add(t);
 			}
 			if (currentList.Count != 0)
-				pop();
+				Pop();
 
 			return (argTokens.ToArray(), j + 1);
 		}
 
+		/// <summary>
+		/// Creates <see cref="IExpression"/>s for the arguments of a procedure call where there are no named arguments.
+		/// Also returns the index of the next token after the procedure call (i.e. the token after the closing parenthesis).
+		/// </summary>
+		/// <param name="indexOfOpen">The index of open.</param>
+		/// <param name="tokens">The tokens.</param>
+		/// <param name="script">The script.</param>
+		/// <param name="substitutions">The substitutions.</param>
+		/// <returns></returns>
 		public static (IExpression[] args, int nextIndex)
 			CreateArgs(int indexOfOpen, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions = null)
 		{
-			var x = CreateArgList(indexOfOpen, tokens, script);
-			var args = new IExpression[x.argTokens.Length];
-			for (int i = 0; i < x.argTokens.Length; i++)
-				args[i] = ExpressionParser.Parse(x.argTokens[i], script, substitutions);
-			return (args, x.indexOfNextToken);
+			var (argTokens, indexOfNextToken) = CreateArgList(indexOfOpen, tokens, script);
+			var args = new IExpression[argTokens.Length];
+			for (var i = 0; i < argTokens.Length; i++)
+				args[i] = ExpressionParser.Parse(argTokens[i], script, substitutions);
+			return (args, indexOfNextToken);
 		}
 	}
 }

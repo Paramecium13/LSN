@@ -8,14 +8,14 @@ namespace LsnCore.Utilities
 	{
 		public class RestorePoint
 		{
-			int val;
-			Indexer<T> Indexer;
+			private readonly int val;
+			private readonly Indexer<T> Indexer;
 			public RestorePoint(int v, Indexer<T> i) { val = v; Indexer = i; }
 			public void Restore() { Indexer.Index = val; }
 		}
 
-		int Index { get; set; }
-		readonly IReadOnlyList<T> Collection;
+		private int Index { get; set; }
+		private readonly IReadOnlyList<T> Collection;
 
 		public T Current => Collection[Index];
 
@@ -46,9 +46,7 @@ namespace LsnCore.Utilities
 
 		public bool TestAhead(Predicate<T> test = null, int by = 1)
 		{
-			if (Index + by >= Collection.Count) return false;
-			if (test == null) return true;
-			return test(Collection[Index + by]);
+			return Index + by < Collection.Count && (test == null || test(Collection[Index + by]));
 		}
 
 		public bool MoveForward()
@@ -66,10 +64,8 @@ namespace LsnCore.Utilities
 				throw new ArgumentNullException(nameof(pred));
 			while (pred(Current))
 			{
-				if(!MoveForward())
-				{
-					reachedEnd = true; Index++; break;
-				}
+				if (MoveForward()) continue;
+				reachedEnd = true; Index++; break;
 			}
 			return Slice<T>.Create(Collection, start, Index - start);
 		}

@@ -13,8 +13,8 @@ namespace LSNr.ScriptObjects
 {
 	public sealed class ScriptClassMethodComponent
 	{
-		readonly ScriptClassMethod Method;
-		readonly ISlice<Token> Body;
+		private readonly ScriptClassMethod Method;
+		private readonly ISlice<Token> Body;
 
 		public ScriptClassMethodComponent(ScriptClassMethod method, ISlice<Token> body)
 		{
@@ -43,6 +43,7 @@ namespace LSNr.ScriptObjects
 				//var x = st != null ? $"state {st.StateName} of " : "";
 				Logging.Log($"method '{Method.Name}' in {/*x*/""}script class {pre.Id.Name}", e);
 			}
+#pragma warning disable CA1031 // Do not catch general exception types
 			catch (Exception e)
 			{
 				pre.Valid = false;
@@ -50,14 +51,15 @@ namespace LSNr.ScriptObjects
 				var x = "";//st != null ? $"state {st.StateName} of " : "";
 				Logging.Log($"method '{Method.Name}' in {x}script class {pre.Id.Name}", e, pre.Path);
 			}
+#pragma warning restore CA1031 // Do not catch general exception types
 		}
 	}
 
 	public sealed class ScriptClassEventListenerComponent
 	{
-		readonly EventListener Event;
-		readonly ISlice<Token> Body;
-		readonly Token First;
+		private readonly EventListener Event;
+		private readonly ISlice<Token> Body;
+		private readonly Token First;
 
 		public ScriptClassEventListenerComponent(EventListener e, ISlice<Token> body, Token first)
 		{
@@ -99,6 +101,7 @@ namespace LSNr.ScriptObjects
 				var x = "";//st != null ? $"state {st.StateName} of " : "";
 				Logging.Log($"event listener '{Event.Definition.Name}' in {x}script object {pre.Id.Name}", e);
 			}
+#pragma warning disable CA1031 // Do not catch general exception types
 			catch (Exception e)
 			{
 				pre.Valid = false;
@@ -106,13 +109,14 @@ namespace LSNr.ScriptObjects
 				var x = "";//st != null ? $"state {st.StateName} of " : "";
 				Logging.Log($"event listener '{Event.Definition.Name}' in {x}script object {pre.Id.Name}", e, pre.Path);
 			}
+#pragma warning restore CA1031 // Do not catch general exception types
 		}
 	}
 
 	public sealed class ScriptClassConstructorComponent
 	{
-		readonly ScriptClassConstructor Constructor;
-		readonly ISlice<Token> Body;
+		private readonly ScriptClassConstructor Constructor;
+		private readonly ISlice<Token> Body;
 
 		public ScriptClassConstructorComponent(ScriptClassConstructor c, ISlice<Token> body)
 		{
@@ -139,11 +143,13 @@ namespace LSNr.ScriptObjects
 				sc.Valid = false;
 				Logging.Log($"constructor for script class {sc.Id.Name}", e);
 			}
+#pragma warning disable CA1031 // Do not catch general exception types
 			catch (Exception e)
 			{
 				sc.Valid = false;
 				Logging.Log($"consructor for script class {sc.Id.Name}", e, sc.Path);
 			}
+#pragma warning restore CA1031 // Do not catch general exception types
 		}
 	}
 }

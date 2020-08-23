@@ -25,18 +25,18 @@ namespace LSNr.LssParser
 			if (fn.Parameters.Count == 0)
 			{
 				var next = index + 1;
-				if (next < tokens.Count && tokens[next].Value == "(")
-				{
-					++next;
-					if (next >= tokens.Count)
-						throw new LsnrParsingException(tokens[index + 1], $"Missing closing parenthesis for function call '{fn.Name}'.", script.Path);
-					if (tokens[next].Value != ")")
-						throw LsnrParsingException.UnexpectedToken(tokens[next], ")", script.Path);
-					++next;
-				}
-				return (new FunctionCall(fn, new IExpression[0]), next, 0);
+				if (next >= tokens.Count || tokens[next].Value != "(")
+					return (new FunctionCall(fn, Array.Empty<IExpression>()), next, 0);
+				++next;
+				if (next >= tokens.Count)
+					throw new LsnrParsingException(tokens[index + 1], $"Missing closing parenthesis for function call '{fn.Name}'.", script.Path);
+				if (tokens[next].Value != ")")
+					throw LsnrParsingException.UnexpectedToken(tokens[next], ")", script.Path);
+				++next;
+				return (new FunctionCall(fn, Array.Empty<IExpression>()), next, 0);
 			}
 
+			// ToDo: Support for positional arguments.
 			var (args, nextIndex) = Create.CreateArgs(index + 1, tokens, script, substitutions);
 
 			args = Utilities.Parameters.Check(tokens[index], fn.Parameters, args, script, $"fn {fn.Name}");

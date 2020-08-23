@@ -8,7 +8,7 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-	class HiddenCastExpression : Expression
+	internal class HiddenCastExpression : Expression
 	{
 		private IExpression Contents;
 

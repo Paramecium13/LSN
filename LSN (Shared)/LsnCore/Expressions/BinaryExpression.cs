@@ -205,12 +205,12 @@ namespace LsnCore.Expressions
 		{
 			Right = Right.Fold();
 			Left = Left.Fold();
-			var lVal = typeof(LsnValue).IsAssignableFrom(Left.GetType());
-			var rVal = typeof(LsnValue).IsAssignableFrom(Right.GetType());
+			var lVal = Left is LsnValue;
+			var rVal = Right is LsnValue;
 			if (lVal)
 			{
 				var left = (LsnValue)Left;
-				if (lVal && rVal)
+				if (rVal)
 				{
 					var right = (LsnValue)Right;
 					switch (ArgumentTypes)
@@ -337,18 +337,12 @@ namespace LsnCore.Expressions
 						{
 							case BinaryOperationArgsType.Int_Int:
 							case BinaryOperationArgsType.Int_Double:
-								if (left.IntValue == 0)
-									return Right;
-								return this;
+								return left.IntValue == 0 ? Right : this;
 							case BinaryOperationArgsType.Double_Double:
 							case BinaryOperationArgsType.Double_Int:
-								if (left.DoubleValue < double.Epsilon)
-									return Right;
-								return this;
+								return left.DoubleValue < double.Epsilon ? Right : this;
 							case BinaryOperationArgsType.String_String:
-								if (string.IsNullOrEmpty((left.Value as StringValue).Value))
-									return Right;
-								return this;
+								return string.IsNullOrEmpty((left.Value as StringValue)?.Value) ? Right : this;
 							default:
 								break;
 						}
@@ -422,17 +416,13 @@ namespace LsnCore.Expressions
 					case BinaryOperation.And:
 						if (ArgumentTypes == BinaryOperationArgsType.Bool_Bool)
 						{
-							if(!left.BoolValue)
-								return new LsnValue(false);
-							return Right;
+							return !left.BoolValue ? new LsnValue(false) : Right;
 						}
 						break;
 					case BinaryOperation.Or:
 						if(ArgumentTypes == BinaryOperationArgsType.Bool_Bool)
 						{
-							if (left.BoolValue)
-								return new LsnValue(true);
-							return Right;
+							return left.BoolValue ? new LsnValue(true) : Right;
 						}
 						break;
 					default:

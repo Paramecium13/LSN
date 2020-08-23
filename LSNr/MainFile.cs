@@ -13,7 +13,7 @@ namespace LSNr
 		public string ObjectFileExtension { get; private set; } = ".obj";
 		public IReadOnlyList<string> LibraryDirectories { get; private set; }
 
-		readonly JObject Raw;
+		private readonly JObject Raw;
 
 		internal MainFile(string path)
 		{
@@ -22,28 +22,27 @@ namespace LSNr
 
 		private void Parse()
 		{
-			JToken token;
-			if (Raw.TryGetValue(out token, StringComparison.OrdinalIgnoreCase, "ExternalLibraries", "Libraries", "lib", "libs"))
+			if (Raw.TryGetValue(out var token, StringComparison.OrdinalIgnoreCase, "ExternalLibraries", "Libraries", "lib", "libs"))
 			{
 				if (token.Type == JTokenType.Array)
 				{
 					var jArray = token as JArray;
-					if (!jArray.Values().All(v => v.Type == JTokenType.String))
+					if (jArray.Values().Any(v => v.Type != JTokenType.String))
 						throw new ApplicationException("Library paths must be text...");
 					LibraryDirectories = jArray.Values<string>().ToList();
 				}
 				else if(token.Type == JTokenType.String)
 					LibraryDirectories = new List<string> { token.Value<string>() };
 			}
-			if (Raw.TryGetValue(out token, StringComparison.OrdinalIgnoreCase, nameof(ObjectFileExtension), "Object File Extension",
-				"ObjectExtension", "Object Extension"))
-			{
-				if (token.Type != JTokenType.String)
-					throw new ApplicationException("Object extension must be a string...");
-				ObjectFileExtension = token.Value<string>();
-				if (!ObjectFileExtension.StartsWith(".", StringComparison.Ordinal))
-					ObjectFileExtension = "." + ObjectFileExtension;
-			}
+
+			if (!Raw.TryGetValue(out token, StringComparison.OrdinalIgnoreCase, nameof(ObjectFileExtension),
+				"Object File Extension",
+				"ObjectExtension", "Object Extension")) return;
+			if (token.Type != JTokenType.String)
+				throw new ApplicationException("Object extension must be a string...");
+			ObjectFileExtension = token.Value<string>();
+			if (!ObjectFileExtension.StartsWith(".", StringComparison.Ordinal))
+				ObjectFileExtension = "." + ObjectFileExtension;
 		}
 	}
 }

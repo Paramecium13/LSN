@@ -29,11 +29,10 @@ namespace LSNr
 			Parent = parent; IsConstructor = isConstructor;
 		}
 
-		public IScope CurrentScope { get; set; } = new VariableTable(new List<Variable>());
+		public IScope CurrentScope { get; set; } = new VariableTable();
 
-		public bool Valid { get { return Parent.Valid; } set { Parent.Valid = value; } }
+		public bool Valid { get => Parent.Valid; set => Parent.Valid = value; }
 
-		public bool Mutable								=> false;
 		public string Path								=> Parent.Path;
 
 		private static readonly IReadOnlyList<IStatementRule> _StatementRules = new IStatementRule[] {
@@ -71,7 +70,6 @@ namespace LSNr
 		public IReadOnlyList<ControlStructureRule> ControlStructureRules => _ControlStructureRules;
 
 		public bool IsConstructor { get; private set; }
-
 
 		public bool GenericTypeExists(string name)		=> Parent.GenericTypeExists(name);
 		public Function GetFunction(string name)		=> Parent.GetFunction(name);

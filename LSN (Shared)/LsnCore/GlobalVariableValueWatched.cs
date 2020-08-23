@@ -17,15 +17,13 @@ namespace LsnCore
 
 		public override LsnValue Value
 		{
-			get { return _Value; }
+			get => _Value;
 			set
 			{
-				if(!value.Equals(_Value))
-				{
-					var old = _Value;
-					_Value = value;
-					OnValueChanged?.Invoke(old, value);
-				}
+				if (value.Equals(_Value)) return;
+				var old = _Value;
+				_Value = value;
+				OnValueChanged?.Invoke(old, value);
 			}
 		}
 

@@ -10,7 +10,7 @@ namespace LsnCore
 	{
 		private Func<LsnValue[], LsnValue> Bound;
 
-		public BoundedFunction(Func<LsnValue[], LsnValue> bound, List<Parameter> parameters, LsnType returnType, string name)
+		public BoundedFunction(Func<LsnValue[], LsnValue> bound, IReadOnlyList<Parameter> parameters, LsnType returnType, string name)
 			:base(new FunctionSignature(parameters,name,returnType?.Id))
 		{
 #if CORE

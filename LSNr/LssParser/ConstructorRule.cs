@@ -24,23 +24,22 @@ namespace LSNr.LssParser
 		{
 			var i = index + 1;
 			var type = script.ParseType(tokens, i, out i);
+			// ToDo: Support for positional arguments.
+			var (args, nextIndex) = Create.CreateArgs(i, tokens, script, substitutions);
 
-			var x = Create.CreateArgs(i, tokens, script, substitutions);
-
-			if (type is StructType structType)
+			switch (type)
 			{
-				// ToDo: Check argument type and number!!!
-				return (new StructConstructor(type.Id, x.args), x.nextIndex, 0);
+				case StructType structType:
+					// ToDo: Check argument type and number!!!
+					return (new StructConstructor(type.Id, args), nextIndex, 0);
+				case RecordType recordType:
+					// ToDo: Check argument type and number!!!
+					return (new RecordConstructor(type.Id, args), nextIndex, 0);
+				case LsnListType lsTy:
+					return (new ListConstructor(lsTy), nextIndex, 0);
+				default:
+					throw new ApplicationException();
 			}
-			if (type is RecordType recordType)
-			{
-				// ToDo: Check argument type and number!!!
-				return (new RecordConstructor(type.Id, x.args), x.nextIndex, 0);
-			}
-
-			if (type is LsnListType lsTy)
-				return (new ListConstructor(lsTy), x.nextIndex, 0);
-			throw new ApplicationException();
 		}
 	}
 }

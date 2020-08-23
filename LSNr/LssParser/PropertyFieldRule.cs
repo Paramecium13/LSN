@@ -15,27 +15,22 @@ namespace LSNr.LssParser
 
 		public bool CheckToken(Token token, IPreScript script)
 		{
-			if(token.Type == TokenType.Identifier)
+			if (token.Type != TokenType.Identifier) return false;
+			switch (script.CheckSymbol(token.Value))
 			{
-				switch (script.CheckSymbol(token.Value))
-				{
-					case SymbolType.Field:
-					case SymbolType.Property:
-						return true;
-					default:
-						return false;
-				}
+				case SymbolType.Field:
+				case SymbolType.Property:
+					return true;
+				default:
+					return false;
 			}
-			return false;
 		}
 
 		public bool CheckContext(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
 			if (index < 2)
 				return true;
-			if (tokens[index - 1].Value == ".")	// It's not a member access expression.
-				return false;
-			return true;
+			return tokens[index - 1].Value != ".";
 		}
 
 		public (IExpression expression, int indexOfNextToken, ushort numTokensToRemoveFromLeft)

@@ -20,10 +20,9 @@ namespace LsnCore.Expressions
 		{
 			Type = type.Id;
 			Args = new IExpression[type.FieldCount];
-			int i = -1;
 			foreach (var pair in args)
 			{
-				i = type.GetIndex(pair.Key);
+				var i = type.GetIndex(pair.Key);
 				Args[i] = pair.Value;
 			}
 		}

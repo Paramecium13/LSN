@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace LSNr
 {
-	static class Program
+	internal static class Program
 	{
 		private const int NO_FILE = -1;
 		private const int FILE_NOT_FOUND = -2;
@@ -25,10 +25,10 @@ namespace LSNr
 		private static MainFile _MainFile;
 
 		internal static MainFile MainFile => _MainFile;
-		private static EventWaitHandle MyWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+		private static readonly EventWaitHandle MyWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
 		private static DependenciesFile _DependenciesFile;
 
-		static int Main(string[] args)
+		private static int Main(string[] args)
 		{
 			/*if (args.Length == 0 || string.Equals(args[0], "setup", StringComparison.OrdinalIgnoreCase)) // Set up the workspace.
 			{
@@ -49,7 +49,7 @@ namespace LSNr
 			var changedFiles = GetChangedFiles();
 			var deps =  _DependenciesFile.RegirsterChangedFiles(changedFiles);
 			var tasks = new Dictionary<string, Task>();
-			foreach (var path in changedFiles.Union(deps).Where(s => s != null && s.Length > 0)) // deps may contain empty strings for some reason...
+			foreach (var path in changedFiles.Union(deps).Where(s => !string.IsNullOrEmpty(s))) // deps may contain empty strings for some reason...
 				tasks[new string(path.Skip(4).Take(path.Length - 8).ToArray())] = Task.Run(() => Reify(path));
 			DependencyWaiter = new DependencyWaiter(_DependenciesFile, tasks);
 			MyWaitHandle.Set();
@@ -116,16 +116,14 @@ namespace LSNr
 			{
 				rawPath = new string(rawPath.Skip(4).ToArray());
 			}
-			if (Path.HasExtension(rawPath))
-			{
-				if (Path.GetExtension(rawPath) != _MainFile.ObjectFileExtension)
-				{
-					rawPath = new string(rawPath.Take(rawPath.Length - Path.GetExtension(rawPath).Length).Concat(_MainFile.ObjectFileExtension).ToArray());
-				}
-				return Path.Combine("obj", rawPath);
-			}
 
-			return Path.Combine("obj", rawPath + _MainFile.ObjectFileExtension);
+			if (!Path.HasExtension(rawPath)) return Path.Combine("obj", rawPath + _MainFile.ObjectFileExtension);
+			if (Path.GetExtension(rawPath) != _MainFile.ObjectFileExtension)
+			{
+				rawPath = new string(rawPath.Take(rawPath.Length - Path.GetExtension(rawPath).Length).Concat(_MainFile.ObjectFileExtension).ToArray());
+			}
+			return Path.Combine("obj", rawPath);
+
 		}
 
 		public static string GetSourcePath(string rawPath)
@@ -144,7 +142,7 @@ namespace LSNr
 			MyWaitHandle.WaitOne();
 
 			// Parse the file
-			var rs = ResourceReader.OpenResource(File.ReadAllText(GetSourcePath(path)), path, DependencyWaiter);
+			var rs = ResourceReader.OpenResource(File.ReadAllText(GetSourcePath(path)), path);
 			var res = rs.Read();
 			if (!rs.Valid)
 			{

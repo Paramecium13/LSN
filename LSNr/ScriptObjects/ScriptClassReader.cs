@@ -12,7 +12,7 @@ using LSNr.ReaderRules;
 namespace LSNr.ScriptObjects
 {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "PreScript")]
-	public interface IBasePreScriptClass : ITypeContainer, IFunctionContainer
+	public interface IBasePreScriptClass : IFunctionContainer
 	{
 		TypeId Id { get; }
 		TypeId HostId { get; }
@@ -98,24 +98,22 @@ namespace LSNr.ScriptObjects
 
 		protected TypeId ParseReturnType(Indexer<Token> index, string memberTypeName, string memberName)
 		{
+			if (!index.MoveForward() || index.Current.Value == ";" || index.Current.Value == "{") return null;
 			TypeId ret = null;
-			if (index.MoveForward() && index.Current.Value != ";" && index.Current.Value != "{")
+			if (index.Current.Value != "->" || !index.MoveForward())
+				throw new LsnrParsingException(index.Current, $"Error parsing {memberTypeName} {memberName}: Expected '->' or end of definition; received '{index.Current.Value}'.",
+					ScriptClass.Path);
+			if(index.Current.Value == "(")
 			{
-				if (index.Current.Value != "->" || !index.MoveForward())
-					throw new LsnrParsingException(index.Current, $"Error parsing {memberTypeName} {memberName}: Expected '->' or end of definition; received '{index.Current.Value}'.",
-						ScriptClass.Path);
-				if(index.Current.Value == "(")
-				{
-					if (!index.MoveForward() || index.Current.Value != ")")
-						throw new LsnrParsingException(index.Current, "...", ScriptClass.Path);
-				}
-				else
-				{
-					var tTokens = index.SliceWhile(t => t.Value != ";" && t.Value != "{", out bool err);
-					ret = ScriptClass.ParseTypeId(tTokens, 0, out int x);
-					if (ret == null)
-						throw new LsnrParsingException(index.Current, "Type not found...", ScriptClass.Path);
-				}
+				if (!index.MoveForward() || index.Current.Value != ")")
+					throw new LsnrParsingException(index.Current, "...", ScriptClass.Path);
+			}
+			else
+			{
+				var tTokens = index.SliceWhile(t => t.Value != ";" && t.Value != "{", out bool err);
+				ret = ScriptClass.ParseTypeId(tTokens, 0, out int x);
+				if (ret == null)
+					throw new LsnrParsingException(index.Current, "Type not found...", ScriptClass.Path);
 			}
 			return ret;
 		}

@@ -11,19 +11,29 @@ using System.Threading.Tasks;
 
 namespace LsnCore
 {
+	/// <summary>
+	/// A container of <see cref="TypeId"/>s. Used in serialization and deserialization of object files. 
+	/// </summary>
 	public interface ITypeIdContainer
 	{
 		TypeId GetTypeId(string name);
 		TypeId GetTypeId(ushort index);
 	}
 
+	/// <summary>
+	/// A container of <see cref="TypeId"/>s. Used in serialization and deserialization of object files. 
+	/// </summary>
 	public class TypeIdContainer : ITypeIdContainer
 	{
-		readonly IDictionary<string, TypeId> TypeIdDictionary;
-		readonly IDictionary<string, TypeId> GenericInstances = new Dictionary<string, TypeId>();
-		readonly IReadOnlyDictionary<string, GenericType> Generics;
-		readonly TypeId[] TypeIds;
+		private readonly IDictionary<string, TypeId> TypeIdDictionary;
+		private readonly IDictionary<string, TypeId> GenericInstances = new Dictionary<string, TypeId>();
+		private readonly IReadOnlyDictionary<string, GenericType> Generics;
+		private readonly TypeId[] TypeIds;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TypeIdContainer"/> class.
+		/// </summary>
+		/// <param name="typeIds">The type ids.</param>
 		public TypeIdContainer(TypeId[] typeIds)
 		{
 			TypeIds = typeIds;
@@ -36,61 +46,60 @@ namespace LsnCore
 			TypeIds.Add(LsnType.string_.Id.Name, LsnType.string_.Id);*/
 		}
 
+		/// <inheritdoc/>
 		public TypeId GetTypeId(string name)
 		{
 			if (GenericInstances.ContainsKey(name))
 				return GenericInstances[name];
-			if (name.Contains('`'))
+			if (!name.Contains('`')) return TypeIdDictionary[name];
+			var i = name.IndexOf('`');
+			var names = name.Split('`');
+			if (names.Any(n => int.TryParse(n, out int x)))
+				throw new NotImplementedException();
+			var genericTypeName = name.Substring(0,i);
+			if (!Generics.ContainsKey(genericTypeName))
+				throw new ApplicationException();
+			var generic = Generics[genericTypeName];
+
+			TypeId Bar(GenericType genericType, string contentNames, out string remainingNames, string fullName)
 			{
-				var i = name.IndexOf('`');
-				var names = name.Split('`');
-				if (names.Any(n => int.TryParse(n, out int x)))
-					throw new NotImplementedException();
-				var genericTypeName = name.Substring(0,i);
-				if (!Generics.ContainsKey(genericTypeName))
-					throw new ApplicationException();
-				var generic = Generics[genericTypeName];
-
-				TypeId Bar(GenericType genericType, string contentNames, out string remainingNames, string fullName)
+				if (genericType.HasConstNumberOfTypeParams && genericType.NumberOfTypeParams == 1)
 				{
-					if (genericType.HasConstNumberOfTypeParams && genericType.NumberOfTypeParams == 1)
-					{
-						var contentsId = GetTypeId(contentNames);
-						var ty = genericType.GetType(new TypeId[] { contentsId });
+					var contentsId = GetTypeId(contentNames);
+					var ty = genericType.GetType(new TypeId[] { contentsId });
 
-						remainingNames = null;
-						GenericInstances.Add(fullName, ty.Id);
-						return ty.Id;
-					}
-					var contentIds = new TypeId[genericType.NumberOfTypeParams];
-					var contentIdsIndex = 0;
-					while (contentIdsIndex < genericType.NumberOfTypeParams)
-					{
-						if (string.IsNullOrEmpty(contentNames))
-							throw new ApplicationException();
-						var j = contentNames.IndexOf('`');
-						var fName = contentNames;
-						var tyName = contentNames.Substring(0, j);
-						contentNames = contentNames.Substring(j + 1);
-						if (Generics.ContainsKey(tyName))
-						{
-							contentIds[contentIdsIndex++] = GenericInstances.ContainsKey(fullName)
-								? GenericInstances[fullName]
-								: Bar(Generics[tyName], contentNames, out contentNames, fName);
-						}
-						else contentIds[contentIdsIndex++] = TypeIdDictionary[tyName];
-					}
-					remainingNames = contentNames;
-					var id = genericType.GetType(contentIds).Id;
-					GenericInstances.Add(fullName, id);
-					return id;
+					remainingNames = null;
+					GenericInstances.Add(fullName, ty.Id);
+					return ty.Id;
 				}
-
-				return Bar(generic, name.Substring(i + 1), out string z, name);
+				var contentIds = new TypeId[genericType.NumberOfTypeParams];
+				var contentIdsIndex = 0;
+				while (contentIdsIndex < genericType.NumberOfTypeParams)
+				{
+					if (string.IsNullOrEmpty(contentNames))
+						throw new ApplicationException();
+					var j = contentNames.IndexOf('`');
+					var fName = contentNames;
+					var tyName = contentNames.Substring(0, j);
+					contentNames = contentNames.Substring(j + 1);
+					if (Generics.ContainsKey(tyName))
+					{
+						contentIds[contentIdsIndex++] = GenericInstances.ContainsKey(fullName)
+							? GenericInstances[fullName]
+							: Bar(Generics[tyName], contentNames, out contentNames, fName);
+					}
+					else contentIds[contentIdsIndex++] = TypeIdDictionary[tyName];
+				}
+				remainingNames = contentNames;
+				var id = genericType.GetType(contentIds).Id;
+				GenericInstances.Add(fullName, id);
+				return id;
 			}
-			return TypeIdDictionary[name];
+
+			return Bar(generic, name.Substring(i + 1), out string z, name);
 		}
 
+		/// <inheritdoc/>
 		public TypeId GetTypeId(ushort index)
 		{
 			if (index < TypeIds.Length)
@@ -99,13 +108,48 @@ namespace LsnCore
 		}
 	}
 
+	/// <summary>
+	/// Contains <see cref="LsnType"/>s...
+	/// </summary>
 	public interface ITypeContainer
 	{
+		/// <summary>
+		/// Gets the <see cref="LsnType"/> named <paramref name="name"/>.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
 		LsnType GetType(string name);
+
+		/// <summary>
+		/// Gets the <see cref="TypeId"/> for the <see cref="LsnType"/> named <paramref name="name"/>.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
 		TypeId GetTypeId(string name);
+
+		/// <summary>
+		/// Does an <see cref="LsnType"/> named <paramref name="name"/> exist?
+		/// </summary>
+		/// <param name="name">The name.</param>
 		bool TypeExists(string name);
+
+		/// <summary>
+		/// Does a <see cref="GenericType"/> named <paramref name="name"/> exist?
+		/// </summary>
+		/// <param name="name">The name.</param>
 		bool GenericTypeExists(string name);
+
+		/// <summary>
+		/// Gets the <see cref="GenericType"/> named <paramref name="name"/>.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
 		GenericType GetGenericType(string name);
+
+		/// <summary>
+		/// Marks the bound generic type as being used.
+		/// </summary>
+		/// <param name="typeId">The type identifier.</param>
 		void GenericTypeUsed(TypeId typeId);
 	}
 
@@ -125,8 +169,7 @@ namespace LsnCore
 
 		public LsnEnvironment GetEnvironment(IResourceManager resourceManager)
 		{
-			if (Environment == null) Environment = new LsnEnvironment(this, resourceManager);
-			return Environment;
+			return Environment ?? (Environment = new LsnEnvironment(this, resourceManager));
 		}
 
 		public void Serialize(Stream stream)
@@ -164,7 +207,7 @@ namespace LsnCore
 		private void WriteGameValues(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((ushort)(GameValues?.Count ?? 0));
-			if(GameValues != null)
+			if (GameValues == null) return;
 			foreach (var gameValue in GameValues.Values)
 				gameValue.Serialize(writer, resourceSerializer);
 		}

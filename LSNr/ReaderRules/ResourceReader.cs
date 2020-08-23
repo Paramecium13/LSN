@@ -9,23 +9,23 @@ using LSNr.ReaderRules;
 
 namespace LSNr
 {
-	class ResourceReader : RuledReader<ResourceReaderStatementRule, ResourceReaderBodyRule>
+	internal class ResourceReader : RuledReader<ResourceReaderStatementRule, ResourceReaderBodyRule>
 	{
-		readonly IPreResource PreResource;
+		private readonly IPreResource PreResource;
 
-		readonly ResourceReaderStatementRule[] _StatementRules;
+		private readonly ResourceReaderStatementRule[] _StatementRules;
 		protected override IEnumerable<ResourceReaderStatementRule> StatementRules => _StatementRules;
 
-		readonly ResourceReaderBodyRule[] _BodyRules;
+		private readonly ResourceReaderBodyRule[] _BodyRules;
 		protected override IEnumerable<ResourceReaderBodyRule> BodyRules => _BodyRules;
 
 		internal bool Valid => PreResource.Valid;
 
-		ResourceReader(string path, ISlice<Token> tokens, DependencyWaiter waiter) : base(tokens)
+		private ResourceReader(string path, ISlice<Token> tokens) : base(tokens)
 		{
 			PreResource = new ResourceBuilder(path);
 			_StatementRules = new ResourceReaderStatementRule[] {
-				new ResourceUsingStatementRule(PreResource, waiter),
+				new ResourceUsingStatementRule(PreResource),
 				new ResourceHandleTypeStatementRule(PreResource)
 			};
 			_BodyRules = new ResourceReaderBodyRule[]
@@ -45,8 +45,8 @@ namespace LSNr
 			return PreResource.Parse();
 		}
 
-		public static ResourceReader OpenResource(string src, string path, DependencyWaiter waiter)
-			=> new ResourceReader(path, new CharStreamTokenizer().Tokenize(src), waiter);
+		public static ResourceReader OpenResource(string src, string path)
+			=> new ResourceReader(path, new CharStreamTokenizer().Tokenize(src));
 
 		protected override void OnReadAdjSemiColon(ISlice<Token>[] attributes) {}
 	}

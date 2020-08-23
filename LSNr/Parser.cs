@@ -21,7 +21,14 @@ namespace LSNr
 		private int TempCount;
 
 		internal List<Component> Components = new List<Component>();
-		private IPreScript Script;
+		private readonly IPreScript Script;
+
+		public static List<Component> Parse(IReadOnlyList<Token> tokens, IPreScript script)
+		{
+			var parser = new Parser(tokens, script);
+			parser.Parse();
+			return Consolidate(parser.Components);
+		}
 
 		public Parser(IReadOnlyList<Token> tokens, IPreScript script)
 		{
@@ -69,7 +76,7 @@ namespace LSNr
 				i++;
 			} while (balance != 0);
 			var x = Slice<Token>.Create(Tokens, start + 1, count - 1);// Skips opening and closing braces...
-			var comp = Create.ControlStructure(TempTokens, x, Script);
+			var comp = Script.ControlStructure(TempTokens, x);
 			if (comp != null)
 				Components.Add(comp);
 			else

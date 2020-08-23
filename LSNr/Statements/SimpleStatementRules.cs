@@ -43,9 +43,7 @@ namespace LSNr.Statements
 
 		public Statement Apply(ISlice<Token> tokens, IPreScript script)
 		{
-			if (tokens.Length > 1)
-				return new ReturnStatement(Create.Express(tokens.Skip(1).ToList(), script));
-			return new ReturnStatement(null);
+			return tokens.Length > 1 ? new ReturnStatement(Create.Express(tokens.Skip(1).ToList(), script)) : new ReturnStatement(null);
 		}
 
 		public bool Check(ISlice<Token> tokens, IPreScript script) => true;

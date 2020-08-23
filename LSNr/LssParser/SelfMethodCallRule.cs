@@ -7,11 +7,11 @@ using LsnCore.Expressions;
 
 namespace LSNr.LssParser
 {
-	class SelfMethodCallRule : IExpressionRule
+	internal class SelfMethodCallRule : IExpressionRule
 	{
 		internal static readonly SelfMethodCallRule Rule = new SelfMethodCallRule();
 
-		SelfMethodCallRule() { }
+		private SelfMethodCallRule() { }
 
 		public uint Priority => ExpressionRulePriorities.MemberAccess;
 
@@ -37,14 +37,13 @@ namespace LSNr.LssParser
 			}
 			else if (method.Parameters.Count > 1)
 			{
+				// ToDo: Why not just use `Utilities.Parameters.CreateArgs`?
 				(args, nextIndex) = Utilities.Parameters.CreateArgs(index + 1, tokens, method.TypeId.Name + "::" + method.Name,
 					method.Parameters, script, new VariableExpression(0), substitutions);
-				var x = Create.CreateArgList(index + 1, tokens, script);
-				var argTokens = x.argTokens;
-				nextIndex = x.indexOfNextToken;
+				var (argTokens, indexOfNextToken) = Create.CreateArgList(index + 1, tokens, script);
+				nextIndex = indexOfNextToken;
 
-				var a = new List<IExpression>(method.Parameters.Count);
-				a.Add(args[0]);
+				var a = new List<IExpression>(method.Parameters.Count) {args[0]};
 				a.AddRange(argTokens.Select(ar => ExpressionParser.Parse(ar, script, substitutions)));
 				// ToDo: Check type and number!!!
 				args = a.ToArray();

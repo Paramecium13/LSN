@@ -21,13 +21,14 @@ namespace LsnCore.Values
 		private ScriptClassState CurrentState;
 
 		public bool BoolValue => true;
-		public bool IsPure => false;
-		public TypeId Type { get; private set; }
+		
+		public TypeId Type { get; }
+		
 		public ILsnValue Clone() => this;
 
-		public uint NumericId { get; private set; }
+		public uint NumericId { get; }
 
-		public string TextId { get; private set; }
+		public string TextId { get; }
 
 		public ScriptObject(LsnValue[] fields, ScriptClass type, int currentState, IHostInterface host = null, bool registerForEvents = true)
 		{
@@ -46,13 +47,12 @@ namespace LsnCore.Values
 				// Subscribe to events.
 				if (registerForEvents) RegisterForEvents();
 
-				string str;
 				if (Settings.ScriptObjectIdFormat == ScriptObjectIdFormat.Host_Self)
 				{
-					NumericId = host.AttachScriptObject(this, out str);
+					NumericId = host.AttachScriptObject(this, out var str);
 					TextId = str;
 				}
-				else host.AttachScriptObject(this, out str);
+				else host.AttachScriptObject(this, out _);
 			}
 			else if (ScriptClass.HostInterface != null)
 				throw new ArgumentException("This type of ScriptObject cannot survive without a host.", nameof(host));
@@ -92,20 +92,20 @@ namespace LsnCore.Values
 			//Else
 			//	Return the type's implementation.
 
-			if (ScriptClass.HasMethod(methodName))
+			if (!ScriptClass.HasMethod(methodName))
+				throw new ArgumentException(
+					$"The ScriptObject type \"{ScriptClass.Name}\" does not have a method named \"{methodName}\".",
+					nameof(methodName));
+			var method = ScriptClass.GetMethod(methodName);
+			if (method.IsVirtual)
 			{
-				var method = ScriptClass.GetMethod(methodName);
-				if (method.IsVirtual)
-				{
-					if (CurrentState?.HasMethod(methodName) ?? false)
-						return CurrentState.GetMethod(methodName);
-					if (!method.IsAbstract)
-						return method;
-					throw new ApplicationException("...");
-				}
-				return method;
+				if (CurrentState?.HasMethod(methodName) ?? false)
+					return CurrentState.GetMethod(methodName);
+				if (!method.IsAbstract)
+					return method;
+				throw new ApplicationException("...");
 			}
-			throw new ArgumentException($"The ScriptObject type \"{ScriptClass.Name}\" does not have a method named \"{methodName}\".", nameof(methodName));
+			return method;
 		}
 
 		public LsnValue ExecuteHostInterfaceMethod(string name, LsnValue[] values)
@@ -139,9 +139,11 @@ namespace LsnCore.Values
 			CurrentState = nextState;
 
 			// Subscribe to new state's event subscriptions (if valid). Run new state Start method.
-			if (Host != null)
-				foreach (var subscription in newSubscriptions)
-					Host.SubscribeToEvent(subscription, this,CurrentState.GetEventListener(subscription).Priority);
+			if (Host == null) return;
+			
+			foreach (var subscription in newSubscriptions)
+				Host.SubscribeToEvent(subscription, this,CurrentState.GetEventListener(subscription).Priority);
+			
 		}
 
 		// Serialization?

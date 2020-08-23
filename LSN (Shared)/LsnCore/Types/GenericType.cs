@@ -40,16 +40,12 @@ namespace LsnCore.Types
 		public virtual LsnType GetType(TypeId[] types)
 		{
 			var name = GetGenericName(types);
-			LsnType type = null;
-			if (Types.TryGetValue(name,out type))
+			if (Types.TryGetValue(name, out var type))
 				return type;
 			type = CreateType(types);
-			if (!Types.ContainsKey(name)) // For some reason this double check is needed to avoid adding duplicate keys.
-			{
-				Types.Add(name, type);
-				return type;
-			}
-			return Types[name];
+			if (Types.ContainsKey(name)) return Types[name];
+			Types.Add(name, type);
+			return type;
 		}
 
 		protected abstract LsnType CreateType(TypeId[] types);

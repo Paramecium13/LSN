@@ -77,12 +77,10 @@ namespace LsnCore.Statements
 			foreach (var expr in Amount.SelectMany(e => e))
 				yield return expr;
 
-			if (Receiver != null && !Receiver.Equals(LsnValue.Nil))
-			{
-				yield return Receiver;
-				foreach (var expr in Receiver.SelectMany(e => e))
-					yield return expr;
-			}
+			if (Receiver == null || Receiver.Equals(LsnValue.Nil)) yield break;
+			yield return Receiver;
+			foreach (var expr in Receiver.SelectMany(e => e))
+				yield return expr;
 		}
 
 #if CORE

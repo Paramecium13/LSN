@@ -26,8 +26,7 @@ namespace LsnCore.ControlStructures
 			VariableIndex = variable;
 			foreach (var component in components)
 			{
-				var c = component as CaseStructure;
-				if (c != null) Cases.Add(c);
+				if (component is CaseStructure c) Cases.Add(c);
 				else throw new ArgumentException("All members a match structure must be case structures.");
 			}
 		}

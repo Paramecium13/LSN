@@ -9,6 +9,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Syroot.BinaryData;
 using System.Collections;
+// ReSharper disable EqualExpressionComparison
+// ReSharper disable CompareOfFloatsByEqualityOperator
 
 namespace LsnCore
 {
@@ -38,8 +40,7 @@ namespace LsnCore
 		/// <summary>
 		/// The numeric data.
 		/// </summary>
-		[FieldOffset(0)]
-		readonly double Data;
+		[FieldOffset(0)] private readonly double Data;
 
 #if LSNR
 		public ulong RawData { get
@@ -172,7 +173,7 @@ namespace LsnCore
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		LsnValue(double d, ILsnValue v)
+		private LsnValue(double d, ILsnValue v)
 		{
 			HandleData = 0;
 			X = 0f;
@@ -223,14 +224,9 @@ namespace LsnCore
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Equals(IExpression other)
 		{
-			var v = other as LsnValue?;
-			if (v != null)
-			{
-				var val = v.Value;
-				var data = val.Data;
-				return (Math.Abs(data - Data) < double.Epsilon || (data != data && Data != Data)) && val.Value == Value;
-			}
-			return false;
+			if (!(other is LsnValue val)) return false;
+			var data = val.Data;
+			return (Math.Abs(data - Data) < double.Epsilon || (data != data && Data != Data)) && val.Value == Value;
 		}
 
 		internal void Serialize(BinaryDataWriter writer)
@@ -390,12 +386,12 @@ namespace LsnCore
 
 		IEnumerator<IExpression> IEnumerable<IExpression>.GetEnumerator()
 		{
-			yield return null;
+			yield break;
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			yield return null;
+			yield break;
 		}
 	}
 }

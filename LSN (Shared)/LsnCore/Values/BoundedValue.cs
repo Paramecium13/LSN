@@ -11,7 +11,7 @@ namespace LsnCore
 	/// LSN value that directly corresponds to a .NET type.
 	/// </summary>
 	/// <typeparam name="T">The .NET type this value has.</typeparam>
-	public interface IBoundValue<T> : ILsnValue
+	public interface IBoundValue<out T> : ILsnValue
 	{
 		T Value { get; }
 	}
@@ -23,13 +23,11 @@ namespace LsnCore
 	{
 		private static readonly TypeId id = LsnType.string_.Id;
 
-		public TypeId Type { get { return id; } }
+		public TypeId Type => id;
 
-		public string Value { get; private set; }
-		public bool BoolValue { get { return true; } }
-
-		public static bool IsPure => true;
-
+		public string Value { get; }
+		public bool BoolValue => true;
+		
 		/// <summary>
 		/// ...
 		/// </summary>
@@ -86,8 +84,8 @@ namespace LsnCore
 	/// </summary>
 	public static class LsnBoolValue
 	{
-		static readonly LsnValue True = new LsnValue(true);
-		static readonly LsnValue False = new LsnValue(false);
+		private static readonly LsnValue True = new LsnValue(true);
+		private static readonly LsnValue False = new LsnValue(false);
 		public static LsnValue GetBoolValue(bool val)
 			=> val? True : False;
 	}

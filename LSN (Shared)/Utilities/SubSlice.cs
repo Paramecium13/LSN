@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Utilities
 {
-	class SubSlice<T> : Slice<T>
+	internal class SubSlice<T> : Slice<T>
 	{
 		public override T this[int index]
 		{
@@ -14,36 +14,36 @@ namespace LsnCore.Utilities
 			{
 				if (index >= Count || index < 0)
 					throw new IndexOutOfRangeException();
-				return m_slice[Start + index];
+				return Slice[Start + index];
 			}
 		}
 
-		protected readonly ISearchableReadOnlyList<T> m_slice;
+		protected readonly ISearchableReadOnlyList<T> Slice;
 
 		public SubSlice(ISearchableReadOnlyList<T> slice, int start, int count):base(start,count)
 		{
 			if (start + count > slice.Count)
 				throw new ArgumentOutOfRangeException(nameof(count));
-			m_slice = slice;
+			Slice = slice;
 		}
 
 		public override IEnumerator<T> GetEnumerator()
 		{
-			for (int i = Start; i < Start + Count; i++)
-				yield return m_slice[i];
+			for (var i = Start; i < Start + Count; i++)
+				yield return Slice[i];
 		}
 
 		public override int IndexOf(T value)
-			=> m_slice.IndexOf(value, Start, Count);
+			=> Slice.IndexOf(value, Start, Count);
 
 		public override int IndexOf(T value, int start, int count)
-			=> m_slice.IndexOf(value, Start + start, Math.Min(Count, count));
+			=> Slice.IndexOf(value, Start + start, Math.Min(Count, count));
 
 		public override ISlice<T> CreateSubSlice(int start, int count)
 		{
 			if(start + count > Count)
 				throw new ArgumentOutOfRangeException();
-			return new SubSlice<T>(m_slice, Start + start, count);
+			return new SubSlice<T>(Slice, Start + start, count);
 		}
 	}
 }

@@ -8,14 +8,14 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
-	sealed class SomeExpression : Expression
+	internal sealed class SomeExpression : Expression
 	{
 		private IExpression Contents;
 
 		internal SomeExpression(IExpression contents)
 		{
 			Contents = contents;
-			Type = OptionGeneric.Instance.GetType(new TypeId[] { Contents.Type }).Id;
+			Type = OptionGeneric.Instance.GetType(new[] { Contents.Type }).Id;
 		}
 
 		public override bool IsPure => Contents.IsPure;

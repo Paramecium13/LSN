@@ -25,7 +25,7 @@ namespace LsnCore.Statements
 
 		private IExpression Position;
 
-		private IExpression Actor;
+		private readonly IExpression Actor;
 
 		private readonly Form MyForm;
 
@@ -163,12 +163,10 @@ namespace LsnCore.Statements
 					yield return expr;
 			}
 
-			if (Actor != null && !Actor.Equals(LsnValue.Nil))
-			{
+			if (Actor == null || Actor.Equals(LsnValue.Nil)) yield break;
+			yield return Actor;
+			foreach (var expr in Actor.SelectMany(e => e))
 				yield return Actor;
-				foreach (var expr in Actor.SelectMany(e => e))
-					yield return Actor;
-			}
 		}
 	}
 }

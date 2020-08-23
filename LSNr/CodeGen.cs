@@ -32,13 +32,11 @@ namespace LSNr
 		{
 			var parser = new Parser(tokens, Script);
 			parser.Parse();
-			Script.CurrentScope.Pop(parser.Components);
-			if (Script.Valid)
-			{
-				var cmps = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
-				StackSize = (Script.CurrentScope as VariableTable)?.MaxSize ?? -1;
-				Code = new ComponentFlattener().Flatten(cmps);
-			}
+			Script.PopScope(parser.Components);
+			if (!Script.Valid) return;
+			var cmps = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
+			StackSize = (Script.CurrentScope as VariableTable)?.MaxSize ?? -1;
+			Code = new ComponentFlattener().Flatten(cmps);
 		}
 
 		private void CheckReturn()
@@ -62,11 +60,9 @@ namespace LSNr
 			}
 			foreach (var st in Code.OfType<ReturnStatement>())
 			{
-				if (st.Value != null)
-				{
-					Script.Valid = false;
-					throw new ApplicationException($"{ProcedureTitle} should not return a value. It returns a value of type {st.Value.Type.Name}.");
-				}
+				if (st.Value == null) continue;
+				Script.Valid = false;
+				throw new ApplicationException($"{ProcedureTitle} should not return a value. It returns a value of type {st.Value.Type.Name}.");
 			}
 		}
 

@@ -24,7 +24,7 @@ namespace LsnCore
 	}
 
 	/// <summary>
-	/// The basis LSN class, children include control structures and statements.
+	/// A base LSN class; its children are control structures and statements.
 	/// </summary>
 	public abstract class Component : IExpressionContainer
 	{
@@ -37,6 +37,7 @@ namespace LsnCore
 		public abstract InterpretValue Interpret(IInterpreter i);
 #endif
 
+		/// <inheritdoc/>
 		public abstract void Replace(IExpression oldExpr, IExpression newExpr);
 	}
 }

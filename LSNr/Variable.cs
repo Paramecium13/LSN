@@ -10,60 +10,115 @@ using System.Threading.Tasks;
 
 namespace LSNr
 {
+	/// <summary>
+	/// A class that represents a variable in LSN. Keeps track of its Name, Type, Mutability, and the expression used to access it.
+	/// </summary>
 	public class Variable
 	{
+		/// <summary>
+		/// Is this variable mutable?
+		/// </summary>
 		public readonly bool Mutable;
+
+		/// <summary>
+		/// The name of the variable.
+		/// </summary>
 		public readonly string Name;
+
+		/// <summary>
+		/// The Type of the variable.
+		/// </summary>
+		/// <see cref="LsnType"/>
 		public readonly LsnType Type;
+
+		/// <summary>
+		/// The index of the variable within the procedure's stack
+		/// </summary>
 		private int _index;
+
+		/// <summary>
+		/// The index of the variable within the procedure's stack
+		/// </summary>
 		public int Index
 		{
-			get { return _index; }
+			get => _index;
 			set
 			{
-				if(_index != value)
+				if (_index == value) return;
+				_index = value;
+				if (Assignment != null)
+					Assignment.Index = value;
+				if (AccessExpression is VariableExpression v)
+					v.Index = value;
+				foreach (var re in Reassignments)
 				{
-					_index = value;
-					if (Assignment != null)
-						Assignment.Index = value;
-					if (AccessExpression is VariableExpression v)
-						v.Index = value;
-					foreach (var re in Reassignments)
-					{
-						re.Index = value;
-					}
+					re.Index = value;
 				}
 			}
 		}
 
+		/// <summary>
+		/// The <see cref="IExpression"/> used to access this variable's value.
+		/// </summary>
 		public IExpression AccessExpression { get; private set; }
 
+		/// <summary>
+		/// The <see cref="IExpression"/> whose result is initially stored in this variable.
+		/// Does not always have a value (e.g. variables from <see cref="Parameter"/>s).
+		/// </summary>
 		public IExpression InitialValue { get; private set; }
 
-		private List<IExpression> _SubsequentValues = new List<IExpression>();
-
-		public IReadOnlyList<IExpression> SubsequentValues => _SubsequentValues;
-
+		/// <summary>
+		/// <see cref="AssignmentStatement"/>s that store a different value in this variable.
+		/// </summary>
 		private readonly List<AssignmentStatement> _Reassignments = new List<AssignmentStatement>();
 
+		/// <summary>
+		/// <see cref="AssignmentStatement"/>s that store a different value in this variable.
+		/// </summary>
 		public IReadOnlyList<AssignmentStatement> Reassignments => _Reassignments;
 
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="Variable"/> is reassigned.
+		/// </summary>
 		public bool Reassigned => _Reassignments.Count != 0;
 
-		// The int item is the length of _SubsequentValues -1 at the time the user was added.
-		private List<IExpressionContainer> _Users = new List<IExpressionContainer>();
+		/// <summary>
+		/// The places that use this variable.
+		/// </summary>
+		private readonly List<IExpressionContainer> _Users = new List<IExpressionContainer>();
 
+		/// <summary>
+		/// The places that use this variable.
+		/// </summary>
 		public IReadOnlyList<IExpressionContainer> Users => _Users;
 
+		/// <summary>
+		/// The <see cref="AssignmentStatement"/> where this variable is initially assigned.
+		/// </summary>
 		private AssignmentStatement _assignment;
+
+		/// <summary>
+		/// The <see cref="AssignmentStatement"/> where this variable is initially assigned.
+		/// </summary>
 		public AssignmentStatement Assignment
 		{
-			get { return _assignment; }
+			get => _assignment;
 			set { _assignment = value; Used = true; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="Variable"/> is used.
+		/// </summary>
 		public bool Used { get; private set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Variable"/> class.
+		/// This constructor is currently used for variables assigned in 'if-let' structures.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <param name="access">The access.</param>
+		/// <param name="type">The type.</param>
 		public Variable(string name, IExpression access, LsnType type)
 		{
 			Name = name;
@@ -73,6 +128,13 @@ namespace LSNr
 			AccessExpression = access;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Variable"/> class.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <param name="m">if set to <c>true</c> [m].</param>
+		/// <param name="init">The initialize.</param>
+		/// <param name="index">The index.</param>
 		public Variable(string name, bool m, IExpression init, int index)
 		{
 			Name = name;
@@ -103,6 +165,13 @@ namespace LSNr
 			AccessExpression = new VariableExpression(Index, param.Type, this);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Variable"/> class.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <param name="type">The type.</param>
+		/// <param name="index">The index.</param>
+		/// <param name="mutable">if set to <c>true</c> [mutable].</param>
 		public Variable(string name, LsnType type, int index, bool mutable = false)
 		{
 			Name = name;
@@ -111,33 +180,47 @@ namespace LSNr
 			_index = index; AccessExpression = new VariableExpression(Index, type.Id, this);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Variable"/> class for the iterated variable in a 'for-in' loop.
+		/// </summary>
+		/// <remarks>
+		/// I guess this is a pseudo-variable in that it is just a shortcut for 'collection[indexVariable]'.
+		/// </remarks>
+		/// <param name="name">The name.</param>
+		/// <param name="indexVariable">The index variable.</param>
+		/// <param name="collection">The collection expression.</param>
 		public Variable(string name, Variable indexVariable, IExpression collection)
 		{
 			Name = name;
-			Type = (collection.Type.Type as ICollectionType).ContentsType;
+			Type = ((ICollectionType) collection.Type.Type).ContentsType;
 			Mutable = false;
 			_index = -1;
 			AccessExpression =
 				new CollectionValueAccessExpression(collection, indexVariable.AccessExpression, Type.Id);
 		}
 		/// <summary>
-		/// Is it constant?
+		/// Is this variable a constant?
 		/// </summary>
-		/// <returns></returns>
 		public bool Const() => (!Mutable && (InitialValue?.IsReifyTimeConst() ?? false));
 
+		/// <summary>
+		/// Adds a user of this variable.
+		/// </summary>
+		/// <param name="user">The user.</param>
 		public void AddUser(IExpressionContainer user) // Include an indication of its position...
 		{
 			_Users.Add(user);
 			Used = true;
 		}
 
+		/// <summary>
+		/// Adds a statement that reassigns this variable.
+		/// </summary>
+		/// <param name="reassign">The reassign.</param>
 		public void AddReasignment(AssignmentStatement reassign)
 		{
 			_Reassignments.Add(reassign);
-			_SubsequentValues.Add(reassign.Value);
 		}
-
 
 		/// <summary>
 		/// Replace all usages of this variable with a new expression.
@@ -151,15 +234,8 @@ namespace LSNr
 		}
 
 		/// <summary>
-		/// Change the index of this variable.
+		/// Marks this variable as being used.
 		/// </summary>
-		/// <param name="newIndex"></param>
-		public void ChangeIndex(int newIndex)
-		{
-			if (newIndex == Index) return;
-			Index = newIndex;
-		}
-
 		public void MarkAsUsed()
 		{
 			Used = true;

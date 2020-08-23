@@ -14,15 +14,14 @@ namespace LsnCore.Expressions
 	{
 		public bool IsPure => false;
 
-		private readonly TypeId _Type;
-		public TypeId Type => _Type;
+		public TypeId Type { get; }
 
 		private readonly TypeId GenericTypeId;
 
 		public ListConstructor(LsnListType listType)
 		{
 			GenericTypeId = listType.GenericId;
-			_Type = listType.Id;
+			Type = listType.Id;
 		}
 
 		public bool Equals(IExpression other)

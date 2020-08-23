@@ -31,7 +31,7 @@ namespace LsnCore.Types
 		public override LsnValue CreateDefaultValue() => LsnValue.Nil;
 
 		public override bool Subsumes(LsnType type) =>
-			type == NullType.Instance || (Contents?.Type?.Subsumes(type) ?? false) ? true : base.Subsumes(type);
+			type == NullType.Instance || (Contents?.Type?.Subsumes(type) ?? false) || base.Subsumes(type);
 	}
 
 	public sealed class OptionGeneric : GenericType

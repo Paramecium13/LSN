@@ -84,23 +84,22 @@ namespace LSNr
 					grandparents = Dependencies[parent].ToArray();
 				}
 			}
-			if(updated)
+
+			if (!updated) return;
+			var children = Dependents[parent];
+			lock (children)
 			{
-				var children = Dependents[parent];
-				lock (children)
-				{
-					children.Add(child);
-				}
-				if (!Dependents.ContainsKey(child))
-					Dependents.TryAdd(child, new List<string>());
-				foreach (var grandchild in Dependents[child].ToArray())
-				{
-					RegisterDependency(grandchild, parent, parent);
-				}
-				foreach (var grandparent in grandparents)
-				{
-					RegisterDependency(child, grandparent, parent);
-				}
+				children.Add(child);
+			}
+			if (!Dependents.ContainsKey(child))
+				Dependents.TryAdd(child, new List<string>());
+			foreach (var grandchild in Dependents[child].ToArray())
+			{
+				RegisterDependency(grandchild, parent, parent);
+			}
+			foreach (var grandparent in grandparents)
+			{
+				RegisterDependency(child, grandparent, parent);
 			}
 
 			// Dependencies[child] contains parent
@@ -114,14 +113,14 @@ namespace LSNr
 		{
 			var json = (JObject)JToken.Parse(File.ReadAllText(path));
 			var deps = new Dictionary<string, IList<string>>();
-			List<string> ls;
 			foreach (var item in json)
 			{
+				List<string> ls;
 				if (item.Value.Type == JTokenType.String)
 					ls = new List<string> { item.Value.Value<string>() };
 				else if (item.Value.Type == JTokenType.Array)
 				{
-					if(!item.Value.All(v => v.Type == JTokenType.String))
+					if(item.Value.Any(v => v.Type != JTokenType.String))
 						throw new ApplicationException("Invalid Dependencies File");
 					ls = item.Value.Values<string>().ToList();
 				}

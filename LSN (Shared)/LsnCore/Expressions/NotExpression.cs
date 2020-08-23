@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LsnCore.Types;
 using Syroot.BinaryData;
 
@@ -24,9 +21,7 @@ namespace LsnCore.Expressions
 
 		public bool Equals(IExpression other)
 		{
-			var n = other as NotExpression;
-			if (n == null) return false;
-			return Value.Equals(n.Value);
+			return other is NotExpression n && Value.Equals(n.Value);
 		}
 
 #if CORE
@@ -39,16 +34,15 @@ namespace LsnCore.Expressions
 		public IExpression Fold()
 		{
 			Value = Value.Fold();
-			var cnst = Value as LsnValue?;
-			if(cnst.HasValue)
+			switch (Value)
 			{
-				var c = cnst.Value;
-				return LsnBoolValue.GetBoolValue(!c.BoolValue);
+				case LsnValue c:
+					return LsnBoolValue.GetBoolValue(!c.BoolValue);
+				case NotExpression n:
+					return n.Value;
+				default:
+					return this;
 			}
-			var n = Value as NotExpression;
-			if(n != null)
-				return n.Value;
-			return this;
 		}
 
 		public bool IsReifyTimeConst()

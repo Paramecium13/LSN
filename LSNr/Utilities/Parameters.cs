@@ -16,36 +16,34 @@ namespace LSNr.Utilities
 		public static string GetSignature(this IReadOnlyList<Parameter> self)
 		{
 			var str = new StringBuilder();
-			void parse(Parameter param)
+			void Parse(Parameter param)
 			{
 				str.Append(param.Name)
 					.Append(": ")
 					.Append(param.Type);
-				if (!param.DefaultValue.IsNull)
-				{
-					// default value;
-					str.Append(" = ");
-					if (param.Type == LsnType.Bool_.Id)
-						str.Append(param.DefaultValue.BoolValue.ToString());
-					else if (param.Type == LsnType.double_.Id)
-						str.Append(param.DefaultValue.DoubleValue.ToString());
-					else if (param.Type == LsnType.int_.Id)
-						str.Append(param.DefaultValue.IntValue.ToString());
-					else if (param.Type == LsnType.string_.Id)
-						str.Append('"')
-							.Append((param.DefaultValue.Value as StringValue).Value);
-					else
-						str	.Append("<<DEFAULT = ")
-							.Append(param.DefaultValue.Value != null ? param.DefaultValue.Value.ToString() : param.DefaultValue.RawData.ToString("X"))
-							.Append(" >>");
-				}
+				if (param.DefaultValue.IsNull) return;
+				// default value;
+				str.Append(" = ");
+				if (param.Type == LsnType.Bool_.Id)
+					str.Append(param.DefaultValue.BoolValue.ToString());
+				else if (param.Type == LsnType.double_.Id)
+					str.Append(param.DefaultValue.DoubleValue.ToString());
+				else if (param.Type == LsnType.int_.Id)
+					str.Append(param.DefaultValue.IntValue.ToString());
+				else if (param.Type == LsnType.string_.Id)
+					str.Append('"')
+						.Append((param.DefaultValue.Value as StringValue).Value);
+				else
+					str	.Append("<<DEFAULT = ")
+						.Append(param.DefaultValue.Value != null ? param.DefaultValue.Value.ToString() : param.DefaultValue.RawData.ToString("X"))
+						.Append(" >>");
 			}
 			for (var i = 0; i < self.Count - 1; i++)
 			{
-				parse(self[i]);
+				Parse(self[i]);
 				str.Append(", ");
 			}
-			parse(self[self.Count - 1]);
+			Parse(self[self.Count - 1]);
 
 			return str.ToString();
 		}
@@ -148,20 +146,20 @@ namespace LSNr.Utilities
 		{
 			var isMember = self != null;
 
-			var x = CreateArgList(indexOfOpen, tokens, script);
+			var (argTokens, indexOfNextToken) = CreateArgList(indexOfOpen, tokens, script);
 
 			var argExprs = new IExpression[parameters.Count];
 
 			if (isMember) argExprs[0] = self;
 
 			var exprIndex = isMember ? 1 : 0;
-			for (int i = 0; i < x.argTokens.Length; i++)
+			foreach (var arg in argTokens)
 			{
-				var arg = x.argTokens[i];
 				IExpression expr;
 				if (arg.TestAt(1, (t) => t.Value == ":"))
 				{
-					exprIndex = parameters.IndexOf(p => p.Name == arg[0].Value);
+					var arg1 = arg;
+					exprIndex = parameters.IndexOf(p => p.Name == arg1[0].Value);
 					if (exprIndex < 0)
 						throw new LsnrParsingException(arg[0], $"{procTitle} does not have a parameter named {arg[0].Value}", script.Path);
 					expr = ExpressionParser.Parse(arg.CreateSliceAt(2), script, substitutions);
@@ -180,7 +178,7 @@ namespace LSNr.Utilities
 				}
 
 				if (isMember && exprIndex == 0)
-					throw new LsnrParsingException(arg[0], $"Cannot provide a value for the parameter 'self'.", script.Path);
+					throw new LsnrParsingException(arg[0], "Cannot provide a value for the parameter 'self'.", script.Path);
 				var param = parameters[exprIndex];
 				if (argExprs[exprIndex] != null)
 					throw new LsnrParsingException(arg[0], $"The parameter {param.Name} of {procTitle} has already been given a value.", script.Path);
@@ -193,7 +191,7 @@ namespace LSNr.Utilities
 
 			// default values.
 
-			return (argExprs, x.indexOfNextToken);
+			return (argExprs, indexOfNextToken);
 		}
 
 		// Parse parameters (replace Create.CreateArgs())

@@ -9,9 +9,9 @@ namespace LsnCore.Values
 {
 	public sealed class LsnCollectionEnumerator : ILsnEnumerator
 	{
-		int currentIndex = -1;
-		int length;
-		readonly ICollectionValue Collection;
+		private int currentIndex = -1;
+		private int length;
+		private readonly ICollectionValue Collection;
 		public LsnValue Current { get; private set; } = LsnValue.Nil;
 
 		public LsnCollectionEnumerator(ICollectionValue collection)

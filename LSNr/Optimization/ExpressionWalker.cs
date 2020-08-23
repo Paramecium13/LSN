@@ -19,62 +19,32 @@ namespace LSNr.Optimization
 			if(bin != null)
 				return WalkBinExp(bin);*/
 
-			var cva = e as CollectionValueAccessExpression;
-			if(cva != null)
+			switch (e)
 			{
-				WalkCvaExp(cva);
-				return e;
+				case CollectionValueAccessExpression cva:
+					WalkCvaExp(cva);
+					return e;
+				case FieldAccessExpression fa:
+					WalkFieldAccess(fa);
+					return e;
+				case FunctionCall fc:
+					WalkFuncCall(fc);
+					return e;
+				case GetExpression gt:
+					WalkGet(gt);
+					return e;
+				case MethodCall mc:
+					WalkMethodCall(mc);
+					return e;
+				case StructConstructor rc:
+					return e;
+				case RecordConstructor sc:
+					return e;
+				case VariableExpression vb:
+					return e;
+				default:
+					return e;
 			}
-
-			var fa = e as FieldAccessExpression;
-			if(fa != null)
-			{
-				WalkFieldAccess(fa);
-				return e;
-			}
-
-			var fc = e as FunctionCall;
-			if(fc != null)
-			{
-				WalkFuncCall(fc);
-				return e;
-			}
-
-			var gt = e as GetExpression;
-			if(gt != null)
-			{
-				WalkGet(gt);
-				return e;
-			}
-
-			var mc = e as MethodCall;
-			if(mc != null)
-			{
-				WalkMethodCall(mc);
-				return e;
-			}
-			
-			var rc = e as StructConstructor;
-			if(rc != null)
-			{
-
-				return e;
-			}
-
-			var sc = e as RecordConstructor;
-			if(sc != null)
-			{
-
-				return e;
-			}
-
-			var vb = e as VariableExpression;
-			if(vb != null)
-			{
-
-				return e;
-			}
-			return e;
 		}
 
 		/*protected virtual IExpression WalkBinExp(BinaryExpression e)
@@ -111,7 +81,7 @@ namespace LSNr.Optimization
 
 		protected virtual void WalkFuncCall(FunctionCall f)
 		{
-			for (int i = 0; i < f.Args.Length; i++)
+			for (var i = 0; i < f.Args.Length; i++)
 				f.Args[i] = Walk(f.Args[i]);
 		}
 
@@ -124,7 +94,7 @@ namespace LSNr.Optimization
 
 		protected virtual void WalkMethodCall(MethodCall m)
 		{
-			for (int i = 0; i < m.Args.Length; i++)
+			for (var i = 0; i < m.Args.Length; i++)
 				m.Args[i] = Walk(m.Args[i]);
 		}
 

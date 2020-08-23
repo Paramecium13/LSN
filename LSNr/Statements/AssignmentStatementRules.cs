@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LsnCore;
 using LsnCore.Expressions;
 using LsnCore.Types;
@@ -51,17 +48,20 @@ namespace LSNr.Statements
 				case SymbolType.ScriptClassMethod:
 				case SymbolType.HostInterfaceMethod:
 				case SymbolType.Function:
-					throw new LsnrParsingException(tokens[i-1], $"Cannot name a new variable '{name}'. That name is already used for a {symType.ToString()}.", script.Path);
-				default:
-					break;
+					throw new LsnrParsingException(tokens[i-1], $"Cannot name a new variable '{name}'. That name is already used for a {symType}.", script.Path);
 			}
 			if (tokens[i].Value != "=")
 				throw LsnrParsingException.UnexpectedToken(tokens[i], "=", script.Path);
 			i++;
 			var val = Create.Express(tokens.CreateSliceAt(i), script);
+			
+			
+			// ToDo: Move this logic into AssignmentStatement, IScope, or Variable.
 			var variable = script.CurrentScope.CreateVariable(name, mut, val);
 			var st = new AssignmentStatement(variable.Index, val);
 			variable.Assignment = st;
+
+
 			return st;
 		}
 	}
@@ -92,14 +92,14 @@ namespace LSNr.Statements
 							throw new LsnrParsingException(lTokens[0], $"Cannot reassign variable '{v.Variable.Name}' as it has not been marked as mutable.", script.Path);
 						if (!v.Type.Subsumes(rValue.Type))
 							throw LsnrParsingException.TypeMismatch(lTokens[0], v.Type.Name, rValue.Type.Name, script.Path);
-							var r = new AssignmentStatement(v.Index, rValue);
+						var r = new AssignmentStatement(v.Index, rValue);
 						v.Variable.AddReasignment(r);
 						return r;
 					}
 				case CollectionValueAccessExpression col:
 					{
 						var colType = col.Collection.Type.Type as ICollectionType;
-						if (colType is VectorType)
+						if (colType is ArrayType)
 							throw new LsnrParsingException(lTokens[0], "Cannot reassign contents of a vector.", script.Path);
 						if (!colType.ContentsType.Subsumes(rValue.Type.Type))
 							throw LsnrParsingException.TypeMismatch(lTokens[0], colType.ContentsType.Name, rValue.Type.Name, script.Path);
@@ -126,8 +126,8 @@ namespace LSNr.Statements
 
 	public sealed class BinExprReassignStatementRule : ReasignmentStatementRule
 	{
-		readonly string Value;
-		readonly BinaryOperation Operation;
+		private readonly string Value;
+		private readonly BinaryOperation Operation;
 
 		public BinExprReassignStatementRule(string val, BinaryOperation op) { Value = val; Operation = op; }
 

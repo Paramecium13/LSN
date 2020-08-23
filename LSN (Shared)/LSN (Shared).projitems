@@ -97,7 +97,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\ScriptClassState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\StructType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\TypeId.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\VectorType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Types\ArrayType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\BoundedValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\EventInstance.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\ExternalizedEventInstance.cs" />
@@ -114,7 +114,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\RecordValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\ScriptObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\StructValue.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\VectorInstance.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Values\ArrayInstance.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnEnvironment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnResourceThing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnScriptBase.cs" />

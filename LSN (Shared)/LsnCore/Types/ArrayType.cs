@@ -6,29 +6,29 @@ using System.Text;
 
 namespace LsnCore
 {
-	public class VectorType : LsnType, ICollectionType
+	public class ArrayType : LsnType, ICollectionType
 	{
-		static VectorType()
+		static ArrayType()
 		{
-			var vectorInt = VectorGeneric.Instance.GetType(new TypeId[] { int_.Id }) as VectorType;
-			var vectorDouble = VectorGeneric.Instance.GetType(new TypeId[] { double_.Id }) as VectorType;
+			var intArray = (ArrayType) ArrayGeneric.Instance.GetType(new[] { int_.Id });
+			var doubleArray = (ArrayType) ArrayGeneric.Instance.GetType(new[] { double_.Id });
 
-			vectorInt._Methods.Add("Sum", new BoundedMethod(vectorInt, int_,
+			intArray._Methods.Add("Sum", new BoundedMethod(intArray, int_,
 				(args) =>
 				{
 					int Σ = 0;
-					var vector = (VectorInstance)args[0].Value;
+					var vector = (ArrayInstance)args[0].Value;
 					int length = vector.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (vector[i]).IntValue;
 					return new LsnValue(Σ);
 				}, "Sum"
 			));
-			vectorInt._Methods.Add("Mean", new BoundedMethod(vectorInt, int_,
+			intArray._Methods.Add("Mean", new BoundedMethod(intArray, int_,
 				(args) =>
 				{
 					int Σ = 0;
-					var vector = (VectorInstance)args[0].Value;
+					var vector = (ArrayInstance)args[0].Value;
 					int length = vector.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (vector[i]).IntValue;
@@ -36,23 +36,23 @@ namespace LsnCore
 				}, "Mean"
 			));
 
-			vectorDouble._Methods.Add("Sum", new BoundedMethod(vectorDouble, double_,
+			doubleArray._Methods.Add("Sum", new BoundedMethod(doubleArray, double_,
 				(args) =>
 				{
 					double Σ = 0;
-					var vector = (VectorInstance)args[0].Value;
-					int length = vector.Length().IntValue;
+					var vector = (ArrayInstance)args[0].Value;
+					var length = vector.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (vector[i]).DoubleValue;
 					return new LsnValue(Σ);
 				}, "Sum"
 			));
-			vectorDouble._Methods.Add("Mean", new BoundedMethod(vectorDouble, double_,
+			doubleArray._Methods.Add("Mean", new BoundedMethod(doubleArray, double_,
 				(args) =>
 				{
-					double Σ = 0.0;
-					var vector = (VectorInstance)args[0].Value;
-					int length = vector.Length().IntValue;
+					var Σ = 0.0;
+					var vector = (ArrayInstance)args[0].Value;
+					var length = vector.Length().IntValue;
 					for (int i = 0; i < length; i++)
 						Σ += (vector[i]).DoubleValue;
 					return new LsnValue(length > 0 ? Σ / length : 0);
@@ -71,7 +71,7 @@ namespace LsnCore
 
 		public LsnType ContentsType => GenericType;
 
-		internal VectorType(TypeId type, string name)
+		internal ArrayType(TypeId type, string name)
 		{
 			if (type == null)
 				throw new ApplicationException();
@@ -85,11 +85,11 @@ namespace LsnCore
 		internal void SetupMethods()
 		{
 			_Methods.Add("Length", new BoundedMethod(this, int_,
-				(args) => ((VectorInstance)args[0].Value).Length(), "Length"));
+				(args) => ((ArrayInstance)args[0].Value).Length(), "Length"));
 			_Methods.Add("ToList",
 				new BoundedMethod(this,
-					LsnListGeneric.Instance.GetType(new TypeId[] { GenericId }),
-					(args) => new LsnValue(((VectorInstance)args[0].Value).ToLsnList())
+					LsnListGeneric.Instance.GetType(new[] { GenericId }),
+					(args) => new LsnValue(((ArrayInstance)args[0].Value).ToLsnList())
 				, "ToList")
 			);
 		}
@@ -99,16 +99,16 @@ namespace LsnCore
 		/// </summary>
 		/// <returns></returns>
 		public override LsnValue CreateDefaultValue()
-			=> new LsnValue(new VectorInstance(this, new LsnValue[0]));
+			=> new LsnValue(new ArrayInstance(this, new LsnValue[0]));
 	}
 
-	public class VectorGeneric : GenericType
+	public class ArrayGeneric : GenericType
 	{
-		public override string Name => "Vector";
+		public override string Name => "Array";
 
-		internal static readonly VectorGeneric Instance = new VectorGeneric();
+		internal static readonly ArrayGeneric Instance = new ArrayGeneric();
 
-		private VectorGeneric() {}
+		private ArrayGeneric() {}
 
 		protected override LsnType CreateType(TypeId[] types)
 		{
@@ -116,19 +116,18 @@ namespace LsnCore
 				throw new ArgumentNullException(nameof(types));
 			if (types.Length != 1)
 				throw new ArgumentException("Vector types must have exactly one generic parameter.");
-			return new VectorType(types[0],GetGenericName(types));
+			return new ArrayType(types[0],GetGenericName(types));
 		}
 
 		public override LsnType GetType(TypeId[] types)
 		{
 			var name = GetGenericName(types);
-			LsnType type = null;
-			if (Types.TryGetValue(name, out type))
+			if (Types.TryGetValue(name, out var type))
 				return type;
 			type = CreateType(types);
 			if (!Types.ContainsKey(name)) // For some reason this double check is needed to avoid adding duplicate keys.
 				Types.Add(name, type);
-			(type as VectorType).SetupMethods();
+			((ArrayType) type).SetupMethods();
 			return Types[name];
 		}
 	}

@@ -5,11 +5,38 @@ using System.Collections.Generic;
 
 namespace LSNr.Statements
 {
+	/// <summary>
+	/// A rule for parsing statements.
+	/// </summary>
 	public interface IStatementRule
 	{
+		/// <summary>
+		/// The order in which this rule is checked. Rules with a lower <see cref="Order"/> are checked first.
+		/// </summary>
 		int Order { get; }
-		bool PreCheck(Token t);
+
+		/// <summary>
+		/// The initial check method. Checks if <paramref name="token"/> is a valid first <see cref="Token"/> for this statement.
+		/// If this passes, then <see cref="Check(ISlice{Token}, IPreScript)"/> is called.
+		/// </summary>
+		/// <param name="token">The token.</param>
+		/// <returns></returns>
+		bool PreCheck(Token token);
+
+		/// <summary>
+		/// Checks if the specified tokens are valid for this statement.
+		/// </summary>
+		/// <param name="tokens">The tokens.</param>
+		/// <param name="script">The script.</param>
+		/// <returns></returns>
 		bool Check(ISlice<Token> tokens, IPreScript script);
+
+		/// <summary>
+		/// Creates a statement from <paramref name="tokens"/>.
+		/// </summary>
+		/// <param name="tokens">The tokens.</param>
+		/// <param name="script">The script.</param>
+		/// <returns></returns>
 		Statement Apply(ISlice<Token> tokens, IPreScript script);
 	}
 

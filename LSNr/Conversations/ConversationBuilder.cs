@@ -15,7 +15,7 @@ using LSNr.Statements;
 
 namespace LSNr.Converations
 {
-	sealed class ConversationBuilder : IConversation, IPreFunction
+	internal sealed class ConversationBuilder : IConversation, IPreFunction
 	{
 		internal static readonly IReadOnlyList<IStatementRule> _StatementRules = new IStatementRule[] {
 			new LetStatementRule(),
@@ -56,22 +56,21 @@ namespace LSNr.Converations
 		public TypeId GetTypeId(string name) => Parent.GetTypeId(name);
 		public bool TypeExists(string name) => Parent.TypeExists(name);
 
-		public bool Mutable => false;
 		public bool Valid { get => Parent.Valid; set => Parent.Valid = value; }
 		public string Path => Parent.Path;
 		public Function GetFunction(string name) => Parent.GetFunction(name);
 
-		string Name;
-		readonly ISlice<Token> Args;
+		private readonly string Name;
+		private readonly ISlice<Token> Args;
 
-		readonly HashSet<string> NodeNames = new HashSet<string>();
-		readonly List<INode> Nodes = new List<INode>();
-		INode First;
-		readonly List<IConversationVariable> PreStartConvVars = new List<IConversationVariable>();
+		private readonly HashSet<string> NodeNames = new HashSet<string>();
+		private readonly List<INode> Nodes = new List<INode>();
+		private INode First;
+		private readonly List<IConversationVariable> PreStartConvVars = new List<IConversationVariable>();
 		public ISlice<Token> StartTokens { get; set; }
-		readonly List<IConversationVariable> PostStartConvVars = new List<IConversationVariable>();
+		private readonly List<IConversationVariable> PostStartConvVars = new List<IConversationVariable>();
 
-		IProcedure Function;
+		private IProcedure Function;
 
 		public IScope CurrentScope { get; set; }
 
@@ -81,7 +80,7 @@ namespace LSNr.Converations
 
 		public IReadOnlyList<ControlStructureRule> ControlStructureRules => _ControlStructureRules;
 
-		public bool IsVirtual { get; private set; }
+		public bool IsVirtual { get; }
 
 		public ConversationBuilder(IFunctionContainer res, string name, ISlice<Token> args, bool isVirtual = false)
 		{
@@ -119,21 +118,19 @@ namespace LSNr.Converations
 			return Parent.CheckSymbol(name);
 		}
 
-		List<Component> GetStartBlock()
+		private List<Component> GetStartBlock()
 		{
 			if (StartTokens == null || StartTokens.Length == 0)
 				return new List<Component>();
-			CurrentScope = CurrentScope.CreateChild();
-			var parser = new Parser(StartTokens, this);
-			parser.Parse();
-			var res = Parser.Consolidate(parser.Components);
-			CurrentScope = CurrentScope.Pop(res);
+			this.PushScope();
+			var res = Parser.Parse(StartTokens, this);
+			this.PopScope(res);
 			return res;
 		}
 
 		public void OnParsingSignatures(IFunctionContainer resource)
 		{
-			CurrentScope = new VariableTable(new List<Variable>());
+			CurrentScope = new VariableTable();
 			// Get parameters, add to scope.
 			var args = Parent.ParseParameters(Args);
 			foreach (var arg in args)

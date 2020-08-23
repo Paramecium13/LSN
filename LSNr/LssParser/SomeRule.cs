@@ -7,11 +7,11 @@ using LsnCore.Expressions;
 
 namespace LSNr.LssParser
 {
-	class SomeRule : IExpressionRule
+	internal class SomeRule : IExpressionRule
 	{
 		internal static readonly SomeRule Rule = new SomeRule();
 
-		SomeRule() { }
+		private SomeRule() { }
 
 		public uint Priority => ExpressionRulePriorities.MemberAccess;
 

@@ -19,7 +19,7 @@ namespace LSNr.LssParser
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
 		private readonly IReadOnlyList<Token> InitialTokens;
 #endif
-		private List<Token> CurrentTokens;
+		private readonly List<Token> CurrentTokens;
 		private int SubCount;
 		private readonly IPreScript Script;
 
@@ -31,13 +31,11 @@ namespace LSNr.LssParser
 			CurrentTokens = new List<Token>(tokens);
 			Script = script;
 			Substitutions = new Dictionary<Token, IExpression>();
-			if (substitutions != null)
+			if (substitutions == null) return;
+			SubCount = substitutions.Count;
+			foreach (var pair in substitutions)
 			{
-				SubCount = substitutions.Count;
-				foreach (var pair in substitutions)
-				{
-					Substitutions.Add(pair.Key, pair.Value);
-				}
+				Substitutions.Add(pair.Key, pair.Value);
 			}
 		}
 
@@ -81,19 +79,17 @@ namespace LSNr.LssParser
 			{
 				foreach (var rule in rules)
 				{
-					if (rule.CheckToken(CurrentTokens[i], Script)
-						&& rule.CheckContext(i, CurrentTokens, Script, Substitutions))
-					{
-						var x = rule.CreateExpression(i, CurrentTokens, Script, Substitutions);
-						var t = new Token(SUB + SubCount++, -1, TokenType.Substitution);
-						Substitutions.Add(t, x.expression);
+					if (!rule.CheckToken(CurrentTokens[i], Script) ||
+					    !rule.CheckContext(i, CurrentTokens, Script, Substitutions)) continue;
+					var (expression, indexOfNextToken, numTokensToRemoveFromLeft) = rule.CreateExpression(i, CurrentTokens, Script, Substitutions);
+					var t = new Token(SUB + SubCount++, -1, TokenType.Substitution);
+					Substitutions.Add(t, expression);
 
-						CurrentTokens.Insert(x.indexOfNextToken, t);
-						var c = x.numTokensToRemoveFromLeft + (x.indexOfNextToken-i);
-						CurrentTokens.RemoveRange(i - x.numTokensToRemoveFromLeft, c);
-						i -= x.numTokensToRemoveFromLeft;
-						break;
-					}
+					CurrentTokens.Insert(indexOfNextToken, t);
+					var c = numTokensToRemoveFromLeft + (indexOfNextToken-i);
+					CurrentTokens.RemoveRange(i - numTokensToRemoveFromLeft, c);
+					i -= numTokensToRemoveFromLeft;
+					break;
 				}
 				++i;
 			}
@@ -101,8 +97,9 @@ namespace LSNr.LssParser
 
 		public static void DefaultSetUp()
 		{
-			SetupRules(new IExpressionRule[]
-				{ ConstantRule.Rule,
+			SetupRules(new[]
+			{
+				ConstantRule.Rule,
 				SelfMethodCallRule.Rule,
 				new MemberAccessRule(),
 				new PropertyFieldRule(),
@@ -128,7 +125,8 @@ namespace LSNr.LssParser
 				UnaryExpressionRule.NegationRule,
 				UnaryExpressionRule.NotRule,
 				RangeExpressionRule.Rule,
-				SomeRule.Rule});
+				SomeRule.Rule
+			});
 		}
 
 		public static void SetupRules(IExpressionRule[] rules)

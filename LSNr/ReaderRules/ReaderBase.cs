@@ -7,14 +7,37 @@ namespace LSNr
 	{
 		private readonly ISlice<Token> Tokens;
 
-		int TokenIndex;
-		int CurrentHeadStart;
-		int CurrentHeadCount;
-		int CurrentBodyStart;
-		int CurrentBodyCount;
-		int Balance;
+		/// <summary>
+		/// The index of the current token.
+		/// </summary>
+		private int TokenIndex;
 
-		IReadToken TokenReader;
+		/// <summary>
+		/// 
+		/// </summary>
+		private int CurrentHeadStart;
+
+		/// <summary>
+		/// The number of tokens in the current head.
+		/// </summary>
+		private int CurrentHeadCount;
+
+		/// <summary>
+		/// The first token after the opening { of the current body.
+		/// </summary>
+		private int CurrentBodyStart;
+
+		/// <summary>
+		/// The number of tokens in the current body.
+		/// </summary>
+		private int CurrentBodyCount;
+
+		/// <summary>
+		/// The balance of { and } tokens
+		/// </summary>
+		private int Balance;
+
+		private IReadToken TokenReader;
 
 		protected ReaderBase(ISlice<Token> tokens) {
 			Tokens = tokens;
@@ -45,68 +68,77 @@ namespace LSNr
 				TokenReader.Read(Tokens[TokenIndex], this);
 		}
 
-		ISlice<Token> GetHeader() => Slice<Token>.Create(Tokens, CurrentHeadStart, CurrentBodyStart-CurrentHeadStart);
+		private ISlice<Token> GetHeader() => Slice<Token>.Create(Tokens, CurrentHeadStart, CurrentBodyStart-CurrentHeadStart);
 
-		ISlice<Token> GetStatement() => Slice<Token>.Create(Tokens, CurrentHeadStart, CurrentHeadCount);
+		private ISlice<Token> GetStatement() => Slice<Token>.Create(Tokens, CurrentHeadStart, CurrentHeadCount);
 
-		void ResetHead()
+		private void ResetHead()
 		{
 			CurrentHeadStart = TokenIndex + 1;
 			CurrentHeadCount = -1;
 			CurrentBodyCount = 0;
 		}
 
-		ISlice<Token>[] PopAttributes()
+		private ISlice<Token>[] PopAttributes()
 		{
 			var attributes = CurrentAttributes.ToArray();
 			CurrentAttributes.Clear();
 			return attributes;
 		}
 
-		readonly IReadToken AttrBaseReader = new BaseAttributeReadToken(new string[] { "unique"});
+		private readonly IReadToken AttrBaseReader = new BaseAttributeReadToken(new string[] { "unique"});
 
-		interface IReadToken
+		private interface IReadToken
 		{
+			/// <summary>
+			/// Reads the specified token.
+			/// </summary>
+			/// <param name="token">The token at <see cref="TokenIndex"/>.</param>
+			/// <param name="reader">The reader.</param>
 			void Read(Token token, ReaderBase reader);
 		}
 
-		class StatementReadToken : IReadToken
+		private class StatementReadToken : IReadToken
 		{
 			internal static readonly StatementReadToken Instance = new StatementReadToken();
-			StatementReadToken() { }
+			
+			private StatementReadToken() { }
+
+			///<inheritdoc/>
 			public void Read(Token token, ReaderBase reader)
 			{
 				reader.CurrentHeadCount++;
-				if(token.Type == TokenType.SyntaxSymbol)
+				if (token.Type != TokenType.SyntaxSymbol) return;
+				switch (token.Value)
 				{
-					switch (token.Value)
-					{
-						case ";":
-							if (reader.CurrentHeadCount > 0)
-								reader.OnReadStatement(reader.GetStatement(), reader.PopAttributes());
-							else
-								reader.OnReadAdjSemiColon(reader.PopAttributes());
-							reader.ResetHead();
-							reader.CurrentHeadCount++;
-							reader.TokenReader = reader.AttrBaseReader;
-							return;
-						case "{":
-							reader.CurrentBodyStart = reader.TokenIndex + 1;
-							// The body does not include the opening '{'.
-							reader.Balance = 1;
-							reader.TokenReader = BodyReadToken.Instance;
-							return;
-						default:
-							break;
-					}
+					case ";":
+						if (reader.CurrentHeadCount > 0)
+							reader.OnReadStatement(reader.GetStatement(), reader.PopAttributes());
+						else
+							reader.OnReadAdjSemiColon(reader.PopAttributes());
+						reader.ResetHead();
+						reader.CurrentHeadCount++;
+						reader.TokenReader = reader.AttrBaseReader;
+						return;
+					case "{":
+						reader.CurrentBodyStart = reader.TokenIndex + 1;
+						// The body does not include the opening '{'.
+						reader.Balance = 1;
+						reader.TokenReader = BodyReadToken.Instance;
+						return;
+					default:
+						break;
 				}
 			}
 		}
 
-		class BodyReadToken : IReadToken
+		private class BodyReadToken : IReadToken
 		{
 			internal static readonly BodyReadToken Instance = new BodyReadToken();
-			BodyReadToken() { }
+			
+			private BodyReadToken() { }
+
+			///<inheritdoc/>
 			public void Read(Token token, ReaderBase reader)
 			{
 				if (token.Type == TokenType.SyntaxSymbol)
@@ -138,11 +170,11 @@ namespace LSNr
 			}
 		}
 
-		List<ISlice<Token>> CurrentAttributes = new List<ISlice<Token>>();
+		private readonly List<ISlice<Token>> CurrentAttributes = new List<ISlice<Token>>();
 
-		class BaseAttributeReadToken : IReadToken
+		private class BaseAttributeReadToken : IReadToken
 		{
-			readonly HashSet<string> FreeAttributeNames;
+			private readonly HashSet<string> FreeAttributeNames;
 
 			public BaseAttributeReadToken(IEnumerable<string> freeAttrNames)
 			{
@@ -171,15 +203,16 @@ namespace LSNr
 			}
 		}
 
-		class AttributeReadToken : IReadToken
+		private class AttributeReadToken : IReadToken
 		{
 			/// <summary>
 			/// The index of the token right after the opening '['.
 			/// </summary>
-			readonly int Start;
-			int Count;
-			int Balance = 1;
-			IReadToken BaseAttrReadToken;
+			private readonly int Start;
+
+			private int Count;
+			private int Balance = 1;
+			private readonly IReadToken BaseAttrReadToken;
 
 			public AttributeReadToken(int start, IReadToken baseReadToken)
 			{
