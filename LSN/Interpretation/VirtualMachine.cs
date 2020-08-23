@@ -87,7 +87,7 @@ namespace LsnCore.Interpretation
 		uint     PopUI32()     => EvalStack.Pop().HandleData;
 		double   PopF64()      => EvalStack.Pop().DoubleValue;
 		bool     PopBool()     => EvalStack.Pop().BoolValueSimple;
-		string   PopString()   => (EvalStack.Pop().Value as StringValue).Value;
+		string   PopString()   => ((StringValue) EvalStack.Pop().Value).Value;
 
 		LsnValue Peek() => EvalStack.Peek();
 		public LsnValue Enter(ProcedureInfo procedure, LsnValue[] args)

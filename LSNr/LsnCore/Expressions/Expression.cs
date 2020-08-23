@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Syroot.BinaryData;
 using System.Collections;
+using LSNr;
 
 namespace LsnCore.Expressions
 {
@@ -21,9 +22,8 @@ namespace LsnCore.Expressions
 
 		public abstract IExpression Fold();
 
-#if CORE
-		public abstract LsnValue Eval(IInterpreter i);
-#endif
+		public abstract IEnumerable<PreInstruction> GetInstructions();
+
 		public virtual void Replace(IExpression oldExpr, IExpression newExpr) { }
 		public virtual bool Equals(IExpression other) => this == other;
 		public abstract void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer);

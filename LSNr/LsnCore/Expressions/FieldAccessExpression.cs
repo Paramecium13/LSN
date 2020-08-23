@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LSNr;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
@@ -52,6 +53,16 @@ namespace LsnCore.Expressions
 			if (hasFields != null)
 				return hasFields.GetFieldValue(Index);
 			return this;
+		}
+
+		/// <inheritdoc />
+		public override IEnumerable<PreInstruction> GetInstructions()
+		{
+			foreach (var instruction in Value.GetInstructions())
+			{
+				yield return instruction;
+			}
+			yield return new SimplePreInstruction(OpCode.LoadField, (ushort)Index);
 		}
 
 #if CORE

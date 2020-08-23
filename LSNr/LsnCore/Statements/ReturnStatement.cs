@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LSNr;
 using Syroot.BinaryData;
+using MoreLinq;
 
 namespace LsnCore.Statements
 {
@@ -13,8 +15,7 @@ namespace LsnCore.Statements
 	/// </summary>
 	public class ReturnStatement : Statement
 	{
-		private IExpression _Value;
-		public IExpression Value { get { return _Value; } set { _Value = value; } }
+		public IExpression Value { get; set; }
 
 		public ReturnStatement(IExpression e)
 		{
@@ -55,6 +56,17 @@ namespace LsnCore.Statements
 			yield return Value;
 			foreach (var expr in Value.SelectMany(e => e))
 				yield return expr;
+		}
+
+		/// <inheritdoc />
+		protected override IEnumerable<PreInstruction> GetInstructions(string target)
+		{
+			if (Value != null)
+			{
+				return Value.GetInstructions().Append(new SimplePreInstruction(OpCode.Ret, 0));
+			}
+
+			yield return new SimplePreInstruction(OpCode.Ret, 0);
 		}
 	}
 }

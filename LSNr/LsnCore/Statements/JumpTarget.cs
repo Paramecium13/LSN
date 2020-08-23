@@ -53,6 +53,11 @@ namespace LsnCore.Statements
 		{
 			yield break;
 		}
+
+		protected override IEnumerable<PreInstruction> GetInstructions(string target)
+		{
+			yield return new SimplePreInstruction(OpCode.JumpToTarget, 0);
+		}
 	}
 
 	public sealed class SetTargetStatement : Statement, IHasTargetStatement

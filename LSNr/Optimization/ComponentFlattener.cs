@@ -52,6 +52,10 @@ namespace LSNr.Optimization
 			PreStatements.Add(new PreStatement(jump) { Label = PopNextLabel() });
 		}
 
+		/// <summary>
+		/// Adds a jump to target statement if the branch doesn't already end in one or in a return statement.
+		/// </summary>
+		/// <param name="convJumpTargetVariable">The conv jump target variable.</param>
 		public void AddOptionalJumpToTargetStatement(Variable convJumpTargetVariable)
 		{
 			if (!(PreStatements[PreStatements.Count - 1].Statement is JumpToTargetStatement

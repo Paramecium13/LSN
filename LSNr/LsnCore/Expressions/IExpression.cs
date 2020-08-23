@@ -3,6 +3,7 @@ using LsnCore.Values;
 using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
+using LSNr;
 
 namespace LsnCore.Expressions
 {
@@ -16,14 +17,8 @@ namespace LsnCore.Expressions
 		/// </summary>
 		TypeId Type { get; }
 
-#if CORE
-		/// <summary>
-		/// Evaluate this expression.
-		/// </summary>
-		/// <param name="i"> The interpreter. </param>
-		/// <returns>The result of evaluating this expression.</returns>
-		LsnValue Eval(IInterpreter i);
-#endif
+		IEnumerable<PreInstruction> GetInstructions();
+
 		/// <summary>
 		/// Folds this expression. Performs optimizations such as constant folding
 		/// and returns the optimized expression.

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using LsnCore.Expressions;
 using System.Collections;
+using System.Linq;
+using LSNr;
+using MoreLinq;
 
 namespace LsnCore.Statements
 {
@@ -22,5 +25,17 @@ namespace LsnCore.Statements
 
 		/// <inheritdoc/>
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+		internal IEnumerable<PreInstruction> GetInstructions(IList<string> labels, string target)
+		{
+			return GetInstructions(target).Pipe(instuction =>
+			{
+				if (!(labels?.Any() ?? false)) return;
+				instuction.Labels.AddRange(labels.Select(l => new InstructionLabel(l)));
+				labels = null;
+			});
+		}
+
+		protected abstract IEnumerable<PreInstruction> GetInstructions(string target);
 	}
 }

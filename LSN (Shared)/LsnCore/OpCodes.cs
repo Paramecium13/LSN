@@ -53,10 +53,12 @@ namespace LsnCore
 	 */
 
 
-	enum OpCode : ushort
+	public enum OpCode : ushort
 	{
 		#region Basic
 		Nop,
+		/// <summary> Line number... </summary>
+		Line,
 		/// <summary>Duplicate the value on top of the stack.</summary>
 		Dup,
 		/// <summary> ,b,a -> ,a,b</summary>

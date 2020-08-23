@@ -95,6 +95,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MoreLinq, Version=3.3.2.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
+      <HintPath>..\packages\morelinq.3.3.2\lib\net451\MoreLinq.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -104,6 +107,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Deployment" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -136,8 +142,47 @@
     <Compile Include="LsnCore\ControlStructures\IfElseControl.cs" />
     <Compile Include="LsnCore\ControlStructures\MatchStructure.cs" />
     <Compile Include="LsnCore\ControlStructures\WhileLoop.cs" />
+    <Compile Include="LsnCore\Expressions\BinaryExpression.cs" />
+    <Compile Include="LsnCore\Expressions\CollectionValueAccessExpression.cs" />
+    <Compile Include="LsnCore\Expressions\Expression.cs" />
+    <Compile Include="LsnCore\Expressions\FieldAccessExpression.cs" />
+    <Compile Include="LsnCore\Expressions\FunctionCall.cs" />
+    <Compile Include="LsnCore\Expressions\GetExpression.cs" />
+    <Compile Include="LsnCore\Expressions\GlobalVariableAccessExpression.cs" />
     <Compile Include="LsnCore\Expressions\HiddenCastExpression.cs" />
+    <Compile Include="LsnCore\Expressions\HostIntefaceMethodCall.cs" />
+    <Compile Include="LsnCore\Expressions\HostInterfaceAccessExpression.cs" />
+    <Compile Include="LsnCore\Expressions\IExpression.cs" />
+    <Compile Include="LsnCore\Expressions\IExpressionContainer.cs" />
+    <Compile Include="LsnCore\Expressions\ListConstructor.cs" />
+    <Compile Include="LsnCore\Expressions\MethodCall.cs" />
+    <Compile Include="LsnCore\Expressions\NotExpression.cs" />
+    <Compile Include="LsnCore\Expressions\RangeExpression.cs" />
+    <Compile Include="LsnCore\Expressions\RecordConstructor.cs" />
+    <Compile Include="LsnCore\Expressions\ScriptObjectMethodCall.cs" />
     <Compile Include="LsnCore\Expressions\SomeExpression.cs" />
+    <Compile Include="LsnCore\Expressions\StructConstructor.cs" />
+    <Compile Include="LsnCore\Expressions\UniqueScriptObjectAccessExpression.cs" />
+    <Compile Include="LsnCore\Expressions\VariableExpression.cs" />
+    <Compile Include="LsnCore\Statements\AssignmentStatement.cs" />
+    <Compile Include="LsnCore\Statements\AttachStatement.cs" />
+    <Compile Include="LsnCore\Statements\ChangeGlobalVariableStatement.cs" />
+    <Compile Include="LsnCore\Statements\CollectionValueReassignmentStatement.cs" />
+    <Compile Include="LsnCore\Statements\DetachStatement.cs" />
+    <Compile Include="LsnCore\Statements\DisplayChoicesStatement.cs" />
+    <Compile Include="LsnCore\Statements\ExpressionStatement.cs" />
+    <Compile Include="LsnCore\Statements\FieldAssignmentStatement.cs" />
+    <Compile Include="LsnCore\Statements\GiveStatement.cs" />
+    <Compile Include="LsnCore\Statements\GoToStatement.cs" />
+    <Compile Include="LsnCore\Statements\JumpStatements.cs" />
+    <Compile Include="LsnCore\Statements\JumpTarget.cs" />
+    <Compile Include="LsnCore\Statements\RegisterChoiceStatement.cs" />
+    <Compile Include="LsnCore\Statements\ReturnStatement.cs" />
+    <Compile Include="LsnCore\Statements\SaveStatement.cs" />
+    <Compile Include="LsnCore\Statements\SayStatement.cs" />
+    <Compile Include="LsnCore\Statements\SetStateStatement.cs" />
+    <Compile Include="LsnCore\Statements\SimpleStatements.cs" />
+    <Compile Include="LsnCore\Statements\Statement.cs" />
     <Compile Include="LsnrException.cs" />
     <Compile Include="LsnrParsingException.cs" />
     <Compile Include="LsnrTypeNotFoundException.cs" />
@@ -159,6 +204,7 @@
     <Compile Include="LssParser\VariableExpressionRule.cs" />
     <Compile Include="MainFile.cs" />
     <Compile Include="Optimization\ComponentFlattener.cs" />
+    <Compile Include="PreInstruction.cs" />
     <Compile Include="PreStatement.cs" />
     <Compile Include="ReaderRules\IReaderStatementRule.cs" />
     <Compile Include="ReaderRules\ReaderBase.cs" />

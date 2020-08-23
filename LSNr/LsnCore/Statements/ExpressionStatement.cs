@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Expressions;
+using LSNr;
 using Syroot.BinaryData;
 
 namespace LsnCore.Statements
@@ -39,11 +40,18 @@ namespace LsnCore.Statements
 			Expression.Serialize(writer, resourceSerializer);
 		}
 
+		/// <inheritdoc/>
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
 			yield return Expression;
 			foreach (var expr in Expression.SelectMany(e => e))
 				yield return expr;
+		}
+
+		/// <inheritdoc/>
+		protected override IEnumerable<PreInstruction> GetInstructions(string target)
+		{
+			return Expression.GetInstructions();
 		}
 	}
 }
