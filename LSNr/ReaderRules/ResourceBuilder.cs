@@ -146,7 +146,7 @@ namespace LSNr.ReaderRules
 		{
 			if (func.ReturnType != null)
 			{
-				// Generics!!!
+				// ToDo: Generics!!!
 				if (!TypeExists(func.ReturnType.Name))
 					throw new LsnrTypeNotFoundException(Path, func.ReturnType.Name);
 				func.ReturnType.Load(GetType(func.ReturnType.Name));
@@ -154,7 +154,7 @@ namespace LSNr.ReaderRules
 			}
 			foreach (var param in func.Parameters)
 			{
-				// Generics!!!
+				// ToDo: Generics!!!
 				if (!TypeExists(param.Type.Name))
 					throw new LsnrTypeNotFoundException(Path, param.Type.Name);
 				param.Type.Load(GetType(param.Type.Name));
@@ -236,7 +236,8 @@ namespace LSNr.ReaderRules
 		public LsnType GetType(string name) {
 			if (name == null)
 				throw new ApplicationException();
-			if (!name.Contains('`')) return LoadedTypes.ContainsKey(name) ? LoadedTypes[name] : MyTypes[name].Type;
+			if (!name.Contains('`'))
+				return LoadedTypes.ContainsKey(name) ? LoadedTypes[name] : MyTypes[name].Type;
 			var names = name.Split('`');
 			if (!GenericTypeExists(names[0])) throw new LsnrTypeNotFoundException(Path, name);
 			var generic = GetGenericType(names[0]);

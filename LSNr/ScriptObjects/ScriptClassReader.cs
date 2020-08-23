@@ -12,7 +12,7 @@ using LSNr.ReaderRules;
 namespace LSNr.ScriptObjects
 {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "PreScript")]
-	public interface IBasePreScriptClass : ITypeContainer, IFunctionContainer
+	public interface IBasePreScriptClass : IFunctionContainer
 	{
 		TypeId Id { get; }
 		TypeId HostId { get; }

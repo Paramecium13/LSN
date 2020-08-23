@@ -107,7 +107,7 @@ namespace LsnCore
 
 		public static List<GenericType> GetBaseGenerics() => new List<GenericType>
 			{
-				VectorGeneric.Instance,
+				ArrayGeneric.Instance,
 				LsnListGeneric.Instance,
 				OptionGeneric.Instance
 			};

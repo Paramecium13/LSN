@@ -10,7 +10,7 @@ namespace LsnCore.Values
 	/// <summary>
 	/// A readonly collection passed by value.
 	/// </summary>
-	public class VectorInstance : LsnValueB, ICollectionValue
+	public class ArrayInstance : LsnValueB, ICollectionValue
 	{
 		public readonly int Size;
 
@@ -18,7 +18,7 @@ namespace LsnCore.Values
 
 		public override bool BoolValue { get { return true;/*Values != null;*/ } }
 
-		//private VectorType _Type;
+		//private ArrayType _Type;
 
 		/// <summary>
 		/// The type of its contents
@@ -32,10 +32,10 @@ namespace LsnCore.Values
 		/// <returns></returns>
 		public LsnValue this [int index] { get { return Values[index].Clone(); } }
 
-		public VectorInstance(VectorType type, LsnValue[] values)
+		public ArrayInstance(ArrayType type, LsnValue[] values)
 			:this(type.Id,type.GenericId,values) {}
 
-		public VectorInstance(TypeId type, TypeId genericType, IEnumerable<LsnValue> values)
+		public ArrayInstance(TypeId type, TypeId genericType, IEnumerable<LsnValue> values)
 		{
 			Type = type; GenericId = genericType; Values = values.ToArray(); Size = Values.Length;
 		}

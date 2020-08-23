@@ -127,7 +127,7 @@ HostInterface IEnemy
 	fn GetHP() -> int;
 	fn Kill();
 	
-	fn GetFriends() -> Option<Vector<IEnemy>>;
+	fn GetFriends() -> Option<IEnemy[]>;
 	
 	event Death(killer : IActor);
 	
@@ -192,7 +192,7 @@ fn ToDog(cat:Cat) -> Dog
 }
 
 
-fn PathDistance(path:Vector<Point>)-> double
+fn PathDistance(path: Point[])-> double
 {
 	let mut sum = 0.0;
 	let mut point = path[0];

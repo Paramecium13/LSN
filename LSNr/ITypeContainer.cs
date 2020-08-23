@@ -4,6 +4,7 @@ using LsnCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace LSNr
@@ -68,16 +69,25 @@ namespace LSNr
 			{
 				endIndex = i + 1;
 				var type = self.GetTypeId(tokens[i].Value);
-				if(tokens.TestAt(i+1, t => t.Value == "["))
+				if (!tokens.TestAt(i + 1, t => t.Value == "["))
+					return type;
+				
+				if (!tokens.TestAt(i + 2, t => t.Value == "]"))
 				{
-					// ToDo: Arrays...
-					throw new NotImplementedException("Arrays");
+					throw LsnrParsingException.UnexpectedToken(tokens.Count <= i + 2 ? tokens[i + 2] : default, "]", "");
 				}
+
+				endIndex = i + 3;
+				var arrayType = ArrayGeneric.Instance.GetType(new[] { type }).Id;
+				self.GenericTypeUsed(arrayType);
+				return arrayType;
 			}
+
 			if (self.GenericTypeExists(tName))
 			{
 				if (tokens[++i].Value != "<")
 				{
+					// ToDo: Exceptions
 					Console.WriteLine($"Error: expected token '<', received '{tokens[i].Value}'.");
 					endIndex = -1;
 					return null;

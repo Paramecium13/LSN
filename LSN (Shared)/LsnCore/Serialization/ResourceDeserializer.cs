@@ -461,8 +461,8 @@ namespace LsnCore.Serialization
 						var values = new LsnValue[nValues];
 						for (int i = 0; i < nValues; i++)
 							values[i] = ReadValue(reader);
-						var type = (VectorType)resourceManager.GetLsnType(typeName);
-						return new LsnValue(new VectorInstance(type, values));
+						var type = (ArrayType)resourceManager.GetLsnType(typeName);
+						return new LsnValue(new ArrayInstance(type, values));
 					}
 				case ConstantCode.List:
 					{

@@ -48,9 +48,7 @@ namespace LSNr.Statements
 				case SymbolType.ScriptClassMethod:
 				case SymbolType.HostInterfaceMethod:
 				case SymbolType.Function:
-					throw new LsnrParsingException(tokens[i-1], $"Cannot name a new variable '{name}'. That name is already used for a {symType.ToString()}.", script.Path);
-				default:
-					break;
+					throw new LsnrParsingException(tokens[i-1], $"Cannot name a new variable '{name}'. That name is already used for a {symType}.", script.Path);
 			}
 			if (tokens[i].Value != "=")
 				throw LsnrParsingException.UnexpectedToken(tokens[i], "=", script.Path);
@@ -101,7 +99,7 @@ namespace LSNr.Statements
 				case CollectionValueAccessExpression col:
 					{
 						var colType = col.Collection.Type.Type as ICollectionType;
-						if (colType is VectorType)
+						if (colType is ArrayType)
 							throw new LsnrParsingException(lTokens[0], "Cannot reassign contents of a vector.", script.Path);
 						if (!colType.ContentsType.Subsumes(rValue.Type.Type))
 							throw LsnrParsingException.TypeMismatch(lTokens[0], colType.ContentsType.Name, rValue.Type.Name, script.Path);
