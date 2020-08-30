@@ -90,7 +90,7 @@ namespace LSNr.Converations
 			if (StartBlockTokens != null)
 			{
 				flattener.ConvPartialFlatten(GetStartBlock(), Name + " ", Name + " Start");
-				flattener.AddSetTargetStatement(Name, _Conversation.JumpTargetVariable);
+				flattener.AddSetTargetStatement(Name);
 			}
 			else
 				flattener.AddLabelAlias(Name + " Start", Name);
@@ -102,7 +102,7 @@ namespace LSNr.Converations
 				this.PopScope(res);
 				var label = Name + " " + branch.Name;
 				flattener.ConvPartialFlatten(res, label + " ", label);
-				flattener.AddOptionalJumpToTargetStatement(_Conversation.JumpTargetVariable);
+				flattener.AddOptionalJumpToTargetStatement();
 			}
 		}
 

@@ -1,14 +1,18 @@
-﻿using LsnCore.Expressions;
+﻿#if LSNR
+using LsnCore.Expressions;
+using LSNr;
+#endif
+using System.Runtime.CompilerServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Types;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Syroot.BinaryData;
 using System.Collections;
+
 // ReSharper disable EqualExpressionComparison
 // ReSharper disable CompareOfFloatsByEqualityOperator
 
@@ -21,7 +25,10 @@ namespace LsnCore
 #if LSNR
 		unsafe
 #endif
-		struct LsnValue : IExpression, IEquatable<LsnValue>
+	struct LsnValue : IEquatable<LsnValue>
+	#if LSNR
+	, IExpression
+	#endif
 	{
 		/// <summary>
 		/// Nil
@@ -192,6 +199,37 @@ namespace LsnCore
 		/// <returns></returns>
 		public LsnValue Eval(IInterpreter i) => this;
 #endif
+
+#if LSNR
+		/// <inheritdoc />
+		public IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
+		{
+			switch (Type.Name)
+			{
+				case "int":
+				{
+					if (IntValue >= short.MinValue && IntValue <= short.MaxValue)
+					{
+						var sh = (short) IntValue;
+						
+						yield return new SimplePreInstruction(OpCode.LoadConst_I32_short, Unsafe.As<short, ushort>(ref sh));
+					}
+					break;
+				}
+				case "double":
+				{
+					throw new NotImplementedException();
+				}
+				case "bool":
+				{
+					yield return new SimplePreInstruction(OpCode.LoadConst_I32_short, (ushort)IntValue);
+					break;
+				}
+				default:
+					throw new NotImplementedException();
+			}
+		}
+
 		/// <summary>
 		/// ...
 		/// </summary>
@@ -201,20 +239,15 @@ namespace LsnCore
 		/// <summary>
 		/// ...
 		/// </summary>
-		public LsnValue Clone() => Data == Data ? this : new LsnValue(Value.Clone());
+		/// <param name="oldExpr"></param>
+		/// <param name="newExpr"></param>
+		public void Replace(IExpression oldExpr, IExpression newExpr){}
 
 		/// <summary>
 		/// ...
 		/// </summary>
 		/// <returns></returns>
 		public bool IsReifyTimeConst() => true;
-
-		/// <summary>
-		/// ...
-		/// </summary>
-		/// <param name="oldExpr"></param>
-		/// <param name="newExpr"></param>
-		public void Replace(IExpression oldExpr, IExpression newExpr){}
 
 		/// <summary>
 		/// ...
@@ -228,6 +261,23 @@ namespace LsnCore
 			var data = val.Data;
 			return (Math.Abs(data - Data) < double.Epsilon || (data != data && Data != Data)) && val.Value == Value;
 		}
+		
+		IEnumerator<IExpression> IEnumerable<IExpression>.GetEnumerator()
+		{
+			yield break;
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			yield break;
+		}
+#endif
+
+		/// <summary>
+		/// ...
+		/// </summary>
+		public LsnValue Clone() => Data == Data ? this : new LsnValue(Value.Clone());
+
 
 		internal void Serialize(BinaryDataWriter writer)
 		{
@@ -384,15 +434,6 @@ namespace LsnCore
 			return Value.Equals(other.Value);
 		}
 
-		IEnumerator<IExpression> IEnumerable<IExpression>.GetEnumerator()
-		{
-			yield break;
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			yield break;
-		}
 	}
 }
 #pragma warning restore RECS0088 // Comparing equal expression for equality is usually useless

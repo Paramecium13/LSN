@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Expressions;
+using LSNr;
 using Syroot.BinaryData;
 
 namespace LsnCore.Statements
@@ -37,12 +38,18 @@ namespace LsnCore.Statements
 			yield break;
 		}
 
+		/// <inheritdoc />
+		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		{
+			yield return new TargetedPreInstruction(OpCode.Jump, target, context.LabelFactory);
+		}
 	}
 
 	[Serializable]
 	public sealed class ConditionalJumpStatement : Statement, IHasTargetStatement
 	{
 		internal IExpression Condition;
+		
 		public int Target { get; set; } = -1;
 
 		internal ConditionalJumpStatement(IExpression condition)

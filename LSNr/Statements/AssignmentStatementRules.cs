@@ -98,9 +98,9 @@ namespace LSNr.Statements
 					}
 				case CollectionValueAccessExpression col:
 					{
-						var colType = col.Collection.Type.Type as ICollectionType;
+						var colType = (ICollectionType) col.Collection.Type.Type;
 						if (colType is ArrayType)
-							throw new LsnrParsingException(lTokens[0], "Cannot reassign contents of a vector.", script.Path);
+							throw new LsnrParsingException(lTokens[0], "Cannot reassign contents of an array.", script.Path);
 						if (!colType.ContentsType.Subsumes(rValue.Type.Type))
 							throw LsnrParsingException.TypeMismatch(lTokens[0], colType.ContentsType.Name, rValue.Type.Name, script.Path);
 						return new CollectionValueAssignmentStatement(col.Collection, col.Index, rValue);

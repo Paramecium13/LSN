@@ -182,7 +182,7 @@ namespace LsnCore
 		JumpToTarget,
 		#endregion
 		#region Call
-		/// <summary>Data is index. Places index into a temp register(not preserved when calling).Used by instructions that need two indexes.</summary>
+		/// <summary>Data is index. Places index into a temp register(not preserved when calling).Used by instructions that need two indexes or a 4 byte index.</summary>
 		LoadIndex,
 
 		/* Two potential styles of non-local procedure indexing:
@@ -293,9 +293,13 @@ namespace LsnCore
 		// data is index of type?
 		ConstructList,
 		// data is number of values on the eval stack to put into the list
+		// Also creates the list.
 		InitializeList,
+
 		// data is number of values on the eval stack to put into the vector
-		InitializeVector,
+		//	The value on top of the stack is the goes into the last slot of the array, ...
+		//	Also creates the array...
+		InitializeArray,
 		#endregion
 		#region ScriptClass
 		/// <summary>Data is state; local[0] is script class.</summary>

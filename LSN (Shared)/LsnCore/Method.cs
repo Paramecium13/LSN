@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+#if LSNR
 using LsnCore.Expressions;
+#endif
 using System.Linq;
 using LsnCore.Types;
 
@@ -31,9 +33,9 @@ namespace LsnCore
 		{
 			TypeId = type;
 		}
-
+		#if LSNR
 		public virtual IExpression CreateMethodCall(IExpression[] args)
 			=> new MethodCall(this, args);
-
+		#endif
 	}
 }

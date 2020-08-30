@@ -12,11 +12,13 @@ namespace LSNr.Converations
 	interface IConversation : ITypeContainer
 	{
 		ISlice<Token> StartTokens { get; set; }
+		
 		void RegisterNode(INode node, bool first);
+		
 		void RegisterConvVar(IConversationVariable convVar);
+		
 		bool NodeExists(string name);
 
-		Variable JumpTargetVariable { get; }
 		string Path { get; }
 	}
 

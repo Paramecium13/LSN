@@ -17,7 +17,11 @@ namespace LsnCore.Expressions
 		/// </summary>
 		TypeId Type { get; }
 
-		IEnumerable<PreInstruction> GetInstructions();
+		/// <summary>
+		/// Gets the instructions for this expression.
+		/// </summary>
+		/// <param name="labelFactory">The label factory.</param>
+		IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context);
 
 		/// <summary>
 		/// Folds this expression. Performs optimizations such as constant folding

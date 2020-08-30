@@ -26,16 +26,23 @@ namespace LsnCore.Statements
 		/// <inheritdoc/>
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-		internal IEnumerable<PreInstruction> GetInstructions(IList<string> labels, string target)
+		/// <summary>
+		/// Gets the <see cref="PreInstruction"/>s that make up this statement.
+		/// </summary>
+		/// <param name="labels"> The labels applied to this statement. </param>
+		/// <param name="target"> The label that this statement targets (if any). </param>
+		// ReSharper disable once LocalSuppression
+		// ReSharper disable once UnusedMember.Global
+		internal IEnumerable<PreInstruction> GetInstructions(IList<string> labels, string target, InstructionGenerationContext context)
 		{
-			return GetInstructions(target).Pipe(instuction =>
+			return GetInstructions(target, context).Pipe(instuction =>
 			{
 				if (!(labels?.Any() ?? false)) return;
-				instuction.Labels.AddRange(labels.Select(l => new InstructionLabel(l)));
+				instuction.Labels.AddRange(labels.Select(context.LabelFactory.GetLabel));
 				labels = null;
 			});
 		}
 
-		protected abstract IEnumerable<PreInstruction> GetInstructions(string target);
+		protected abstract IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context);
 	}
 }

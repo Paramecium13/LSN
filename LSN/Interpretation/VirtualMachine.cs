@@ -216,7 +216,7 @@ namespace LsnCore.Interpretation
 				#endregion
 				#region Constants
 				case OpCode.LoadConst_I32_short:		Push(instr.Data);								break;
-				case OpCode.LoadConst_I32:				Push(Environment.GetInt(instr.Index));			break;
+				case OpCode.LoadConst_I32:				Push(Environment.GetInt(instr.Index));			break; // ToDo: Use TmpIndex???
 				case OpCode.LoadConst_F64:				Push(Environment.GetDouble(instr.Index));		break;
 				//case OpCode.LoadConst_F64_short:		Push((double)instr.Data);						break;
 				case OpCode.LoadConst_F64_ShortRatio:	Push(instr.Index / ((double)ushort.MaxValue));	break;
@@ -352,14 +352,14 @@ namespace LsnCore.Interpretation
 					Push(new LsnList((LsnListType)Environment.GetUsedType(instr.Index)));
 					break;
 				case OpCode.InitializeList:
-				case OpCode.InitializeVector:
+				case OpCode.InitializeArray:
 					throw new NotImplementedException();
 				#endregion
 				case OpCode.ConstructStruct: {
 						var type = Environment.GetUsedType(instr.Index) as StructType;
 						var fCount = type.FieldCount;
 						var vals = GetArray(fCount);
-						for (int i = fCount - 1; i >= 0; i++)
+						for (var i = fCount - 1; i >= 0; i++)
 							vals[i] = Pop();
 						Push(new StructValue(type.Id, vals));
 					} break;
@@ -376,7 +376,7 @@ namespace LsnCore.Interpretation
 						var type = Environment.GetUsedType(instr.Index) as RecordType;
 						var fCount = type.FieldCount;
 						var vals = GetArray(fCount);
-						for (int i = fCount - 1; i >= 0; i++)
+						for (var i = fCount - 1; i >= 0; i++)
 							vals[i] = Pop();
 						Push(new RecordValue(vals, type.Id));
 					} break;

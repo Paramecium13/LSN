@@ -12,23 +12,34 @@ namespace LsnCore.Expressions
 {
 	public abstract class Expression : IExpression
 	{
-		private TypeId _Type;
+		/// <inheritdoc/>
+		public /*virtual*/ TypeId Type { get; protected set; }
 
-		public /*virtual*/ TypeId Type { get { return _Type; } protected set { _Type = value; } }
-
+		/// <inheritdoc/>
 		public abstract bool IsPure { get; }
 
+		/// <inheritdoc/>
 		public abstract bool IsReifyTimeConst();
 
+		/// <inheritdoc/>
 		public abstract IExpression Fold();
 
-		public abstract IEnumerable<PreInstruction> GetInstructions();
+		/// <inheritdoc/>
+		public abstract IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context);
 
+		/// <inheritdoc/>
 		public virtual void Replace(IExpression oldExpr, IExpression newExpr) { }
+		
+		/// <inheritdoc/>
 		public virtual bool Equals(IExpression other) => this == other;
+		
+		/// <inheritdoc/>
 		public abstract void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer);
+
+		/// <inheritdoc/>
 		public abstract IEnumerator<IExpression> GetEnumerator();
 
+		/// <inheritdoc/>
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }

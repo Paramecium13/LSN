@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LsnCore.Types;
 using LsnCore.Values;
 using LsnCore.Expressions;
+using LSNr;
 using Syroot.BinaryData;
 
 namespace LsnCore.Statements
@@ -20,14 +21,6 @@ namespace LsnCore.Statements
 		{
 			Collection = collection; Index = index; Value = value;
 		}
-
-#if CORE
-		public override InterpretValue Interpret(IInterpreter i)
-		{
-			(Collection.Eval(i).Value as IMutableCollectionValue).SetValue(Index.Eval(i).IntValue, Value.Eval(i));
-			return InterpretValue.Base;
-		}
-#endif
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
@@ -66,6 +59,27 @@ namespace LsnCore.Statements
 			yield return Value;
 			foreach (var expr in Value.SelectMany(e => e))
 				yield return expr;
+		}
+
+		/// <inheritdoc />
+		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		{
+			foreach (var instruction in Collection.GetInstructions(context.WithContext(ExpressionContext.ItemWrite)))
+			{
+				yield return instruction;
+			}
+
+			foreach (var instruction in Index.GetInstructions(context.WithContext(ExpressionContext.SubExpression)))
+			{
+				yield return instruction;
+			}
+
+			foreach (var instruction in Value.GetInstructions(context.WithContext(ExpressionContext.Store)))
+			{
+				yield return instruction;
+			}
+
+			yield return new SimplePreInstruction(OpCode.StoreElement, 0);
 		}
 	}
 

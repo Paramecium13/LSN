@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using LSNr;
+using MoreLinq;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
@@ -14,7 +16,6 @@ namespace LsnCore.Expressions
 		//ToDo: Encapsulate? Used in ExpressionWalker...
 		public readonly IExpression[] Args;
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public FunctionCall(Function fn, IExpression[] args)// This is possible because when a resource file is loaded, function stubs are created for
 															// all its functions before any code is read. Thus when the reader reads the code, it has
 															// a function object for every function that the code could call.
@@ -23,16 +24,6 @@ namespace LsnCore.Expressions
 			Args = args;
 			Type = fn.ReturnType;
 		}
-
-#if CORE
-		public override LsnValue Eval(IInterpreter i)
-		{
-			var args = new LsnValue[Args.Length];
-			for (int x = 0; x < Args.Length; x++)
-				args[x] = Args[x].Eval(i);
-			return Fn.Eval(args, i);
-		}
-#endif
 
 		public override IExpression Fold()
 		{
@@ -60,8 +51,8 @@ namespace LsnCore.Expressions
 			writer.Write((byte)ExpressionCode.FunctionCall);
 			writer.Write(Fn.Name);
 			writer.Write((byte)Args.Length);
-			for (int i = 0; i < Args.Length; i++)
-				Args[i].Serialize(writer, resourceSerializer);
+			foreach (var t in Args)
+				t.Serialize(writer, resourceSerializer);
 		}
 
 		public override IEnumerator<IExpression> GetEnumerator()
@@ -72,6 +63,11 @@ namespace LsnCore.Expressions
 				foreach (var expr in arg.SelectMany(e => e))
 					yield return expr;
 			}
+		}
+
+		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
+		{
+			return Args.SelectMany(a => a.GetInstructions(context)).Append(new FunctionCallPreInstruction(Fn));
 		}
 	}
 }

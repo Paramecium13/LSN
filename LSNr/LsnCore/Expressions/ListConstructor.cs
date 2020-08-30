@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Syroot.BinaryData;
 using System.Collections;
+using LSNr;
 
 namespace LsnCore.Expressions
 {
@@ -24,38 +25,42 @@ namespace LsnCore.Expressions
 			Type = listType.Id;
 		}
 
+		/// <inheritdoc />
 		public bool Equals(IExpression other)
 		{
 			return this == other;
 		}
 
-#if CORE
-		public LsnValue Eval(IInterpreter i)
+		/// <inheritdoc />
+		public IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
 		{
-			return new LsnValue(new LsnList(Type));
+			yield return new TypeTargetedInstruction(OpCode.ConstructList, Type);
 		}
-#endif
 
+		/// <inheritdoc />
 		public IExpression Fold() => this;
 
-
+		/// <inheritdoc />
 		public bool IsReifyTimeConst() => false;
 
-
+		/// <inheritdoc />
 		public void Replace(IExpression oldExpr, IExpression newExpr)
 		{}
 
+		/// <inheritdoc />
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.ListConstructor);
 			resourceSerializer.WriteTypeId(GenericTypeId, writer);
 		}
 
+		/// <inheritdoc />
 		public IEnumerator<IExpression> GetEnumerator()
 		{
 			yield return null;
 		}
 
+		/// <inheritdoc />
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }

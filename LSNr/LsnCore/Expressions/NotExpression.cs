@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using LsnCore.Types;
+using LSNr;
+using MoreLinq;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
@@ -10,8 +12,10 @@ namespace LsnCore.Expressions
 	{
 		internal IExpression Value;
 
+		/// <inheritdoc />
 		public TypeId Type => LsnType.Bool_.Id;
 
+		/// <inheritdoc />
 		public bool IsPure => Value.IsPure;
 
 		internal NotExpression(IExpression value)
@@ -19,6 +23,7 @@ namespace LsnCore.Expressions
 			Value = value;
 		}
 
+		/// <inheritdoc />
 		public bool Equals(IExpression other)
 		{
 			return other is NotExpression n && Value.Equals(n.Value);
@@ -31,6 +36,13 @@ namespace LsnCore.Expressions
 		}
 #endif
 
+		/// <inheritdoc />
+		public IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
+		{
+			return Value.GetInstructions(context).Append(new SimplePreInstruction(OpCode.Not, 0));
+		}
+
+		/// <inheritdoc />
 		public IExpression Fold()
 		{
 			Value = Value.Fold();
@@ -45,9 +57,11 @@ namespace LsnCore.Expressions
 			}
 		}
 
+		/// <inheritdoc />
 		public bool IsReifyTimeConst()
 			=> Value.IsReifyTimeConst();
 
+		/// <inheritdoc />
 		public void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if (Value.Equals(oldExpr))
@@ -62,6 +76,7 @@ namespace LsnCore.Expressions
 			Value.Serialize(writer, resourceSerializer);
 		}
 
+		/// <inheritdoc />
 		public IEnumerator<IExpression> GetEnumerator()
 		{
 			yield return Value;
@@ -69,6 +84,7 @@ namespace LsnCore.Expressions
 				yield return expr;
 		}
 
+		/// <inheritdoc />
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }

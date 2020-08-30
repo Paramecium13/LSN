@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LSNr;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
@@ -17,6 +18,7 @@ namespace LsnCore.Expressions
 		public IExpression Collection;
 		public IExpression Index;
 
+		/// <inheritdoc/>
 		public override bool IsPure => true;
 
 		/// <summary>
@@ -25,30 +27,17 @@ namespace LsnCore.Expressions
 		/// <param name="collection"> The collection expression.</param>
 		/// <param name="index"> The index expression.</param>
 		/// <param name="type"> The type of the value contained in the collection.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public CollectionValueAccessExpression(IExpression collection, IExpression index, TypeId type)
 		{
 			Collection = collection; Index = index; Type = type;
 		}
 
-		public CollectionValueAccessExpression(IExpression collection, IExpression index)
-		{
-			Collection = collection; Index = index;
-		}
-
+		/// <inheritdoc/>
 		public override bool Equals(IExpression other)
 		{
-			var e = other as CollectionValueAccessExpression;
-			if (e == null) return false;
+			if (!(other is CollectionValueAccessExpression e)) return false;
 			return e.Collection == Collection && e.Index == Index;
 		}
-
-#if CORE
-		public override LsnValue Eval(IInterpreter i)
-		{
-			return (Collection.Eval(i).Value as ICollectionValue).GetValue(Index.Eval(i).IntValue);
-		}
-#endif
 
 		public override IExpression Fold()
 		{
@@ -71,15 +60,45 @@ namespace LsnCore.Expressions
 			return expr;
 		}
 
+		/// <inheritdoc />
+		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
+		{
+			var subContext = context.WithContext(ExpressionContext.SubExpression);
+			foreach (var instruction in Collection.GetInstructions(subContext))
+			{
+				yield return instruction;
+			}
+
+			foreach (var instruction in Index.GetInstructions(subContext))
+			{
+				yield return instruction;
+			}
+
+			yield return new SimplePreInstruction(OpCode.LoadElement, 0);
+			if (Type.Type is StructType)
+			{
+				switch (context.Context)
+				{
+					case ExpressionContext.Store:
+					case ExpressionContext.Parameter_Default:
+						yield return new SimplePreInstruction(OpCode.CopyStruct, 0);
+						break;
+				}
+			}
+			
+		}
+
 		public override bool IsReifyTimeConst()
 			=> Collection.IsReifyTimeConst() && Index.IsReifyTimeConst();
 
+		/// <inheritdoc/>
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if (Collection.Equals(oldExpr)) Collection = newExpr;
 			if (Index.Equals( oldExpr)) Index = newExpr;
 		}
 
+		/// <inheritdoc/>
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.CollectionValueAccess);
@@ -87,6 +106,7 @@ namespace LsnCore.Expressions
 			Index.Serialize(writer, resourceSerializer);
 		}
 
+		/// <inheritdoc/>
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
 			yield return Collection;

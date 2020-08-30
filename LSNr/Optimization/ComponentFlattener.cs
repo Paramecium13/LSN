@@ -46,9 +46,9 @@ namespace LSNr.Optimization
 			// add a Jump to Target statement, w/ next label, if any.
 		}
 
-		public void AddJumpToTargetStatement(Variable convJumpTargetVariable)
+		public void AddJumpToTargetStatement()
 		{
-			var jump = new JumpToTargetStatement(convJumpTargetVariable.Index);
+			var jump = new JumpToTargetStatement();
 			PreStatements.Add(new PreStatement(jump) { Label = PopNextLabel() });
 		}
 
@@ -56,19 +56,18 @@ namespace LSNr.Optimization
 		/// Adds a jump to target statement if the branch doesn't already end in one or in a return statement.
 		/// </summary>
 		/// <param name="convJumpTargetVariable">The conv jump target variable.</param>
-		public void AddOptionalJumpToTargetStatement(Variable convJumpTargetVariable)
+		public void AddOptionalJumpToTargetStatement()
 		{
 			if (!(PreStatements[PreStatements.Count - 1].Statement is JumpToTargetStatement
 				|| PreStatements[PreStatements.Count - 1].Statement is ReturnStatement))
-				AddJumpToTargetStatement(convJumpTargetVariable);
+				AddJumpToTargetStatement();
 		}
 
-		public void AddSetTargetStatement(string target, Variable jumpTargetVar)
+		public void AddSetTargetStatement(string target)
 		{
 			if (LabelAliases.ContainsKey(target))
 				target = LabelAliases[target];
-			var set = new SetTargetStatement(jumpTargetVar);
-			jumpTargetVar.AddUser(set);
+			var set = new SetTargetStatement();
 			PreStatements.Add(new PreStatement(set) { Target = target, Label = PopNextLabel() });
 		}
 
@@ -268,11 +267,11 @@ namespace LSNr.Optimization
 			PreStatement preSt;
 			switch (s)
 			{
-				case BreakStatement br:
+				case BreakStatement _:
 					preSt = new PreStatement(new JumpStatement())
 					{ Target = InnerMostLoopEndLabels.Peek() };
 					break;
-				case NextStatement nxt:
+				case NextStatement _:
 					preSt = new PreStatement(new JumpStatement())
 					{ Target = InnerMostLoopContinueLabels.Peek() };
 					break;
@@ -280,8 +279,7 @@ namespace LSNr.Optimization
 					preSt = new PreStatement(reg) { Target = reg.Label };
 					break;
 				case SetNodeStatement sn:
-					var st = new SetTargetStatement(sn.Variable);
-					preSt = new PreStatement(st) { Target = sn.Node };
+					preSt = new PreStatement(new SetTargetStatement()) { Target = sn.Node };
 					break;
 				default:
 					preSt = new PreStatement(s);

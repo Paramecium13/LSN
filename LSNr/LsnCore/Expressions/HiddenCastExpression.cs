@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Types;
+using LSNr;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
@@ -31,6 +32,9 @@ namespace LsnCore.Expressions
 			foreach (var expr in Contents.SelectMany(e => e))
 				yield return expr;
 		}
+
+		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
+			=> Contents.GetInstructions(context);
 
 		public override bool IsReifyTimeConst() => Contents.IsReifyTimeConst();
 

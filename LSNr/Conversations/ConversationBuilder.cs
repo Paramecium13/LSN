@@ -74,8 +74,6 @@ namespace LSNr.Converations
 
 		public IScope CurrentScope { get; set; }
 
-		public Variable JumpTargetVariable { get; private set; }
-
 		public IReadOnlyList<IStatementRule> StatementRules => _StatementRules;
 
 		public IReadOnlyList<ControlStructureRule> ControlStructureRules => _ControlStructureRules;
@@ -140,9 +138,6 @@ namespace LSNr.Converations
 
 		public void Parse()
 		{
-			JumpTargetVariable = CurrentScope.CreateVariable("Jump Target", LsnType.int_, true);
-			JumpTargetVariable.MarkAsUsed();
-
 			var flattener = new ComponentFlattener();
 
 			// Conversation variables before start block:
@@ -157,7 +152,7 @@ namespace LSNr.Converations
 				i = 1;
 				First = Nodes[0];
 			}
-			flattener.AddSetTargetStatement(First.Name + " Start", JumpTargetVariable);
+			flattener.AddSetTargetStatement(First.Name + " Start");
 
 			// Conversation variables after start block:
 			foreach (var cv in PostStartConvVars)
