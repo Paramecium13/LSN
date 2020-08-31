@@ -5,6 +5,7 @@ using System.Collections;
 using System.Linq;
 using LSNr;
 using MoreLinq;
+using LSNr.CodeGeneration;
 
 namespace LsnCore.Statements
 {
@@ -31,6 +32,7 @@ namespace LsnCore.Statements
 		/// </summary>
 		/// <param name="labels"> The labels applied to this statement. </param>
 		/// <param name="target"> The label that this statement targets (if any). </param>
+		/// <param name="context"></param>
 		// ReSharper disable once LocalSuppression
 		// ReSharper disable once UnusedMember.Global
 		internal IEnumerable<PreInstruction> GetInstructions(IList<string> labels, string target, InstructionGenerationContext context)
@@ -42,6 +44,15 @@ namespace LsnCore.Statements
 				labels = null;
 			});
 		}
+
+		/// <summary>
+		/// Gets the instructions.
+		/// </summary>
+		/// <param name="instructionList">The instruction list.</param>
+		/// <param name="target">The label that this statement targets (if any).</param>
+		/// <param name="context">The context.</param>
+		protected abstract void GetInstructions(InstructionList instructionList, string target,
+			InstructionGenerationContext context);
 
 		protected abstract IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context);
 	}

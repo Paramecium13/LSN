@@ -121,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeGen.cs" />
+    <Compile Include="CodeGeneration\InstructionList.cs" />
     <Compile Include="ControlStructures\CaseStructureRules.cs" />
     <Compile Include="ControlStructures\ConditionalStructureRules.cs" />
     <Compile Include="ControlStructures\IControlStructureRule.cs" />
@@ -271,6 +272,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\LSN (Shared)\LSN (Shared).projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

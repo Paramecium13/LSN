@@ -8,12 +8,10 @@ namespace LsnCore
 	 *	Header:
 	 *		Info about this file...
 	 *	Data Section (May be shared by multiple files to save space...?):
-	 *		Id Strings segment:
-	 *			...
 	 *		Constant Pools:
-	 *			WORD Pool:
+	 *			WORD (4 Bytes) Pool ??? (Not to sure about this, instructions can just use temp index for 2 more bytes:
 	 *				...
-	 *			LONG Pool:
+	 *			LONG (8 bytes) Pool:
 	 *				...
 	 *			String Pool:
 	 *				...
@@ -27,6 +25,8 @@ namespace LsnCore
 	 *			Number of generics
 	 *			generics[number of generics]:
 	 *				index of generic parameter in used types segment.
+	 *			...
+	 *		Id Strings segment:
 	 *			...
 	 *	Info Section
 	 *		Non-Local Procedure Stubs:
@@ -266,6 +266,7 @@ namespace LsnCore
 		/// <summary>, collection, index, value -> ,</summary>
 		StoreElement,
 		LoadField,
+		// object, value -> 
 		StoreField,
 		#endregion
 		#region Atomic Field Operations

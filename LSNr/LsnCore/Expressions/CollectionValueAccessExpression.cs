@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LSNr;
 using Syroot.BinaryData;
+using LSNr.CodeGeneration;
 
 namespace LsnCore.Expressions
 {
@@ -39,6 +40,7 @@ namespace LsnCore.Expressions
 			return e.Collection == Collection && e.Index == Index;
 		}
 
+		/// <inheritdoc />
 		public override IExpression Fold()
 		{
 			var c = Collection.Fold();
@@ -88,6 +90,26 @@ namespace LsnCore.Expressions
 			
 		}
 
+		/// <inheritdoc />
+		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			var subContext = context.WithContext(ExpressionContext.SubExpression);
+			Collection.GetInstructions(instructions, subContext);
+			Index.GetInstructions(instructions, subContext);
+			instructions.AddInstruction(new SimplePreInstruction(OpCode.LoadElement, 0));
+			if (Type.Type is StructType)
+			{
+				switch (context.Context)
+				{
+					case ExpressionContext.Store:
+					case ExpressionContext.Parameter_Default:
+						instructions.AddInstruction(new SimplePreInstruction(OpCode.CopyStruct, 0));
+						break;
+				}
+			}
+		}
+
+		/// <inheritdoc />
 		public override bool IsReifyTimeConst()
 			=> Collection.IsReifyTimeConst() && Index.IsReifyTimeConst();
 

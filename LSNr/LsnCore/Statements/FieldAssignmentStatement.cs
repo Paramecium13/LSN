@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using LsnCore.Expressions;
 using LsnCore.Values;
 using LsnCore.Types;
+using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Statements
@@ -87,6 +89,20 @@ namespace LsnCore.Statements
 			yield return ValueToAssign;
 			foreach (var expr in ValueToAssign.SelectMany(e => e))
 				yield return expr;
+		}
+
+		/// <inheritdoc />
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
+		{
+			FieldedValue.GetInstructions(instructionList, context.WithContext(ExpressionContext.FieldWrite));
+			ValueToAssign.GetInstructions(instructionList, context.WithContext(ExpressionContext.Store));
+			instructionList.AddInstruction(new SimplePreInstruction(OpCode.StoreField, (ushort)Index));
+		}
+
+		/// <inheritdoc />
+		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
 		}
 	}
 

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Types;
+using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
@@ -20,6 +22,19 @@ namespace LsnCore.Expressions
 
 		public override bool IsPure => Contents.IsPure;
 
+		/// <inheritdoc />
+		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			Contents.GetInstructions(instructions, context);
+		}
+
+		/// <inheritdoc />
+		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
 		public override IExpression Fold()
 		{
 			Contents = Contents.Fold();

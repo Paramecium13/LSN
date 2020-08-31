@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Syroot.BinaryData;
 using System.Collections;
 using LSNr;
+using LSNr.CodeGeneration;
 
 namespace LsnCore.Expressions
 {
@@ -26,6 +27,8 @@ namespace LsnCore.Expressions
 
 		/// <inheritdoc/>
 		public abstract IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context);
+
+		public abstract void GetInstructions(InstructionList instructions, InstructionGenerationContext context);
 
 		/// <inheritdoc/>
 		public virtual void Replace(IExpression oldExpr, IExpression newExpr) { }

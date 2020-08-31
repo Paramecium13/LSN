@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Syroot.BinaryData;
 using System.Collections;
 using LSNr;
+using LSNr.CodeGeneration;
 
 namespace LsnCore.Expressions
 {
@@ -35,6 +36,12 @@ namespace LsnCore.Expressions
 		public IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
 		{
 			yield return new TypeTargetedInstruction(OpCode.ConstructList, Type);
+		}
+
+		/// <inheritdoc />
+		public void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			instructions.AddInstruction(new TypeTargetedInstruction(OpCode.ConstructList, Type));
 		}
 
 		/// <inheritdoc />

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
@@ -17,7 +18,7 @@ namespace LsnCore.Expressions
 
 		public override bool IsPure => true;
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+		/// <inheritdoc />
 		public FieldAccessExpression(IExpression value, string name, LsnType type)
 		{
 			Value = value;
@@ -25,6 +26,7 @@ namespace LsnCore.Expressions
 			Type = type.Id;
 		}
 
+		/// <inheritdoc />
 		public FieldAccessExpression(IExpression value, string name, TypeId type)
 		{
 			Value = value;
@@ -32,56 +34,58 @@ namespace LsnCore.Expressions
 			Type = type;
 		}
 
+		/// <inheritdoc />
 		internal FieldAccessExpression(IExpression fieldOwner, Field field)
 		{
 			Value = fieldOwner; Index = field.Index; Type = field.Type;
 		}
 
+		/// <inheritdoc />
 		public FieldAccessExpression(IExpression value, int index)
 		{
 			Value = value;
 			Index = index;
 		}
 
+		/// <inheritdoc />
 		public override bool IsReifyTimeConst()
-			=> Value.IsReifyTimeConst();
+			=> false;
 
+		/// <inheritdoc />
 		public override IExpression Fold()
 		{
 			Value = Value.Fold();
-			var hasFields = Value as IHasFieldsValue;
-			if (hasFields != null)
-				return hasFields.GetFieldValue(Index);
 			return this;
 		}
 
 		/// <inheritdoc />
-		public override IEnumerable<PreInstruction> GetInstructions()
+		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
 		{
-			foreach (var instruction in Value.GetInstructions())
-			{
-				yield return instruction;
-			}
-			yield return new SimplePreInstruction(OpCode.LoadField, (ushort)Index);
+			throw new NotImplementedException();
 		}
 
-#if CORE
-		public override LsnValue Eval(IInterpreter i)
-			=> ((IHasFieldsValue)Value.Eval(i).Value).GetFieldValue(Index);
-#endif
+		/// <inheritdoc />
+		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			var subContext = context.WithContext(ExpressionContext.SubExpression);
+			Value.GetInstructions(instructions, subContext);
+			instructions.AddInstruction(new SimplePreInstruction(OpCode.LoadField, (ushort) Index));
+		}
 
+		/// <inheritdoc />
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if (Value.Equals(oldExpr)) Value = newExpr;
 		}
 
+		/// <inheritdoc />
 		public override bool Equals(IExpression other)
 		{
-			var e = other as FieldAccessExpression;
-			if (e == null) return false;
+			if (!(other is FieldAccessExpression e)) return false;
 			return Index == e.Index && Value.Equals(e.Value);
 		}
 
+		/// <inheritdoc />
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.FieldAccess);
@@ -89,6 +93,7 @@ namespace LsnCore.Expressions
 			Value.Serialize(writer, resourceSerializer);
 		}
 
+		/// <inheritdoc />
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
 			yield return Value;

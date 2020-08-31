@@ -17,11 +17,13 @@ namespace LsnCore.Statements
 		private IExpression Index;
 		private IExpression Value;
 
+		/// <inheritdoc />
 		public CollectionValueAssignmentStatement(IExpression collection, IExpression index, IExpression value)
 		{
 			Collection = collection; Index = index; Value = value;
 		}
 
+		/// <inheritdoc />
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if (Collection.Equals(oldExpr))
@@ -38,6 +40,7 @@ namespace LsnCore.Statements
 			}
 		}
 
+		/// <inheritdoc />
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(StatementCode.AssignValueInCollection);
@@ -46,6 +49,7 @@ namespace LsnCore.Statements
 			Value.Serialize(writer, resourceSerializer);
 		}
 
+		/// <inheritdoc />
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
 			yield return Collection;

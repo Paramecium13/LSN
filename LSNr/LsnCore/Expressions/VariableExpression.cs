@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using LsnCore.Types;
+using LSNr.CodeGeneration;
 #if LSNR
 using LSNr;
 #endif
@@ -51,14 +52,16 @@ namespace LsnCore.Expressions
 			yield break;
 		}
 
+		/// <inheritdoc />
+		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			instructions.AddInstruction(new LoadVariablePreInstruction(Variable));
+		}
+
 		/// <inheritdoc/>
 		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
 		{
-			if (Variable != null) return Variable.AccessExpression.GetInstructions(context);
-			if (Index != 0) throw new ApplicationException();
-
-			return new [] {new SimplePreInstruction(OpCode.LoadLocal, 0)};
-
+			yield break;
 		}
 	}
 }

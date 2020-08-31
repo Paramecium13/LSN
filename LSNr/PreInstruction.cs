@@ -151,20 +151,26 @@ namespace LSNr
 		}
 	}
 
-	public sealed class LoadVariablePreInstruction : PreInstruction
+	public abstract class VariablePreInstruction : PreInstruction
 	{
-		public Variable Variable { get; }
+		protected VariablePreInstruction(Variable variable, OpCode code) : base(code)
+		{
+			Variable = variable;
+		}
 
+		public Variable Variable { get; }
+	}
+
+	public sealed class LoadVariablePreInstruction : VariablePreInstruction
+	{
 		private ushort _data;
 
 		/// <inheritdoc />
 		public override ushort Data => _data;
 
 		/// <inheritdoc />
-		public LoadVariablePreInstruction(Variable variable) : base(OpCode.LoadLocal)
-		{
-			Variable = variable;
-		}
+		public LoadVariablePreInstruction(Variable variable) : base(variable, OpCode.LoadLocal)
+		{}
 
 		public override unsafe void Resolve()
 		{
@@ -193,6 +199,22 @@ namespace LSNr
 			}
 
 			_data = (ushort) Variable.Index;
+		}
+	}
+
+	public sealed class SetVariablePreInstruction : VariablePreInstruction
+	{
+		private ushort _data;
+
+		/// <inheritdoc />
+		public override ushort Data => _data;
+
+		public SetVariablePreInstruction(Variable variable) : base(variable, OpCode.StoreLocal) { }
+
+		public override void Resolve()
+		{
+			base.Resolve();
+			_data = (ushort)Variable.Index;
 		}
 	}
 

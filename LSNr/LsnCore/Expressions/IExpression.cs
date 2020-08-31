@@ -4,6 +4,7 @@ using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
 using LSNr;
+using LSNr.CodeGeneration;
 
 namespace LsnCore.Expressions
 {
@@ -20,8 +21,9 @@ namespace LsnCore.Expressions
 		/// <summary>
 		/// Gets the instructions for this expression.
 		/// </summary>
-		/// <param name="labelFactory">The label factory.</param>
 		IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context);
+
+		void GetInstructions(InstructionList instructions, InstructionGenerationContext context);
 
 		/// <summary>
 		/// Folds this expression. Performs optimizations such as constant folding
