@@ -7,6 +7,7 @@ using LsnCore.Types;
 using LsnCore.Values;
 using LsnCore.Expressions;
 using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Statements
@@ -63,6 +64,14 @@ namespace LsnCore.Statements
 			yield return Value;
 			foreach (var expr in Value.SelectMany(e => e))
 				yield return expr;
+		}
+
+		/// <inheritdoc />
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
+		{
+			Collection.GetInstructions(instructionList, context.WithContext(ExpressionContext.ItemWrite));
+			Index.GetInstructions(instructionList, context.WithContext(ExpressionContext.SubExpression));
+			Value.GetInstructions(instructionList, context.WithContext(ExpressionContext.Store));
 		}
 
 		/// <inheritdoc />

@@ -388,25 +388,28 @@ namespace LsnCore.Interpretation
 				#region Script Class
 				case OpCode.ConstructScriptClass:
 					{
-						var scriptClass = Environment.GetUsedType(instr.Index) as ScriptClass;
+						var scriptClass = (ScriptClass) Environment.GetUsedType(instr.Index);
+						var scrObj = new ScriptObject(new LsnValue[scriptClass.Fields.Count], scriptClass, scriptClass.DefaultStateId, null);
 						var cstor = scriptClass.Constructor;
 						EnterFunction(((IProcedureB)cstor).Info);
-					} break;
-				case OpCode.CreateScriptClass:
-					{
-						var scriptClass = Environment.GetUsedType(instr.Index) as ScriptClass;
-						var scrObj = new ScriptObject(new LsnValue[scriptClass.Fields.Count], scriptClass, scriptClass.DefaultStateId, null);
+						// Done after entering the procedure so that it is in the constructor's stack
+						Stack.SetVariable(0, new LsnValue(scrObj));
 						break;
 					}
-				case OpCode.CreateAndAttachScriptClass:
+				case OpCode.ConstructAndAttachScriptClass:
 					{
 						var scriptClass = Environment.GetUsedType(instr.Index) as ScriptClass;
-						var scrObj = new ScriptObject(new LsnValue[scriptClass.Fields.Count], scriptClass, scriptClass.DefaultStateId, Pop().Value as IHostInterface, false);
+						var scrObj = new ScriptObject(new LsnValue[scriptClass.Fields.Count], scriptClass, scriptClass.DefaultStateId, (IHostInterface) Pop().Value, false);
+						Push(scrObj);
+						var cstor = scriptClass.Constructor;
+						EnterFunction(((IProcedureB)cstor).Info);
+						// Done after entering the procedure so that it is in the constructor's stack
+						Stack.SetVariable(0, new LsnValue(scrObj));
 						break;
 					}
 				case OpCode.RegisterScriptObjectForEvents:
 					{
-						var scrObj = Stack.GetVariable(0).Value as ScriptObject;
+						var scrObj = (ScriptObject) Stack.GetVariable(0).Value;
 						scrObj.RegisterForEvents();
 						break;
 					}
@@ -437,7 +440,13 @@ namespace LsnCore.Interpretation
 				case OpCode.Srand:			GameHost.RngSetSeed(PopI32());					break;
 				case OpCode.Srand_sysTime:	throw new NotImplementedException();
 				case OpCode.Rand:			Push(GameHost.RngGetDouble());					break;
-				case OpCode.RandInt:		Push(GameHost.RngGetInt(PopI32(), PopI32()));	break;
+				case OpCode.RandInt:
+				{
+					var min = PopI32();
+					var max = PopI32();
+					Push(GameHost.RngGetInt(min, max));
+					break;
+				}
 				#endregion
 				#region Debug
 				case OpCode.Error:

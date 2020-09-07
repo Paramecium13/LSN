@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Expressions;
+using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Statements
@@ -41,6 +43,18 @@ namespace LsnCore.Statements
 		{
 			yield return null;
 		}
+
+		/// <inheritdoc />
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	public class LoadStatement : Statement
@@ -75,6 +89,18 @@ namespace LsnCore.Statements
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
 			yield return null;
+		}
+
+		/// <inheritdoc />
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

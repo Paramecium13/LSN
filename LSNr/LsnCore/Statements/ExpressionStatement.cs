@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Expressions;
 using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Statements
@@ -48,10 +49,16 @@ namespace LsnCore.Statements
 				yield return expr;
 		}
 
-		/// <inheritdoc/>
-		protected override IEnumerable<PreInstruction> GetInstructions(string target)
+		/// <inheritdoc />
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
 		{
-			return Expression.GetInstructions();
+			Expression.GetInstructions(instructionList, context.WithContext(ExpressionContext.SubExpression));
+		}
+
+		/// <inheritdoc />
+		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -5,14 +5,24 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Expressions;
 using LsnCore.Values;
+using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
+	/// <summary>
+	/// A statement that sets the state of the script object that the current procedure belongs to (Local Variable 0).
+	/// </summary>
+	/// <seealso cref="LsnCore.Statements.Statement" />
 	public sealed class SetStateStatement : Statement
 	{
 		private readonly int State;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SetStateStatement"/> class.
+		/// </summary>
+		/// <param name="state">The state to set the script object to.</param>
 		public SetStateStatement(int state)
 		{
 			State = state;
@@ -26,6 +36,7 @@ namespace LsnCore.Statements
 		}
 #endif
 
+		/// <inheritdoc />
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{}
 
@@ -35,9 +46,22 @@ namespace LsnCore.Statements
 			writer.Write(State);
 		}
 
+		/// <inheritdoc />
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
-			yield return null;
+			yield break;
+		}
+
+		/// <inheritdoc />
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
+		{
+			instructionList.AddInstruction(new SimplePreInstruction(OpCode.SetState, (ushort) State));
+		}
+
+		/// <inheritdoc />
+		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

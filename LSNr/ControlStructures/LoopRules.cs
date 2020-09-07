@@ -52,7 +52,7 @@ namespace LSNr.ControlStructures
 				{
 					// ToDo: Move this logic into AssignmentStatement, IScope, or Variable.
 					var collVar = script.CurrentScope.CreateVariable(vName + " collection", expr.Type.Type);
-					state = new AssignmentStatement(collVar.Index, expr);
+					state = new AssignmentStatement(collVar, expr);
 					collVar.Assignment = state;
 					
 					collection = collVar.AccessExpression;
@@ -80,7 +80,7 @@ namespace LSNr.ControlStructures
 						// statement for end...
 						var endVar = script.CurrentScope.CreateVariable("# " + vName, LsnType.int_);
 						endVar.MarkAsUsed();
-						var st1 = new AssignmentStatement(endVar.Index, rExp.End);
+						var st1 = new AssignmentStatement(endVar, rExp.End);
 						endVar.Assignment = st1;
 						loop.Statement = st1;
 						endVar.AddUser(st1);
@@ -107,7 +107,7 @@ namespace LSNr.ControlStructures
 				default:
 					var rVar = script.CurrentScope.CreateVariable("# " + vName, RangeType.Instance);
 					rVar.MarkAsUsed();
-					var st = new AssignmentStatement(rVar.Index, expr);
+					var st = new AssignmentStatement(rVar, expr);
 					rVar.AddUser(st);
 					rVar.Assignment = st;
 					loop.Statement = st;

@@ -53,7 +53,7 @@ namespace LSNr.Converations
 
 			// ToDo: Move this logic into AssignmentStatement, IScope, or Variable.
 			var v = script.CurrentScope.CreateVariable(Name, Mutable, expr);
-			var let = new AssignmentStatement(v.Index, expr);
+			var let = new AssignmentStatement(v, expr);
 			v.Assignment = let;
 			//v.AddUser(let); //??
 			

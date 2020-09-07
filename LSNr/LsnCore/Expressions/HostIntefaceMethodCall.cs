@@ -6,14 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Types;
 using LsnCore.Values;
+using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
 	public sealed class HostInterfaceMethodCall : IExpression
 	{
+		/// <inheritdoc />
 		public bool IsPure => false;
 
+		/// <inheritdoc />
 		public TypeId Type { get; }
 
 		private readonly string Name;
@@ -42,6 +46,7 @@ namespace LsnCore.Expressions
 		}
 #endif
 
+		/// <inheritdoc />
 		public IExpression Fold()
 		{
 			HostInterface = HostInterface.Fold();
@@ -51,8 +56,10 @@ namespace LsnCore.Expressions
 			return this;
 		}
 
+		/// <inheritdoc />
 		public bool IsReifyTimeConst() => false;
 
+		/// <inheritdoc />
 		public void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if (HostInterface == oldExpr)
@@ -69,6 +76,18 @@ namespace LsnCore.Expressions
 			writer.Write((byte)Arguments.Length);
 			for (int i = 0; i < Arguments.Length; i++)
 				Arguments[i].Serialize(writer, resourceSerializer);
+		}
+
+		/// <inheritdoc />
+		public IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
 		}
 
 		public IEnumerator<IExpression> GetEnumerator()

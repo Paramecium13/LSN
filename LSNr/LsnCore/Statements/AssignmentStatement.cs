@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using LsnCore.Expressions;
+using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Statements
@@ -9,14 +11,12 @@ namespace LsnCore.Statements
 	public class AssignmentStatement : Statement
 	{
 		public IExpression Value;
-		public int Index; // ToDo: For LSNr, add a Variable field, make 'Index' a property that returns Variable.Index
 
-		// ToDo:	Create a ProtoAssignmentStatement class in LSNr. Make it take a variable object, in case the variable's value changes during optimization.
-		//			Or use compiler directives in this class...
-		public AssignmentStatement(int index, IExpression value)
+		public Variable Variable { get; }
+
+		public AssignmentStatement(Variable variable, IExpression value)
 		{
-			//VariableName = name;
-			Index = index;
+			Variable = variable;
 			Value = value;
 		}
 
@@ -40,11 +40,18 @@ namespace LsnCore.Statements
 			if (Value.Equals(oldExpr)) Value = newExpr;
 		}
 
-		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
 		{
-			writer.Write(StatementCode.AssignVariable);
-			writer.Write((ushort)Index);
-			Value.Serialize(writer, resourceSerializer);
+			Value.GetInstructions(instructionList, context.WithContext(ExpressionContext.Store));
+			instructionList.AddInstruction(new SetVariablePreInstruction(Variable));
 		}
+
+		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
+		}
+
+		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{}
 	}
 }

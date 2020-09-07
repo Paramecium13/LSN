@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Expressions;
+using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Statements
@@ -18,12 +20,17 @@ namespace LsnCore.Statements
 			throw new NotImplementedException();
 		}
 
-#if CORE
-		public override InterpretValue Interpret(IInterpreter i)
+		/// <inheritdoc />
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
 		{
 			throw new InvalidOperationException();
 		}
-#endif
+
+		/// <inheritdoc />
+		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		{
+			throw new InvalidOperationException();
+		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 
@@ -43,12 +50,17 @@ namespace LsnCore.Statements
 			throw new NotImplementedException();
 		}
 
-#if CORE
-		public override InterpretValue Interpret(IInterpreter i)
+		/// <inheritdoc />
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
 		{
 			throw new InvalidOperationException();
 		}
-#endif
+
+		/// <inheritdoc />
+		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		{
+			throw new InvalidOperationException();
+		}
 
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 

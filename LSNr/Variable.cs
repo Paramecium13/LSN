@@ -46,14 +46,8 @@ namespace LSNr
 			{
 				if (_index == value) return;
 				_index = value;
-				if (Assignment != null)
-					Assignment.Index = value;
 				if (AccessExpression is VariableExpression v)
 					v.Index = value;
-				foreach (var re in Reassignments)
-				{
-					re.Index = value;
-				}
 			}
 		}
 

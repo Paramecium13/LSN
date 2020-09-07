@@ -144,6 +144,7 @@ namespace LSNr
 			Function = function;
 		}
 
+		/// <inheritdoc />
 		public override void Resolve()
 		{
 			base.Resolve();
@@ -172,6 +173,7 @@ namespace LSNr
 		public LoadVariablePreInstruction(Variable variable) : base(variable, OpCode.LoadLocal)
 		{}
 
+		/// <inheritdoc />
 		public override unsafe void Resolve()
 		{
 			base.Resolve();
@@ -209,8 +211,13 @@ namespace LSNr
 		/// <inheritdoc />
 		public override ushort Data => _data;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SetVariablePreInstruction"/> class.
+		/// </summary>
+		/// <param name="variable">The variable.</param>
 		public SetVariablePreInstruction(Variable variable) : base(variable, OpCode.StoreLocal) { }
 
+		/// <inheritdoc />
 		public override void Resolve()
 		{
 			base.Resolve();

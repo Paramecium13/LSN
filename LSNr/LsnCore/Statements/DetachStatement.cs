@@ -5,19 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Expressions;
 using LsnCore.Values;
+using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Statements
 {
+	// ToDo: Use this!!!
 	public class DetachStatement : Statement
 	{
-#if CORE
-		public override InterpretValue Interpret(IInterpreter i)
-		{
-			(i.GetVariable(0).Value as ScriptObject).Detach();
-			return InterpretValue.Base;
-		}
-#endif
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
@@ -28,6 +24,18 @@ namespace LsnCore.Statements
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
 			yield return null;
+		}
+
+		/// <inheritdoc />
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
+		{
+			instructionList.AddInstruction(new SimplePreInstruction(OpCode.Detach, 0));
+		}
+
+		/// <inheritdoc />
+		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

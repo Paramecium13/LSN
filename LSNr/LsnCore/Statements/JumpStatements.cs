@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Expressions;
 using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Statements
@@ -36,6 +37,12 @@ namespace LsnCore.Statements
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
 			yield break;
+		}
+
+		/// <inheritdoc />
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
+		{
+			instructionList.AddInstruction(new TargetedPreInstruction(OpCode.Jump, target, context.LabelFactory));
 		}
 
 		/// <inheritdoc />
@@ -86,6 +93,27 @@ namespace LsnCore.Statements
 			yield return Condition;
 			foreach (var expr in Condition.SelectMany(e => e))
 				yield return expr;
+		}
+
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
+		{
+			if (Condition is NotExpression not)
+			{
+				not.Value.GetInstructions(instructionList, context.WithContext(ExpressionContext.SubExpression));
+				instructionList.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False, target,
+					context.LabelFactory));
+			}
+			else
+			{
+				Condition.GetInstructions(instructionList, context.WithContext(ExpressionContext.SubExpression));
+				instructionList.AddInstruction(new TargetedPreInstruction(OpCode.Jump_True, target,
+					context.LabelFactory));
+			}
+		}
+
+		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
 		}
 	}
 

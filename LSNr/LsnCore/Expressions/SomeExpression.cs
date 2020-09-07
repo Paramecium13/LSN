@@ -20,6 +20,7 @@ namespace LsnCore.Expressions
 			Type = OptionGeneric.Instance.GetType(new[] { Contents.Type }).Id;
 		}
 
+		/// <inheritdoc />
 		public override bool IsPure => Contents.IsPure;
 
 		/// <inheritdoc />
@@ -41,6 +42,7 @@ namespace LsnCore.Expressions
 			return this;
 		}
 
+		/// <inheritdoc />
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
 			yield return Contents;
@@ -48,6 +50,7 @@ namespace LsnCore.Expressions
 				yield return expr;
 		}
 
+		/// <inheritdoc />
 		public override bool IsReifyTimeConst()
 			=> Contents.IsReifyTimeConst();
 

@@ -15,10 +15,16 @@ namespace LsnCore.Expressions
 	/// <seealso cref="Expression" />
 	public sealed class VariableExpression : Expression
 	{
+		/// <summary>
+		/// The index of the variable
+		/// </summary>
 		public int Index;
 
 		public override bool IsPure => true;
 
+		/// <summary>
+		/// The variable
+		/// </summary>
 		public readonly Variable Variable;
 
 		public VariableExpression(int index, TypeId type, Variable variable)

@@ -166,6 +166,7 @@ namespace LsnCore
 		#region Jump/Branch
 		/// <summary>Unconditional jump. Target is data</summary>
 		Jump,
+		
 		/// <summary>Conditional jump. Target is data</summary>
 		Jump_True,
 		Jump_True_NoPop,
@@ -305,16 +306,12 @@ namespace LsnCore
 		#region ScriptClass
 		/// <summary>Data is state; local[0] is script class.</summary>
 		SetState,
-		/// <summary>
-		/// Call the constructor for the script class
-		/// Stack: , arg_0, ..., arg_N, (host) -> ,script object
-		/// </summary>
+		/// <summary>Called in the beginning of the constructor... Puts it in stack[0]</summary>
 		ConstructScriptClass,
 
 		/// <summary>Called in the beginning of the constructor... Puts it in stack[0]</summary>
-		CreateScriptClass,
-		/// <summary>Called in the beginning of the constructor... Puts it in stack[0]</summary>
-		CreateAndAttachScriptClass,
+		ConstructAndAttachScriptClass,
+		
 		/// <summary>Called at the end of the constructor of a script class that listens to its hosts events...</summary>
 		RegisterScriptObjectForEvents,
 			// This happens at the end of the constructor so that all of the script object's fields are initialized before any of its code is run.
@@ -326,14 +323,19 @@ namespace LsnCore
 		#endregion
 		#region LSN
 		GoTo,
+
+		// Register event?
 		ComeFrom,
 		Say,
 		/// <summary>Instruction index is data...</summary>
 		RegisterChoice,
 		/// <summary>???</summary>
 		RegisterChoice_Pop,
+		/// <summary>
+		/// Call choices, sets $PC to the result.
+		/// </summary>
 		CallChoices,
-		/// <summary>Call choice but instead of jumping, push result onto stack.</summary>
+		/// <summary>Call choice but instead of jumping, pushes the result onto the evaluation stack.</summary>
 		CallChoices_Push, // Maybe use same OpCode as CallChoices but depend on data...
 		GiveItem,
 		GiveGold,
@@ -348,6 +350,9 @@ namespace LsnCore
 		/// <summary>Set PRNG seed to pseudo-random value, e.g. system time (in ticks).</summary>
 		Srand_sysTime,
 		Rand,
+		/// <summary>
+		/// max, min -> random
+		/// </summary>
 		RandInt,
 		#endregion
 		#region Debug

@@ -190,7 +190,8 @@ namespace LSNr.Optimization
 		private int ForLoopCount;
 		protected override void WalkForLoop(ForLoop f)
 		{
-			var index = ForLoopCount++;
+			throw new NotImplementedException(); // ForLoop is unused...
+			/*var index = ForLoopCount++;
 			var cndLabel = LabelPrefix + "For" + index;
 			var endLabel = LabelPrefix + "EndFor" + index;
 
@@ -215,7 +216,7 @@ namespace LSNr.Optimization
 			AddLabel(endLabel);
 
 			InnerMostLoopContinueLabels.Pop();
-			InnerMostLoopEndLabels.Pop();
+			InnerMostLoopEndLabels.Pop();*/
 		}
 
 		private int ChoiceCount;
@@ -306,7 +307,7 @@ namespace LSNr.Optimization
 				PreStatements.Add(p);
 				// [label?] assign limit ?
 			}
-			var initPreSt = new PreStatement(new AssignmentStatement(fr.Iterator.Index, fr.Start)) { Label = PopNextLabel() };
+			var initPreSt = new PreStatement(new AssignmentStatement(fr.Iterator, fr.Start)) { Label = PopNextLabel() };
 			PreStatements.Add(initPreSt);
 					// [label?] init var
 			if (!(fr.Start is LsnValue start1 && fr.End is LsnValue end1 && start1.IntValue <= end1.IntValue))
@@ -326,7 +327,7 @@ namespace LSNr.Optimization
 			Walk(fr.Body);
 					// [start] body
 			//if(NextLabel == null) add NOP.
-			var incrStatement = new AssignmentStatement(fr.Iterator.Index,
+			var incrStatement = new AssignmentStatement(fr.Iterator,
 				new BinaryExpression(fr.Iterator.AccessExpression, new LsnValue(1), BinaryOperation.Sum,
 				BinaryOperationArgsType.Int_Int));
 			PreStatements.Add(new PreStatement(incrStatement) { Label = new List<string> { continueLabel } });
@@ -363,7 +364,7 @@ namespace LSNr.Optimization
 
 			// [label?] init index
 			// ToDo: Use fc.Statement
-			var initPreSt = new PreStatement(new AssignmentStatement(fc.Index.Index, new LsnValue(0))) { Label = PopNextLabel() };
+			var initPreSt = new PreStatement(new AssignmentStatement(fc.Index, new LsnValue(0))) { Label = PopNextLabel() };
 			PreStatements.Add(initPreSt);
 			// if (collection is empty) jmp end
 			// ToDo: ?????
@@ -379,7 +380,7 @@ namespace LSNr.Optimization
 			//if(NextLabel == null) add NOP.
 
 			// index++
-			var incrStatement = new AssignmentStatement(fc.Index.Index,
+			var incrStatement = new AssignmentStatement(fc.Index,
 				new BinaryExpression(fc.Index.AccessExpression, new LsnValue(1), BinaryOperation.Sum,
 				BinaryOperationArgsType.Int_Int));
 			PreStatements.Add(new PreStatement(incrStatement) { Label = new List<string> { continueLabel } });

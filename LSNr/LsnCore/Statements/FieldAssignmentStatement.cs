@@ -106,5 +106,5 @@ namespace LsnCore.Statements
 		}
 	}
 
-	// Make a const version, where the ValueToAssign is a(n) LsnValue?
+	//ToDo: Make a const version, where the ValueToAssign is a(n) LsnValue?
 }
