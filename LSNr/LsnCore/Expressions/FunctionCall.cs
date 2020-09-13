@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using LSNr;
+using LSNr.CodeGeneration;
 using MoreLinq;
 using Syroot.BinaryData;
 
@@ -11,6 +12,7 @@ namespace LsnCore.Expressions
 	{
 		public Function Fn;
 
+		/// <inheritdoc />
 		public override bool IsPure => false;
 
 		//ToDo: Encapsulate? Used in ExpressionWalker...
@@ -25,25 +27,28 @@ namespace LsnCore.Expressions
 			Type = fn.ReturnType;
 		}
 
+		/// <inheritdoc />
 		public override IExpression Fold()
 		{
 			var args = Args.Select(a => a.Fold()).ToArray();
 			return new FunctionCall(Fn, args);
 		}
 
+		/// <inheritdoc />
 		public override bool IsReifyTimeConst() => false;
 
+		/// <inheritdoc />
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if(Args.Contains(oldExpr))
 				Args[Array.IndexOf(Args, oldExpr)] = newExpr;
 		}
 
+		/// <inheritdoc />
 		public override bool Equals(IExpression other)
 		{
-			var e = other as FunctionCall;
-			if (e == null) return false;
-			return e.Args.SequenceEqual(Args);
+			if (!(other is FunctionCall e)) return false;
+			return e.Fn == Fn && e.Args.SequenceEqual(Args);
 		}
 
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
@@ -55,6 +60,7 @@ namespace LsnCore.Expressions
 				t.Serialize(writer, resourceSerializer);
 		}
 
+		/// <inheritdoc />
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
 			foreach (var arg in Args)
@@ -65,9 +71,22 @@ namespace LsnCore.Expressions
 			}
 		}
 
+		/// <inheritdoc />
 		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
 		{
 			return Args.SelectMany(a => a.GetInstructions(context)).Append(new FunctionCallPreInstruction(Fn));
+		}
+
+		/// <inheritdoc />
+		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			var subcontext = context.WithContext(ExpressionContext.Parameter_Default);
+			foreach (var arg in Args)
+			{
+				arg.GetInstructions(instructions, subcontext);
+			}
+
+			instructions.AddInstruction(new FunctionCallPreInstruction(Fn));
 		}
 	}
 }

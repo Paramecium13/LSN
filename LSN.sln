@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2035
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30309.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSN", "LSN\LSN.csproj", "{C1269507-B8FD-4668-8D5A-0819DEAAFE89}"
 EndProject
@@ -10,6 +10,11 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "LSN (Shared)", "LSN (Shared)\LSN (Shared).shproj", "{1579E78F-3443-4832-8802-B297FF0E9A36}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleInterpreter", "ConsoleInterpreter\ConsoleInterpreter.csproj", "{1ABD4D5A-067B-4D6B-AD25-9B1F7919D1D0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{667AA833-385C-40B4-ACBC-2F321390823A}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

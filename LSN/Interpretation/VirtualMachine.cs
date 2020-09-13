@@ -11,7 +11,6 @@ namespace LsnCore.Interpretation
 {
 	public interface IProcedureB
 	{
-		Instruction[] Instructions { get; }
 		ushort NumberOfParameters { get; }
 		ushort StackSize { get; }
 		LsnObjectFile Environment { get; }
@@ -32,6 +31,7 @@ namespace LsnCore.Interpretation
 	 *	Calling convention:
 	 *		For non-virtual calls, the callee pops its arguments from the eval stack as it sees fit...
 	 */
+	// ReSharper disable once UnusedMember.Global
 	public class VirtualMachine
 	{
 		static readonly LsnValue Cairo = new LsnValue(new StringValue("Elephant"));
@@ -41,7 +41,7 @@ namespace LsnCore.Interpretation
 		readonly IResourceManager	ResourceManager;
 		readonly ILsnGameHost		GameHost;
 
-		VMRegisterFile RegisterFile = new VMRegisterFile();
+		VMRegisterFile RegisterFile;
 
 		int Target
 		{
@@ -90,6 +90,8 @@ namespace LsnCore.Interpretation
 		string   PopString()   => ((StringValue) EvalStack.Pop().Value).Value;
 
 		LsnValue Peek() => EvalStack.Peek();
+
+		//ToDo: Make VMRegisterFile a stack variable/parameter...
 		public LsnValue Enter(ProcedureInfo procedure, LsnValue[] args)
 		{
 			Push(Cairo);
@@ -189,7 +191,7 @@ namespace LsnCore.Interpretation
 					throw new NotImplementedException();
 				case OpCode.CallNativeMethod:
 					{
-						var methodName = Environment.GetString(instr.Index);
+						var methodName = Environment.GetIdentifierString(instr.Index);
 						var type = Environment.GetUsedType(TmpIndex);
 						var method = (BoundedMethod)type.Methods[methodName];
 						if (method.ReturnType != null && method.ReturnType.Name != "void")
@@ -216,11 +218,11 @@ namespace LsnCore.Interpretation
 				#endregion
 				#region Constants
 				case OpCode.LoadConst_I32_short:		Push(instr.Data);								break;
-				case OpCode.LoadConst_I32:				Push(Environment.GetInt(instr.Index));			break; // ToDo: Use TmpIndex???
+				case OpCode.LoadConst_I32:				Push((TmpIndex << 16) | instr.Index);			break;
 				case OpCode.LoadConst_F64:				Push(Environment.GetDouble(instr.Index));		break;
 				//case OpCode.LoadConst_F64_short:		Push((double)instr.Data);						break;
 				case OpCode.LoadConst_F64_ShortRatio:	Push(instr.Index / ((double)ushort.MaxValue));	break;
-				case OpCode.LoadConst_Obj:				Push(Environment.GetObject(instr.Index));		break;
+				case OpCode.LoadConst_String:			Push(Environment.GetString(instr.Index));		break;
 				case OpCode.LoadConst_Nil:				Push(LsnValue.Nil);								break;
 				case OpCode.Load_UniqueScriptClass:
 					Push(ResourceManager.GetUniqueScriptObject(Environment.GetUsedType(instr.Index) as ScriptClass));
@@ -487,8 +489,8 @@ namespace LsnCore.Interpretation
 			Stack.EnterProcedure(RegisterFile, procedure);
 			CurrentProcedure = procedure;
 			// Place args in stack frame...
-			/*for (int i = CurrentProcedure.NumberOfParameters - 1; i >= 0; i--)
-				Stack.SetVariable(i, Pop());*/
+			for (int i = CurrentProcedure.NumberOfParameters - 1; i >= 0; i--)
+				Stack.SetVariable(i, Pop());
 			NextInstruction = procedure.CodeOffset;
 		}
 

@@ -241,12 +241,14 @@ namespace LsnCore
 		LoadConst_I32,
 		/// <summary> </summary>
 		LoadConst_F64,
-		/// <summary> </summary>
+		// <summary> </summary>
 		//LoadConst_F64_short,
 		/// <summary> Push (index) /((double)ushort.MaxValue)</summary>
 		LoadConst_F64_ShortRatio,
-		/// <summary> </summary>
-		LoadConst_Obj,
+		/// <summary>
+		/// Load a constant string
+		/// </summary>
+		LoadConst_String,
 		/// <summary> </summary>
 		LoadConst_Nil,
 		#endregion
