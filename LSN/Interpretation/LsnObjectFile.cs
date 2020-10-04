@@ -38,6 +38,7 @@ namespace LsnCore.Interpretation
 		public readonly ProcedureInfo Info;
 		public readonly TypeId ReturnType;
 		public readonly ProcedureClassification Classification;
+		public readonly TypeId OwnerType;
 	}
 	
 	/// <summary>
@@ -45,6 +46,29 @@ namespace LsnCore.Interpretation
 	/// </summary>
 	public class LsnObjectFile
 	{
+		/// <summary>
+		/// The constant table
+		/// </summary>
+		private readonly ConstTableStruct ConstTable;
+
+		/// <summary>
+		/// The referenced types
+		/// </summary>
+		private readonly TypeId[] ReferencedTypes;
+
+		/// <summary>
+		/// The defined types
+		/// </summary>
+		private readonly TypeId[] DefinedTypes;
+
+		/// <summary>
+		/// A lookup of types defined in this file by their names.
+		/// </summary>
+		private readonly IReadOnlyDictionary<string, TypeId> DefinedTypesLookup;
+
+		/// <summary>
+		/// The procedure definitions
+		/// </summary>
 		private readonly ProcedureDefinition[] ProcedureDefinitions;
 
 		/// <summary>
@@ -69,14 +93,17 @@ namespace LsnCore.Interpretation
 			internal ConstTableStruct(double[] doubles, string[] strings)
 			{
 				ConstDoubles = doubles;
-				ConstStrings = strings.Select(s => new StringValue(s)).ToArray();
+				ConstStrings = new StringValue[strings.Length];
+				for (int i = 0; i < strings.Length; i++)
+				{
+					ConstStrings[i] = new StringValue(strings[i]);
+				}
 			}
 
 			internal double GetDouble(ushort index) => ConstDoubles[index];
 			internal StringValue GetString(ushort index) => ConstStrings[index];
 		}
 
-		private readonly ConstTableStruct ConstTable;
 
 		/// <summary>
 		/// Gets a string that is the name of something
@@ -86,14 +113,19 @@ namespace LsnCore.Interpretation
 		internal string GetIdentifierString(ushort index) => throw new NotImplementedException();
 
 		/// <summary>
-		/// Gets a type used by code in this file.
+		/// Gets the id of a type used by code in this file. A negative value of <paramref name="index"/> indicates it is a locally defined type.
 		/// </summary>
-		internal LsnType GetUsedType(ushort index) => throw new NotImplementedException();
+		internal TypeId GetUsedTypeId(short index) => index > 0 ? ReferencedTypes[index]: DefinedTypes[-index];
 
+		/// <summary>
+		/// Gets a type used by code in this file. A negative value of <paramref name="index"/> indicates it is a locally defined type.
+		/// </summary>
+		internal LsnType GetUsedType(short index) => GetUsedTypeId(index).Type;
+		
 		/// <summary>
 		/// Gets a type contained in this file.
 		/// </summary>
-		internal LsnType GetContainedType(string name) => throw new NotImplementedException();
+		internal TypeId GetContainedType(string name) => DefinedTypesLookup[name];
 
 		/// <summary>
 		/// Get a procedure called by code in this file.

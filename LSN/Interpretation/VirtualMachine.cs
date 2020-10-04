@@ -111,7 +111,7 @@ namespace LsnCore.Interpretation
 			return res;
 		}
 
-		ushort TmpIndex;
+		short TmpIndex;
 
 		void Eval(Instruction instr)
 		{
@@ -182,7 +182,7 @@ namespace LsnCore.Interpretation
 				case OpCode.SetTarget:		Target = instr.Index;							break;
 				#endregion
 				#region Call
-				case OpCode.LoadIndex:		TmpIndex = instr.Index;							break;
+				case OpCode.LoadIndex:		TmpIndex = instr.Data;							break;
 				case OpCode.CallFn_Short:
 				case OpCode.CallFn:
 					EnterFunction(Environment.GetProcedure(instr.Index)); break;
@@ -225,7 +225,7 @@ namespace LsnCore.Interpretation
 				case OpCode.LoadConst_String:			Push(Environment.GetString(instr.Index));		break;
 				case OpCode.LoadConst_Nil:				Push(LsnValue.Nil);								break;
 				case OpCode.Load_UniqueScriptClass:
-					Push(ResourceManager.GetUniqueScriptObject(Environment.GetUsedType(instr.Index) as ScriptClass));
+					Push(ResourceManager.GetUniqueScriptObject(Environment.GetUsedType(instr.Data) as ScriptClass));
 					break;
 				#endregion
 				#region Variables, fields, and elements
@@ -351,14 +351,14 @@ namespace LsnCore.Interpretation
 				#endregion
 				#region Vectors and Lists
 				case OpCode.ConstructList:
-					Push(new LsnList((LsnListType)Environment.GetUsedType(instr.Index)));
+					Push(new LsnList((LsnListType)Environment.GetUsedType(instr.Data)));
 					break;
 				case OpCode.InitializeList:
 				case OpCode.InitializeArray:
 					throw new NotImplementedException();
 				#endregion
 				case OpCode.ConstructStruct: {
-						var type = Environment.GetUsedType(instr.Index) as StructType;
+						var type = Environment.GetUsedType(instr.Data) as StructType;
 						var fCount = type.FieldCount;
 						var vals = GetArray(fCount);
 						for (var i = fCount - 1; i >= 0; i++)
@@ -375,7 +375,7 @@ namespace LsnCore.Interpretation
 						FreeArray(str.Values, fCount);
 					} break;
 				case OpCode.ConstructRecord: {
-						var type = Environment.GetUsedType(instr.Index) as RecordType;
+						var type = Environment.GetUsedType(instr.Data) as RecordType;
 						var fCount = type.FieldCount;
 						var vals = GetArray(fCount);
 						for (var i = fCount - 1; i >= 0; i++)
@@ -390,7 +390,7 @@ namespace LsnCore.Interpretation
 				#region Script Class
 				case OpCode.ConstructScriptClass:
 					{
-						var scriptClass = (ScriptClass) Environment.GetUsedType(instr.Index);
+						var scriptClass = (ScriptClass) Environment.GetUsedType(instr.Data);
 						var scrObj = new ScriptObject(new LsnValue[scriptClass.Fields.Count], scriptClass, scriptClass.DefaultStateId, null);
 						var cstor = scriptClass.Constructor;
 						EnterFunction(((IProcedureB)cstor).Info);
@@ -400,7 +400,7 @@ namespace LsnCore.Interpretation
 					}
 				case OpCode.ConstructAndAttachScriptClass:
 					{
-						var scriptClass = Environment.GetUsedType(instr.Index) as ScriptClass;
+						var scriptClass = Environment.GetUsedType(instr.Data) as ScriptClass;
 						var scrObj = new ScriptObject(new LsnValue[scriptClass.Fields.Count], scriptClass, scriptClass.DefaultStateId, (IHostInterface) Pop().Value, false);
 						Push(scrObj);
 						var cstor = scriptClass.Constructor;
@@ -415,9 +415,9 @@ namespace LsnCore.Interpretation
 						scrObj.RegisterForEvents();
 						break;
 					}
-				case OpCode.SetState:	(Stack.GetVariable(0).Value as ScriptObject).SetState(instr.Data);	break;
-				case OpCode.Detach:		(Stack.GetVariable(0).Value as ScriptObject).Detach();				break;
-				case OpCode.GetHost:	Push((Stack.GetVariable(0).Value as ScriptObject).GetHost());		break;
+				case OpCode.SetState:	((ScriptObject) Stack.GetVariable(0).Value).SetState(instr.Data);	break;
+				case OpCode.Detach:		((ScriptObject) Stack.GetVariable(0).Value).Detach();				break;
+				case OpCode.GetHost:	Push(((ScriptObject) Stack.GetVariable(0).Value).GetHost());		break;
 				#endregion
 				#region LSN
 				case OpCode.GoTo:

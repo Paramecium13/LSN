@@ -9,29 +9,30 @@ namespace LsnCore
 	 *		Info about this file...
 	 *	Data Section (May be shared by multiple files to save space...?):
 	 *		Constant Pools:
-	 *			WORD (4 Bytes) Pool ??? (Not to sure about this, instructions can just use temp index for 2 more bytes:
+	 *			LONG (8 bytes) Pool [Indexed]:
 	 *				...
-	 *			LONG (8 bytes) Pool:
-	 *				...
-	 *			String Pool:
+	 *			String Pool [Indexed]:
 	 *				...
 	 *	Link Section
-	 *		Usings Segment:
-	 *			Index of name in Id Strings segment
-	 *		Used Types Segment:
-	 *			Index of containing file + 2 (0 is system, 1 is this file)
-	 *			Index of name in Id Strings segment
+	 *		Usings Segment [Indexed?]:
+	 *			Name
+	 *		Used Types Segment [Indexed]:
+	 *			Index of containing file + 1 (0 is system)
+	 *			Name
 	 *			Type of type [enum...]
 	 *			Number of generics
 	 *			generics[number of generics]:
 	 *				index of generic parameter in used types segment.
 	 *			...
-	 *		Id Strings segment:
+	 *			{During loading, the values in this are resolved to TypeIds}
+	 *		Id Strings segment [Indexed]:
 	 *			...
 	 *	Info Section
+	 *		Defined Type Ids [Indexed]
+	 *			Name of type
 	 *		Non-Local Procedure Stubs:
-	 *			Index of type in types segment
-	 *			Index of name in Id Strings segment
+	 *			Index of Type in used types segment
+	 *			Name
 	 *		Exported Types Segment:
 	 *			Index of entry in used types segment...?
 	 *			...
@@ -40,8 +41,8 @@ namespace LsnCore
 	 *			stack size
 	 *			number of parameters
 	 *			parameters:
-	 *				Index of name
-	 *				Index of type
+	 *				Name
+	 *				Index of type [Type Index: A negative value indicates it is a locally defined type]
 	 *				Usage info bit-flags?
 	 *			index of return type
 	 *			offset of first instruction in code segment
