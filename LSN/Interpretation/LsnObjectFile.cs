@@ -24,6 +24,29 @@ namespace LsnCore.Interpretation
 		}
 	}
 
+	/// <summary>
+	/// Contains the information that the Virtual Machine needs to call a host interface method.
+	/// </summary>
+	/// <remarks>
+	/// If/when the VM transitions to using Handles for methods, types, & stuff, this will contain
+	/// the method's handle in place of its name.
+	/// </remarks>
+	public readonly struct SignatureStub
+	{
+		public readonly string Name;
+
+		public readonly int NumberOfParameters;
+
+		public SignatureStub(string name, int numberOfParameters)
+		{
+			Name = name;
+			NumberOfParameters = numberOfParameters;
+		}
+
+		public SignatureStub(FunctionSignature signature) : this(signature.Name, signature.Parameters.Count)
+		{}
+	}
+
 	public enum ProcedureClassification
 	{
 		Function,
@@ -71,6 +94,8 @@ namespace LsnCore.Interpretation
 		/// </summary>
 		private readonly ProcedureDefinition[] ProcedureDefinitions;
 
+		private readonly SignatureStub[] SignatureStubs;
+
 		/// <summary>
 		/// Gets the name of this file.
 		/// </summary>
@@ -111,6 +136,8 @@ namespace LsnCore.Interpretation
 		/// <param name="index"></param>
 		/// <returns></returns>
 		internal string GetIdentifierString(ushort index) => throw new NotImplementedException();
+
+		internal SignatureStub GetSignatureStub(ushort index) => SignatureStubs[index];
 
 		/// <summary>
 		/// Gets the id of a type used by code in this file. A negative value of <paramref name="index"/> indicates it is a locally defined type.

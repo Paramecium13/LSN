@@ -152,6 +152,26 @@ namespace LSNr
 		}
 	}
 
+	public class HostInterfaceMethodCallPreInstruction : PreInstruction
+	{
+		internal FunctionSignature MethodSignature { get; }
+
+		/// <inheritdoc />
+		public override ushort Data => throw new NotImplementedException();
+
+		/// <inheritdoc />
+		public HostInterfaceMethodCallPreInstruction(FunctionSignature methodSignature) : base(OpCode.CallHostInterfaceMethodVoid)
+		{
+			MethodSignature = methodSignature;
+		}
+
+		public override void Resolve()
+		{
+			base.Resolve();
+			throw new NotImplementedException();
+		}
+	}
+
 	public abstract class VariablePreInstruction : PreInstruction
 	{
 		protected VariablePreInstruction(Variable variable, OpCode code) : base(code)

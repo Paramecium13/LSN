@@ -32,15 +32,10 @@ namespace LsnCore
 		}
 
 		protected string _ResourceFilePath;
-		public string ResourceFilePath { get { return _ResourceFilePath; } protected set { _ResourceFilePath = value; } }
-
-		public virtual FunctionCall CreateCall(IList<Tuple<string,IExpression>> args, bool included = false)
-		{
-			var argsArray = Signature.CreateArgsArray(args);
-
-			return new FunctionCall(this, argsArray);
+		public string ResourceFilePath { get => _ResourceFilePath;
+			protected set => _ResourceFilePath = value;
 		}
-
+		
 #if CORE
 		public abstract LsnValue Eval(LsnValue[] args, IInterpreter i);
 #endif

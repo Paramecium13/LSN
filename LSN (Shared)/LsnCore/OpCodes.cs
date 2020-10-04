@@ -232,6 +232,7 @@ namespace LsnCore
 		/// Data is index of method name.
 		/// {, arg_0,..., arg_N, object -> , result (if it returns a value) }
 		/// </summary>
+		CallHostInterfaceMethodVoid,
 		CallHostInterfaceMethod,
 		Ret,
 		#endregion

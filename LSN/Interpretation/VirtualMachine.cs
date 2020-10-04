@@ -203,15 +203,35 @@ namespace LsnCore.Interpretation
 					EnterFunction(Environment.GetProcedure(instr.Index));
 					break;
 				case OpCode.CallScObjVirtualMethod:
+				{
+					throw new NotImplementedException();
+				}
+				case OpCode.CallHostInterfaceMethodVoid:
+				{
+					var obj = Peek().Value as IHostInterface;
+					var sigStub = Environment.GetSignatureStub(instr.Index);
+					var args = new LsnValue[sigStub.NumberOfParameters]; // ToDo: Array Caching...
+					for (var j= sigStub.NumberOfParameters - 1; j >= 0; j--)
 					{
-						throw new NotImplementedException();
+						args[j] = Pop();
 					}
+					
+					obj.CallMethod(sigStub.Name, args);
+					break;
+				}
 				case OpCode.CallHostInterfaceMethod:
+				{
+					var obj = Peek().Value as IHostInterface;
+					var sigStub = Environment.GetSignatureStub(instr.Index);
+					var args = new LsnValue[sigStub.NumberOfParameters]; // ToDo: Array Caching...
+					for (var j = sigStub.NumberOfParameters - 1; j >= 0; j--)
 					{
-						var obj = Peek().Value as IHostInterface;
-						var type = obj.Type.Type;
-						throw new NotImplementedException();
+						args[j] = Pop();
 					}
+
+					Push(obj.CallMethod(sigStub.Name, args));
+					break;
+				}
 				case OpCode.Ret:
 					RegisterFile = Stack.ExitProcedure();
 					break;

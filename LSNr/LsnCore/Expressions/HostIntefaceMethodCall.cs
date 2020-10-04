@@ -20,21 +20,17 @@ namespace LsnCore.Expressions
 		/// <inheritdoc />
 		public TypeId Type { get; }
 
-		private readonly string Name;
+		internal string Name => Signature.Name;
 
 		private IExpression HostInterface;
 
 		private readonly IExpression[] Arguments;
 
+		internal FunctionSignature Signature { get; }
 
 		public HostInterfaceMethodCall(FunctionSignature def, IExpression hostInterface, IExpression[] args)
 		{
-			Type = def.ReturnType; Name = def.Name; HostInterface = hostInterface; Arguments = args;
-		}
-
-		public HostInterfaceMethodCall(string name, IExpression hostInterface, IExpression[] args)
-		{
-			Name = name; HostInterface = hostInterface; Arguments = args;
+			Type = def.ReturnType; HostInterface = hostInterface; Arguments = args; Signature = def;
 		}
 
 		public bool Equals(IExpression other) => this == other;
@@ -87,7 +83,13 @@ namespace LsnCore.Expressions
 		/// <inheritdoc />
 		public void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{
-			throw new NotImplementedException();
+			foreach (var argument in Arguments)
+			{
+				argument.GetInstructions(instructions, context.WithContext(ExpressionContext.Parameter_Default));
+			}
+
+			HostInterface.GetInstructions(instructions, context.WithContext(ExpressionContext.SubExpression));
+			instructions.AddInstruction(new HostInterfaceMethodCallPreInstruction(this.))
 		}
 
 		public IEnumerator<IExpression> GetEnumerator()
