@@ -225,7 +225,7 @@ namespace LsnCore
 				}, new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Gamma")
 			};
 
-			return new LsnResourceThing(new TypeId[] { LsnType.int_.Id, LsnType.double_.Id})
+			return new LsnResourceThing(new[] { LsnType.int_.Id, LsnType.double_.Id})
 			{
 				HostInterfaces = new Dictionary<string, HostInterfaceType>(),
 				StructTypes = new Dictionary<string, StructType>(),

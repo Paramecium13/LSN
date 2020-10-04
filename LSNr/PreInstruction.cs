@@ -160,7 +160,8 @@ namespace LSNr
 		public override ushort Data => throw new NotImplementedException();
 
 		/// <inheritdoc />
-		public HostInterfaceMethodCallPreInstruction(FunctionSignature methodSignature) : base(OpCode.CallHostInterfaceMethodVoid)
+		public HostInterfaceMethodCallPreInstruction(FunctionSignature methodSignature)
+			: base(methodSignature.ReturnType?.Name != null && methodSignature.Name != "void"? OpCode.CallHostInterfaceMethod : OpCode.CallHostInterfaceMethodVoid)
 		{
 			MethodSignature = methodSignature;
 		}

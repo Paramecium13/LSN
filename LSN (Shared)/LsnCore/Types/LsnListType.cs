@@ -97,6 +97,7 @@ namespace LsnCore
 			_Methods.Add("Length", new BoundedMethod(this, int_, (args) => ((LsnList)args[0].Value).Length(), "Length"));
 			var vtype = ArrayGeneric.Instance.GetType(new TypeId[] { GenericId }) as ArrayType;
 			_Methods.Add("ToArray", new BoundedMethod(this, vtype, (args) => new LsnValue(new ArrayInstance(vtype, ((LsnList)args[0].Value).GetValues())), "ToArray"));
+			// ToDo: Remove, RemoveAt, Clear.
 			Id.Load(this);
 		}
 

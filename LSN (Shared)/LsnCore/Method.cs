@@ -22,12 +22,6 @@ namespace LsnCore
 			TypeId = type.Id;
 		}
 
-		protected Method(LsnType type, TypeId returnType, string name, IReadOnlyList<Parameter> parameters)
-			: base(new FunctionSignature(parameters, name, returnType))
-		{
-			TypeId = type.Id;
-		}
-
 		protected Method(TypeId type, TypeId returnType, string name, IReadOnlyList<Parameter> parameters)
 			: base(new FunctionSignature(parameters, name, returnType))
 		{

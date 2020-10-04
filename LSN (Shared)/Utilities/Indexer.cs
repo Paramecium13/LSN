@@ -4,6 +4,7 @@ using System.Text;
 
 namespace LsnCore.Utilities
 {
+	// ToDo: Document!!!
 	public class Indexer<T>
 	{
 		public class RestorePoint
@@ -49,6 +50,10 @@ namespace LsnCore.Utilities
 			return Index + by < Collection.Count && (test == null || test(Collection[Index + by]));
 		}
 
+		/// <summary>
+		/// Tries to move this <see cref="Indexer{T}"/> forward.
+		/// </summary>
+		/// <returns> Whether this <see cref="Indexer{T}"/> was able to move forward. </returns>
 		public bool MoveForward()
 		{
 			if (Index + 1 >= Collection.Count) return false;

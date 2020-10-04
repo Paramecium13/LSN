@@ -28,9 +28,19 @@ namespace LSNr.ScriptObjects
 	public interface IPreScriptClass : IBasePreScriptClass
 	{
 		void RegisterField(string name, TypeId id, bool mutable);
+
+		/// <summary>
+		/// Registers an abstract method.
+		/// </summary>
+		/// <param name="name">The name of the method.</param>
+		/// <param name="returnType">The method's return type.</param>
+		/// <param name="parameters">The parameters.</param>
 		void RegisterAbstractMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters);
+
 		ScriptClassMethod RegisterMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters, bool isVirtual);
+		
 		EventListener RegisterEventListener(string name, IReadOnlyList<Parameter> parameters);
+		
 		ScriptClassConstructor RegisterConstructor(IReadOnlyList<Parameter> parameters);
 
 		event Action<IPreScriptClass> ParsingProcBodies;
@@ -96,6 +106,7 @@ namespace LSNr.ScriptObjects
 			return ScriptClass.ParseParameters(argTokens);
 		}
 
+		// ToDo: Share this logic w/ functions, host interface method declarations.
 		protected TypeId ParseReturnType(Indexer<Token> index, string memberTypeName, string memberName)
 		{
 			if (!index.MoveForward() || index.Current.Value == ";" || index.Current.Value == "{") return null;
@@ -106,12 +117,12 @@ namespace LSNr.ScriptObjects
 			if(index.Current.Value == "(")
 			{
 				if (!index.MoveForward() || index.Current.Value != ")")
-					throw new LsnrParsingException(index.Current, "...", ScriptClass.Path);
+					throw new LsnrParsingException(index.Current, "invalid return type syntax...", ScriptClass.Path);
 			}
 			else
 			{
-				var tTokens = index.SliceWhile(t => t.Value != ";" && t.Value != "{", out bool err);
-				ret = ScriptClass.ParseTypeId(tTokens, 0, out int x);
+				var tTokens = index.SliceWhile(t => t.Value != ";" && t.Value != "{", out _);
+				ret = ScriptClass.ParseTypeId(tTokens, 0, out _);
 				if (ret == null)
 					throw new LsnrParsingException(index.Current, "Type not found...", ScriptClass.Path);
 			}

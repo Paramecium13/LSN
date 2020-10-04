@@ -13,12 +13,44 @@ namespace LSNr.ReaderRules
 {
 	public interface IFunctionContainer : ITypeContainer
 	{
+		/// <summary>
+		/// Gets the file path of the source file.
+		/// </summary>
 		string Path { get; }
+
+		/// <summary>
+		/// Is the script valid?
+		/// </summary>
 		bool Valid { get; set; }
+
+		/// <summary>
+		/// Gets the function with the name <paramref name="name"/>.
+		/// </summary>
+		/// <param name="name">The name of the function to get.</param>
+		/// <returns></returns>
 		Function GetFunction(string name);
 
+		/// <summary>
+		/// Checks determines what type of symbol the identifier <paramref name="symbol"/> refers to in this context.
+		/// </summary>
+		/// <param name="symbol">The symbol.</param>
+		/// <returns> The <see cref="SymbolType"/></returns>
 		SymbolType CheckSymbol(string symbol);
+
+		/// <summary>
+		/// Parses <paramref name="tokens"/> into a list of <see cref="Parameter"/>s.
+		/// </summary>
+		/// <param name="tokens">The tokens.</param>
 		IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens);
+
+		/// <summary>
+		/// Creates the procedure.
+		/// </summary>
+		/// <param name="args">The procedure's arguments.</param>
+		/// <param name="retType"> The procedure's return type, or null if it does not return a value.</param>
+		/// <param name="name">The procedure's name.</param>
+		/// <param name="isVirtual"> Is the procedure virtual?.</param>
+		/// <returns></returns>
 		IProcedure CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false);
 	}
 
@@ -26,11 +58,21 @@ namespace LSNr.ReaderRules
 	{
 		IPreScript Script { get; }
 
+		/// <summary>
+		/// Registers that this file uses the file <paramref name="file"/>.
+		/// </summary>
+		/// <param name="file">The file.</param>
 		void RegisterUsing(string file);
 
+		/// <summary>
+		/// Registers the function <paramref name="fn"/> so it can be refered to.
+		/// </summary>
+		/// <param name="fn">The function.</param>
 		void RegisterFunction(Function fn);
 
+
 		void RegisterTypeId(TypeId id);
+		
 		void RegisterStructType(StructType structType);
 		void RegisterRecordType(RecordType recordType);
 		void RegisterHandleType(HandleType handleType);

@@ -12,8 +12,17 @@ namespace LSNr.ScriptObjects
 {
 	public interface IPreHostInterface : IFunctionContainer
 	{
-		void RegisterEvent(EventDefinition ev);
-		void RegisterMethod(FunctionSignature fn);
+		/// <summary>
+		/// Registers <paramref name="eventDefinition"/>.
+		/// </summary>
+		/// <param name="eventDefinition">The event definition.</param>
+		void RegisterEvent(EventDefinition eventDefinition);
+
+		/// <summary>
+		/// Registers <paramref name="methodSignature"/>.
+		/// </summary>
+		/// <param name="methodSignature">The function.</param>
+		void RegisterMethod(FunctionSignature methodSignature);
 	}
 
 	public abstract class HostInterfaceStatementRule : IReaderStatementRule

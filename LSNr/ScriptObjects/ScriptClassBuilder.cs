@@ -92,11 +92,13 @@ namespace LSNr.ScriptObjects
 			Fields.Add(new Field(Fields.Count, name, id, mutable));
 		}
 
+		/// <inheritdoc/>
 		public void RegisterAbstractMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters)
 		{
 			AbstractMethods.Add(new ScriptClassMethod(Id, returnType, parameters, Path, true, true, name));
 		}
 
+		/// <inheritdoc/>
 		public ScriptClassMethod RegisterMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters, bool isVirtual)
 		{
 			if (NonAbstractMethods.Any(x => x.Name == name) || AbstractMethods.Any(x => x.Name == name))

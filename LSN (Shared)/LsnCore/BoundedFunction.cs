@@ -20,15 +20,6 @@ namespace LsnCore
 			Bound = bound;
 		}
 
-		public BoundedFunction(Func<LsnValue[], LsnValue> bound, List<Parameter> parameters, TypeId returnType, string name)
-			: base(new FunctionSignature(parameters, name, returnType))
-		{
-#if CORE
-			if (bound == null)
-				throw new ArgumentNullException(nameof(bound));
-#endif
-			Bound = bound;
-		}
 #if CORE
 		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
 			=> Bound(args);

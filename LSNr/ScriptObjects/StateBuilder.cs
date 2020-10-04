@@ -68,6 +68,7 @@ namespace LSNr.ScriptObjects
 			ParsingProcBodies?.Invoke(this);
 		}
 
+		/// <inheritdoc/>
 		public ScriptClassMethod RegisterMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters)
 		{
 			var m = new ScriptClassMethod(Id, returnType, parameters, Path, false, false, name);

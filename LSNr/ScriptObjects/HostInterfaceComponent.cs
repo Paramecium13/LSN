@@ -32,14 +32,21 @@ namespace LSNr.ScriptObjects
 		public LsnType GetType(string name) => name != Id.Name ? Resource.GetType(name)
 			: throw new ApplicationException();
 		public Function GetFunction(string name) => Resource.GetFunction(name);
+		
+		/// <inheritdoc/>
 		public SymbolType CheckSymbol(string symbol) => Resource.CheckSymbol(symbol);
 
+		/// <inheritdoc/>
 		public TypeId GetTypeId(string name) => name == Id.Name ? Id : Resource.GetTypeId(name);
+		
+		/// <inheritdoc/>
 		public bool TypeExists(string name) => Resource.TypeExists(name) || name == Id.Name;
 
-		public void RegisterEvent(EventDefinition ev) { Events.Add(ev); }
+		/// <inheritdoc/>
+		public void RegisterEvent(EventDefinition eventDefinition) { Events.Add(eventDefinition); }
 
-		public void RegisterMethod(FunctionSignature fn) { Methods.Add(fn); }
+		/// <inheritdoc/>
+		public void RegisterMethod(FunctionSignature methodSignature) { Methods.Add(methodSignature); }
 
 		public void OnParsingSignatures(IPreResource resource)
 		{
@@ -51,9 +58,11 @@ namespace LSNr.ScriptObjects
 
 		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens) => Resource.ParseParameters(tokens);
 
+		/// <inheritdoc/>
+		/// <remarks> Since, host interfaces cannot contain LSN procedures, this method always fails. </remarks>
 		public IProcedure CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
 		{
-			throw new NotImplementedException();
+			throw new InvalidOperationException();
 		}
 	}
 }
