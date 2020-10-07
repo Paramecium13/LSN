@@ -137,6 +137,9 @@
     <Compile Include="Dependencies.cs" />
     <Compile Include="DependenciesForest.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Instructions\InstructionGenerationContext.cs" />
+    <Compile Include="Instructions\InstructionLabel.cs" />
+    <Compile Include="Instructions\VariablePreInstruction.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="LsnCore\ControlStructures\CaseStructure.cs" />
     <Compile Include="LsnCore\ControlStructures\Choice.cs" />
@@ -208,7 +211,7 @@
     <Compile Include="LssParser\VariableExpressionRule.cs" />
     <Compile Include="MainFile.cs" />
     <Compile Include="Optimization\ComponentFlattener.cs" />
-    <Compile Include="PreInstruction.cs" />
+    <Compile Include="Instructions\PreInstruction.cs" />
     <Compile Include="PreStatement.cs" />
     <Compile Include="ReaderRules\IReaderStatementRule.cs" />
     <Compile Include="ReaderRules\ReaderBase.cs" />
