@@ -182,7 +182,7 @@ namespace LsnCore.Interpretation
 				case OpCode.SetTarget:		Target = instr.Index;							break;
 				#endregion
 				#region Call
-				case OpCode.LoadIndex:		TmpIndex = instr.Data;							break;
+				case OpCode.LoadTempIndex:		TmpIndex = instr.Data;							break;
 				case OpCode.CallFn_Short:
 				case OpCode.CallFn:
 					EnterFunction(Environment.GetProcedure(instr.Index)); break;

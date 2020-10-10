@@ -41,7 +41,8 @@ namespace LSNr
 		/// Resolves the details of this instruction. For example, choose between long and short forms of the instruction,
 		/// in the former case, requires a load instruction.
 		/// </summary>
-		public virtual void Resolve() {}
+		/// <param name="resolutionContext"></param>
+		public virtual void Resolve(InstructionResolutionContext resolutionContext) {}
 	}
 
 	/// <summary>
@@ -72,11 +73,12 @@ namespace LSNr
 		/// <param name="code">The <see cref="OpCode" />.</param>
 		protected PreInstruction(OpCode code) : base(code) { }
 
+		/// <param name="resolutionContext"></param>
 		/// <inheritdoc/>
-		public override void Resolve()
+		public override void Resolve(InstructionResolutionContext resolutionContext)
 		{
-			base.Resolve();
-			PrefixInstructions.ForEach(i => i.Resolve());
+			base.Resolve(resolutionContext);
+			PrefixInstructions.ForEach(i => i.Resolve(resolutionContext));
 		}
 	}
 
@@ -94,35 +96,6 @@ namespace LSNr
 		public SimplePreInstruction(OpCode code, ushort data) : base(code)
 		{
 			Data = data;
-		}
-	}
-
-	/// <summary>
-	/// A <see cref="LSNr.BasePreInstruction"/> for prefix <see cref="OpCode"/>s, such as <see cref="OpCode.Line"/>.
-	/// </summary>
-	/// <seealso cref="LSNr.BasePreInstruction" />
-	public abstract class PrePrefixInstruction : BasePreInstruction
-	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PrePrefixInstruction"/> class.
-		/// </summary>
-		/// <param name="code">The <see cref="OpCode"/>.</param>
-		protected PrePrefixInstruction(OpCode code) : base(code){}
-	}
-
-	/// <summary>
-	/// A <see cref="BasePreInstruction"/> that notes the line number in source code of the following instructions.
-	/// </summary>
-	/// <seealso cref="LSNr.PrePrefixInstruction" />
-	public sealed class LineNumberPreInstruction : PrePrefixInstruction
-	{
-		/// <inheritdoc/>
-		public override ushort Data { get; }
-
-		/// <inheritdoc />
-		public LineNumberPreInstruction(int lineNumber) : base(OpCode.Line)
-		{
-			Data = (ushort) lineNumber;
 		}
 	}
 
@@ -209,10 +182,11 @@ namespace LSNr
 			Function = function;
 		}
 
+		/// <param name="resolutionContext"></param>
 		/// <inheritdoc />
-		public override void Resolve()
+		public override void Resolve(InstructionResolutionContext resolutionContext)
 		{
-			base.Resolve();
+			base.Resolve(resolutionContext);
 			throw new NotImplementedException();
 		}
 	}
@@ -241,14 +215,32 @@ namespace LSNr
 			MethodSignature = methodSignature;
 		}
 
+		/// <param name="resolutionContext"></param>
 		/// <inheritdoc/>
-		public override void Resolve()
+		public override void Resolve(InstructionResolutionContext resolutionContext)
 		{
-			base.Resolve();
+			base.Resolve(resolutionContext);
 			throw new NotImplementedException();
 		}
 	}
 
-	// ReSharper disable once UnusedMember.Global	
+	/// <summary>
+	/// 
+	/// </summary>
+	public sealed class InstructionResolutionContext
+	{
+		/// <summary>
+		/// Gets the file header factory.
+		/// </summary>
+		public ObjectFileHeaderFactory FileHeaderFactory { get; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="InstructionResolutionContext"/> class.
+		/// </summary>
+		/// <param name="fileHeaderFactory">The file header factory.</param>
+		public InstructionResolutionContext(ObjectFileHeaderFactory fileHeaderFactory)
+		{
+			FileHeaderFactory = fileHeaderFactory;
+		}
+	}
 }

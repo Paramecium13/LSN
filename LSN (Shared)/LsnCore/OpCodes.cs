@@ -185,7 +185,7 @@ namespace LsnCore
 		#endregion
 		#region Call
 		/// <summary>Data is index. Places index into a temp register(not preserved when calling).Used by instructions that need two indexes or a 4 byte index.</summary>
-		LoadIndex,
+		LoadTempIndex,
 
 		/* Two potential styles of non-local procedure indexing:
 		 *	(1): Index of file containing procedure is loaded by LoadIndex, index of procedure name is data
@@ -237,18 +237,30 @@ namespace LsnCore
 		Ret,
 		#endregion
 		#region Load Const
-		/// <summary> </summary>
+		
+		/// <summary> Loads a 16 bit signed integer from the instruction's data onto the evaluation stack as a 32-bit signed integer. </summary>
 		LoadConst_I32_short,
-		/// <summary> </summary>
+
+		/// <summary>
+		/// Loads a 32 bit signed integer onto the evaluation stack.
+		///	The upper 16 bits are loaded from the temporary index register thingy,
+		///	where they were previously put by <see cref="LoadTempIndex"/>. The lower 16 bits are
+		/// in this instruction's data.
+		/// </summary>
 		LoadConst_I32,
-		/// <summary> </summary>
+
+		/// <summary>
+		/// Loads a 64-bit double precision floating point number onto the evaluation stack
+		/// from the current file's F64 constant table at the position indicated by this instruction's data.
+		/// </summary>
 		LoadConst_F64,
 		// <summary> </summary>
 		//LoadConst_F64_short,
 		/// <summary> Push (index) /((double)ushort.MaxValue)</summary>
 		LoadConst_F64_ShortRatio,
 		/// <summary>
-		/// Load a constant string
+		/// Load a string onto the evaluation stack from the current file's string constant table at the
+		/// position indicated by this instruction's data.
 		/// </summary>
 		LoadConst_String,
 		/// <summary> </summary>

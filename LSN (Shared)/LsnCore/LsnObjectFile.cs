@@ -1,7 +1,6 @@
 ﻿using LsnCore.Types;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,16 +32,31 @@ namespace LsnCore.Interpretation
 	/// </remarks>
 	public readonly struct SignatureStub
 	{
+		/// <summary>
+		/// The name of the procedure.
+		/// </summary>
 		public readonly string Name;
 
+		/// <summary>
+		/// The number of parameters the procedure takes, including 'self'.
+		/// </summary>
 		public readonly int NumberOfParameters;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SignatureStub"/> struct.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <param name="numberOfParameters">The number of parameters.</param>
 		public SignatureStub(string name, int numberOfParameters)
 		{
 			Name = name;
 			NumberOfParameters = numberOfParameters;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SignatureStub"/> struct.
+		/// </summary>
+		/// <param name="signature">The function signature to base this stub on.</param>
 		public SignatureStub(FunctionSignature signature) : this(signature.Name, signature.Parameters.Count)
 		{}
 	}
@@ -55,15 +69,6 @@ namespace LsnCore.Interpretation
 		EventHandler,
 	}
 
-	public class ProcedureDefinition
-	{
-		public readonly string Name;
-		public readonly ProcedureInfo Info;
-		public readonly TypeId ReturnType;
-		public readonly ProcedureClassification Classification;
-		public readonly TypeId OwnerType;
-	}
-	
 	/// <summary>
 	/// 
 	/// </summary>
@@ -88,11 +93,6 @@ namespace LsnCore.Interpretation
 		/// A lookup of types defined in this file by their names.
 		/// </summary>
 		private readonly IReadOnlyDictionary<string, TypeId> DefinedTypesLookup;
-
-		/// <summary>
-		/// The procedure definitions
-		/// </summary>
-		private readonly ProcedureDefinition[] ProcedureDefinitions;
 
 		private readonly SignatureStub[] SignatureStubs;
 
@@ -159,13 +159,6 @@ namespace LsnCore.Interpretation
 		/// </summary>
 		/// <param name="index"></param>
 		internal ProcedureInfo GetProcedure(ushort index) => throw new NotImplementedException();
-
-		/// <summary>
-		/// Gets a procedure contained in this file.
-		/// </summary>
-		/// <param name="name">The name.</param>
-		internal ProcedureDefinition GetContainedProcedure(string name) =>
-			ProcedureDefinitions.FirstOrDefault(p => p.Name == name);
 
 		internal LsnObjectFile GetFile(ushort index) => throw new NotImplementedException();
 	}

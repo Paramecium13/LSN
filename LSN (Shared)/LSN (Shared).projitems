@@ -27,6 +27,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnMath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnObjectFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnReferenceValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Method.cs" />

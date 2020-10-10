@@ -89,7 +89,6 @@
     <Compile Include="Interpretation\IInterpreter.cs" />
     <Compile Include="Interpretation\ILsnGameHost.cs" />
     <Compile Include="Interpretation\Interpreter.cs" />
-    <Compile Include="Interpretation\LsnObjectFile.cs" />
     <Compile Include="Interpretation\LsnStack.cs" />
     <Compile Include="Interpretation\LsnVmCallback.cs" />
     <Compile Include="Interpretation\LsnVMStack.cs" />

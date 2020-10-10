@@ -38,13 +38,14 @@ namespace LSNr
 		public LoadVariablePreInstruction(Variable variable) : base(variable, OpCode.LoadLocal)
 		{ }
 
+		/// <param name="resolutionContext"></param>
 		/// <inheritdoc />
 		/// <remarks>
 		/// Resolves whether or not the variable is a constant and if it is, generates the instruction to load it.
 		/// </remarks>
-		public override unsafe void Resolve()
+		public override unsafe void Resolve(InstructionResolutionContext resolutionContext)
 		{
-			base.Resolve();
+			base.Resolve(resolutionContext);
 			if (Variable.Const())
 			{
 				var value = (LsnValue)Variable.AccessExpression;
@@ -62,10 +63,22 @@ namespace LSNr
 					{
 						Code = OpCode.LoadConst_I32_short;
 						var sh = (short)intVal;
-						_data = *(ushort*)&sh;
+						_data = System.Runtime.CompilerServices.Unsafe.As<short, ushort>(ref sh);
 						return;
 					}
-					throw new NotImplementedException();
+
+					var uintVal = System.Runtime.CompilerServices.Unsafe.As<int, uint>(ref intVal);
+					var upper = (ushort) (uintVal >> 16);
+					var lower = (ushort) uintVal;
+					PrefixInstructions.Add(new LoadTempPreInstruction(upper));
+					_data = lower;
+					Code = OpCode.LoadConst_I32;
+					return;
+				}
+
+				if (Variable.Type == LsnType.string_)
+				{
+
 				}
 
 				throw new NotImplementedException();
@@ -95,10 +108,11 @@ namespace LSNr
 		/// <param name="variable">The variable.</param>
 		public SetVariablePreInstruction(Variable variable) : base(variable, OpCode.StoreLocal) { }
 
+		/// <param name="resolutionContext"></param>
 		/// <inheritdoc />
-		public override void Resolve()
+		public override void Resolve(InstructionResolutionContext resolutionContext)
 		{
-			base.Resolve();
+			base.Resolve(resolutionContext);
 			_data = (ushort)Variable.Index;
 		}
 	}

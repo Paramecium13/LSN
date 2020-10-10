@@ -31,7 +31,7 @@
 	}
 
 	/// <summary>
-	/// The context in which instructions are generated.
+	/// The context in which instructions are generated from <see cref="LsnCore.Expressions.IExpression"/>s.
 	/// </summary>
 	public class InstructionGenerationContext
 	{
