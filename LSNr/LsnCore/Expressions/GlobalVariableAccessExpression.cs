@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Syroot.BinaryData;
 using System.Collections;
+using LSNr;
+using LSNr.CodeGeneration;
 
 namespace LsnCore.Expressions
 {
@@ -17,12 +19,11 @@ namespace LsnCore.Expressions
 
 		public bool IsPure => false;
 
-		private readonly TypeId _Type;
-		public TypeId Type => _Type;
+		public TypeId Type { get; }
 
 		public GlobalVariableAccessExpression(string gvarName, TypeId type)
 		{
-			GlobalVarName = gvarName; _Type = type;
+			GlobalVarName = gvarName; Type = type;
 		}
 
 		public bool Equals(IExpression other)
@@ -30,6 +31,18 @@ namespace LsnCore.Expressions
 			var gl = other as GlobalVariableAccessExpression;
 			if (gl == null) return false;
 			return gl.GlobalVarName == GlobalVarName;
+		}
+
+		/// <inheritdoc />
+		public IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
 		}
 
 #if CORE
@@ -49,7 +62,7 @@ namespace LsnCore.Expressions
 
 		public IEnumerator<IExpression> GetEnumerator()
 		{
-			yield return null;
+			yield break;
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

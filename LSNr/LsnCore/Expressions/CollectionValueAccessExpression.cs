@@ -53,7 +53,7 @@ namespace LsnCore.Expressions
 				{
 					expr = cl.GetValue(((LsnValue)i).IntValue);
 				}
-				catch (Exception)
+				catch
 				{
 					expr = new CollectionValueAccessExpression(c, i, Type);
 				}

@@ -12,10 +12,16 @@ using LSNr.CodeGeneration;
 
 namespace LsnCore.Expressions
 {
+	/// <summary>
+	/// Construct a <see cref="LsnCore.Values.LsnList"/>.
+	/// </summary>
+	/// <seealso cref="LsnCore.Expressions.IExpression" />
 	public sealed class ListConstructor : IExpression
 	{
+		/// <inheritdoc/>
 		public bool IsPure => false;
 
+		/// <inheritdoc/>
 		public TypeId Type { get; }
 
 		private readonly TypeId GenericTypeId;
@@ -64,7 +70,7 @@ namespace LsnCore.Expressions
 		/// <inheritdoc />
 		public IEnumerator<IExpression> GetEnumerator()
 		{
-			yield return null;
+			yield break;
 		}
 
 		/// <inheritdoc />

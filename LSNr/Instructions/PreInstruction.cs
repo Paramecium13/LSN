@@ -1,5 +1,4 @@
 ﻿using LsnCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -144,9 +143,10 @@ namespace LSNr
 		/// </summary>
 		public TypeId TypeId { get; }
 
+		private ushort _Data;
+
 		/// <inheritdoc />
-		// ToDo: Create property TypeId.Index
-		public override ushort Data => throw new NotImplementedException(); //TypeId.Index;
+		public override ushort Data => _Data;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TypeTargetedInstruction"/> class.
@@ -156,6 +156,13 @@ namespace LSNr
 		public TypeTargetedInstruction(OpCode code, TypeId type) : base(code)
 		{
 			TypeId = type;
+		}
+
+		public override void Resolve(InstructionResolutionContext resolutionContext)
+		{
+			base.Resolve(resolutionContext);
+			var data = resolutionContext.GetTypeIndex(TypeId);
+			_Data = System.Runtime.CompilerServices.Unsafe.As<short, ushort>(ref data);
 		}
 	}
 
@@ -255,33 +262,5 @@ namespace LSNr
 			_Data = resolutionContext.FileHeaderFactory.AddHostInterfaceMethodSignature(
 				new LsnCore.Interpretation.SignatureStub(MethodSignature, HostInterfaceName));
 		}
-	}
-
-	/// <summary>
-	/// 
-	/// </summary>
-	public sealed class InstructionResolutionContext
-	{
-		/// <summary>
-		/// Gets the file header factory.
-		/// </summary>
-		public ObjectFileHeaderFactory FileHeaderFactory { get; }
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="InstructionResolutionContext"/> class.
-		/// </summary>
-		/// <param name="fileHeaderFactory">The file header factory.</param>
-		public InstructionResolutionContext(ObjectFileHeaderFactory fileHeaderFactory)
-		{
-			FileHeaderFactory = fileHeaderFactory;
-		}
-
-		/// <summary>
-		/// Gets the index of the locally defined procedure.
-		/// </summary>
-		/// <param name="function">The function.</param>
-		/// <returns></returns>
-		/// <exception cref="NotImplementedException"></exception>
-		public ushort GetLocalProcedureIndex(Function function) => throw new NotImplementedException();
 	}
 }

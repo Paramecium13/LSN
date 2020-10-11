@@ -10,6 +10,10 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
+	/// <summary>
+	/// An expression that converts an optional type expression to the underlying type...
+	/// </summary>
+	/// <seealso cref="LsnCore.Expressions.Expression" />
 	internal sealed class HiddenCastExpression : Expression
 	{
 		private IExpression Contents;

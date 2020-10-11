@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
@@ -38,10 +40,33 @@ namespace LsnCore.Expressions
 		}
 #endif
 
-		public override IExpression Fold() => this;
+		/// <inheritdoc/>
+		public override IExpression Fold()
+		{
+			for (int i = 0; i < Args.Length; i++)
+			{
+				Args[i] = Args[i].Fold();
+			}
 
+			return this;
+		}
+
+		/// <inheritdoc />
+		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		/// <inheritdoc/>
 		public override bool IsReifyTimeConst() => false;
 
+		/// <inheritdoc/>
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.MethodCall);

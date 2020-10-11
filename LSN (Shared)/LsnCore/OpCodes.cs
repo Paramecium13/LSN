@@ -76,6 +76,10 @@ namespace LsnCore
 		//Mul_I32,
 		Mul,
 		Div_I32,
+
+		/// <summary>
+		/// , a, b -> , a/b
+		/// </summary>
 		Div_F64,
 
 		/// <summary>Remainder</summary>
@@ -130,6 +134,7 @@ namespace LsnCore
 		#region String Arithmetic
 		Concat,
 		IntToString,
+		StringLength,
 		#endregion
 		#region Compare
 		Eq_I32,
@@ -408,6 +413,11 @@ namespace LsnCore
 		ASin,
 		ACos,
 		ATan,
+		Log,
+		Log10,
+		Log2,
+		Erf,
+		Gamma,
 		#endregion
 		
 		#region WORDS
@@ -436,7 +446,7 @@ namespace LsnCore
 
 		CRN,
 		CFRN,
-		HCF = 0xF00F
+		HCF = 0xF00F,
 	}
 
 	[StructLayout(LayoutKind.Explicit)]

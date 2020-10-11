@@ -23,52 +23,16 @@ namespace LsnCore
 
 		private static void SetUpMethods()
 		{
-			int_._Methods.Add("Abs", new BoundedMethod(int_,int_,(args)=>new LsnValue(Math.Abs(args[0].IntValue)), "Abs"));
-
-			double_._Methods.Add("Abs", new BoundedMethod(double_, double_,
-				(args) => new LsnValue
-				(
-					Math.Abs
-					(
-						args[0].DoubleValue
-					)
-				), "Abs"
-			));
-
-			double_._Methods.Add("Ceil", new BoundedMethod(double_, int_,
-				(args) => new LsnValue
-				(
-					(int)Math.Ceiling
-					(
-						args[0].DoubleValue
-					)
-				), "Ceil"
-			));
-
-			double_._Methods.Add("Floor", new BoundedMethod(double_, int_,
-				(args) => new LsnValue
-				(
-					(int)args[0].DoubleValue
-				), "Floor"
-			));
-
-			double_._Methods.Add("Round", new BoundedMethod(double_, int_,
-				(args) => new LsnValue
-				(
-					(int)Math.Round
-					(
-						args[0].DoubleValue
-					)
-				), "Round"
-			));
+			#if LSNR
+			int_._Methods.Add("Abs", new InstructionMappedMethod(int_, int_, "Abs", OpCode.Abs));
+			double_._Methods.Add("Abs", new InstructionMappedMethod(double_, double_, "Abs", OpCode.Abs));
+			double_._Methods.Add("Ceil", new InstructionMappedMethod(double_, int_, "Ceil", OpCode.Ceil));
+			double_._Methods.Add("Floor", new InstructionMappedMethod(double_, int_, "Floor", OpCode.Floor));
+			double_._Methods.Add("Round", new InstructionMappedMethod(double_, int_, "Round", OpCode.Round));
 
 
-			string_._Methods.Add("Length", new BoundedMethod(string_, int_,
-				(args) => new LsnValue
-				(
-					((StringValue)args[0].Value).Value.Length
-				), "Length"
-			));
+			string_._Methods.Add("Length", new InstructionMappedMethod(string_, int_, "Length", OpCode.StringLength));
+			#endif
 
 			string_._Methods.Add("SubString", new BoundedMethod(string_, string_,
 				(args) => new LsnValue (

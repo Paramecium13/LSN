@@ -139,6 +139,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Instructions\InstructionGenerationContext.cs" />
     <Compile Include="Instructions\InstructionLabel.cs" />
+    <Compile Include="Instructions\InstructionResolutionContext.cs" />
     <Compile Include="Instructions\PrefixInstructions.cs" />
     <Compile Include="Instructions\VariablePreInstruction.cs" />
     <Compile Include="Logging.cs" />
@@ -172,6 +173,7 @@
     <Compile Include="LsnCore\Expressions\StructConstructor.cs" />
     <Compile Include="LsnCore\Expressions\UniqueScriptObjectAccessExpression.cs" />
     <Compile Include="LsnCore\Expressions\VariableExpression.cs" />
+    <Compile Include="LsnCore\InstructionMappedMethod.cs" />
     <Compile Include="LsnCore\Statements\AssignmentStatement.cs" />
     <Compile Include="LsnCore\Statements\AttachStatement.cs" />
     <Compile Include="LsnCore\Statements\ChangeGlobalVariableStatement.cs" />

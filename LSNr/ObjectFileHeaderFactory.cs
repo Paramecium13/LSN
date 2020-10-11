@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Interpretation;
+using LsnCore.Types;
 using LSNr.Utilities;
 
 namespace LSNr
@@ -65,5 +66,10 @@ namespace LSNr
 		/// <returns> The index of <paramref name="signatureStub"/> in the signature table. </returns>
 		public ushort AddHostInterfaceMethodSignature(SignatureStub signatureStub) =>
 			checked((ushort) SignatureTable.Add(signatureStub));
+
+		public short AddType(TypeId typeId)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

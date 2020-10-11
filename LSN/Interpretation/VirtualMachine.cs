@@ -139,15 +139,15 @@ namespace LsnCore.Interpretation
 				case OpCode.Pop:	 Pop();                                       break;
 				#region Arithmetic
 				case OpCode.Add:     Push(LsnValue.DoubleSum(Pop(), Pop()));      break;
-				case OpCode.Sub:     Push(LsnValue.DoubleDiff(Pop(), Pop()));     break;
+				case OpCode.Sub:     Push(PopF64() - PopF64());                   break;
 				//case OpCode.Mul_I32: Push(LsnValue.IntProduct(Pop(), Pop()));     break;
-				case OpCode.Mul:     Push(LsnValue.DoubleProduct(Pop(), Pop()));  break;
-				case OpCode.Div_I32: Push(LsnValue.IntQuotient(Pop(), Pop()));    break;
-				case OpCode.Div_F64: Push(LsnValue.DoubleQuotient(Pop(), Pop())); break;
-				case OpCode.Rem_I32: Push(LsnValue.IntMod(Pop(), Pop()));         break;
+				case OpCode.Mul:     Push(PopF64() * PopF64());                   break;
+				case OpCode.Div_I32: Push(PopI32()/PopI32());                     break;
+				case OpCode.Div_F64: Push(PopF64() / PopF64());                   break;
+				case OpCode.Rem_I32: Push(PopI32() % PopI32());                   break;
 				case OpCode.Rem_F64: Push(LsnValue.DoubleMod(Pop(), Pop()));      break;
 				case OpCode.Pow:	 Push(LsnValue.DoublePow(Pop(), Pop()));      break;
-				case OpCode.Neg:     Push(-Pop().DoubleValue);                    break;
+				case OpCode.Neg:     Push(-PopF64());                             break;
 				#endregion
 				#region Strings
 				case OpCode.Concat:      Push(PopString() + PopString());         break;

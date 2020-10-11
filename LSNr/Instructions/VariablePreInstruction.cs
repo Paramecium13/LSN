@@ -92,7 +92,7 @@ namespace LSNr
 
 				if (Variable.Type == LsnType.Bool_)
 				{
-					Code = value.BoolValueSimple ? OpCode.LoadConst_String : OpCode.LoadConst_False;
+					Code = value.BoolValueSimple ? OpCode.LoadConst_True : OpCode.LoadConst_False;
 					return;
 				}
 

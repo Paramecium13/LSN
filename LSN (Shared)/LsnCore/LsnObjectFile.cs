@@ -161,9 +161,9 @@ namespace LsnCore.Interpretation
 		private readonly TypeId[] DefinedTypes;
 
 		/// <summary>
-		/// A lookup of types defined in this file by their names.
+		/// A lookup of type indexes in <see cref="DefinedTypes"/> by name.
 		/// </summary>
-		private readonly IReadOnlyDictionary<string, TypeId> DefinedTypesLookup;
+		private readonly IReadOnlyDictionary<string, ushort> DefinedTypesIndexLookup;
 
 		/// <summary>
 		/// The signature stubs of host interface methods called by code in this file.
@@ -251,7 +251,7 @@ namespace LsnCore.Interpretation
 		/// <summary>
 		/// Gets a type contained in this file.
 		/// </summary>
-		internal TypeId GetContainedType(string name) => DefinedTypesLookup[name];
+		internal TypeId GetContainedType(string name) => DefinedTypes[DefinedTypesIndexLookup[name]];
 
 		/// <summary>
 		/// Get an LSN procedure contained in this file.

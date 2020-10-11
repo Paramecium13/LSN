@@ -6,27 +6,45 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Types;
 using LsnCore.Values;
+using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
+	/// <summary>
+	/// An expression that gets the host of the current script class.
+	/// </summary>
+	/// <seealso cref="LsnCore.Expressions.IExpression" />
 	public sealed class HostInterfaceAccessExpression : IExpression
 	{
+		/// <inheritdoc/>
 		public bool IsPure => false;
 
-		private readonly TypeId _Type;
-		public TypeId Type => _Type;
+		/// <inheritdoc/>
+		public TypeId Type { get; }
 
 		public HostInterfaceAccessExpression(TypeId type)
 		{
-			_Type = type;
+			Type = type;
 		}
 
-		public HostInterfaceAccessExpression(){}
-
+		/// <inheritdoc/>
 		public bool Equals(IExpression other)
 		{
 			return other is HostInterfaceAccessExpression;
+		}
+
+		/// <inheritdoc />
+		public IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			instructions.AddInstruction(new SimplePreInstruction(OpCode.GetHost, 0));
 		}
 
 #if CORE
@@ -36,23 +54,29 @@ namespace LsnCore.Expressions
 		}
 #endif
 
+		/// <inheritdoc/>
 		public IExpression Fold() => this;
 
+		/// <inheritdoc/>
 		public bool IsReifyTimeConst() => false;
 
+		/// <inheritdoc/>
 		public void Replace(IExpression oldExpr, IExpression newExpr) {}// _ScriptObject should be a variable access expression, accessing the 'self' parameter of
 																		// a script object method.
 
+		/// <inheritdoc/>
 		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.HostInterfaceAccess);
 		}
 
+		/// <inheritdoc/>
 		public IEnumerator<IExpression> GetEnumerator()
 		{
-			yield return null;
+			yield break;
 		}
 
+		/// <inheritdoc/>
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }
