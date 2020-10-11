@@ -24,6 +24,11 @@ namespace LSNr
 		/// </summary>
 		private readonly TableBuilder<string> IdentifierTable = new TableBuilder<string>();
 
+		/// <summary>
+		/// The table of host interface method signatures.
+		/// </summary>
+		private readonly TableBuilder<SignatureStub> SignatureTable = new TableBuilder<SignatureStub>();
+
 		public string FilePath { get; }
 
 		/// <summary>
@@ -51,5 +56,14 @@ namespace LSNr
 				nameIndex = (ushort) IdentifierTable.Add(functionName);
 			}
 		}
+
+		/// <summary>
+		/// Adds the host interface method signature to the signature table if it isn't already present.
+		/// Returns the index of <paramref name="signatureStub"/> in the signature table.
+		/// </summary>
+		/// <param name="signatureStub">The signature stub.</param>
+		/// <returns> The index of <paramref name="signatureStub"/> in the signature table. </returns>
+		public ushort AddHostInterfaceMethodSignature(SignatureStub signatureStub) =>
+			checked((ushort) SignatureTable.Add(signatureStub));
 	}
 }

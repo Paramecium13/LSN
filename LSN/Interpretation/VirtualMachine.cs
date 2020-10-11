@@ -224,7 +224,7 @@ namespace LsnCore.Interpretation
 						args[j] = Pop();
 					}
 					var obj = (IHostInterface) Pop().Value;
-					obj.CallMethod(sigStub.Name, args);
+					obj.CallMethod(sigStub.Identifier, args);
 					break;
 				}
 				case OpCode.CallHostInterfaceMethod:
@@ -237,7 +237,7 @@ namespace LsnCore.Interpretation
 					}
 					var obj = (IHostInterface) Pop().Value;
 
-					Push(obj.CallMethod(sigStub.Name, args));
+					Push(obj.CallMethod(sigStub.Identifier, args));
 					break;
 				}
 				case OpCode.Ret:

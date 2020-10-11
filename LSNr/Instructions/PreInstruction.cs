@@ -192,7 +192,8 @@ namespace LSNr
 			if (Function.ResourceFilePath == resolutionContext.FileHeaderFactory.FilePath)
 			{
 				Code = OpCode.CallFn_Local;
-				throw new NotImplementedException();
+				_Data = resolutionContext.GetLocalProcedureIndex(Function);
+				return;
 			}
 
 			resolutionContext.FileHeaderFactory.AddFunctionReferenceByName(Function.ResourceFilePath, Function.Name,
@@ -201,7 +202,13 @@ namespace LSNr
 			{
 				var data = (fnIndex << 8) | referencedFileIndex;
 				_Data = checked((ushort) data);
+				Code = OpCode.CallFn_Short;
+				return;
 			}
+
+			PrefixInstructions.Add(new LoadTempPreInstruction(referencedFileIndex));
+			Code = OpCode.CallFn;
+			_Data = fnIndex;
 		}
 	}
 
@@ -215,6 +222,11 @@ namespace LSNr
 		/// Gets the signature of the host interface method to call.
 		/// </summary>
 		internal FunctionSignature MethodSignature { get; }
+
+		/// <summary>
+		/// Gets the name of the host interface the method was defined in.
+		/// </summary>
+		internal string HostInterfaceName { get;}
 
 		/// <summary>
 		/// The data
@@ -232,6 +244,7 @@ namespace LSNr
 			: base(methodSignature.ReturnType != null? OpCode.CallHostInterfaceMethod : OpCode.CallHostInterfaceMethodVoid)
 		{
 			MethodSignature = methodSignature;
+			HostInterfaceName = methodSignature.Parameters[0].Type.Name;
 		}
 
 		/// <param name="resolutionContext"></param>
@@ -239,8 +252,8 @@ namespace LSNr
 		public override void Resolve(InstructionResolutionContext resolutionContext)
 		{
 			base.Resolve(resolutionContext);
-			_Data = 0;
-			throw new NotImplementedException();
+			_Data = resolutionContext.FileHeaderFactory.AddHostInterfaceMethodSignature(
+				new LsnCore.Interpretation.SignatureStub(MethodSignature, HostInterfaceName));
 		}
 	}
 
@@ -262,5 +275,13 @@ namespace LSNr
 		{
 			FileHeaderFactory = fileHeaderFactory;
 		}
+
+		/// <summary>
+		/// Gets the index of the locally defined procedure.
+		/// </summary>
+		/// <param name="function">The function.</param>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
+		public ushort GetLocalProcedureIndex(Function function) => throw new NotImplementedException();
 	}
 }

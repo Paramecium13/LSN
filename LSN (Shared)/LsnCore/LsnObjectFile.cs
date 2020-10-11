@@ -27,15 +27,6 @@ namespace LsnCore.Interpretation
 	}
 
 	/// <summary>
-	/// Includes the name of the containing file.
-	/// </summary>
-	public readonly struct FullProcedureDefinition
-	{
-		public readonly ProcedureDefinition Definition;
-		public readonly string FilePath;
-	}
-
-	/// <summary>
 	/// Information about a procedure implemented in LSN. Used by the virtual machine to call the procedure.
 	/// </summary>
 	public readonly struct ProcedureInfo
@@ -74,35 +65,71 @@ namespace LsnCore.Interpretation
 	/// If/when the VM transitions to using Handles for methods, types, & stuff, this will contain
 	/// the method's handle in place of its name.
 	/// </remarks>
-	public readonly struct SignatureStub
+	public readonly struct SignatureStub : IEquatable<SignatureStub>
 	{
 		/// <summary>
-		/// The name of the procedure.
+		/// The name of the host interface type this method was defined in.
 		/// </summary>
-		public readonly string Name;
+		public readonly string HostInterfaceName;
 
 		/// <summary>
-		/// The number of parameters the procedure takes, including 'self'.
+		/// The identifier of the method. Without any overloading (and thus without name mangling), this
+		/// is just the name of the method.
+		/// </summary>
+		public readonly string Identifier;
+
+		/// <summary>
+		/// The number of parameters the method takes, including 'self'.
 		/// </summary>
 		public readonly int NumberOfParameters;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SignatureStub"/> struct.
 		/// </summary>
-		/// <param name="name">The name.</param>
-		/// <param name="numberOfParameters">The number of parameters.</param>
-		public SignatureStub(string name, int numberOfParameters)
+		/// <param name="identifier">The identifier of the method.</param>
+		/// <param name="numberOfParameters">The number of parameters the method takes, including 'self'.</param>
+		/// <param name="hostInterfaceName"> The name of the host interface this method belongs to. </param>
+		public SignatureStub(string identifier, int numberOfParameters, string hostInterfaceName)
 		{
-			Name = name;
+			Identifier = identifier;
 			NumberOfParameters = numberOfParameters;
+			HostInterfaceName = hostInterfaceName;
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="SignatureStub"/> struct.
-		/// </summary>
+		/// <summary>Initializes a new instance of the <see cref="SignatureStub" /> struct.</summary>
 		/// <param name="signature">The function signature to base this stub on.</param>
-		public SignatureStub(FunctionSignature signature) : this(signature.Name, signature.Parameters.Count)
+		/// <param name="hostInterfaceName"> The name of the host interface this method belongs to. </param>
+		public SignatureStub(FunctionSignature signature, string hostInterfaceName) : this(signature.Name, signature.Parameters.Count, hostInterfaceName)
 		{}
+
+		/// <inheritdoc />
+		/// <remarks>
+		/// Does not take into account <see cref="NumberOfParameters"/>.
+		/// A host interface cannot have two different methods with the same identifier.
+		/// </remarks>
+		public bool Equals(SignatureStub other)
+		{
+			return HostInterfaceName == other.HostInterfaceName && Identifier == other.Identifier;
+		}
+
+		/// <inheritdoc />
+		/// <remarks>
+		/// Does not take into account <see cref="NumberOfParameters"/>.
+		/// A host interface cannot have two different methods with the same identifier.
+		/// </remarks>
+		public override bool Equals(object obj)
+		{
+			return obj is SignatureStub other && Equals(other);
+		}
+
+		/// <inheritdoc />
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				return (HostInterfaceName.GetHashCode() * 397) ^ Identifier.GetHashCode();
+			}
+		}
 	}
 
 	public enum ProcedureClassification
@@ -139,29 +166,43 @@ namespace LsnCore.Interpretation
 		private readonly IReadOnlyDictionary<string, TypeId> DefinedTypesLookup;
 
 		/// <summary>
-		/// The signature stubs of procedures called by code in this file.
+		/// The signature stubs of host interface methods called by code in this file.
 		/// </summary>
 		private readonly SignatureStub[] SignatureStubs;
 
+		/// <summary>
+		/// A lookup of procedure indexes in <see cref="ContainedProcedures"/> by procedure name.
+		/// </summary>
 		private readonly IReadOnlyDictionary<string, int> ProcedureIndexLookup;
 
+		/// <summary>
+		/// The procedures contained in this file.
+		/// </summary>
 		private readonly ProcedureInfo[] ContainedProcedures;
 
+		/// <summary>
+		/// The files referenced by this file.
+		/// </summary>
 		private readonly LsnObjectFile[] ReferencedFiles;
 
 		/// <summary>
-		/// Gets the name of this file.
+		/// Gets the path to this file, relative to the LSN-Environment-Root, excluding any file extension.
 		/// </summary>
-		public string FileName { get; }
+		public string FilePath { get; }
 
 		internal Instruction[] Code { get; }
-		
+
+		/// <summary>
+		/// Gets a double constant.
+		/// </summary>
+		/// <param name="index">The index in the double constant table.</param>
+		/// <returns></returns>
 		internal LsnValue GetDouble(ushort index) => new LsnValue(ConstTable.GetDouble(index));
 
 		/// <summary>
 		/// Gets a string constant.
 		/// </summary>
-		/// <param name="index">The index.</param>
+		/// <param name="index">The index in the string constant table.</param>
 		/// <returns></returns>
 		internal LsnValue GetString(ushort index) => new LsnValue(ConstTable.GetString(index));
 
