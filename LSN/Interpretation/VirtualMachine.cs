@@ -4,6 +4,7 @@ using LsnCore.Values;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,7 +19,10 @@ namespace LsnCore.Interpretation
 		ProcedureInfo Info { get; }
 	}
 
-	struct VMRegisterFile
+	/// <summary>
+	/// Contains the 'Registers' of the virtual machine: $PC, $Target, & $Procedure.
+	/// </summary>
+	internal struct VMRegisterFile
 	{
 		public int NextInstruction;
 
@@ -182,13 +186,18 @@ namespace LsnCore.Interpretation
 				case OpCode.SetTarget:		Target = instr.Index;							break;
 				#endregion
 				#region Call
-				case OpCode.LoadTempIndex:		TmpIndex = instr.Data;							break;
+				case OpCode.LoadTempIndex:		TmpIndex = instr.Data;						break;
 				case OpCode.CallFn_Short:
+					EnterFunction(Environment.GetFile((ushort) (instr.Index & 0xFF))
+						.GetProcedure(Environment.GetIdentifierString((ushort) (instr.Index >> 8))));
+					break;
 				case OpCode.CallFn:
-					EnterFunction(Environment.GetProcedure(instr.Index)); break;
+					EnterFunction(Environment.GetFile(Unsafe.As<short, ushort>(ref TmpIndex))
+						.GetProcedure(Environment.GetIdentifierString(instr.Index)));
+					break;
 				case OpCode.CallFn_Local:
-					//EnterFunction(Environment.GetProcedure(instr.Index));break;
-					throw new NotImplementedException();
+					EnterFunction(Environment.GetProcedure(instr.Index));
+					break;
 				case OpCode.CallNativeMethod:
 					{
 						var methodName = Environment.GetIdentifierString(instr.Index);
@@ -200,34 +209,33 @@ namespace LsnCore.Interpretation
 					} break;
 				case OpCode.CallScObjMethod:
 				//case OpCode.CallLsnMethod:
-					EnterFunction(Environment.GetProcedure(instr.Index));
-					break;
+					//EnterFunction(Environment.GetProcedure(instr.Index));
+					//break;
 				case OpCode.CallScObjVirtualMethod:
 				{
 					throw new NotImplementedException();
 				}
 				case OpCode.CallHostInterfaceMethodVoid:
 				{
-					var obj = Peek().Value as IHostInterface;
 					var sigStub = Environment.GetSignatureStub(instr.Index);
 					var args = new LsnValue[sigStub.NumberOfParameters]; // ToDo: Array Caching...
 					for (var j= sigStub.NumberOfParameters - 1; j >= 0; j--)
 					{
 						args[j] = Pop();
 					}
-					
+					var obj = (IHostInterface) Pop().Value;
 					obj.CallMethod(sigStub.Name, args);
 					break;
 				}
 				case OpCode.CallHostInterfaceMethod:
 				{
-					var obj = Peek().Value as IHostInterface;
 					var sigStub = Environment.GetSignatureStub(instr.Index);
 					var args = new LsnValue[sigStub.NumberOfParameters]; // ToDo: Array Caching...
 					for (var j = sigStub.NumberOfParameters - 1; j >= 0; j--)
 					{
 						args[j] = Pop();
 					}
+					var obj = (IHostInterface) Pop().Value;
 
 					Push(obj.CallMethod(sigStub.Name, args));
 					break;
@@ -244,6 +252,8 @@ namespace LsnCore.Interpretation
 				case OpCode.LoadConst_F64_ShortRatio:	Push(instr.Index / ((double)ushort.MaxValue));	break;
 				case OpCode.LoadConst_String:			Push(Environment.GetString(instr.Index));		break;
 				case OpCode.LoadConst_Nil:				Push(LsnValue.Nil);								break;
+				case OpCode.LoadConst_True:				Push(true);										break;
+				case OpCode.LoadConst_False:			Push(false);									break;
 				case OpCode.Load_UniqueScriptClass:
 					Push(ResourceManager.GetUniqueScriptObject(Environment.GetUsedType(instr.Data) as ScriptClass));
 					break;

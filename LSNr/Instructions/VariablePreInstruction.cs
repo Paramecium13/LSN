@@ -43,18 +43,25 @@ namespace LSNr
 		/// <remarks>
 		/// Resolves whether or not the variable is a constant and if it is, generates the instruction to load it.
 		/// </remarks>
-		public override unsafe void Resolve(InstructionResolutionContext resolutionContext)
+		public override void Resolve(InstructionResolutionContext resolutionContext)
 		{
 			base.Resolve(resolutionContext);
 			if (Variable.Const())
 			{
 				var value = (LsnValue)Variable.AccessExpression;
-				if (Variable.Type == LsnType.Bool_)
+
+				if (value.IsNull)
+				{
+					Code = OpCode.LoadConst_Nil;
+					return;
+				}
+
+				/*if (Variable.Type == LsnType.Bool_)
 				{
 					Code = OpCode.LoadConst_I32_short;
 					_data = value.BoolValueSimple ? (ushort)0 : (ushort)1;
 					return;
-				}
+				}*/
 
 				if (Variable.Type == LsnType.int_)
 				{
@@ -76,9 +83,25 @@ namespace LSNr
 					return;
 				}
 
+				if (Variable.Type == LsnType.double_)
+				{
+					_data = resolutionContext.FileHeaderFactory.AddConstant(value.DoubleValue);
+					Code = OpCode.LoadConst_F64;
+					return;
+				}
+
+				if (Variable.Type == LsnType.Bool_)
+				{
+					Code = value.BoolValueSimple ? OpCode.LoadConst_String : OpCode.LoadConst_False;
+					return;
+				}
+
 				if (Variable.Type == LsnType.string_)
 				{
-
+					var strVal = ((StringValue) (value.Value)).Value;
+					_data = resolutionContext.FileHeaderFactory.AddConstant(strVal);
+					Code = OpCode.LoadConst_String;
+					return;
 				}
 
 				throw new NotImplementedException();

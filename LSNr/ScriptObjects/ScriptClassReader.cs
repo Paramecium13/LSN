@@ -103,7 +103,7 @@ namespace LSNr.ScriptObjects
 			var argTokens = i.SliceWhile(t => t.Value != ")", out bool err);
 			if(err)
 				throw new LsnrParsingException(i.Current, $"Error parsing {memberTypeName} {memberName}: No parameter list defined", ScriptClass.Path);
-			return ScriptClass.ParseParameters(argTokens);
+			return ScriptClass.ParseParameters(argTokens, 0);
 		}
 
 		// ToDo: Share this logic w/ functions, host interface method declarations.

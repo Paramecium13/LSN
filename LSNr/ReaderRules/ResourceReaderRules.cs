@@ -41,7 +41,8 @@ namespace LSNr.ReaderRules
 		/// Parses <paramref name="tokens"/> into a list of <see cref="Parameter"/>s.
 		/// </summary>
 		/// <param name="tokens">The tokens.</param>
-		IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens);
+		/// <param name="index"></param>
+		IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens, ushort index = 0);
 
 		/// <summary>
 		/// Creates the procedure.

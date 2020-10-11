@@ -6,14 +6,58 @@ using System.Threading.Tasks;
 
 namespace LsnCore.Interpretation
 {
+	public readonly struct ProcedureDefinition
+	{
+		public readonly string Name;
+
+		/// <summary>
+		/// The offset of the code for this procedure
+		/// </summary>
+		public readonly int CodeOffset;
+
+		/// <summary>
+		/// The (function) stack size of this procedure.
+		/// </summary>
+		public readonly ushort StackSize;
+
+		/// <summary>
+		/// The parameters
+		/// </summary>
+		public readonly Parameter[] Parameters;
+	}
+
 	/// <summary>
-	/// Information about a procedure.
+	/// Includes the name of the containing file.
+	/// </summary>
+	public readonly struct FullProcedureDefinition
+	{
+		public readonly ProcedureDefinition Definition;
+		public readonly string FilePath;
+	}
+
+	/// <summary>
+	/// Information about a procedure implemented in LSN. Used by the virtual machine to call the procedure.
 	/// </summary>
 	public readonly struct ProcedureInfo
 	{
+		/// <summary>
+		/// The offset of the code for this procedure
+		/// </summary>
 		public readonly int CodeOffset;
+
+		/// <summary>
+		/// The (function) stack size of this procedure.
+		/// </summary>
 		public readonly ushort StackSize;
+
+		/// <summary>
+		/// The file that contains this procedure.
+		/// </summary>
 		public readonly LsnObjectFile File;
+
+		/// <summary>
+		/// The number of parameters this procedure has.
+		/// </summary>
 		public readonly ushort NumberOfParameters;
 
 		public ProcedureInfo(int offset, ushort stackSize, ushort numberOfParameters, LsnObjectFile file)
@@ -94,7 +138,16 @@ namespace LsnCore.Interpretation
 		/// </summary>
 		private readonly IReadOnlyDictionary<string, TypeId> DefinedTypesLookup;
 
+		/// <summary>
+		/// The signature stubs of procedures called by code in this file.
+		/// </summary>
 		private readonly SignatureStub[] SignatureStubs;
+
+		private readonly IReadOnlyDictionary<string, int> ProcedureIndexLookup;
+
+		private readonly ProcedureInfo[] ContainedProcedures;
+
+		private readonly LsnObjectFile[] ReferencedFiles;
 
 		/// <summary>
 		/// Gets the name of this file.
@@ -105,6 +158,11 @@ namespace LsnCore.Interpretation
 		
 		internal LsnValue GetDouble(ushort index) => new LsnValue(ConstTable.GetDouble(index));
 
+		/// <summary>
+		/// Gets a string constant.
+		/// </summary>
+		/// <param name="index">The index.</param>
+		/// <returns></returns>
 		internal LsnValue GetString(ushort index) => new LsnValue(ConstTable.GetString(index));
 
 		/// <summary>
@@ -155,12 +213,14 @@ namespace LsnCore.Interpretation
 		internal TypeId GetContainedType(string name) => DefinedTypesLookup[name];
 
 		/// <summary>
-		/// Get a procedure called by code in this file.
+		/// Get an LSN procedure contained in this file.
 		/// </summary>
 		/// <param name="index"></param>
-		internal ProcedureInfo GetProcedure(ushort index) => throw new NotImplementedException();
+		internal ProcedureInfo GetProcedure(ushort index) => ContainedProcedures[index];
 
-		internal LsnObjectFile GetFile(ushort index) => throw new NotImplementedException();
+		internal ProcedureInfo GetProcedure(string name) => ContainedProcedures[ProcedureIndexLookup[name]];
+
+		internal LsnObjectFile GetFile(ushort index) => ReferencedFiles[index];
 	}
 
 }

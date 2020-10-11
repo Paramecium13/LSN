@@ -229,10 +229,15 @@ namespace LsnCore
 		CallMethod,*/
 
 		/// <summary>
-		/// Data is index of method name.
-		/// {, arg_0,..., arg_N, object -> , result (if it returns a value) }
+		/// Data is index of method signature stub.
+		/// {, host_interface, arg_1,..., arg_N, -> , }
 		/// </summary>
 		CallHostInterfaceMethodVoid,
+
+		/// <summary>
+		/// Data is index of method signature stub.
+		/// {, host_interface, arg_1,..., arg_N, -> , result }
+		/// </summary>
 		CallHostInterfaceMethod,
 		Ret,
 		#endregion
@@ -265,6 +270,8 @@ namespace LsnCore
 		LoadConst_String,
 		/// <summary> </summary>
 		LoadConst_Nil,
+		LoadConst_True,
+		LoadConst_False,
 		#endregion
 		// data is index of type id...
 		Load_UniqueScriptClass,

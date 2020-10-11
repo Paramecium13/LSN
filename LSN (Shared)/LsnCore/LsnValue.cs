@@ -12,6 +12,7 @@ using LsnCore.Types;
 using System.Runtime.InteropServices;
 using Syroot.BinaryData;
 using System.Collections;
+using LSNr.CodeGeneration;
 
 // ReSharper disable EqualExpressionComparison
 // ReSharper disable CompareOfFloatsByEqualityOperator
@@ -26,9 +27,9 @@ namespace LsnCore
 		unsafe
 #endif
 	struct LsnValue : IEquatable<LsnValue>
-	#if LSNR
+#if LSNR
 	, IExpression
-	#endif
+#endif
 	{
 		/// <summary>
 		/// Nil
@@ -38,6 +39,8 @@ namespace LsnCore
 		public bool IsPure => true;
 
 		public bool IsNull => Data != Data && Value == null;
+
+		public bool IsNonNull => Data == Data || Value != null;
 
 		public bool BoolValue =>
 			Data == Data ? Math.Abs(Data) > double.Epsilon : Value?.BoolValue ?? false;
@@ -49,16 +52,15 @@ namespace LsnCore
 		/// </summary>
 		[FieldOffset(0)] private readonly double Data;
 
-#if LSNR
-		public ulong RawData { get
+		public ulong RawData
+		{
+			get
 			{
-				fixed (double* x = &Data)
-				{
-					return *(ulong*)x;
-				}
+				var data = Data;
+				return Unsafe.As<double, ulong>(ref data);
 			}
 		}
-#endif
+
 		[FieldOffset(0)]
 		public readonly uint HandleData;
 
@@ -144,7 +146,8 @@ namespace LsnCore
 			HandleData = 0;
 			X = 0f;
 			Y = 0f;
-			Data = value ? 1 : 0;
+			long val = value ? -1 : 0;
+			Data = Unsafe.As<long, double>(ref val);
 			Value = null;
 #if LSNR
 			Id = LsnType.Bool_.Id;
@@ -433,7 +436,12 @@ namespace LsnCore
 			if (Value == null) return other.Value == null;
 			return Value.Equals(other.Value);
 		}
-
+#if LSNR
+		public void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
+		}
+#endif
 	}
 }
 #pragma warning restore RECS0088 // Comparing equal expression for equality is usually useless

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace LSNr.ScriptObjects
 		public Field GetField(string val) => ScriptClass.GetField(val);
 		public bool StateExists(string stateName) => ScriptClass.StateExists(stateName);
 		public bool MethodExists(string value) => ScriptClass.MethodExists(value);
-		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens) => ScriptClass.ParseParameters(tokens);
+		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens, ushort index = 0) => ScriptClass.ParseParameters(tokens, index);
 
 		readonly List<ScriptClassMethod> Methods = new List<ScriptClassMethod>();
 		readonly List<EventListener> EventListeners = new List<EventListener>();
@@ -71,6 +72,7 @@ namespace LSNr.ScriptObjects
 		/// <inheritdoc/>
 		public ScriptClassMethod RegisterMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters)
 		{
+			Debug.Assert(parameters[0].Type == ScriptClass.Id);
 			var m = new ScriptClassMethod(Id, returnType, parameters, Path, false, false, name);
 			Methods.Add(m);
 			return m;

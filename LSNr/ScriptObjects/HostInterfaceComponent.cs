@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MoreLinq;
 
 namespace LSNr.ScriptObjects
 {
@@ -56,7 +57,25 @@ namespace LSNr.ScriptObjects
 			resource.RegisterHostInterface(t);
 		}
 
-		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens) => Resource.ParseParameters(tokens);
+		/// <summary>
+		/// Parses <paramref name="tokens" /> into a list of <see cref="Parameter" />s.
+		/// </summary>
+		/// <param name="tokens">The tokens.</param>
+		/// <param name="index">
+		///     The index of the first parameter parsed. For methods, this will be 1 so a 'hostObject' parameter can be added.
+		///     For events, this will be 0.
+		/// </param>
+		/// <returns></returns>
+		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens, ushort index = 0)
+		{
+			var parameters = Resource.ParseParameters(tokens, index);
+			if (index != 0)
+			{
+				return parameters.Prepend(new Parameter("hostObject", Id, LsnValue.Nil, 0)).ToList();
+			}
+
+			return parameters;
+		}
 
 		/// <inheritdoc/>
 		/// <remarks> Since, host interfaces cannot contain LSN procedures, this method always fails. </remarks>

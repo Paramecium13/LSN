@@ -81,7 +81,7 @@ namespace LSNr.ScriptObjects
 			while (tokens[++i].Value != ")") // This starts with the token after '('.
 				paramTokens.Add(tokens[i]);
 
-			var parameters = PreHostInterface.ParseParameters(paramTokens);
+			var parameters = PreHostInterface.ParseParameters(paramTokens, 1);
 			TypeId returnType = null;
 			i++; // 'i' Points to the thing after the closing parenthesis.
 			if (tokens.TestAt(i, t => t.Value == "->"))
@@ -126,7 +126,7 @@ namespace LSNr.ScriptObjects
 			while (tokens[++i].Value != ")") // This starts with the token after '('.
 				paramTokens.Add(tokens[i]);
 
-			var parameters = PreHostInterface.ParseParameters(paramTokens);
+			var parameters = PreHostInterface.ParseParameters(paramTokens, 0);
 
 			i++; // 'i' Points to the thing after the closing parenthesis.
 			if (i > tokens.Count)

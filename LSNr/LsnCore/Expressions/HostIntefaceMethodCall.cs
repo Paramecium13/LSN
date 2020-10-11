@@ -83,13 +83,14 @@ namespace LsnCore.Expressions
 		/// <inheritdoc />
 		public void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{
+			HostInterface.GetInstructions(instructions, context.WithContext(ExpressionContext.SubExpression));
+			var paramContext = context.WithContext(ExpressionContext.Parameter_Default);
 			foreach (var argument in Arguments)
 			{
-				argument.GetInstructions(instructions, context.WithContext(ExpressionContext.Parameter_Default));
+				argument.GetInstructions(instructions, paramContext);
 			}
 
-			HostInterface.GetInstructions(instructions, context.WithContext(ExpressionContext.SubExpression));
-			instructions.AddInstruction(new HostInterfaceMethodCallPreInstruction(this.))
+			instructions.AddInstruction(new HostInterfaceMethodCallPreInstruction(Signature));
 		}
 
 		public IEnumerator<IExpression> GetEnumerator()

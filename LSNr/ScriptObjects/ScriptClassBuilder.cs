@@ -246,7 +246,7 @@ namespace LSNr.ScriptObjects
 			// ToDo: Check self method calls, they may use fields.
 		}
 
-		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens)
+		public IReadOnlyList<Parameter> ParseParameters(IReadOnlyList<Token> tokens, ushort index = 0)
 		{
 			var ls = new List<Parameter> { new Parameter("self", Id, LsnValue.Nil, 0) };
 			var additional = this.BaseParseParameters(tokens, 1);

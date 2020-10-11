@@ -318,11 +318,11 @@ namespace LsnCore.Expressions
 						case BinaryOperationArgsType.Bool_Bool:
 							switch (Operation)
 							{
-								case BinaryOperation.Equal:		return new LsnValue(left.BoolValue == right.BoolValue);
-								case BinaryOperation.NotEqual:	return new LsnValue(left.BoolValue != right.BoolValue);
-								case BinaryOperation.And:		return new LsnValue(left.BoolValue && right.BoolValue);
-								case BinaryOperation.Or:		return new LsnValue(left.BoolValue || right.BoolValue);
-								case BinaryOperation.Xor:		return new LsnValue(left.BoolValue ^ right.BoolValue);
+								case BinaryOperation.Equal:		return new LsnValue(left.BoolValueSimple == right.BoolValueSimple);
+								case BinaryOperation.NotEqual:	return new LsnValue(left.BoolValueSimple != right.BoolValueSimple);
+								case BinaryOperation.And:		return new LsnValue(left.BoolValueSimple && right.BoolValueSimple);
+								case BinaryOperation.Or:		return new LsnValue(left.BoolValueSimple || right.BoolValueSimple);
+								case BinaryOperation.Xor:		return new LsnValue(left.BoolValueSimple  ^ right.BoolValueSimple);
 								default:
 									throw new InvalidOperationException();
 							}
@@ -416,13 +416,13 @@ namespace LsnCore.Expressions
 					case BinaryOperation.And:
 						if (ArgumentTypes == BinaryOperationArgsType.Bool_Bool)
 						{
-							return !left.BoolValue ? new LsnValue(false) : Right;
+							return !left.BoolValueSimple ? new LsnValue(false) : Right;
 						}
 						break;
 					case BinaryOperation.Or:
 						if(ArgumentTypes == BinaryOperationArgsType.Bool_Bool)
 						{
-							return left.BoolValue ? new LsnValue(true) : Right;
+							return left.BoolValueSimple ? new LsnValue(true) : Right;
 						}
 						break;
 					default:

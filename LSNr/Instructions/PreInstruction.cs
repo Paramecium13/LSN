@@ -170,8 +170,10 @@ namespace LSNr
 		/// </summary>
 		internal Function Function { get; }
 
+		private ushort _Data;
+
 		/// <inheritdoc />
-		public override ushort Data => throw new NotImplementedException();// Function.Index;
+		public override ushort Data => _Data;// Function.Index;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FunctionCallPreInstruction"/> class.
@@ -187,7 +189,19 @@ namespace LSNr
 		public override void Resolve(InstructionResolutionContext resolutionContext)
 		{
 			base.Resolve(resolutionContext);
-			throw new NotImplementedException();
+			if (Function.ResourceFilePath == resolutionContext.FileHeaderFactory.FilePath)
+			{
+				Code = OpCode.CallFn_Local;
+				throw new NotImplementedException();
+			}
+
+			resolutionContext.FileHeaderFactory.AddFunctionReferenceByName(Function.ResourceFilePath, Function.Name,
+				out var referencedFileIndex, out var fnIndex);
+			if (fnIndex <= byte.MaxValue && referencedFileIndex <= byte.MaxValue)
+			{
+				var data = (fnIndex << 8) | referencedFileIndex;
+				_Data = checked((ushort) data);
+			}
 		}
 	}
 
@@ -202,8 +216,13 @@ namespace LSNr
 		/// </summary>
 		internal FunctionSignature MethodSignature { get; }
 
+		/// <summary>
+		/// The data
+		/// </summary>
+		private ushort _Data;
+
 		/// <inheritdoc />
-		public override ushort Data => throw new NotImplementedException();
+		public override ushort Data => _Data;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HostInterfaceMethodCallPreInstruction"/> class.
@@ -220,6 +239,7 @@ namespace LSNr
 		public override void Resolve(InstructionResolutionContext resolutionContext)
 		{
 			base.Resolve(resolutionContext);
+			_Data = 0;
 			throw new NotImplementedException();
 		}
 	}
