@@ -74,16 +74,35 @@ namespace LsnCore.Expressions
 		/// <inheritdoc />
 		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
 		{
-			return Args.SelectMany(a => a.GetInstructions(context)).Append(new FunctionCallPreInstruction(Fn));
+			throw new InvalidOperationException();
 		}
 
 		/// <inheritdoc />
 		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{
 			var subcontext = context.WithContext(ExpressionContext.Parameter_Default);
+			if (Fn is MultiInstructionMappedFunction multiInstruction)
+			{
+				for (var i = 0; i < Args.Length; i++)
+				{
+					Args[i].GetInstructions(instructions, subcontext);
+					foreach (var (opcode, data) in multiInstruction.Instructions[i])
+					{
+						instructions.AddInstruction(new SimplePreInstruction(opcode, data));
+					}
+				}
+				return;
+			}
+
 			foreach (var arg in Args)
 			{
 				arg.GetInstructions(instructions, subcontext);
+			}
+
+			if (Fn is InstructionMappedFunction mapped)
+			{
+				instructions.AddInstruction(new SimplePreInstruction(mapped.OpCode, mapped.Data));
+				return;
 			}
 
 			instructions.AddInstruction(new FunctionCallPreInstruction(Fn));

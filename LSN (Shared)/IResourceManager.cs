@@ -186,8 +186,28 @@ namespace LsnCore
 					}
 				}),
 				new InstructionMappedFunction(new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ErrorFunction", OpCode.Erf),
-				new InstructionMappedFunction(new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Gamma", OpCode.Gamma)
-			#endif
+				new InstructionMappedFunction(new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Gamma", OpCode.Gamma),
+				new InstructionMappedFunction(new List<Parameter>
+				{
+					new Parameter("a", LsnType.double_.Id, LsnValue.Nil, 0) , new Parameter("b", LsnType.double_.Id, LsnValue.Nil, 1)
+
+				}, LsnType.double_, "Max", OpCode.Max),
+				new InstructionMappedFunction(new List<Parameter>
+				{
+					new Parameter("a", LsnType.double_.Id, LsnValue.Nil, 0) , new Parameter("b", LsnType.double_.Id, LsnValue.Nil, 1)
+
+				}, LsnType.double_, "Min", OpCode.Min),
+				new InstructionMappedFunction(new List<Parameter>
+				{
+					new Parameter("a", LsnType.int_.Id, LsnValue.Nil, 0) , new Parameter("b", LsnType.int_.Id, LsnValue.Nil, 1)
+
+				}, LsnType.double_, "MaxI", OpCode.Max),
+				new InstructionMappedFunction(new List<Parameter>
+				{
+					new Parameter("a", LsnType.int_.Id, LsnValue.Nil, 0) , new Parameter("b", LsnType.int_.Id, LsnValue.Nil, 1)
+
+				}, LsnType.double_, "MinI", OpCode.Min),
+#endif
 			};
 
 			return new LsnResourceThing(new[] { LsnType.int_.Id, LsnType.double_.Id})
@@ -207,7 +227,7 @@ namespace LsnCore
 			{
 #if LSNR
 				new InstructionMappedFunction(new List<Parameter>(), LsnType.double_, "Random", OpCode.Rand),
-				new InstructionMappedFunction(new List<Parameter> {new Parameter("seed",LsnType.int_,new LsnValue(0),0)},null, "SetRandomSeed", OpCode.Srand),
+				new InstructionMappedFunction(new List<Parameter> {new Parameter("seed",LsnType.int_,new LsnValue(0),0)},(TypeId) null, "SetRandomSeed", OpCode.Srand),
 				new InstructionMappedFunction(new List<Parameter>
 					{
 						new Parameter("min",LsnType.int_,new LsnValue(0),0), new Parameter("max",LsnType.int_,new LsnValue(int.MaxValue),1)

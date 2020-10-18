@@ -60,7 +60,19 @@ namespace LsnCore.Expressions
 		/// <inheritdoc />
 		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{
-			throw new System.NotImplementedException();
+			switch (Method)
+			{
+				case InstructionMappedMethod mapped:
+					instructions.AddInstruction(new SimplePreInstruction(mapped.OpCode, mapped.Data));
+					return;
+				case BoundedMethod bound:
+				{
+					var code = OpCode.CallNativeMethod;
+					throw new System.NotImplementedException();
+				}
+				default:
+					throw new System.NotImplementedException();
+			}
 		}
 
 		/// <inheritdoc/>

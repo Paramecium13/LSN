@@ -379,7 +379,7 @@ namespace LsnCore
 		Srand_sysTime,
 		Rand,
 		/// <summary>
-		/// max, min -> random
+		/// min, max -> random
 		/// </summary>
 		RandInt,
 		#endregion

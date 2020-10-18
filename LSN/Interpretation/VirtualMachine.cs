@@ -474,8 +474,8 @@ namespace LsnCore.Interpretation
 				case OpCode.Rand:			Push(GameHost.RngGetDouble());					break;
 				case OpCode.RandInt:
 				{
-					var min = PopI32();
 					var max = PopI32();
+					var min = PopI32();
 					Push(GameHost.RngGetInt(min, max));
 					break;
 				}
