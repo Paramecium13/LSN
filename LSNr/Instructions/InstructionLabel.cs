@@ -52,6 +52,8 @@ namespace LSNr
 				LabelsLookup.Add(name, label);
 				return label;
 			}
+
+			public InstructionLabel CreateLabel() => new InstructionLabel(null);
 		}
 	}
 }

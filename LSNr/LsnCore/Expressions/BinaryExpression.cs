@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Syroot.BinaryData;
+using LSNr.CodeGeneration;
+using LSNr;
 
 namespace LsnCore.Expressions
 {
@@ -551,4 +553,175 @@ namespace LsnCore.Expressions
 				yield return expr;
 		}
 	}
+
+	public abstract class BinaryExpressionBase : Expression
+	{
+		public BinaryOperation Operation { get; }
+
+		public BinaryOperationArgsType ArgumentTypes { get; }
+
+		/// <summary>
+		/// The left hand side of this expression.
+		/// </summary>
+		public IExpression Left { get; protected set; }
+
+		/// <summary>
+		/// The right hand side of this expression.
+		/// </summary>
+		public IExpression Right { get; protected set; }
+
+		protected BinaryExpressionBase(BinaryOperation operation, BinaryOperationArgsType argumentTypes)
+		{
+			Operation = operation;
+			ArgumentTypes = argumentTypes;
+		}
+
+		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			var subContext = context.WithContext(ExpressionContext.SubExpression);
+			Left.GetInstructions(instructions, subContext);
+			Right.GetInstructions(instructions, subContext);
+			GetOperationInstruction(instructions, context);
+		}
+
+		protected abstract void GetOperationInstruction(InstructionList instructions,
+			InstructionGenerationContext context);
+	}
+
+	public sealed class LogicalAndExpression : BinaryExpressionBase
+	{
+		/// <inheritdoc />
+		public LogicalAndExpression(BinaryOperationArgsType argumentTypes, IExpression left, IExpression right) : base(
+			BinaryOperation.And, argumentTypes)
+		{
+			Left = left;
+			Right = right;
+		}
+
+		/// <inheritdoc />
+		public override bool IsReifyTimeConst() => false;
+
+		/// <inheritdoc />
+		public override IExpression Fold()
+		{
+			Left = Left.Fold();
+			Right = Right.Fold();
+			if (Left is LsnValue leftConst)
+			{
+				if (!leftConst.BoolValue) return LsnBoolValue.GetBoolValue(false);
+				if (Right is LsnValue rConst)
+				{
+					return LsnBoolValue.GetBoolValue(rConst.BoolValue);
+				}
+
+				return Right;
+			}
+
+			if (Right is LsnValue rightConst)
+			{
+				if (rightConst.BoolValue)
+				{
+					return Left;
+				}
+
+				return LsnBoolValue.GetBoolValue(false);
+			}
+
+			return this;
+		}
+
+		/// <inheritdoc />
+		public override bool IsPure { get; }
+
+		/// <inheritdoc />
+		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			var subContext = context.WithContext(ExpressionContext.ShortCircuitOnFalse);
+			switch (context.Context)
+			{
+				case ExpressionContext.ShortCircuitOnFalse:
+				{
+					Left.GetInstructions(instructions, subContext);
+					if (context.WantsBoolReturnValue)
+					{
+						instructions.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False_NoPop,
+							context.ShortCircuitLabelA));
+					}
+					else
+					{
+						instructions.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False,
+							context.ShortCircuitLabelA));
+					}
+
+					Right.GetInstructions(instructions, subContext);
+					break;
+				}
+				case ExpressionContext.ShortCirtuitOnTrue:
+				{
+					var label = context.LabelFactory.CreateLabel();
+					Left.GetInstructions(instructions, subContext);
+					if (context.WantsBoolReturnValue)
+					{
+						instructions.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False_NoPop, label));
+					}
+					else
+					{
+						instructions.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False, label));
+					}
+
+					Right.GetInstructions(instructions, subContext);
+					break;
+				}
+				case ExpressionContext.JumpTrueStatement:
+				{
+					subContext.WantsBoolReturnValue = false;
+					Left.GetInstructions(instructions, subContext);
+					instructions.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False,
+						context.ShortCircuitLabelB));
+					Right.GetInstructions(instructions, subContext);
+					break;
+				}
+				case ExpressionContext.JumpFalseStatement:
+				{
+					subContext.WantsBoolReturnValue = false;
+					Left.GetInstructions(instructions, subContext);
+					instructions.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False,
+						context.ShortCircuitLabelA));
+					Right.GetInstructions(instructions, subContext);
+					break;
+				}
+				default: // want the return value...
+				{
+					var label = context.LabelFactory.CreateLabel();
+					subContext.WantsBoolReturnValue = true;
+					subContext.ShortCircuitLabelA = label;
+					Left.GetInstructions(instructions, subContext);
+					instructions.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False_NoPop, label));
+					Right.GetInstructions(instructions, subContext);
+					instructions.SetNextLabel(label);
+					break;
+				}
+
+			}
+		}
+
+
+		/// <inheritdoc />
+		protected override void GetOperationInstruction(InstructionList instructions, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
+		}
+	}
+
 }

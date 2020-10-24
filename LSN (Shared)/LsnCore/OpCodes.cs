@@ -175,10 +175,17 @@ namespace LsnCore
 		
 		/// <summary>Conditional jump. Target is data</summary>
 		Jump_True,
+		/// <summary>
+		/// Jump to target & pop when true. Otherwise value stays on stack...
+		/// </summary>
+		Jump_True_ConditionalPop,
 		Jump_True_NoPop,
 		Jump_False,
+		/// <summary>
+		/// Jump to target & pop when false. Otherwise value stays on stack...
+		/// </summary>
+		Jump_False_ConditionalPop,
 		Jump_False_NoPop,
-
 		//https://llvm.org/docs/LangRef.html#switch-instruction
 		/// <summary>Not yet implemented. </summary>
 		Switch,

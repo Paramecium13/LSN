@@ -2,7 +2,6 @@
 using LsnCore.Types;
 using LsnCore.Values;
 using Syroot.BinaryData;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -95,12 +94,6 @@ namespace LsnCore.Statements
 
 			HostExpression.GetInstructions(instructionList, context.WithContext(ExpressionContext.SubExpression));
 			instructionList.AddInstruction(new TypeTargetedInstruction(OpCode.ConstructAndAttachScriptClass, ScriptClass));
-		}
-
-		/// <inheritdoc />
-		protected virtual IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

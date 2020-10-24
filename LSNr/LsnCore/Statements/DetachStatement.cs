@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,12 +29,6 @@ namespace LsnCore.Statements
 		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
 		{
 			instructionList.AddInstruction(new SimplePreInstruction(OpCode.Detach, 0));
-		}
-
-		/// <inheritdoc />
-		protected virtual IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

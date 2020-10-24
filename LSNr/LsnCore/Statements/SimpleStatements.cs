@@ -17,17 +17,11 @@ namespace LsnCore.Statements
 	{
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
-			throw new NotImplementedException();
+			yield break;
 		}
 
 		/// <inheritdoc />
 		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
-		{
-			throw new InvalidOperationException();
-		}
-
-		/// <inheritdoc />
-		protected virtual IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
 		{
 			throw new InvalidOperationException();
 		}
@@ -43,21 +37,15 @@ namespace LsnCore.Statements
 	/// <summary>
 	/// Move on to the next iteration of the innermost loop.
 	/// </summary>
-	public class NextStatement : Statement
+	public sealed class NextStatement : Statement
 	{
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
-			throw new NotImplementedException();
+			yield break;
 		}
 
 		/// <inheritdoc />
 		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
-		{
-			throw new InvalidOperationException();
-		}
-
-		/// <inheritdoc />
-		protected virtual IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
 		{
 			throw new InvalidOperationException();
 		}

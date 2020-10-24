@@ -43,9 +43,9 @@ namespace LSNr.ReaderRules
 		public bool Valid { get; set; } = true;
 
 		public IReadOnlyList<IStatementRule> StatementRules
-			=> throw new NotImplementedException();
+			=> throw new InvalidOperationException();
 
-		public IReadOnlyList<ControlStructureRule> ControlStructureRules => throw new NotImplementedException();
+		public IReadOnlyList<ControlStructureRule> ControlStructureRules => throw new InvalidOperationException();
 
 		internal ResourceBuilder(string path)
 		{

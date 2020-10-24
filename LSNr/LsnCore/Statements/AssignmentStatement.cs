@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using LsnCore.Expressions;
 using LSNr;
@@ -44,11 +43,6 @@ namespace LsnCore.Statements
 		{
 			Value.GetInstructions(instructionList, context.WithContext(ExpressionContext.Store));
 			instructionList.AddInstruction(new SetVariablePreInstruction(Variable));
-		}
-
-		protected virtual IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
-		{
-			throw new NotImplementedException();
 		}
 
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)

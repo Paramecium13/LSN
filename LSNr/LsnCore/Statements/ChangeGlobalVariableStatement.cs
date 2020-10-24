@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Syroot.BinaryData;
+using LSNr.CodeGeneration;
+using LSNr;
 
 namespace LsnCore.Statements
 {
@@ -42,6 +44,11 @@ namespace LsnCore.Statements
 			yield return Value;
 			foreach (var expr in Value.SelectMany(e => e))
 				yield return expr;
+		}
+
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

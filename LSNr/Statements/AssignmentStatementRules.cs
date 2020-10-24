@@ -26,7 +26,7 @@ namespace LSNr.Statements
 			if(tokens[i].Type == TokenType.SyntaxSymbol && tokens[i].Value == ":")
 			{
 				i++;
-				throw new NotImplementedException();
+				throw new NotImplementedException(); // Specify type...
 			}
 			if (tokens[i].Type != TokenType.Identifier)
 				throw LsnrParsingException.UnexpectedToken(tokens[i], "an identifier", script.Path);
@@ -80,8 +80,7 @@ namespace LSNr.Statements
 			var lTokens = tokens.CreateSliceTaking(i);
 			return Make(Create.Express(lTokens, script), Create.Express(tokens.CreateSliceAt(i + 1), script), script, lTokens);
 		}
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "gv")]
+		
 		protected static Statement Make(IExpression lValue, IExpression rValue, IPreScript script, ISlice<Token> lTokens)
 		{
 			switch (lValue)

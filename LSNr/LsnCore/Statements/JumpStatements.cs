@@ -89,20 +89,31 @@ namespace LsnCore.Statements
 				yield return expr;
 		}
 
+		/// <inheritdoc/>
 		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
 		{
+			var targetLabel = context.LabelFactory.GetLabel(target);
+			var nextLabel = context.LabelFactory.CreateLabel();
 			if (Condition is NotExpression not)
 			{
-				not.Value.GetInstructions(instructionList, context.WithContext(ExpressionContext.SubExpression));
-				instructionList.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False, target,
-					context.LabelFactory));
+				var subContext = context.WithContext(ExpressionContext.JumpFalseStatement);
+				subContext.WantsBoolReturnValue = false;
+				subContext.ShortCircuitLabelA = targetLabel;
+				subContext.ShortCircuitLabelB = nextLabel;
+				not.Value.GetInstructions(instructionList, subContext);
+				instructionList.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False, targetLabel));
 			}
 			else
 			{
-				Condition.GetInstructions(instructionList, context.WithContext(ExpressionContext.SubExpression));
-				instructionList.AddInstruction(new TargetedPreInstruction(OpCode.Jump_True, target,
-					context.LabelFactory));
+				var subContext = context.WithContext(ExpressionContext.JumpTrueStatement);
+				subContext.WantsBoolReturnValue = false;
+				subContext.ShortCircuitLabelA = targetLabel;
+				subContext.ShortCircuitLabelB = nextLabel;
+				Condition.GetInstructions(instructionList, subContext);
+				instructionList.AddInstruction(new TargetedPreInstruction(OpCode.Jump_True, targetLabel));
 			}
+
+			instructionList.SetNextLabel(nextLabel);
 		}
 	}
 
