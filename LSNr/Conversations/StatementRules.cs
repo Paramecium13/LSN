@@ -7,6 +7,7 @@ using LsnCore;
 using LsnCore.Expressions;
 using LsnCore.Statements;
 using LsnCore.Utilities;
+using LSNr.CodeGeneration;
 using LSNr.Statements;
 using Syroot.BinaryData;
 
@@ -23,10 +24,7 @@ namespace LSNr.Converations
 		{
 			if (tokens.Length > 1)
 				throw new LsnrParsingException(tokens[1],"Cannot return a value from a conversation...",script.Path);
-			var v = script.CurrentScope.GetVariable("Jump Target");
-			var j = new JumpToTargetStatement(v.Index);
-			v.AddUser(j);
-			return j;
+			return new JumpToTargetStatement();
 		}
 
 		public bool Check(ISlice<Token> tokens, IPreScript script) => true;
@@ -53,12 +51,10 @@ namespace LSNr.Converations
 	internal class SetNodeStatement : Statement
 	{
 		public readonly string Node;
-		public readonly Variable Variable;
 
-		public SetNodeStatement(string node, Variable v)
+		public SetNodeStatement(string node)
 		{
 			Node = node;
-			Variable = v ?? throw new ArgumentNullException(nameof(v));
 		}
 
 		public override IEnumerator<IExpression> GetEnumerator()
@@ -66,11 +62,23 @@ namespace LSNr.Converations
 			yield break;
 		}
 
+		/// <inheritdoc />
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
+		{
+			throw new InvalidOperationException();
+		}
+
+		/// <inheritdoc />
+		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		{
+			throw new InvalidOperationException();
+		}
+
 		public override void Replace(IExpression oldExpr, IExpression newExpr) { }
 
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
-			throw new NotImplementedException();
+			throw new InvalidOperationException();
 		}
 	}
 
@@ -89,8 +97,7 @@ namespace LSNr.Converations
 			var index = tokens[0].Value == "set" ? 2 : 1;
 			var name = tokens[index].Value;
 
-			var v = script.CurrentScope.GetVariable("Jump Target");
-			return new SetNodeStatement(name + " Start", v);
+			return new SetNodeStatement(name + " Start");
 		}
 
 		public bool Check(ISlice<Token> tokens, IPreScript script)

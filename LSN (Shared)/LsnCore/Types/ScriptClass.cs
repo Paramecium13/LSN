@@ -95,9 +95,19 @@ namespace LsnCore.Types
 		}
 #endif
 
+		/// <summary>
+		/// Determines whether this <see cref="ScriptClass"/> has a method named <paramref name="name"/>.
+		/// </summary>
+		/// <param name="name">The name.</param>
 		public bool HasMethod(string name)
 			=> ScriptObjectMethods.ContainsKey(name);
 
+		/// <summary>
+		/// Gets the method named <paramref name="name"/>.
+		/// </summary>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentException">The ScriptObject type \"{Name}\" does not have a method named \"{name}\". - name</exception>
 		public ScriptClassMethod GetMethod(string name)
 		{
 			if (ScriptObjectMethods.ContainsKey(name))

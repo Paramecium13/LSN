@@ -261,8 +261,6 @@ namespace LSNr.Optimization
 			AddLabel(endLabel);
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "nxt")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "br")]
 		protected override void View(Statement s)
 		{
 			PreStatement preSt;

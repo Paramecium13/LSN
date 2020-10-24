@@ -87,7 +87,7 @@ namespace LSNr
 			/// </summary>
 			SymbolLess,
 			SymbolGreater,
-			SybolAt,
+			SymbolAt,
 			SymbolSlash,
 			SymbolExclamation,
 			SymbolNumberDot,
@@ -314,7 +314,7 @@ namespace LSNr
 					State = TokenizerState.SymbolAnd;
 					break;
 				case '@':
-					State = TokenizerState.SybolAt; //Is this even used?
+					State = TokenizerState.SymbolAt; //Is this even used?
 					break;
 				default:
 					break;
@@ -464,7 +464,7 @@ namespace LSNr
 						BaseReadChar(c);
 					}
 					break;
-				case TokenizerState.SybolAt:
+				case TokenizerState.SymbolAt:
 					if (c == '\"')
 					{
 						throw new NotImplementedException();

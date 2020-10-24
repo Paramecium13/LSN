@@ -57,6 +57,7 @@ namespace LsnCore.ControlStructures
 			Index = index; Collection = collection; Body = body.ToList();
 		}
 
+		/// <inheritdoc />
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			foreach (var item in Body)
