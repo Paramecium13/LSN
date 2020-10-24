@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,12 +32,6 @@ namespace LsnCore.Expressions
 		public bool Equals(IExpression other)
 		{
 			return other is HostInterfaceAccessExpression;
-		}
-
-		/// <inheritdoc />
-		public IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
-		{
-			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

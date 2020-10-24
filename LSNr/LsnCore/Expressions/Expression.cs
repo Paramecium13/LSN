@@ -25,9 +25,6 @@ namespace LsnCore.Expressions
 		/// <inheritdoc/>
 		public abstract IExpression Fold();
 
-		/// <inheritdoc/>
-		public abstract IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context);
-
 		public abstract void GetInstructions(InstructionList instructions, InstructionGenerationContext context);
 
 		/// <inheritdoc/>

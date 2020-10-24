@@ -53,12 +53,6 @@ namespace LsnCore.Expressions
 		}
 
 		/// <inheritdoc />
-		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		/// <inheritdoc />
 		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{
 			Args[0].GetInstructions(instructions, context.WithContext(ExpressionContext.MethodCall));

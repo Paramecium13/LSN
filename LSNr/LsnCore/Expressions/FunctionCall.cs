@@ -72,12 +72,6 @@ namespace LsnCore.Expressions
 		}
 
 		/// <inheritdoc />
-		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
-		{
-			throw new InvalidOperationException();
-		}
-
-		/// <inheritdoc />
 		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{
 			var subcontext = context.WithContext(ExpressionContext.Parameter_Default);

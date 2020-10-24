@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +9,10 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
+	/// <summary>
+	/// Used to convert a value of type T into a value of type Option&lt;T&gt;.
+	/// </summary>
+	/// <seealso cref="LsnCore.Expressions.Expression" />
 	internal sealed class SomeExpression : Expression
 	{
 		private IExpression Contents;
@@ -27,12 +30,6 @@ namespace LsnCore.Expressions
 		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{
 			Contents.GetInstructions(instructions, context);
-		}
-
-		/// <inheritdoc />
-		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
-		{
-			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

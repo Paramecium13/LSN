@@ -39,12 +39,6 @@ namespace LsnCore.Expressions
 		}
 
 		/// <inheritdoc />
-		public IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
-		{
-			yield return new TypeTargetedInstruction(OpCode.ConstructList, Type);
-		}
-
-		/// <inheritdoc />
 		public void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{
 			instructions.AddInstruction(new TypeTargetedInstruction(OpCode.ConstructList, Type));

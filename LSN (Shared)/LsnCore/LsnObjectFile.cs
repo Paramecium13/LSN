@@ -161,6 +161,11 @@ namespace LsnCore.Interpretation
 		private readonly TypeId[] DefinedTypes;
 
 		/// <summary>
+		/// The identifier strings
+		/// </summary>
+		private readonly string[] IdentifierStrings;
+
+		/// <summary>
 		/// A lookup of type indexes in <see cref="DefinedTypes"/> by name.
 		/// </summary>
 		private readonly IReadOnlyDictionary<string, ushort> DefinedTypesIndexLookup;
@@ -234,7 +239,7 @@ namespace LsnCore.Interpretation
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		internal string GetIdentifierString(ushort index) => throw new NotImplementedException();
+		internal string GetIdentifierString(ushort index) => IdentifierStrings[index];
 
 		internal SignatureStub GetSignatureStub(ushort index) => SignatureStubs[index];
 

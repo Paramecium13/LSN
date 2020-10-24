@@ -48,10 +48,6 @@ namespace LsnCore.Expressions
 		}
 
 		/// <inheritdoc />
-		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
-			=> Contents.GetInstructions(context);
-
-		/// <inheritdoc />
 		public override bool IsReifyTimeConst() => Contents.IsReifyTimeConst();
 
 		/// <inheritdoc />

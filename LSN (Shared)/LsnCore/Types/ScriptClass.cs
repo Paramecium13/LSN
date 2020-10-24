@@ -77,6 +77,7 @@ namespace LsnCore.Types
 		public override LsnValue CreateDefaultValue()
 			=> LsnValue.Nil;
 
+		/// <inheritdoc />
 		int IHasFieldsType.GetIndex(string name)
 		{
 			if (Fields.Any(f => f.Name == name))

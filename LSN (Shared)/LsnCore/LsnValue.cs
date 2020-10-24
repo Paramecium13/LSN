@@ -1,6 +1,7 @@
 ﻿#if LSNR
 using LsnCore.Expressions;
 using LSNr;
+using LSNr.CodeGeneration;
 #endif
 using System.Runtime.CompilerServices;
 using System;
@@ -12,7 +13,6 @@ using LsnCore.Types;
 using System.Runtime.InteropServices;
 using Syroot.BinaryData;
 using System.Collections;
-using LSNr.CodeGeneration;
 
 // ReSharper disable EqualExpressionComparison
 // ReSharper disable CompareOfFloatsByEqualityOperator
@@ -204,34 +204,6 @@ namespace LsnCore
 #endif
 
 #if LSNR
-		/// <inheritdoc />
-		public IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
-		{
-			switch (Type.Name)
-			{
-				case "int":
-				{
-					if (IntValue >= short.MinValue && IntValue <= short.MaxValue)
-					{
-						var sh = (short) IntValue;
-						
-						yield return new SimplePreInstruction(OpCode.LoadConst_I32_short, Unsafe.As<short, ushort>(ref sh));
-					}
-					break;
-				}
-				case "double":
-				{
-					throw new NotImplementedException();
-				}
-				case "bool":
-				{
-					yield return new SimplePreInstruction(OpCode.LoadConst_I32_short, (ushort)IntValue);
-					break;
-				}
-				default:
-					throw new NotImplementedException();
-			}
-		}
 
 		/// <summary>
 		/// ...

@@ -1,5 +1,4 @@
 ﻿using LsnCore.Types;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,13 +33,8 @@ namespace LsnCore.Expressions
 			instructions.AddInstruction(new TypeTargetedInstruction(OpCode.Load_UniqueScriptClass, Type));
 		}
 
-		public override IExpression Fold() => this;
-
 		/// <inheritdoc />
-		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
-		{
-			throw new NotImplementedException();
-		}
+		public override IExpression Fold() => this;
 
 		/// <inheritdoc />
 		public override bool IsReifyTimeConst() => false;

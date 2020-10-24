@@ -34,12 +34,6 @@ namespace LsnCore.Expressions
 		}
 
 		/// <inheritdoc />
-		public IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <inheritdoc />
 		public void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{
 			throw new NotImplementedException();

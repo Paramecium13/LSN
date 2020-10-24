@@ -1,6 +1,5 @@
 ﻿using LsnCore.Types;
 using LsnCore.Values;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -56,12 +55,6 @@ namespace LsnCore.Expressions
 		{
 			Value = Value.Fold();
 			return this;
-		}
-
-		/// <inheritdoc />
-		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
-		{
-			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

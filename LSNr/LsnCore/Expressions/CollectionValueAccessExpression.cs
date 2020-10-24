@@ -63,34 +63,6 @@ namespace LsnCore.Expressions
 		}
 
 		/// <inheritdoc />
-		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
-		{
-			var subContext = context.WithContext(ExpressionContext.SubExpression);
-			foreach (var instruction in Collection.GetInstructions(subContext))
-			{
-				yield return instruction;
-			}
-
-			foreach (var instruction in Index.GetInstructions(subContext))
-			{
-				yield return instruction;
-			}
-
-			yield return new SimplePreInstruction(OpCode.LoadElement, 0);
-			if (Type.Type is StructType)
-			{
-				switch (context.Context)
-				{
-					case ExpressionContext.Store:
-					case ExpressionContext.Parameter_Default:
-						yield return new SimplePreInstruction(OpCode.CopyStruct, 0);
-						break;
-				}
-			}
-			
-		}
-
-		/// <inheritdoc />
 		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{
 			var subContext = context.WithContext(ExpressionContext.SubExpression);

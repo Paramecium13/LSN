@@ -18,11 +18,6 @@ namespace LsnCore.Expressions
 		/// </summary>
 		TypeId Type { get; }
 
-		/// <summary>
-		/// Gets the instructions for this expression.
-		/// </summary>
-		IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context);
-
 		void GetInstructions(InstructionList instructions, InstructionGenerationContext context);
 
 		/// <summary>

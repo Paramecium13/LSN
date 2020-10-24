@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -72,12 +71,6 @@ namespace LsnCore.Expressions
 			writer.Write((byte)Arguments.Length);
 			for (int i = 0; i < Arguments.Length; i++)
 				Arguments[i].Serialize(writer, resourceSerializer);
-		}
-
-		/// <inheritdoc />
-		public IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
-		{
-			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

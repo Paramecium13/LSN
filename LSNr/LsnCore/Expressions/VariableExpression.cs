@@ -63,11 +63,5 @@ namespace LsnCore.Expressions
 		{
 			instructions.AddInstruction(new LoadVariablePreInstruction(Variable));
 		}
-
-		/// <inheritdoc/>
-		public override IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
-		{
-			yield break;
-		}
 	}
 }

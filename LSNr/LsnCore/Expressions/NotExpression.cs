@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using LsnCore.Types;
 using LSNr;
-using MoreLinq;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
+	/// <summary>
+	/// An expression that returns the boolean inverse of its <see cref="Value"/>.
+	/// </summary>
+	/// <seealso cref="LsnCore.Expressions.IExpression" />
 	public sealed class NotExpression : IExpression
 	{
 		internal IExpression Value;
@@ -37,9 +41,10 @@ namespace LsnCore.Expressions
 #endif
 
 		/// <inheritdoc />
-		public IEnumerable<PreInstruction> GetInstructions(InstructionGenerationContext context)
+		public void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{
-			return Value.GetInstructions(context).Append(new SimplePreInstruction(OpCode.Not, 0));
+			Value.GetInstructions(instructions, context.WithContext(ExpressionContext.SubExpression));
+			instructions.AddInstruction(new SimplePreInstruction(OpCode.Not, 0));
 		}
 
 		/// <inheritdoc />
