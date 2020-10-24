@@ -54,11 +54,5 @@ namespace LsnCore.Statements
 		{
 			Expression.GetInstructions(instructionList, context.WithContext(ExpressionContext.SubExpression));
 		}
-
-		/// <inheritdoc />
-		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

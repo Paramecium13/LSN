@@ -38,10 +38,5 @@ namespace LsnCore.Statements
 		{
 			instructionList.AddInstruction(new SimplePreInstruction(OpCode.CallChoices, 0));
 		}
-
-		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

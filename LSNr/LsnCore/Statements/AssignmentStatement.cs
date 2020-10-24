@@ -46,7 +46,7 @@ namespace LsnCore.Statements
 			instructionList.AddInstruction(new SetVariablePreInstruction(Variable));
 		}
 
-		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		protected virtual IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
 		{
 			throw new NotImplementedException();
 		}

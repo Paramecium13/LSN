@@ -35,14 +35,15 @@ namespace LsnCore.Statements
 		/// <param name="context"></param>
 		// ReSharper disable once LocalSuppression
 		// ReSharper disable once UnusedMember.Global
-		internal IEnumerable<PreInstruction> GetInstructions(IList<string> labels, string target, InstructionGenerationContext context)
+		internal void GetInstructions(string label, string target, InstructionList instructionList, InstructionGenerationContext context)
 		{
-			return GetInstructions(target, context).Pipe(instuction =>
+			if (label != null)
 			{
-				if (!(labels?.Any() ?? false)) return;
-				instuction.Labels.AddRange(labels.Select(context.LabelFactory.GetLabel));
-				labels = null;
-			});
+				instructionList.SetNextLabel(context.LabelFactory.GetLabel(label));
+
+			}
+
+			GetInstructions(instructionList, target, context);
 		}
 
 		/// <summary>
@@ -53,7 +54,5 @@ namespace LsnCore.Statements
 		/// <param name="context">The context.</param>
 		protected abstract void GetInstructions(InstructionList instructionList, string target,
 			InstructionGenerationContext context);
-
-		protected abstract IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context);
 	}
 }

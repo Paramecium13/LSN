@@ -73,27 +73,6 @@ namespace LsnCore.Statements
 			Index.GetInstructions(instructionList, context.WithContext(ExpressionContext.SubExpression));
 			Value.GetInstructions(instructionList, context.WithContext(ExpressionContext.Store));
 		}
-
-		/// <inheritdoc />
-		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
-		{
-			foreach (var instruction in Collection.GetInstructions(context.WithContext(ExpressionContext.ItemWrite)))
-			{
-				yield return instruction;
-			}
-
-			foreach (var instruction in Index.GetInstructions(context.WithContext(ExpressionContext.SubExpression)))
-			{
-				yield return instruction;
-			}
-
-			foreach (var instruction in Value.GetInstructions(context.WithContext(ExpressionContext.Store)))
-			{
-				yield return instruction;
-			}
-
-			yield return new SimplePreInstruction(OpCode.StoreElement, 0);
-		}
 	}
 
 	// Make const versions, where Index and/or Value are constant.

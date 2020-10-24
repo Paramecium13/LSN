@@ -98,12 +98,6 @@ namespace LsnCore.Statements
 			ValueToAssign.GetInstructions(instructionList, context.WithContext(ExpressionContext.Store));
 			instructionList.AddInstruction(new SimplePreInstruction(OpCode.StoreField, (ushort)Index));
 		}
-
-		/// <inheritdoc />
-		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
-		{
-			throw new NotImplementedException();
-		}
 	}
 
 	//ToDo: Make a const version, where the ValueToAssign is a(n) LsnValue?

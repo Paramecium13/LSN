@@ -57,11 +57,5 @@ namespace LsnCore.Statements
 		{
 			instructionList.AddInstruction(new SimplePreInstruction(OpCode.SetState, (ushort) State));
 		}
-
-		/// <inheritdoc />
-		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

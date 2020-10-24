@@ -69,7 +69,7 @@ namespace LSNr.Converations
 		}
 
 		/// <inheritdoc />
-		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		protected virtual IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
 		{
 			throw new InvalidOperationException();
 		}

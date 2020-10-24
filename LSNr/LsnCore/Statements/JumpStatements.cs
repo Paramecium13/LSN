@@ -44,12 +44,6 @@ namespace LsnCore.Statements
 		{
 			instructionList.AddInstruction(new TargetedPreInstruction(OpCode.Jump, target, context.LabelFactory));
 		}
-
-		/// <inheritdoc />
-		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
-		{
-			yield return new TargetedPreInstruction(OpCode.Jump, target, context.LabelFactory);
-		}
 	}
 
 	[Serializable]
@@ -109,11 +103,6 @@ namespace LsnCore.Statements
 				instructionList.AddInstruction(new TargetedPreInstruction(OpCode.Jump_True, target,
 					context.LabelFactory));
 			}
-		}
-
-		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
-		{
-			throw new NotImplementedException();
 		}
 	}
 

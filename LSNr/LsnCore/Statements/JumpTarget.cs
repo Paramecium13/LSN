@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using LsnCore.Expressions;
+using LSNr.CodeGeneration;
 #if LSNR
 using LSNr;
 #endif
@@ -31,8 +32,14 @@ namespace LsnCore.Statements
 			yield break;
 		}
 
+		/// <inheritdoc />
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
+		{
+			instructionList.AddInstruction(new SimplePreInstruction(OpCode.JumpToTarget, 0));
+		}
+
 		/// <inheritdoc/>
-		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		protected virtual IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
 		{
 			yield return new SimplePreInstruction(OpCode.JumpToTarget, 0);
 		}
@@ -61,9 +68,9 @@ namespace LsnCore.Statements
 		}
 
 		/// <inheritdoc />
-		protected override IEnumerable<PreInstruction> GetInstructions(string target, InstructionGenerationContext context)
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
 		{
-			yield return new TargetedPreInstruction(OpCode.SetTarget, target, context.LabelFactory);
+			instructionList.AddInstruction(new TargetedPreInstruction(OpCode.SetTarget, target, context.LabelFactory));
 		}
 
 		/// <inheritdoc/>
