@@ -189,7 +189,11 @@ namespace LsnCore
 		JumpToTarget,
 		#endregion
 		#region Call
-		/// <summary>Data is index. Places index into a temp register(not preserved when calling).Used by instructions that need two indexes or a 4 byte index.</summary>
+		
+		/// <summary>
+		/// Data is index. Places index into a temp register(not preserved when calling).
+		/// Used by instructions that need two indexes or a 4 byte index.
+		/// </summary>
 		LoadTempIndex,
 
 		/* Two potential styles of non-local procedure indexing:
@@ -201,11 +205,22 @@ namespace LsnCore
 		 *			* The offset of that procedure in its file's code segment. This is resolved at load time or when it is first called.
 		 */
 
-		/// <summary>index of file loaded by LoadIndex instruction, index of function name is data</summary>
+		/// <summary>
+		/// Index of file loaded by LoadIndex instruction, index of function name is data.
+		/// This <see cref="OpCode"/> can also be used to call non-virtual script object methods.
+		/// </summary>
 		CallFn,
-		/// <summary>index of file is first byte of data, index of function name is second byte in data</summary>
+
+		/// <summary>
+		/// Index of file is first byte of data, index of function name is second byte in data.
+		/// This <see cref="OpCode"/> can also be used to call non-virtual script object methods.
+		/// </summary>
 		CallFn_Short,
-		/// <summary>file is the current file, index of fn is data.</summary>
+		
+		/// <summary>
+		/// File is the current file, index of the procedure is data.
+		/// This <see cref="OpCode"/> can also be used to call non-virtual script object methods.
+		/// </summary>
 		CallFn_Local,
 
 		/// <summary>
@@ -214,24 +229,10 @@ namespace LsnCore
 		/// </summary>
 		CallNativeMethod,
 		/// <summary>
-		/// Loaded index is index of type. Data is index of method name.
-		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
-		/// </summary>
-		//CallLsnMethod,
-		/// <summary>
-		/// Call ScriptObject method. Loaded index is index of type. Data is index of method name.
-		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
-		/// </summary>
-		CallScObjMethod,
-		/// <summary>
 		/// Call virtual ScriptObject method. Loaded index is index of type. Data is index of method name.
 		/// {object, arg_1,..., arg_N-> , result (if it returns a value) }
 		/// </summary>
 		CallScObjVirtualMethod,
-		/*/// <summary>
-		/// Loaded index is index of type. Data is index of method name.
-		/// </summary>
-		CallMethod,*/
 
 		/// <summary>
 		/// Data is index of method signature stub.

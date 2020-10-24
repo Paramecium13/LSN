@@ -28,6 +28,11 @@
 		/// In this case, the procedure call expression will emit the copy struct instruction when needed.
 		/// </summary>
 		Parameter_Default,
+
+		/// <summary>
+		/// This expression's return value will have one of its methods called.
+		/// </summary>
+		MethodCall,
 	}
 
 	/// <summary>

@@ -263,4 +263,29 @@ namespace LSNr
 				new LsnCore.Interpretation.SignatureStub(MethodSignature, HostInterfaceName));
 		}
 	}
+
+	public class IdStringTargetedPreInstruction : PreInstruction
+	{
+		/// <summary>
+		/// Gets the identifier string.
+		/// </summary>
+		public string IdentifierString { get; }
+
+		private ushort _data;
+
+		/// <inheritdoc />
+		public override ushort Data => _data;
+
+		/// <inheritdoc />
+		public IdStringTargetedPreInstruction(OpCode code, string identifierString) : base(code)
+		{
+			IdentifierString = identifierString;
+		}
+
+		public override void Resolve(InstructionResolutionContext resolutionContext)
+		{
+			base.Resolve(resolutionContext);
+			_data = resolutionContext.FileHeaderFactory.AddIdentifierString(IdentifierString);
+		}
+	}
 }

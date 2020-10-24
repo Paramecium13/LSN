@@ -203,14 +203,17 @@ namespace LsnCore.Interpretation
 						var methodName = Environment.GetIdentifierString(instr.Index);
 						var type = Environment.GetUsedType(TmpIndex);
 						var method = (BoundedMethod)type.Methods[methodName];
+						var numArgs = method.Parameters.Count;
+						var args = new LsnValue[numArgs]; // ToDo: Array cache.
+						for (var i = method.Parameters.Count - 1; i >= 0; i--)
+						{
+							args[i] = Pop();
+						}
 						if (method.ReturnType != null && method.ReturnType.Name != "void")
-							Push(method.Eval(EvalStack));
-						else method.Eval(EvalStack);
+							Push(method.Eval(args));
+						else method.Eval(args);
+						// ToDo: 'Free' args.
 					} break;
-				case OpCode.CallScObjMethod:
-				//case OpCode.CallLsnMethod:
-					//EnterFunction(Environment.GetProcedure(instr.Index));
-					//break;
 				case OpCode.CallScObjVirtualMethod:
 				{
 					throw new NotImplementedException();

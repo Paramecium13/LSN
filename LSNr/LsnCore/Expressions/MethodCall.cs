@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using LsnCore.Types;
 using LSNr;
 using LSNr.CodeGeneration;
 using Syroot.BinaryData;
@@ -60,16 +61,28 @@ namespace LsnCore.Expressions
 		/// <inheritdoc />
 		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{
+			Args[0].GetInstructions(instructions, context.WithContext(ExpressionContext.MethodCall));
+			var subContext = context.WithContext(ExpressionContext.Parameter_Default);
+			for (var index = 1; index < Args.Length; index++)
+			{
+				Args[index].GetInstructions(instructions, subContext);
+			}
+
 			switch (Method)
 			{
 				case InstructionMappedMethod mapped:
 					instructions.AddInstruction(new SimplePreInstruction(mapped.OpCode, mapped.Data));
 					return;
 				case BoundedMethod bound:
-				{
-					var code = OpCode.CallNativeMethod;
+					instructions.AddInstruction(new TypeTargetedInstruction(OpCode.LoadTempIndex, bound.TypeId));
+					instructions.AddInstruction(
+						new IdStringTargetedPreInstruction(OpCode.CallNativeMethod, bound.Name));
+					return;
+				case ScriptClassVirtualMethod virtualMethod:
 					throw new System.NotImplementedException();
-				}
+				case ScriptClassMethod scMethod:
+					instructions.AddInstruction(new FunctionCallPreInstruction(scMethod));
+					return;
 				default:
 					throw new System.NotImplementedException();
 			}

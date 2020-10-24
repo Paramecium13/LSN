@@ -30,6 +30,8 @@ namespace LSNr
 		/// </summary>
 		private readonly TableBuilder<SignatureStub> SignatureTable = new TableBuilder<SignatureStub>();
 
+		private readonly TableBuilder<TypeId> ReferencedTypeTable = new TableBuilder<TypeId>();
+
 		public string FilePath { get; }
 
 		/// <summary>
@@ -67,9 +69,17 @@ namespace LSNr
 		public ushort AddHostInterfaceMethodSignature(SignatureStub signatureStub) =>
 			checked((ushort) SignatureTable.Add(signatureStub));
 
-		public short AddType(TypeId typeId)
-		{
-			throw new NotImplementedException();
-		}
+		/// <summary>
+		/// Adds a referenced type.
+		/// </summary>
+		public short AddType(TypeId typeId) => checked((short) ReferencedTypeTable.Add(typeId));
+
+		/// <summary>
+		/// Adds an identifier string.
+		/// </summary>
+		/// <param name="identifierString"> The identifier string. </param>
+		/// <returns></returns>
+		public ushort AddIdentifierString(string identifierString) =>
+			checked((ushort) IdentifierTable.Add(identifierString));
 	}
 }
