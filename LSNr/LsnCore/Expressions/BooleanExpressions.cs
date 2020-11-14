@@ -189,6 +189,183 @@ namespace LsnCore.Expressions
 	}
 
 	/// <summary>
+	/// A logical or expression.
+	/// </summary>
+	/// <remarks>
+	/// This is an intermediate expression: calling <see cref="Expression.Fold"/> returns either a constant,
+	/// a single side of this expression, or a <see cref="MultiOrExpression"/>.
+	/// </remarks>
+	/// <seealso cref="LsnCore.Expressions.BinaryExpressionBase" />
+	public sealed class LogicalOrExpression : BinaryExpressionBase
+	{
+		/// <inheritdoc />
+		public LogicalOrExpression(BinaryOperationArgsType argumentTypes, IExpression left, IExpression right) : base(
+			BinaryOperation.And, argumentTypes)
+		{
+			Left = left;
+			Right = right;
+		}
+
+		/// <inheritdoc />
+		public override bool IsReifyTimeConst() => false;
+
+		/// <inheritdoc />
+		public override IExpression Fold()
+		{
+			Left = Left.Fold();
+			Right = Right.Fold();
+			var expressions = new List<IExpression>();
+			switch (Left)
+			{
+				case LsnValue leftConst when leftConst.BoolValue:
+					return LsnBoolValue.GetBoolValue(true);
+				case LsnValue _ when Right is LsnValue rConst:
+					return LsnBoolValue.GetBoolValue(rConst.BoolValue);
+				case LsnValue _:
+					return Right;
+				case LogicalOrExpression leftOr:
+					expressions.Add(leftOr.Left);
+					expressions.Add(leftOr.Right);
+					break;
+				case MultiOrExpression leftMultiOr:
+					expressions.AddRange(leftMultiOr.Expressions);
+					break;
+				default:
+					expressions.Add(Left);
+					break;
+			}
+
+			switch (Right)
+			{
+				case LsnValue rightConst when !rightConst.BoolValue:
+					return Left;
+				case LsnValue _:
+					return LsnBoolValue.GetBoolValue(true);
+				case LogicalOrExpression rightOr:
+					expressions.Add(rightOr.Left);
+					expressions.Add(rightOr.Right);
+					break;
+				case MultiOrExpression rightMultiOr:
+					expressions.AddRange(rightMultiOr.Expressions);
+					break;
+				default:
+					expressions.Add(Right);
+					break;
+			}
+
+			if (expressions.Count < 2)
+			{
+				throw new InvalidOperationException("This probably can't happen...");
+			}
+			// ToDo: should I ever return this type?
+			// if(expressions.Count == 2) { return new LogicalOrExpression(ArgumentTypes,expressions[0],expressions[1]);}
+			return new MultiOrExpression(expressions.ToArray());
+		}
+
+		/// <inheritdoc />
+		public override bool IsPure => Left.IsPure && Right.IsPure;
+
+		/// <inheritdoc />
+		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		{
+			throw new InvalidOperationException();
+		}
+
+		/// <inheritdoc />
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return Left;
+			foreach (var expr in Left.SelectMany(e => e))
+			{
+				yield return expr;
+			}
+			yield return Right;
+			foreach (var expr in Right.SelectMany(e => e))
+			{
+				yield return expr;
+			}
+		}
+
+		/// <inheritdoc />
+		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			var subContext = context.WithContext(ExpressionContext.ShortCircuitOnFalse);
+			switch (context.Context)
+			{
+				case ExpressionContext.ShortCircuitOnFalse:
+					{
+						Left.GetInstructions(instructions, subContext);
+						if (context.WantsBoolReturnValue)
+						{
+							instructions.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False_NoPop,
+								context.ShortCircuitLabelA));
+						}
+						else
+						{
+							instructions.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False,
+								context.ShortCircuitLabelA));
+						}
+
+						Right.GetInstructions(instructions, subContext);
+						break;
+					}
+				case ExpressionContext.ShortCirtuitOnTrue:
+					{
+						var label = context.LabelFactory.CreateLabel();
+						Left.GetInstructions(instructions, subContext);
+						if (context.WantsBoolReturnValue)
+						{
+							instructions.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False_NoPop, label));
+						}
+						else
+						{
+							instructions.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False, label));
+						}
+
+						Right.GetInstructions(instructions, subContext);
+						instructions.SetNextLabel(label);
+						break;
+					}
+				case ExpressionContext.JumpTrueStatement:
+					{
+						subContext.WantsBoolReturnValue = false;
+						Left.GetInstructions(instructions, subContext);
+						instructions.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False,
+							context.ShortCircuitLabelB));
+						Right.GetInstructions(instructions, subContext);
+						break;
+					}
+				case ExpressionContext.JumpFalseStatement:
+					{
+						subContext.WantsBoolReturnValue = false;
+						Left.GetInstructions(instructions, subContext);
+						instructions.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False,
+							context.ShortCircuitLabelA));
+						Right.GetInstructions(instructions, subContext);
+						break;
+					}
+				default: // want the return value...
+					{
+						var label = context.LabelFactory.CreateLabel();
+						subContext.WantsBoolReturnValue = true;
+						subContext.ShortCircuitLabelA = label;
+						Left.GetInstructions(instructions, subContext);
+						instructions.AddInstruction(new TargetedPreInstruction(OpCode.Jump_False_NoPop, label));
+						Right.GetInstructions(instructions, subContext);
+						instructions.SetNextLabel(label);
+						break;
+					}
+
+			}
+		}
+
+		/// <inheritdoc />
+		protected override void GetOperationInstruction(InstructionList instructions, InstructionGenerationContext context)
+		{
+			throw new InvalidOperationException();
+		}
+	}
+	/// <summary>
 	/// An expression that consists of multiple boolean expressions AND`ed together.
 	/// </summary>
 	/// <seealso cref="LsnCore.Expressions.Expression" />
@@ -316,8 +493,15 @@ namespace LsnCore.Expressions
 	/// <seealso cref="LsnCore.Expressions.Expression" />
 	public sealed class MultiOrExpression : Expression
 	{
-		private readonly IExpression[] Expressions;
+		/// <summary>
+		/// The expressions.
+		/// </summary>
+		internal IExpression[] Expressions { get; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MultiOrExpression"/> class.
+		/// </summary>
+		/// <param name="expressions">The expressions.</param>
 		public MultiOrExpression(IExpression[] expressions)
 		{
 			Expressions = expressions;
