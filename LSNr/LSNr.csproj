@@ -151,6 +151,7 @@
     <Compile Include="LsnCore\ControlStructures\IfElseControl.cs" />
     <Compile Include="LsnCore\ControlStructures\MatchStructure.cs" />
     <Compile Include="LsnCore\ControlStructures\WhileLoop.cs" />
+    <Compile Include="LsnCore\Expressions\BooleanExpressions.cs" />
     <Compile Include="LsnCore\Expressions\BinaryExpression.cs" />
     <Compile Include="LsnCore\Expressions\CollectionValueAccessExpression.cs" />
     <Compile Include="LsnCore\Expressions\Expression.cs" />
