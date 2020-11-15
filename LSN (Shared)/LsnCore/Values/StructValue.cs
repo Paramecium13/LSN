@@ -32,10 +32,13 @@ namespace LsnCore.Values
 				Values[i] = values[i].Clone();
 		}
 
+		/// <inheritdoc />
 		public override ILsnValue Clone() => new StructValue(Type, Values.Select(v=>v.Clone()).ToArray());
 
+		/// <inheritdoc />
 		public LsnValue GetFieldValue(int index) => Values[index];
 
+		/// <inheritdoc />
 		public void SetFieldValue(int index, LsnValue value)
 		{
 			Values[index] = value;

@@ -1,4 +1,5 @@
-﻿using LsnCore.Types;
+﻿using System;
+using LsnCore.Types;
 using LsnCore.Values;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,6 +64,15 @@ namespace LsnCore.Expressions
 			var subContext = context.WithContext(ExpressionContext.SubExpression);
 			Value.GetInstructions(instructions, subContext);
 			instructions.AddInstruction(new SimplePreInstruction(OpCode.LoadField, (ushort) Index));
+			if (!(Type.Type is StructType structType)) return;
+			switch (context.Context)
+			{
+				case ExpressionContext.Store:
+				case ExpressionContext.ReturnValue:
+				case ExpressionContext.Parameter_Default:
+					instructions.AddInstruction(new TypeTargetedInstruction(OpCode.CopyStruct, structType.Id));
+					break;
+			}
 		}
 
 		/// <inheritdoc />

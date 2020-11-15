@@ -16,9 +16,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LSN (5)", "LSN (5)\LSN (5).csproj", "{8A196662-C334-49C2-B6F1-181A1611513A}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		LSN (Shared)\LSN (Shared).projitems*{1579e78f-3443-4832-8802-b297ff0e9a36}*SharedItemsImports = 13
+		LSN (Shared)\LSN (Shared).projitems*{8a196662-c334-49c2-b6f1-181a1611513a}*SharedItemsImports = 5
 		LSN (Shared)\LSN (Shared).projitems*{c1269507-b8fd-4668-8d5a-0819deaafe89}*SharedItemsImports = 4
 		LSN (Shared)\LSN (Shared).projitems*{e0a445ac-01aa-4568-b15a-765b5c590cf7}*SharedItemsImports = 4
 	EndGlobalSection
@@ -53,6 +56,14 @@ Global
 		{1ABD4D5A-067B-4D6B-AD25-9B1F7919D1D0}.LssTest|Any CPU.Build.0 = Release|Any CPU
 		{1ABD4D5A-067B-4D6B-AD25-9B1F7919D1D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1ABD4D5A-067B-4D6B-AD25-9B1F7919D1D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A196662-C334-49C2-B6F1-181A1611513A}.Debug (no catch)|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A196662-C334-49C2-B6F1-181A1611513A}.Debug (no catch)|Any CPU.Build.0 = Debug|Any CPU
+		{8A196662-C334-49C2-B6F1-181A1611513A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A196662-C334-49C2-B6F1-181A1611513A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A196662-C334-49C2-B6F1-181A1611513A}.LssTest|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A196662-C334-49C2-B6F1-181A1611513A}.LssTest|Any CPU.Build.0 = Debug|Any CPU
+		{8A196662-C334-49C2-B6F1-181A1611513A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A196662-C334-49C2-B6F1-181A1611513A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

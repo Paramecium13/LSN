@@ -435,7 +435,7 @@ namespace LsnCore.Interpretation
 					{
 						var scriptClass = Environment.GetUsedType(instr.Data) as ScriptClass;
 						var scrObj = new ScriptObject(new LsnValue[scriptClass.Fields.Count], scriptClass, scriptClass.DefaultStateId, (IHostInterface) Pop().Value, false);
-						Push(scrObj);
+						//Push(scrObj);
 						var cstor = scriptClass.Constructor;
 						EnterFunction(((IProcedureB)cstor).Info);
 						// Done after entering the procedure so that it is in the constructor's stack

@@ -59,6 +59,11 @@
 		/// is the instruction after jump.
 		/// </summary>
 		JumpFalseStatement,
+
+		/// <summary>
+		/// The expression's value is being returned.
+		/// </summary>
+		ReturnValue
 	}
 
 	/// <summary>

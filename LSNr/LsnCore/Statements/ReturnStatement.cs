@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 using MoreLinq;
 
@@ -15,8 +16,15 @@ namespace LsnCore.Statements
 	/// </summary>
 	public class ReturnStatement : Statement
 	{
+		/// <summary>
+		/// Gets or sets the value that this <see cref="ReturnStatement"/> returns.
+		/// </summary>
 		public IExpression Value { get; set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ReturnStatement"/> class.
+		/// </summary>
+		/// <param name="e">The expression to return, or null if it doesn't return a value.</param>
 		public ReturnStatement(IExpression e)
 		{
 			Value = e;
@@ -30,6 +38,7 @@ namespace LsnCore.Statements
 		}
 #endif
 
+		/// <inheritdoc />
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if (Value == null) return;
@@ -39,6 +48,7 @@ namespace LsnCore.Statements
 				Value.Replace(oldExpr, newExpr);
 		}
 
+		/// <inheritdoc />
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			if(Value == null)
@@ -50,6 +60,7 @@ namespace LsnCore.Statements
 			}
 		}
 
+		/// <inheritdoc />
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
 			if (!(!Value?.Equals(LsnValue.Nil) ?? false)) yield break;
@@ -59,14 +70,10 @@ namespace LsnCore.Statements
 		}
 
 		/// <inheritdoc />
-		protected override IEnumerable<PreInstruction> GetInstructions(string target)
+		protected override void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context)
 		{
-			if (Value != null)
-			{
-				return Value.GetInstructions().Append(new SimplePreInstruction(OpCode.Ret, 0));
-			}
-
-			yield return new SimplePreInstruction(OpCode.Ret, 0);
+			Value?.GetInstructions(instructionList, context.WithContext(ExpressionContext.ReturnValue));
+			instructionList.AddInstruction(new SimplePreInstruction(OpCode.Ret, 0));
 		}
 	}
 }

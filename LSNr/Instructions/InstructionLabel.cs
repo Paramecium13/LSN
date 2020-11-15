@@ -33,6 +33,8 @@ namespace LSNr
 			// ReSharper disable once UnusedMember.Global
 			public IEnumerable<InstructionLabel> Labels => LabelsLookup.Values;
 
+			private uint Count;
+
 			// ReSharper disable once EmptyConstructor
 			public Factory() { }
 
@@ -53,7 +55,7 @@ namespace LSNr
 				return label;
 			}
 
-			public InstructionLabel CreateLabel() => new InstructionLabel(null);
+			public InstructionLabel CreateLabel() => new InstructionLabel($"L{Count++}");
 		}
 	}
 }

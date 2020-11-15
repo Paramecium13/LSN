@@ -69,15 +69,14 @@ namespace LsnCore.Expressions
 			Collection.GetInstructions(instructions, subContext);
 			Index.GetInstructions(instructions, subContext);
 			instructions.AddInstruction(new SimplePreInstruction(OpCode.LoadElement, 0));
-			if (Type.Type is StructType)
+			if (!(Type.Type is StructType structType)) return;
+			switch (context.Context)
 			{
-				switch (context.Context)
-				{
-					case ExpressionContext.Store:
-					case ExpressionContext.Parameter_Default:
-						instructions.AddInstruction(new SimplePreInstruction(OpCode.CopyStruct, 0));
-						break;
-				}
+				case ExpressionContext.Store:
+				case ExpressionContext.ReturnValue:
+				case ExpressionContext.Parameter_Default:
+					instructions.AddInstruction(new TypeTargetedInstruction(OpCode.CopyStruct, structType.Id));
+					break;
 			}
 		}
 

@@ -12,11 +12,15 @@ namespace LsnCore.Statements
 {
 	internal interface IHasTargetStatement
 	{
+		/// <summary>
+		/// Gets or sets the index of the statement that this statement targets.
+		/// </summary>
 		int Target { get; set; }
 	}
 
 	public sealed class JumpStatement : Statement, IHasTargetStatement
 	{
+		/// <inheritdoc />
 		public int Target { get; set; } = -1;
 #if CORE
 		public override InterpretValue Interpret(IInterpreter i)
@@ -26,14 +30,17 @@ namespace LsnCore.Statements
 		}
 #endif
 
+		/// <inheritdoc />
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 
+		/// <inheritdoc />
 		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(StatementCode.Jump);
 			writer.Write(Target);
 		}
 
+		/// <inheritdoc />
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
 			yield break;
@@ -49,8 +56,12 @@ namespace LsnCore.Statements
 	[Serializable]
 	public sealed class ConditionalJumpStatement : Statement, IHasTargetStatement
 	{
+		/// <summary>
+		/// The condition of this conditional jump
+		/// </summary>
 		internal IExpression Condition;
-		
+
+		/// <inheritdoc />
 		public int Target { get; set; } = -1;
 
 		internal ConditionalJumpStatement(IExpression condition)
