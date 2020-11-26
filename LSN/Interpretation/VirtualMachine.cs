@@ -154,6 +154,7 @@ namespace LsnCore.Interpretation
 				case OpCode.IntToString: Push(PopI32().ToString());               break;
 				#endregion
 				#region Compare
+#pragma warning disable S1764 // Identical expressions should not be used on both sides of a binary operator
 				case OpCode.Eq_I32:			Push(PopI32() == PopI32());								break;
 				case OpCode.Eq_F64:			Push(Math.Abs(PopF64() - PopF64()) < double.Epsilon);	break;
 				case OpCode.Eq_Str:			Push(PopString() == PopString());						break;
@@ -169,7 +170,8 @@ namespace LsnCore.Interpretation
 				case OpCode.Lte:			Push(PopF64() <= PopF64());								break;
 				case OpCode.Gte:			Push(PopF64() >= PopF64());								break;
 				case OpCode.Gt:				Push(PopF64() > PopF64());								break;
-				#endregion
+#pragma warning restore S1764 // Identical expressions should not be used on both sides of a binary operator
+					#endregion
 				case OpCode.MakeRange: Push(new RangeValue(PopI32(), PopI32())); break;
 				#region Logic
 				case OpCode.And:	Push(PopBool() && PopBool());	break;
@@ -394,7 +396,7 @@ namespace LsnCore.Interpretation
 						var type = Environment.GetUsedType(instr.Data) as StructType;
 						var fCount = type.FieldCount;
 						var vals = GetArray(fCount);
-						for (var i = fCount - 1; i >= 0; i++)
+						for (var i = fCount - 1; i >= 0; i--)
 							vals[i] = Pop();
 						Push(new StructValue(type.Id, vals));
 					} break;
@@ -411,7 +413,7 @@ namespace LsnCore.Interpretation
 						var type = Environment.GetUsedType(instr.Data) as RecordType;
 						var fCount = type.FieldCount;
 						var vals = GetArray(fCount);
-						for (var i = fCount - 1; i >= 0; i++)
+						for (var i = fCount - 1; i >= 0; i--)
 							vals[i] = Pop();
 						Push(new RecordValue(vals, type.Id));
 					} break;
