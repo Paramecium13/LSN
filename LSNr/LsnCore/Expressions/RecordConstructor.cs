@@ -1,6 +1,8 @@
 ﻿using LsnCore.Types;
 using System.Collections.Generic;
 using System.Linq;
+using LSNr;
+using LSNr.CodeGeneration;
 using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
@@ -9,6 +11,7 @@ namespace LsnCore.Expressions
 	{
 		public readonly IExpression[] Args;
 
+		/// <inheritdoc />
 		public override bool IsPure => Args.All(a => a.IsPure);
 
 		public RecordConstructor(RecordType type, IDictionary<string,IExpression> args)
@@ -19,6 +22,8 @@ namespace LsnCore.Expressions
 				var i = type.GetIndex(pair.Key);
 				Args[i] = pair.Value;
 			}
+
+			Type = type.Id;
 		}
 
 		public RecordConstructor(TypeId type, IEnumerable<IExpression> args)
@@ -27,28 +32,29 @@ namespace LsnCore.Expressions
 			Args = args.ToArray();
 		}
 
-#if CORE
-		public override LsnValue Eval(IInterpreter i)
-		//=> new StructValue(_Type, ArgsB.Select(e => e.Eval(i)).ToArray());
-		{
-			var length = Args.Length;
-			var values = new LsnValue[length];
-			for(int j = 0; j < length; j++)
-			{
-				values[j] = Args[j].Eval(i);
-			}
-			return new LsnValue(new RecordValue(values));
-		}
-#endif
-
+		/// <inheritdoc />
 		public override IExpression Fold()
 		{
 			var args = Args.Select(a => a.Fold()).ToArray();
 			return new RecordConstructor(Type, args);
 		}
 
+		/// <inheritdoc />
+		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
+		{
+			var subcontext = context.WithContext(ExpressionContext.Store);
+			foreach (var arg in Args)
+			{
+				arg.GetInstructions(instructions, subcontext);
+			}
+
+			instructions.AddInstruction(new TypeTargetedInstruction(OpCode.ConstructRecord, Type));
+		}
+
+		/// <inheritdoc />
 		public override bool IsReifyTimeConst() => false;
 
+		/// <inheritdoc />
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.RecordConstructor);
@@ -56,10 +62,11 @@ namespace LsnCore.Expressions
 			resourceSerializer.WriteTypeId(Type, writer);
 
 			writer.Write((ushort)Args.Length);
-			for (int i = 0; i < Args.Length; i++)
+			for (var i = 0; i < Args.Length; i++)
 				Args[i].Serialize(writer, resourceSerializer);
 		}
 
+		/// <inheritdoc />
 		public override IEnumerator<IExpression> GetEnumerator()
 		{
 			foreach (var arg in Args)
