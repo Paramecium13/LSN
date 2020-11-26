@@ -576,6 +576,7 @@ namespace LsnCore.Expressions
 			ArgumentTypes = argumentTypes;
 		}
 
+		/// <inheritdoc />
 		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{
 			var subContext = context.WithContext(ExpressionContext.SubExpression);
@@ -583,7 +584,52 @@ namespace LsnCore.Expressions
 			Right.GetInstructions(instructions, subContext);
 			GetOperationInstruction(instructions, context);
 		}
+		protected static BinaryOperationArgsType GetArgTypes(TypeId left, TypeId right)
+		{
+			switch (left.Name)
+			{
+				case "int":
+					switch (right.Name)
+					{
+						case "int": return BinaryOperationArgsType.Int_Int;
+						case "double": return BinaryOperationArgsType.Int_Double;
+						default:
+							break;
+					}
+					break;
+				case "double":
+					switch (right.Name)
+					{
+						case "int": return BinaryOperationArgsType.Double_Int;
+						case "double": return BinaryOperationArgsType.Double_Double;
+						default:
+							break;
+					}
+					break;
+				case "string":
+					switch (right.Name)
+					{
+						case "string": return BinaryOperationArgsType.String_String;
+						case "int": return BinaryOperationArgsType.String_Int;
+						default:
+							break;
+					}
+					break;
+				case "bool":
+					/*switch (right.Name)
+					{
+						case "bool": return BinaryOperationArgTypes.Bool_Bool;
+						default:
+							break;
+					}
+					break;*/
+					return BinaryOperationArgsType.Bool_Bool;
+				default:
+					return BinaryOperationArgsType.Bool_Bool;
+			}
 
+			throw new InvalidOperationException();
+		}
 		protected abstract void GetOperationInstruction(InstructionList instructions,
 			InstructionGenerationContext context);
 	}
