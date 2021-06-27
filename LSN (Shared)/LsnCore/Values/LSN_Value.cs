@@ -1,5 +1,4 @@
-﻿using LsnCore.Expressions;
-using LsnCore.Values;
+﻿using LsnCore.Values;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,9 +14,11 @@ namespace LsnCore
 	[Serializable]
 	public abstract class LsnValueB : ILsnValue
 	{
-		private TypeId _Type;
+		public /*virtual*/ TypeId Type { get; protected set; }
 
-		public /*virtual*/ TypeId Type { get { return _Type; } protected set { _Type = value; } }
+		/// <summary>
+		/// ?
+		/// </summary>
 		public abstract bool BoolValue { get; }
 
 		public abstract ILsnValue Clone();

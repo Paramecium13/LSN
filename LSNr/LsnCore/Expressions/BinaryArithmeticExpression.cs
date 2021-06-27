@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LSNr;
 using LSNr.CodeGeneration;
 using Syroot.BinaryData;
@@ -248,6 +246,19 @@ namespace LsnCore.Expressions
 								return Left;
 						}
 					}
+
+					if (Operation == BinaryOperation.Power)
+					{
+						if (Math.Abs(rightValue.DoubleValue - 0.5) <= double.Epsilon)
+						{
+							return new FunctionCall(ResourceManager.Sqrt, new[] {Left});
+						}
+
+						if (Math.Abs(rightValue.DoubleValue - -0.5) <= double.Epsilon)
+						{
+							return new FunctionCall(ResourceManager.InvSqrt, new[] { Left });
+						}
+					}
 					break;
 				}
 				default:
@@ -263,19 +274,72 @@ namespace LsnCore.Expressions
 		/// <inheritdoc />
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
-			throw new NotImplementedException();
-		}
-
-		/// <inheritdoc />
-		public override IEnumerator<IExpression> GetEnumerator()
-		{
-			throw new NotImplementedException();
+			throw new InvalidOperationException();
 		}
 
 		/// <inheritdoc />
 		protected override void GetOperationInstruction(InstructionList instructions, InstructionGenerationContext context)
 		{
-			throw new NotImplementedException();
+			var subcontext = context.WithContext(ExpressionContext.SubExpression);
+			Left.GetInstructions(instructions, subcontext);
+			Right.GetInstructions(instructions, subcontext);
+			instructions.AddInstruction(new SimplePreInstruction(GetOpCode(), 0));
+		}
+
+		/// <summary>
+		/// Gets the op code for the operation.
+		/// </summary>
+		/// <returns></returns>
+		/// <exception cref="System.ArgumentOutOfRangeException">
+		/// </exception>
+		/// <exception cref="System.NotImplementedException">
+		/// Bitwise operations are currently unsupported.
+		/// </exception>
+		private OpCode GetOpCode()
+		{
+			switch (Operation)
+			{
+				case BinaryOperation.Sum:
+					return OpCode.Add;
+				case BinaryOperation.Difference:
+					return OpCode.Sub;
+				case BinaryOperation.Product:
+					return OpCode.Mul;
+				case BinaryOperation.Quotient:
+					switch (ArgumentTypes)
+					{
+						case BinaryOperationArgsType.Int_Int:
+							return OpCode.Div_I32;
+						case BinaryOperationArgsType.Int_Double:
+						case BinaryOperationArgsType.Double_Double:
+						case BinaryOperationArgsType.Double_Int:
+							return OpCode.Div_F64;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+				case BinaryOperation.Modulus:
+					switch (ArgumentTypes)
+					{
+						case BinaryOperationArgsType.Int_Int:
+							return OpCode.Rem_I32;
+						case BinaryOperationArgsType.Int_Double:
+						case BinaryOperationArgsType.Double_Double:
+						case BinaryOperationArgsType.Double_Int:
+							return OpCode.Rem_F64;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+				case BinaryOperation.Power:
+					return OpCode.Pow;
+				case BinaryOperation.And:
+					throw new NotImplementedException("No bitwise AND instruction code.");
+				case BinaryOperation.Or:
+					throw new NotImplementedException("No bitwise OR instruction code.");
+				case BinaryOperation.Xor:
+					throw new NotImplementedException("No bitwise XOR instruction code.");
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 		}
 	}
 }

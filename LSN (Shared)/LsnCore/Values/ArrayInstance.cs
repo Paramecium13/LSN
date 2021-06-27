@@ -16,7 +16,8 @@ namespace LsnCore.Values
 
 		private readonly LsnValue[] Values;
 
-		public override bool BoolValue { get { return true;/*Values != null;*/ } }
+		/// <inheritdoc/>
+		public override bool BoolValue => true;
 
 		//private ArrayType _Type;
 
@@ -30,14 +31,14 @@ namespace LsnCore.Values
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public LsnValue this [int index] { get { return Values[index].Clone(); } }
+		public LsnValue this [int index] => Values[index].Clone();
 
 		public ArrayInstance(ArrayType type, LsnValue[] values)
 			:this(type.Id,type.GenericId,values) {}
 
-		public ArrayInstance(TypeId type, TypeId genericType, IEnumerable<LsnValue> values)
+		public ArrayInstance(TypeId type, TypeId genericType, LsnValue[] values)
 		{
-			Type = type; GenericId = genericType; Values = values.ToArray(); Size = Values.Length;
+			Type = type; GenericId = genericType; Values = values; Size = Values.Length;
 		}
 
 		public override ILsnValue Clone() => this;
@@ -81,5 +82,45 @@ namespace LsnCore.Values
 		}
 
 		public ILsnEnumerator GetLsnEnumerator() => new LsnCollectionEnumerator(this);
+	}
+
+	public sealed class ObjectArrayInstance : LsnValueB,ICollectionValue
+	{
+
+
+		/// <inheritdoc />
+		public override bool BoolValue => true;
+
+		public ObjectArrayInstance(ArrayType type, LsnValue[] values) { }
+
+		/// <inheritdoc />
+		public override ILsnValue Clone()
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public override void Serialize(BinaryDataWriter writer)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public ILsnEnumerator GetLsnEnumerator()
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public LsnValue GetValue(int index)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public int GetLength()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

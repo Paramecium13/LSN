@@ -94,21 +94,6 @@ namespace LsnCore.Expressions
 		}
 
 		/// <inheritdoc />
-		public override IEnumerator<IExpression> GetEnumerator()
-		{
-			yield return Left;
-			foreach (var expr in Left.SelectMany(e => e))
-			{
-				yield return expr;
-			}
-			yield return Right;
-			foreach (var expr in Right.SelectMany(e => e))
-			{
-				yield return expr;
-			}
-		}
-
-		/// <inheritdoc />
 		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{
 			var subContext = context.WithContext(ExpressionContext.ShortCircuitOnFalse);
@@ -182,6 +167,7 @@ namespace LsnCore.Expressions
 		}
 
 		/// <inheritdoc />
+		/// <remarks> This is never called because <see cref="LogicalAndExpression"/> overrides <see cref="GetInstructions(InstructionList, InstructionGenerationContext)"/>. </remarks>
 		protected override void GetOperationInstruction(InstructionList instructions, InstructionGenerationContext context)
 		{
 			throw new InvalidOperationException();
@@ -270,22 +256,7 @@ namespace LsnCore.Expressions
 		{
 			throw new InvalidOperationException();
 		}
-
-		/// <inheritdoc />
-		public override IEnumerator<IExpression> GetEnumerator()
-		{
-			yield return Left;
-			foreach (var expr in Left.SelectMany(e => e))
-			{
-				yield return expr;
-			}
-			yield return Right;
-			foreach (var expr in Right.SelectMany(e => e))
-			{
-				yield return expr;
-			}
-		}
-
+		
 		/// <inheritdoc />
 		public override void GetInstructions(InstructionList instructions, InstructionGenerationContext context)
 		{

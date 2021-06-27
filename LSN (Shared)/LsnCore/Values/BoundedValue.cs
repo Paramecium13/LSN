@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using LsnCore.Expressions;
 using LsnCore.Types;
 using Syroot.BinaryData;
 
@@ -23,18 +22,23 @@ namespace LsnCore
 	{
 		private static readonly TypeId id = LsnType.string_.Id;
 
+		/// <summary>
+		/// Gets the TypeId of th.
+		/// </summary>
 		public TypeId Type => id;
 
 		public string Value { get; }
 		public bool BoolValue => true;
-		
+
+		public static StringValue Empty { get; } = new StringValue("");
+
 		/// <summary>
-		/// ...
+		/// Constructor
 		/// </summary>
-		/// <param name="val"></param>
+		/// <param name="val">The value</param>
 		public StringValue(string val)
 		{
-			Value = val;
+			Value = val ?? throw new ArgumentNullException(nameof(val));
 		}
 
 		/// <summary>
@@ -59,13 +63,15 @@ namespace LsnCore
 		public static explicit operator string(StringValue v) => v.Value;
 		public static explicit operator StringValue(string s) => new StringValue(s);
 
-		public bool Equals(IExpression other)
+		/// <inheritdoc/>
+		public override bool Equals(object obj)
 		{
-			var e = other as IBoundValue<string>;
-			if (e == null) return false;
-			return e.Value == Value;
+			return obj is StringValue strVal && strVal.Value == Value;
 		}
 
+		/// <inheritdoc/>
+		public override int GetHashCode() => Value.GetHashCode();
+		
 		public void Serialize(BinaryDataWriter writer)
 		{
 			writer.Write((byte)ConstantCode.String);

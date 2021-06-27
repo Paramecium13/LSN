@@ -3,17 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Syroot.BinaryData;
 using LSNr.CodeGeneration;
 using LSNr;
 
 namespace LsnCore.Expressions
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1028:EnumStorageShouldBeInt32")]
 	public enum BinaryOperation : byte { Sum, Difference, Product, Quotient, Modulus, Power, LessThan, LessThanOrEqual, GreaterThan,GreaterThanOrEqual,Equal,NotEqual,And,Or,Xor}
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1028:EnumStorageShouldBeInt32")]
 	public enum BinaryOperationArgsType : byte { Int_Int, Int_Double,Double_Double,Double_Int,String_String,String_Int,Bool_Bool}
 
 	public sealed class BinaryExpression : Expression
@@ -28,6 +25,7 @@ namespace LsnCore.Expressions
 		/// </summary>
 		public IExpression Right { get; set; }
 
+		/// <inheritdoc />
 		public override bool IsPure => Left.IsPure && Right.IsPure;
 
 		public readonly BinaryOperation Operation;
@@ -36,7 +34,6 @@ namespace LsnCore.Expressions
 		public BinaryExpression(IExpression left,IExpression right, BinaryOperation operation, BinaryOperationArgsType argTypes)
 		{
 			Left = left; Right = right; Operation = operation; ArgumentTypes = argTypes;
-#if LSNR
 			switch (operation)
 			{
 				case BinaryOperation.LessThan:
@@ -70,7 +67,6 @@ namespace LsnCore.Expressions
 					}
 					break;
 			}
-#endif
 		}
 
 #if CORE
@@ -203,6 +199,7 @@ namespace LsnCore.Expressions
 		}
 #endif
 
+		/// <inheritdoc />
 		public override IExpression Fold()
 		{
 			Right = Right.Fold();
@@ -472,9 +469,10 @@ namespace LsnCore.Expressions
 			return this;
 		}
 
-		public override bool IsReifyTimeConst()
-			=> Left.IsReifyTimeConst() && Right.IsReifyTimeConst();
+		/// <inheritdoc />
+		public override bool IsReifyTimeConst() => Left.IsReifyTimeConst() && Right.IsReifyTimeConst();
 
+		/// <inheritdoc />
 		public override void Replace(IExpression oldExpr, IExpression newExpr)
 		{
 			if (Left.Equals(oldExpr))
@@ -488,6 +486,7 @@ namespace LsnCore.Expressions
 				Right.Replace(oldExpr, newExpr);
 		}
 
+		/// <inheritdoc />
 		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.BinaryExpression);
@@ -584,6 +583,7 @@ namespace LsnCore.Expressions
 			Right.GetInstructions(instructions, subContext);
 			GetOperationInstruction(instructions, context);
 		}
+
 		protected static BinaryOperationArgsType GetArgTypes(TypeId left, TypeId right)
 		{
 			switch (left.Name)
@@ -630,7 +630,22 @@ namespace LsnCore.Expressions
 
 			throw new InvalidOperationException();
 		}
-		protected abstract void GetOperationInstruction(InstructionList instructions,
-			InstructionGenerationContext context);
+
+		/// <summary>
+		/// Generate the instructions that perform the operation itself.
+		/// </summary>
+		/// <param name="instructions">The instructions.</param>
+		/// <param name="context">The context.</param>
+		protected abstract void GetOperationInstruction(InstructionList instructions, InstructionGenerationContext context);
+
+		public override IEnumerator<IExpression> GetEnumerator()
+		{
+			yield return Left;
+			foreach (var expr in Left.SelectMany(e => e))
+				yield return expr;
+			yield return Right;
+			foreach (var expr in Right.SelectMany(e => e))
+				yield return expr;
+		}
 	}
 }

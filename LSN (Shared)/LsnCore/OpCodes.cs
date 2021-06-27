@@ -168,6 +168,11 @@ namespace LsnCore
 		Concat,
 		[OpCodeInfo("I32.To.Str", "String")]
 		IntToString,
+		/// <summary>
+		/// Repeat a string several times.
+		/// </summary>
+		[OpCodeInfo("STR.MULT", "String", NetStackChange = -1)]
+		StrMult,
 		[OpCodeInfo("STR.Len", "String")]
 		StringLength,
 		#endregion
@@ -435,10 +440,12 @@ namespace LsnCore
 		CostructLiteDoubleArray,
 		[OpCodeInfo("FREE.ARRAY.F64", "Arrays and Lists", NetStackChange = -1)]
 		FreeLiteDoubleArray,
-		// data is number of values on the eval stack to put into the vector
-		//	The value on top of the stack is the goes into the last slot of the array, ...
-		//	Also creates the array...
-		[OpCodeInfo("INIT.ARRAY", "Arrays and Lists", ConstNetStackChange = false)]
+		/// <summary>
+		/// Creates and initializes an array of <see cref="ILsnValue"/>s. Temp Index is index of type.
+		/// <i>data</i> is number of values on the eval stack to put into the array
+		///	The value on top of the stack goes into the last slot of the array, ...
+		/// </summary>
+		[OpCodeInfo("INIT.ARRAY", "Arrays and Lists", ConstNetStackChange = false)]		
 		InitializeArray,
 		[OpCodeInfo("FREE.ARRAY", "Arrays and Lists", NetStackChange = -1)]
 		FreeArray,
@@ -548,6 +555,8 @@ namespace LsnCore
 		Abs,
 		[OpCodeInfo("SQRT", "Math")]
 		Sqrt,
+		[OpCodeInfo("INVSQRT", "Math")]
+		InvSqrt,
 		[OpCodeInfo("SIN", "Math")]
 		Sin,
 		[OpCodeInfo("COS", "Math")]

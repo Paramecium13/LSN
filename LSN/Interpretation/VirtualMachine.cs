@@ -119,6 +119,7 @@ namespace LsnCore.Interpretation
 
 		void Eval(Instruction instr)
 		{
+#pragma warning disable S1764 // Identical expressions should not be used on both sides of a binary operator
 			var opCode = instr.OpCode;
 			switch (opCode)
 			{
@@ -140,7 +141,7 @@ namespace LsnCore.Interpretation
 				#region Arithmetic
 				case OpCode.Add:     Push(LsnValue.DoubleSum(Pop(), Pop()));      break;
 				case OpCode.Sub:     Push(PopF64() - PopF64());                   break;
-				//case OpCode.Mul_I32: Push(LsnValue.IntProduct(Pop(), Pop()));     break;
+							 //case OpCode.Mul_I32: Push(LsnValue.IntProduct(Pop(), Pop()));     break;
 				case OpCode.Mul:     Push(PopF64() * PopF64());                   break;
 				case OpCode.Div_I32: Push(PopI32()/PopI32());                     break;
 				case OpCode.Div_F64: Push(PopF64() / PopF64());                   break;
@@ -150,8 +151,36 @@ namespace LsnCore.Interpretation
 				case OpCode.Neg:     Push(-PopF64());                             break;
 				#endregion
 				#region Strings
-				case OpCode.Concat:      Push(PopString() + PopString());         break;
-				case OpCode.IntToString: Push(PopI32().ToString());               break;
+				case OpCode.Concat:       Push(PopString() + PopString());        break;
+				case OpCode.IntToString:  Push(PopI32().ToString());              break;
+				case OpCode.StrMult:
+				{
+					var i = PopI32();
+					var s = Pop().Value;
+					if (i < 0) throw new ArgumentException();
+					var str = ((StringValue) s).Value;
+					if (i == 0 || str.Length == 0)
+					{
+						Push(new LsnValue(StringValue.Empty));
+						break;
+					}
+
+					if (i == 1)
+					{
+						Push(new LsnValue(s));
+						break;
+					}
+
+					var strb = new StringBuilder(str.Length * i);
+					for (var j = 0; j < i; j++)
+					{
+						strb.Append(str);
+					}
+
+					Push(strb.ToString());
+					break;
+				}
+				case OpCode.StringLength: Push(PopString().Length);               break;
 				#endregion
 				#region Compare
 #pragma warning disable S1764 // Identical expressions should not be used on both sides of a binary operator
@@ -384,13 +413,31 @@ namespace LsnCore.Interpretation
 					}
 					break;
 				#endregion
-				#region Vectors and Lists
+				#region Arrays and Lists
 				case OpCode.ConstructList:
 					Push(new LsnList((LsnListType)Environment.GetUsedType(instr.Data)));
 					break;
 				case OpCode.InitializeList:
 				case OpCode.InitializeArray:
-					throw new NotImplementedException();
+				{
+
+					var size = instr.Data;
+					if (size < 0)
+					{
+						throw new IndexOutOfRangeException();
+					}
+
+					var genericType = Environment.GetUsedTypeId(TmpIndex);
+					var type = (ArrayType)ArrayGeneric.Instance.GetType(new [] {genericType});
+					var array = new LsnValue[instr.Data];
+					for (int i = size - 1; i >= 0; i--)
+					{
+						array[i] = Pop();
+					}
+					var lsnArray = new ArrayInstance(type, array);
+					Push(lsnArray);
+					break;
+				}
 				#endregion
 				case OpCode.ConstructStruct: {
 						var type = Environment.GetUsedType(instr.Data) as StructType;
@@ -401,11 +448,11 @@ namespace LsnCore.Interpretation
 						Push(new StructValue(type.Id, vals));
 					} break;
 				case OpCode.CopyStruct: {
-						var str = Pop().Value as StructValue;
+						var str = (StructValue) Pop().Value;
 						Push(str.Clone());
 					} break;
 				case OpCode.FreeStruct: {
-						var str = Pop().Value as StructValue;
+						var str = (StructValue) Pop().Value;
 						var fCount = instr.Index; //(str.Type.Type as StructType).FieldCount;
 						FreeArray(str.Values, fCount);
 					} break;
@@ -517,6 +564,7 @@ namespace LsnCore.Interpretation
 				default:
 					break;
 			}
+#pragma warning restore S1764 // Identical expressions should not be used on both sides of a binary operator
 		}
 
 		void EnterFunction(ProcedureInfo procedure)

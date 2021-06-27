@@ -136,32 +136,72 @@ namespace LsnCore
 			}
 		}
 
+#if LSNR
+		internal static Function Sqrt { get; private set; }
+		internal static Function InvSqrt { get; private set; }
+		internal static Function Hypot { get; private set; }
+		internal static Function Sin { get; private set; }
+		internal static Function Cos { get; private set; }
+		internal static Function Tan { get; private set; }
+		internal static Function ASin { get; private set; }
+		internal static Function ACos { get; private set; }
+		internal static Function ATan { get; private set; }
+
+		private static void CreateMathFunctions()
+		{
+			Sqrt = new InstructionMappedFunction(
+				new List<Parameter> {new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0)}, LsnType.double_, "Sqrt",
+				OpCode.Sqrt);
+			InvSqrt = new InstructionMappedFunction(
+				new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sqrt",
+				OpCode.InvSqrt);
+			Sin = new InstructionMappedFunction(
+				new List<Parameter> {new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0)}, LsnType.double_, "Sin",
+				OpCode.Sin);
+			Cos = new InstructionMappedFunction(
+				new List<Parameter> {new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0)}, LsnType.double_, "Cos",
+				OpCode.Cos);
+			Tan = new InstructionMappedFunction(
+				new List<Parameter> {new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0)}, LsnType.double_, "Tan",
+				OpCode.Tan);
+			Hypot = new MultiInstructionMappedFunction(new List<Parameter>
+				{
+					new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0),
+					new Parameter("y", LsnType.double_.Id, LsnValue.Nil, 0)
+				}, LsnType.double_, "Hypot",
+				new[]
+				{
+					// load x
+					new (OpCode opCode, ushort data)[] {(OpCode.Dup, 0), (OpCode.Mul, 0)},
+					// load y
+					new (OpCode opCode, ushort data)[] {(OpCode.Dup, 0), (OpCode.Mul, 0), (OpCode.Sqrt, 0)},
+				});
+			ASin = new InstructionMappedFunction(
+				new List<Parameter> {new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0)}, LsnType.double_, "ASin",
+				OpCode.ASin);
+			ACos = new InstructionMappedFunction(new List<Parameter> {new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0)},
+				LsnType.double_, "ACos", OpCode.ACos);
+			ATan = new InstructionMappedFunction(
+				new List<Parameter> {new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0)}, LsnType.double_, "ATan",
+				OpCode.ATan);
+		}
+#endif
 		/// <summary>
 		/// Load the standard library math functions.
 		/// </summary>
 		/// <returns></returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		private static LsnResourceThing LoadMath()
 		{
-			var functions = new Function[]
+			#if LSNR
+			if (Sqrt == null)
+			{
+				CreateMathFunctions();
+			}
+			#endif
+			var functions = new []
 			{
 			#if LSNR
-				new InstructionMappedFunction(new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sqrt", OpCode.Sqrt),
-				new InstructionMappedFunction(new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sin", OpCode.Sin),
-				new InstructionMappedFunction(new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Cos", OpCode.Cos),
-				new InstructionMappedFunction(new List<Parameter> { new Parameter("θ", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Tan", OpCode.Tan),
-				new MultiInstructionMappedFunction(new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0),
-					new Parameter("y", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Hypot",
-					new[]
-					{
-						// load x
-						new (OpCode opCode, ushort data)[]{ (OpCode.Dup, 0), (OpCode.Mul, 0)},
-						// load y
-						new (OpCode opCode, ushort data)[]{ (OpCode.Dup, 0), (OpCode.Mul, 0), (OpCode.Sqrt, 0)},
-					}),
-				new InstructionMappedFunction(new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ASin", OpCode.ASin),
-				new InstructionMappedFunction(new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ACos", OpCode.ACos),
-				new InstructionMappedFunction(new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "ATan", OpCode.ATan),
+				Sqrt,Sin,Cos,Tan,Hypot,ASin,ACos,ATan,
 				
 				// ToDo: Hyperbolic trig OpCodes?
 				new InstructionMappedFunction(new List<Parameter> { new Parameter("x", LsnType.double_.Id, LsnValue.Nil, 0) }, LsnType.double_, "Sinh", OpCode.HCF),
