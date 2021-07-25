@@ -7,6 +7,10 @@ using Syroot.BinaryData;
 
 namespace LsnCore.Expressions
 {
+	/// <summary>
+	/// A binary expression for arithmetic.
+	/// </summary>
+	/// <seealso cref="LsnCore.Expressions.BinaryExpressionBase" />
 	public sealed class BinaryArithmeticExpression : BinaryExpressionBase
 	{
 		/// <summary>

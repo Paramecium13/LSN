@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 
 namespace LSNr.LssParser
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public interface IExpressionRule
 	{
+		/// <summary>
+		/// Gets the priority of this rule.
+		/// </summary>
 		uint Priority { get; }
 
 		/// <summary>

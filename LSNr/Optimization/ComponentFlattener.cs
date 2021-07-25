@@ -311,8 +311,7 @@ namespace LSNr.Optimization
 			if (!(fr.Start is LsnValue start1 && fr.End is LsnValue end1 && start1.IntValue <= end1.IntValue))
 			{
 				// Don't make a pre check if the range is constant.
-				var startCondExpr = new BinaryExpression(fr.Iterator.AccessExpression, fr.End,
-					BinaryOperation.GreaterThan, BinaryOperationArgsType.Int_Int);
+				var startCondExpr = new ComparisonExpression(fr.Iterator.AccessExpression, fr.End, BinaryOperation.GreaterThan);
 				var startCond = new PreStatement(new ConditionalJumpStatement(startCondExpr)) { Target = endLabel };
 				PreStatements.Add(startCond);
 					// if(not in range) jmp [end]
@@ -326,12 +325,11 @@ namespace LSNr.Optimization
 					// [start] body
 			//if(NextLabel == null) add NOP.
 			var incrStatement = new AssignmentStatement(fr.Iterator,
-				new BinaryExpression(fr.Iterator.AccessExpression, new LsnValue(1), BinaryOperation.Sum,
-				BinaryOperationArgsType.Int_Int));
+				new BinaryArithmeticExpression(fr.Iterator.AccessExpression, new LsnValue(1), BinaryOperation.Sum));
 			PreStatements.Add(new PreStatement(incrStatement) { Label = new List<string> { continueLabel } });
 					// [continue] increment
-			var condExpr = new BinaryExpression(fr.Iterator.AccessExpression, fr.End,
-				BinaryOperation.LessThanOrEqual, BinaryOperationArgsType.Int_Int);
+			var condExpr = new ComparisonExpression(fr.Iterator.AccessExpression, fr.End,
+				BinaryOperation.LessThanOrEqual);
 			var jumpBack = new PreStatement(new ConditionalJumpStatement(condExpr)) { Target = startLabel };
 			PreStatements.Add(jumpBack);
 			// if(in range) jmp [start]
@@ -367,7 +365,7 @@ namespace LSNr.Optimization
 			// if (collection is empty) jmp end
 			// ToDo: ?????
 			var length = new MethodCall(fc.Collection.Type.Type.Methods["Length"], new[] { fc.Collection });
-			var stCond = new BinaryExpression(length, new LsnValue(0), BinaryOperation.Equal, BinaryOperationArgsType.Int_Int);
+			var stCond = new ComparisonExpression(length, new LsnValue(0), BinaryOperation.Equal);
 
 			InnerMostLoopContinueLabels.Push(continueLabel);
 			InnerMostLoopEndLabels.Push(endLabel);
@@ -379,13 +377,11 @@ namespace LSNr.Optimization
 
 			// index++
 			var incrStatement = new AssignmentStatement(fc.Index,
-				new BinaryExpression(fc.Index.AccessExpression, new LsnValue(1), BinaryOperation.Sum,
-				BinaryOperationArgsType.Int_Int));
+				new BinaryArithmeticExpression(fc.Index.AccessExpression, new LsnValue(1), BinaryOperation.Sum));
 			PreStatements.Add(new PreStatement(incrStatement) { Label = new List<string> { continueLabel } });
 
 			// if (index < collection.length) jmp [start]
-			var condExpr = new BinaryExpression(fc.Index.AccessExpression, length,
-				BinaryOperation.LessThan, BinaryOperationArgsType.Int_Int);
+			var condExpr = new ComparisonExpression(fc.Index.AccessExpression, length, BinaryOperation.LessThan);
 			var jumpBack = new PreStatement(new ConditionalJumpStatement(condExpr)) { Target = startLabel };
 			PreStatements.Add(jumpBack);
 			// [end] ...

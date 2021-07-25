@@ -37,7 +37,7 @@ namespace LSNr.LssParser
 		public static readonly IExpressionRule NotRule = new UnaryExpressionRule("!", ExpressionRulePriorities.Logical, (e) => new NotExpression(e));
 
 		public static readonly IExpressionRule NegationRule = new UnaryExpressionRule("-", ExpressionRulePriorities.Negation,
-			(e) => new BinaryExpression(new LsnValue(-1), e, BinaryOperation.Product, BinaryExpression.GetArgTypes(LsnType.int_.Id, e.Type)),
+			(e) => new BinaryArithmeticExpression(new LsnValue(-1), e, BinaryOperation.Product),
 			(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)=>
 			{
 				if (index == 0)
