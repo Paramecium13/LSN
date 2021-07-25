@@ -123,23 +123,37 @@ namespace LSNr.Statements
 		}
 	}
 
+	/// <summary>
+	/// A binary expression reassignment statement rule (e.g. +=).
+	/// </summary>
+	/// <seealso cref="LSNr.Statements.ReasignmentStatementRule" />
 	public sealed class BinExprReassignStatementRule : ReasignmentStatementRule
 	{
 		private readonly string Value;
 		private readonly BinaryOperation Operation;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="BinExprReassignStatementRule"/> class.
+		/// </summary>
+		/// <param name="val">The text value of the operator, e.g. "+=".</param>
+		/// <param name="op">The operator.</param>
 		public BinExprReassignStatementRule(string val, BinaryOperation op) { Value = val; Operation = op; }
 
+		/// <inheritdoc />
 		public override bool Check(ISlice<Token> tokens, IPreScript script)
 			=> tokens.Any(t => t.Value == Value);
 
+		/// <inheritdoc />
 		public override Statement Apply(ISlice<Token> tokens, IPreScript script)
 		{
 			var i = tokens.IndexOf(Value);
 			var lTokens = tokens.CreateSliceTaking(i);
 			var lValue = Create.Express(lTokens, script);
 			var tmp = Create.Express(tokens.CreateSliceAt(i + 1),script);
-			var rValue = new BinaryExpression(lValue, tmp, Operation, BinaryExpression.GetArgTypes(lValue.Type, tmp.Type));
+			var argTypes = BinaryExpressionBase.GetArgTypes(lValue.Type, tmp.Type);
+			var rValue = argTypes == BinaryOperationArgsType.String_Int || argTypes == BinaryOperationArgsType.String_String ?
+				new StringBinaryExpression(lValue, tmp, Operation)
+				: (IExpression)new BinaryArithmeticExpression(lValue, tmp, Operation);
 			return Make(lValue, rValue, script, lTokens);
 		}
 	}

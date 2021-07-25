@@ -56,19 +56,19 @@ namespace LSNr.LssParser
 		}
 
 		public static readonly IExpressionRule Sum = new BinaryExpressionRule(ExpressionRulePriorities.AddSub, "+",
-			(l, r) => new BinaryExpression(l, r, BinaryOperation.Sum, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+			(l, r) => new BinaryArithmeticExpression(l, r, BinaryOperation.Sum));
 
 		public static readonly IExpressionRule Difference = new BinaryExpressionRule(ExpressionRulePriorities.AddSub, "-",
-			(l, r) => new BinaryExpression(l, r, BinaryOperation.Difference, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+			(l, r) => new BinaryArithmeticExpression(l, r, BinaryOperation.Difference));
 
 		public static readonly IExpressionRule Product = new BinaryExpressionRule(ExpressionRulePriorities.MultDiv, "*",
-			(l, r) => new BinaryExpression(l, r, BinaryOperation.Product, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+			(l, r) => new BinaryArithmeticExpression(l, r, BinaryOperation.Product));
 
 		public static readonly IExpressionRule Quotient = new BinaryExpressionRule(ExpressionRulePriorities.MultDiv, "/",
-			(l, r) => new BinaryExpression(l, r, BinaryOperation.Quotient, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+			(l, r) => new BinaryArithmeticExpression(l, r, BinaryOperation.Quotient));
 
 		public static readonly IExpressionRule Modulus = new BinaryExpressionRule(ExpressionRulePriorities.MultDiv, "%",
-			(l, r) => new BinaryExpression(l, r, BinaryOperation.Modulus, BinaryExpression.GetArgTypes(l.Type, r.Type)));
+			(l, r) => new BinaryArithmeticExpression(l, r, BinaryOperation.Modulus));
 
 		public static readonly IExpressionRule LessThan = new BinaryExpressionRule(ExpressionRulePriorities.Comparative, "<",
 			(l, r) => new BinaryExpression(l, r, BinaryOperation.LessThan, BinaryExpression.GetArgTypes(l.Type, r.Type)));

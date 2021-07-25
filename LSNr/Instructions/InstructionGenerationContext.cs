@@ -1,5 +1,8 @@
 ﻿namespace LSNr
 {
+	/// <summary>
+	/// A generalization of where/how the expression is being used.
+	/// </summary>
 	public enum ExpressionContext
 	{
 		/// <summary>
@@ -22,7 +25,7 @@
 		/// <para/>
 		/// It is up to the expression given this context to emit the copy struct instruction when needed.
 		/// <para/>
-		/// For example, variable access and index access instructions need to copy the struct but procedure calls and constructors don't
+		/// For example, variable access and index access instructions need to copy the struct but procedure calls and constructors, both of which create instances, don't.
 		/// </summary>
 		Store,
 		

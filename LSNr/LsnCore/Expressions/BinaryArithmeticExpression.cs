@@ -9,7 +9,12 @@ namespace LsnCore.Expressions
 {
 	public sealed class BinaryArithmeticExpression : BinaryExpressionBase
 	{
-		/// <inheritdoc />
+		/// <summary>
+		/// Initializes a new instance of the <see cref="BinaryArithmeticExpression"/> class.
+		/// </summary>
+		/// <param name="left">The left expression.</param>
+		/// <param name="right">The right expression.</param>
+		/// <param name="operation">The operation.</param>
 		public BinaryArithmeticExpression(IExpression left, IExpression right, BinaryOperation operation) : base(
 			operation, GetArgTypes(left.Type, right.Type))
 		{

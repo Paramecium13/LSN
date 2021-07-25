@@ -584,7 +584,14 @@ namespace LsnCore.Expressions
 			GetOperationInstruction(instructions, context);
 		}
 
-		protected static BinaryOperationArgsType GetArgTypes(TypeId left, TypeId right)
+		/// <summary>
+		/// Gets the argument types.
+		/// </summary>
+		/// <param name="left">The type of the left expression.</param>
+		/// <param name="right">The type of the right expression.</param>
+		/// <returns></returns>
+		/// <exception cref="System.InvalidOperationException"></exception>
+		public static BinaryOperationArgsType GetArgTypes(TypeId left, TypeId right)
 		{
 			switch (left.Name)
 			{

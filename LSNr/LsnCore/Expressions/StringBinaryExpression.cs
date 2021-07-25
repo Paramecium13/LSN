@@ -15,7 +15,12 @@ namespace LsnCore.Expressions
 	class StringBinaryExpression : BinaryExpressionBase
 	{
 		/// <inheritdoc />
-		public StringBinaryExpression(BinaryOperation operation, BinaryOperationArgsType argumentTypes) : base(operation, argumentTypes) {}
+		public StringBinaryExpression(IExpression left, IExpression right, BinaryOperation operation) : base(
+			operation, GetArgTypes(left.Type, right.Type))
+		{
+			Left = left;
+			Right = right;
+		}
 
 		/// <inheritdoc />
 		public override bool IsReifyTimeConst()

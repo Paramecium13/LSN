@@ -155,6 +155,7 @@
     <Compile Include="LsnCore\Expressions\BooleanExpressions.cs" />
     <Compile Include="LsnCore\Expressions\BinaryExpression.cs" />
     <Compile Include="LsnCore\Expressions\CollectionValueAccessExpression.cs" />
+    <Compile Include="LsnCore\Expressions\ComparisonExpression.cs" />
     <Compile Include="LsnCore\Expressions\Expression.cs" />
     <Compile Include="LsnCore\Expressions\FieldAccessExpression.cs" />
     <Compile Include="LsnCore\Expressions\FunctionCall.cs" />
