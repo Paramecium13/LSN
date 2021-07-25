@@ -17,6 +17,7 @@
   <Import Project="..\LSN %28Shared%29\LSN %28Shared%29.projitems" Label="Shared" />
 
   <ItemGroup>
+    <PackageReference Include="Syroot.IO.BinaryData" Version="4.0.4" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
   </ItemGroup>
 

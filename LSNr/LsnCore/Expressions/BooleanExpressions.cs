@@ -21,8 +21,8 @@ namespace LsnCore.Expressions
 	public sealed class LogicalAndExpression : BinaryExpressionBase
 	{
 		/// <inheritdoc />
-		public LogicalAndExpression(BinaryOperationArgsType argumentTypes, IExpression left, IExpression right) : base(
-			BinaryOperation.And, argumentTypes)
+		public LogicalAndExpression(IExpression left, IExpression right) : base(
+			BinaryOperation.And, GetArgTypes(left.Type,right.Type))
 		{
 			Left = left;
 			Right = right;
@@ -185,8 +185,8 @@ namespace LsnCore.Expressions
 	public sealed class LogicalOrExpression : BinaryExpressionBase
 	{
 		/// <inheritdoc />
-		public LogicalOrExpression(BinaryOperationArgsType argumentTypes, IExpression left, IExpression right) : base(
-			BinaryOperation.And, argumentTypes)
+		public LogicalOrExpression(IExpression left, IExpression right) : base(
+			BinaryOperation.And, GetArgTypes(left.Type,right.Type))
 		{
 			Left = left;
 			Right = right;
@@ -243,7 +243,7 @@ namespace LsnCore.Expressions
 			{
 				throw new InvalidOperationException("This probably can't happen...");
 			}
-			// ToDo: should I ever return this type?
+			// ToDo: should I ever return this type, or should I always use MultiOrExpression?
 			// if(expressions.Count == 2) { return new LogicalOrExpression(ArgumentTypes,expressions[0],expressions[1]);}
 			return new MultiOrExpression(expressions.ToArray());
 		}
@@ -336,6 +336,7 @@ namespace LsnCore.Expressions
 			throw new InvalidOperationException();
 		}
 	}
+
 	/// <summary>
 	/// An expression that consists of multiple boolean expressions AND`ed together.
 	/// </summary>

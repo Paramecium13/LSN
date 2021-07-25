@@ -10,12 +10,16 @@ namespace LSNr.Statements
 {
 	public sealed class LetStatementRule : IStatementRule
 	{
+		/// <inheritdoc/>
 		public int Order => StatementRuleOrders.Base;
 
-		public bool PreCheck(Token t) => t.Value == "let";
+		/// <inheritdoc/>
+		public bool PreCheck(Token token) => token.Value == "let";
 
+		/// <inheritdoc/>
 		public bool Check(ISlice<Token> tokens, IPreScript script) => true;
 
+		/// <inheritdoc/>
 		public Statement Apply(ISlice<Token> tokens, IPreScript script)
 		{
 			// let x = 1
@@ -61,19 +65,22 @@ namespace LSNr.Statements
 			var st = new AssignmentStatement(variable, val);
 			variable.Assignment = st;
 
-
 			return st;
 		}
 	}
 
 	public class ReasignmentStatementRule : IStatementRule
 	{
+		/// <inheritdoc/>
 		public virtual int Order => StatementRuleOrders.Reassign;
 
+		/// <inheritdoc/>
 		public virtual bool PreCheck(Token t) => true;
 
+		/// <inheritdoc/>
 		public virtual bool Check(ISlice<Token> tokens, IPreScript script) => tokens.Any(t => t.Value == "=");
 
+		/// <inheritdoc/>
 		public virtual Statement Apply(ISlice<Token> tokens, IPreScript script)
 		{
 			var i = tokens.IndexOf("=");

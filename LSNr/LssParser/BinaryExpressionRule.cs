@@ -89,10 +89,10 @@ namespace LSNr.LssParser
 			(l, r) => new ComparisonExpression(l, r, BinaryOperation.NotEqual));
 
 		public static readonly IExpressionRule LogicalAnd = new BinaryExpressionRule(ExpressionRulePriorities.Logical, "&&",
-			(l, r) => new ComparisonExpression(l, r, BinaryOperation.And));
+			(l, r) => new LogicalAndExpression(l, r));
 
 		public static readonly IExpressionRule LogicalOr = new BinaryExpressionRule(ExpressionRulePriorities.Logical, "||",
-					(l, r) => new ComparisonExpression(l, r, BinaryOperation.Or));
+					(l, r) => new LogicalOrExpression(l, r));
 
 		public static readonly IExpressionRule Power = new BinaryExpressionRule(ExpressionRulePriorities.Exponents, "^",
 			(l, r) => new BinaryArithmeticExpression(l, r, BinaryOperation.Power));
