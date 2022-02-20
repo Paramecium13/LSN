@@ -9,17 +9,15 @@ using LsnCore.Types;
 using LsnCore.Utilities;
 using LSNr.Optimization;
 using LSNr.ReaderRules;
-using EventListener = LsnCore.Types.EventListener;
-using ScriptClassMethod = LsnCore.Types.ScriptClassMethod;
 
 namespace LSNr.ScriptObjects
 {
 	public sealed class ScriptClassMethodComponent
 	{
-		private readonly ScriptClassMethod Method;
+		private readonly CompileTimeScriptClassMethod Method;
 		private readonly ISlice<Token> Body;
 
-		public ScriptClassMethodComponent(ScriptClassMethod method, ISlice<Token> body)
+		public ScriptClassMethodComponent(CompileTimeScriptClassMethod method, ISlice<Token> body)
 		{
 			Method = method; Body = body;
 		}
@@ -60,11 +58,11 @@ namespace LSNr.ScriptObjects
 
 	public sealed class ScriptClassEventListenerComponent
 	{
-		private readonly EventListener Event;
+		private readonly CompileTimeEventListener Event;
 		private readonly ISlice<Token> Body;
 		private readonly Token First;
 
-		public ScriptClassEventListenerComponent(EventListener e, ISlice<Token> body, Token first)
+		public ScriptClassEventListenerComponent(CompileTimeEventListener e, ISlice<Token> body, Token first)
 		{
 			Event = e; Body = body; First = first;
 		}

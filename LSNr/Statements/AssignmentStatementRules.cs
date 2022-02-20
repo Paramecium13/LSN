@@ -2,6 +2,7 @@
 using System.Linq;
 using LsnCore;
 using LsnCore.Expressions;
+using LsnCore.Runtime.Types;
 using LsnCore.Types;
 using LsnCore.Statements;
 using LsnCore.Utilities;
@@ -69,7 +70,7 @@ namespace LSNr.Statements
 		}
 	}
 
-	public class ReasignmentStatementRule : IStatementRule
+	public class ReassignmentStatementRule : IStatementRule
 	{
 		/// <inheritdoc/>
 		public virtual int Order => StatementRuleOrders.Reassign;
@@ -114,11 +115,20 @@ namespace LSNr.Statements
 				case FieldAccessExpression f:
 					{
 						if (f.Type.Type is RecordType)
+						{
 							throw new LsnrParsingException(lTokens[0], "Cannot reassign the contents of a record.", script.Path);
+						}
+
 						if (f.Type.Type is ScriptClass type && !(type.Fields[f.Index].Mutable) && !((script as PreScriptClassFunction)?.IsConstructor ?? false))
+						{
 							throw new LsnrParsingException(lTokens[0], $"The field '{type.Fields[f.Index].Name}' of script class '{type.Name}' is immutable.", script.Path);
+						}
+
 						if (!f.Type.Subsumes(rValue.Type))
+						{
 							throw LsnrParsingException.TypeMismatch(lTokens[0], f.Type.Name, rValue.Type.Name, script.Path);
+						}
+
 						return new FieldAssignmentStatement(f.Value, f.Index, rValue);
 					}
 				case GlobalVariableAccessExpression gv:
@@ -133,8 +143,8 @@ namespace LSNr.Statements
 	/// <summary>
 	/// A binary expression reassignment statement rule (e.g. +=).
 	/// </summary>
-	/// <seealso cref="LSNr.Statements.ReasignmentStatementRule" />
-	public sealed class BinExprReassignStatementRule : ReasignmentStatementRule
+	/// <seealso cref="ReassignmentStatementRule" />
+	public sealed class BinExprReassignStatementRule : ReassignmentStatementRule
 	{
 		private readonly string Value;
 		private readonly BinaryOperation Operation;

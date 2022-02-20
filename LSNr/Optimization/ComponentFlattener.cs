@@ -7,7 +7,7 @@ using LsnCore.ControlStructures;
 using LsnCore.Statements;
 using LsnCore;
 using LsnCore.Expressions;
-using LSNr.Converations;
+using LSNr.Conversations;
 
 namespace LSNr.Optimization
 {

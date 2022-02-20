@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
+using LsnCore.Runtime.Types;
 using LsnCore.Types;
 using LsnCore.Utilities;
-using LSNr.Converations;
+using LSNr.Conversations;
 using LSNr.ReaderRules;
 
 namespace LSNr.ScriptObjects
@@ -37,9 +38,9 @@ namespace LSNr.ScriptObjects
 		/// <param name="parameters">The parameters.</param>
 		void RegisterAbstractMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters);
 
-		ScriptClassMethod RegisterMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters, bool isVirtual);
+		CompileTimeScriptClassMethod RegisterMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters, bool isVirtual);
 		
-		EventListener RegisterEventListener(string name, IReadOnlyList<Parameter> parameters);
+		CompileTimeEventListener RegisterEventListener(string name, IReadOnlyList<Parameter> parameters);
 		
 		ScriptClassConstructor RegisterConstructor(IReadOnlyList<Parameter> parameters);
 
@@ -47,7 +48,7 @@ namespace LSNr.ScriptObjects
 		event Action<IPreScriptClass> ParsingSignaturesB;
 		event Action<IPreScriptClass> ParsingStateSignatures;
 
-		ScriptClassState RegisterState(string name, bool auto, IReadOnlyList<ScriptClassMethod> methods, IReadOnlyList<EventListener> eventListeners);
+		CompileTimeScriptClassState RegisterState(string name, bool auto, IReadOnlyList<CompileTimeScriptClassMethod> methods, IReadOnlyList<CompileTimeEventListener> eventListeners);
 	}
 
 	public sealed class ScriptClassReader : RuledReader<ScriptClassStatementRule, ScriptClassBodyRule>
@@ -63,7 +64,7 @@ namespace LSNr.ScriptObjects
 				new ScriptClassFieldRule(pre)
 			};
 			BodyRules = new ScriptClassBodyRule[] {
-				new ScriptClassConstuctorRule(pre),
+				new ScriptClassConstructorRule(pre),
 				new ScriptClassEventListenerRule(pre),
 				new ScriptClassMethodRule(pre),
 				new ScriptClassStateRule(pre),
@@ -89,20 +90,32 @@ namespace LSNr.ScriptObjects
 		protected string GetName(Indexer<Token> i, string memberTypeName)
 		{
 			if (i.Current.Type != TokenType.Identifier)
+			{
 				throw new LsnrParsingException(i.Current, $"'{i.Current.Value}' is not a valid {memberTypeName} name.", ScriptClass.Path);
+			}
+
 			var s = ScriptClass.CheckSymbol(i.Current.Value);
 			if (s != SymbolType.Undefined)
+			{
 				throw new LsnrParsingException(i.Current, $"Cannot name a {memberTypeName} '{i.Current.Value}'. There is already a(n) {s.ToString()} with that name.", ScriptClass.Path);
+			}
+
 			return i.Current.Value;
 		}
 
 		protected IReadOnlyList<Parameter> ParseParameters(Indexer<Token> i, string memberTypeName, string memberName)
 		{
 			if (!i.MoveForward() || i.Current.Value != "(" || !i.MoveForward())
+			{
 				throw new LsnrParsingException(i.Current, $"Error parsing {memberTypeName} {memberName}: No parameter list defined", ScriptClass.Path);
+			}
+
 			var argTokens = i.SliceWhile(t => t.Value != ")", out bool err);
 			if(err)
+			{
 				throw new LsnrParsingException(i.Current, $"Error parsing {memberTypeName} {memberName}: No parameter list defined", ScriptClass.Path);
+			}
+
 			return ScriptClass.ParseParameters(argTokens, 0);
 		}
 
@@ -112,8 +125,11 @@ namespace LSNr.ScriptObjects
 			if (!index.MoveForward() || index.Current.Value == ";" || index.Current.Value == "{") return null;
 			TypeId ret = null;
 			if (index.Current.Value != "->" || !index.MoveForward())
+			{
 				throw new LsnrParsingException(index.Current, $"Error parsing {memberTypeName} {memberName}: Expected '->' or end of definition; received '{index.Current.Value}'.",
 					ScriptClass.Path);
+			}
+
 			if(index.Current.Value == "(")
 			{
 				if (!index.MoveForward() || index.Current.Value != ")")
@@ -151,12 +167,13 @@ namespace LSNr.ScriptObjects
 	{
 		public ScriptClassFieldRule(IPreScriptClass p) : base(p) { }
 
+		/// <inheritdoc/>
 		public override bool Check(ISlice<Token> tokens)
 		{
-			if (tokens[0].Value == "mut") return true;
-			return tokens.Any(t => t.Value == ":");
+			return tokens[0].Value == "mut" || tokens.Any(t => t.Value == ":");
 		}
 
+		/// <inheritdoc/>
 		public override void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes)
 		{
 			var mutable = false;
@@ -181,10 +198,12 @@ namespace LSNr.ScriptObjects
 	{
 		public ScriptClassAbstractMethodRule(IPreScriptClass p) : base(p) { }
 
+		/// <inheritdoc/>
 		public override bool Check(ISlice<Token> tokens) => tokens.Length > 2
 			&& ((tokens[0].Value == "abstract" && tokens[1].Value == "fn")
 			|| (tokens[0].Value == "fn" && tokens[1].Value == "abstract"));
 
+		/// <inheritdoc/>
 		public override void Apply(ISlice<Token> tokens, ISlice<Token>[] attributes)
 		{
 			// abstract fn foo()
@@ -207,24 +226,24 @@ namespace LSNr.ScriptObjects
 		public override void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes)
 		{
 			var index = new Indexer<Token>(0, head);
-			var virt = false;
+			var isVirtual = false;
 			if(index.Current.Value == "virtual")
 			{
-				virt = true;
+				isVirtual = true;
 				index.MoveForward();
 			}
 			if (index.Current.Value != "fn")
 				throw new LsnrParsingException(index.Current, "Error parsing virtual method", ScriptClass.Path);
 			index.MoveForward();
-			if(!virt && index.Current.Value == "virtual")
+			if(!isVirtual && index.Current.Value == "virtual")
 			{
-				virt = true;
+				isVirtual = true;
 				index.MoveForward();
 			}
 			var name = GetName(index, "method");
 			var args = ParseParameters(index, "method", name);
 			var ret = ParseReturnType(index, "method", name);
-			var method = ScriptClass.RegisterMethod(name, ret, args, virt);
+			var method = ScriptClass.RegisterMethod(name, ret, args, isVirtual);
 			var comp = new ScriptClassMethodComponent(method, body);
 			ScriptClass.ParsingProcBodies += comp.OnParsingProcBodies;
 		}
@@ -250,9 +269,9 @@ namespace LSNr.ScriptObjects
 		}
 	}
 
-	public sealed class ScriptClassConstuctorRule : ScriptClassBodyRule
+	public sealed class ScriptClassConstructorRule : ScriptClassBodyRule
 	{
-		public ScriptClassConstuctorRule(IPreScriptClass p) : base(p) { }
+		public ScriptClassConstructorRule(IPreScriptClass p) : base(p) { }
 
 		public override bool Check(ISlice<Token> head) => head[0].Value == "new";
 

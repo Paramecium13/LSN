@@ -42,11 +42,11 @@ namespace LsnCore.Expressions
 						{
 							BinaryOperation.Sum => new LsnValue(new StringValue(((StringValue) leftValue.Value).Value +
 								((StringValue) rightValue.Value).Value)),
-							BinaryOperation.Difference => throw new NotImplementedException(
+							BinaryOperation.Difference => throw new InvalidOperationException(
 								"String subtraction is not currently supported"),
-							BinaryOperation.Quotient => throw new NotImplementedException(
+							BinaryOperation.Quotient => throw new InvalidOperationException(
 								"String division is not currently supported"),
-							BinaryOperation.Modulus => throw new NotImplementedException(
+							BinaryOperation.Modulus => throw new InvalidOperationException(
 								"String splitting via the '%' operator is not yet supported."),
 							_ => throw new ArgumentOutOfRangeException()
 						};
@@ -56,7 +56,7 @@ namespace LsnCore.Expressions
 							case BinaryOperation.Sum:
 								return new LsnValue(new StringValue(((StringValue)leftValue.Value).Value + rightValue.IntValue));
 							case BinaryOperation.Difference:
-								throw new NotImplementedException(
+								throw new InvalidOperationException(
 									"Sub-string operations by subtracting by an int are not currently supported.");
 							case BinaryOperation.Product:
 								var strb = new StringBuilder();
@@ -74,10 +74,10 @@ namespace LsnCore.Expressions
 								return new LsnValue(new StringValue(str));
 							case BinaryOperation.Quotient:
 								// This would divide the string into n parts of equal length (the last part may be shorter).
-								throw new NotImplementedException("Splitting strings into equal parts via the '/' operator is not yet supported");
+								throw new InvalidOperationException("Splitting strings into equal parts via the '/' operator is not yet supported");
 							case BinaryOperation.Modulus:
 								// This would divide the string into parts of length n (the last part may be shorter).
-								throw new NotImplementedException("Splitting strings into equal parts via the '%' operator is not yet supported");
+								throw new InvalidOperationException("Splitting strings into equal parts via the '%' operator is not yet supported");
 							default:
 								throw new ArgumentOutOfRangeException();
 						}
@@ -119,12 +119,11 @@ namespace LsnCore.Expressions
 							instructions.AddInstruction(new SimplePreInstruction(OpCode.Concat, 0));
 							break;
 						case BinaryOperation.Difference:
-							throw new NotImplementedException("String subtraction is not currently supported");
+							throw new InvalidOperationException("String subtraction is not currently supported");
 						case BinaryOperation.Quotient:
-							throw new NotImplementedException("String division is not currently supported");
+							throw new InvalidOperationException("String division is not currently supported");
 						case BinaryOperation.Modulus:
-							throw new NotImplementedException(
-								"String splitting via the '%' operator is not yet supported.");
+							throw new InvalidOperationException("String splitting via the '%' operator is not yet supported.");
 						default:
 							throw new ArgumentOutOfRangeException();
 					}
@@ -140,14 +139,13 @@ namespace LsnCore.Expressions
 							instructions.AddInstruction(new SimplePreInstruction(OpCode.StrMult, 0));
 							break;
 						case BinaryOperation.Difference:
-							throw new NotImplementedException(
-								"Sub-string operations by subtracting by an int are not currently supported.");
+							throw new InvalidOperationException("Sub-string operations by subtracting by an int are not currently supported.");
 						case BinaryOperation.Quotient:
 							// This would divide the string into n parts of equal length (the last part may be shorter).
-							throw new NotImplementedException("Splitting strings into equal parts via the '/' operator is not yet supported");
+							throw new InvalidOperationException("Splitting strings into equal parts via the '/' operator is not yet supported");
 						case BinaryOperation.Modulus:
 							// This would divide the string into parts of length n (the last part may be shorter).
-							throw new NotImplementedException("Splitting strings into equal parts via the '%' operator is not yet supported");
+							throw new InvalidOperationException("Splitting strings into equal parts via the '%' operator is not yet supported");
 						default:
 							throw new ArgumentOutOfRangeException();
 					}

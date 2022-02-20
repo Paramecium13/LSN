@@ -11,15 +11,33 @@ using LsnCore.Serialization;
 
 namespace LsnCore
 {
+	public interface ICompileTimeProcedure
+	{
+		Statement[] Code { get; set; }
+
+		Instruction[] Instructions { get; set; }
+
+		IReadOnlyList<Parameter> Parameters { get; }
+
+		TypeId ReturnType { get; }
+
+		string Name { get; }
+
+		int StackSize { get; set; }
+
+	}
+
 	/// <summary>
 	/// A function written in LSN.
 	/// </summary>
-	public class LsnFunction : Function, ICodeBlock, IProcedure
+	public class LsnFunction : Function, ICompileTimeProcedure//, ICodeBlock, IProcedure
 	{
 		/// <summary>
 		/// This should only be set from within LSNr, where function bodies are parsed.
 		/// </summary>
 		public Statement[] Code { get; set; }
+
+		public Instruction[] Instructions { get; set; }
 
 		public LsnFunction(IReadOnlyList<Parameter> parameters, TypeId returnType, string name, string resourceFilePath)
 			: base(new FunctionSignature(parameters, name, returnType))
@@ -48,11 +66,11 @@ namespace LsnCore
 
 		public static LsnFunction Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
-			var signiture = FunctionSignature.Read(reader, typeContainer);
+			var signature = FunctionSignature.Read(reader, typeContainer);
 			var stackSize = reader.ReadUInt16();
 			var codeSize = reader.ReadInt32();
 
-			var fn = new LsnFunction(signiture.Parameters.ToList(), signiture.ReturnType, signiture.Name, resourceFilePath)
+			var fn = new LsnFunction(signature.Parameters.ToList(), signature.ReturnType, signature.Name, resourceFilePath)
 			{
 				StackSize = stackSize
 			};

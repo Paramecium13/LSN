@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using LsnCore.Runtime.Types;
 using LsnCore.Types;
 using LSNr;
 using LSNr.CodeGeneration;
@@ -93,8 +94,10 @@ namespace LsnCore.Expressions
 			resourceSerializer.WriteTypeId(type, writer);
 			writer.Write(Method.Name);
 			writer.Write((byte)Args.Length);
-			for (int i = 0; i < Args.Length; i++)
-				Args[i].Serialize(writer, resourceSerializer);
+			foreach (var arg in Args)
+			{
+				arg.Serialize(writer, resourceSerializer);
+			}
 		}
 
 		public override IEnumerator<IExpression> GetEnumerator()

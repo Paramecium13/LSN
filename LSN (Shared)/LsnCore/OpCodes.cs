@@ -423,7 +423,7 @@ namespace LsnCore
 		[OpCodeInfo("FREE.LST.I32", "Arrays and Lists", NetStackChange = -1)]
 		FreeLiteIntList,
 		[OpCodeInfo("MK.LST.F64", "Arrays and Lists", NetStackChange = 1)]
-		CostructLiteDoubleList,
+		ConstructLiteDoubleList,
 		[OpCodeInfo("FREE.LST.F64", "Arrays and Lists", NetStackChange = -1)]
 		FreeLiteDoubleList,
 		// data is number of values on the eval stack to put into the list. Temp Index is index of type
@@ -437,7 +437,7 @@ namespace LsnCore
 		[OpCodeInfo("FREE.ARRAY.I32", "Arrays and Lists", NetStackChange = -1)]
 		FreeLiteIntArray,
 		[OpCodeInfo("MK.ARRAY.F64", "Arrays and Lists", NetStackChange = 1)]
-		CostructLiteDoubleArray,
+		ConstructLiteDoubleArray,
 		[OpCodeInfo("FREE.ARRAY.F64", "Arrays and Lists", NetStackChange = -1)]
 		FreeLiteDoubleArray,
 		/// <summary>

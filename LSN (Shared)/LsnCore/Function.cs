@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+#if LSNR
+using LsnCore.Expressions;
+#endif
 
 namespace LsnCore
 {
@@ -57,6 +60,26 @@ namespace LsnCore
 			protected set => _ResourceFilePath = value;
 		}
 		
+		#if LSNR
+		public bool TypesMatch(IReadOnlyList<IExpression> args)
+		{
+			if (args.Count != Parameters.Count)
+			{
+				return false;
+			}
+
+			for (var i = 0; i < Parameters.Count; i++)
+			{
+				if (!Parameters[i].Type.Type.Subsumes(args[i].Type.Type))
+				{
+					return false; // ToDo: Error message?
+				}
+			}
+
+			return true;
+		}
+		#endif
+
 #if CORE
 		//public abstract LsnValue Eval(LsnValue[] args, IInterpreter i);
 #endif

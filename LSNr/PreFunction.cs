@@ -22,7 +22,7 @@ namespace LSNr
 
 		private static readonly IReadOnlyList<IStatementRule> _StatementRules = new IStatementRule[] {
 			new LetStatementRule(),
-			new ReasignmentStatementRule(),
+			new ReassignmentStatementRule(),
 			new BinExprReassignStatementRule("+=", BinaryOperation.Sum),
 			new BinExprReassignStatementRule("-=", BinaryOperation.Difference),
 			new BinExprReassignStatementRule("*=", BinaryOperation.Product),

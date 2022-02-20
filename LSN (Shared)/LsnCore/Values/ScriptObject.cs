@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LsnCore.Expressions;
+using LsnCore.Runtime.Types;
+using LsnCore.Runtime.Values;
 using LsnCore.Types;
 using Syroot.BinaryData;
 

@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
+using LsnCore.Runtime.Types;
 using LsnCore.Types;
 using LsnCore.Utilities;
-using LSNr.Converations;
+using LSNr.Conversations;
 using LSNr.ScriptObjects;
 
 namespace LSNr.ReaderRules
@@ -52,7 +53,7 @@ namespace LSNr.ReaderRules
 		/// <param name="name">The procedure's name.</param>
 		/// <param name="isVirtual"> Is the procedure virtual?.</param>
 		/// <returns></returns>
-		IProcedure CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false);
+		ICompileTimeProcedure CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false);
 	}
 
 	public interface IPreResource : IFunctionContainer
@@ -189,7 +190,7 @@ namespace LSNr.ReaderRules
 	/// A rule for parsing using statements.
 	/// </summary>
 	/// <seealso cref="ResourceReaderStatementRule" />
-	sealed class ResourceUsingStatementRule : ResourceReaderStatementRule
+	internal sealed class ResourceUsingStatementRule : ResourceReaderStatementRule
 	{
 		public ResourceUsingStatementRule(IPreResource pre) : base(pre){ }
 
@@ -204,7 +205,7 @@ namespace LSNr.ReaderRules
 			=> tokens[0].Value == "using";
 	}
 
-	sealed class ResourceHandleTypeStatementRule : ResourceReaderStatementRule
+	internal sealed class ResourceHandleTypeStatementRule : ResourceReaderStatementRule
 	{
 		public ResourceHandleTypeStatementRule(IPreResource pre) : base(pre) { }
 
@@ -274,7 +275,7 @@ namespace LSNr.ReaderRules
 		public abstract void Apply(ISlice<Token> head, ISlice<Token> body, ISlice<Token>[] attributes);
 	}
 
-	sealed class ResourceReaderFunctionRule : ResourceReaderBodyRule
+	internal sealed class ResourceReaderFunctionRule : ResourceReaderBodyRule
 	{
 		public ResourceReaderFunctionRule(IPreResource pre) : base(pre) { }
 
@@ -323,7 +324,7 @@ namespace LSNr.ReaderRules
 		}
 	}
 
-	sealed class ResourceReaderStructRule : ResourceReaderBodyRule
+	internal sealed class ResourceReaderStructRule : ResourceReaderBodyRule
 	{
 		internal ResourceReaderStructRule(IPreResource pre) : base(pre) { }
 
@@ -341,7 +342,7 @@ namespace LSNr.ReaderRules
 		}
 	}
 
-	sealed class ResourceReaderRecordRule : ResourceReaderBodyRule
+	internal sealed class ResourceReaderRecordRule : ResourceReaderBodyRule
 	{
 		internal ResourceReaderRecordRule(IPreResource pre) : base(pre) { }
 
@@ -359,7 +360,7 @@ namespace LSNr.ReaderRules
 		}
 	}
 
-	sealed class ResourceReaderHostInterfaceRule : ResourceReaderBodyRule
+	internal sealed class ResourceReaderHostInterfaceRule : ResourceReaderBodyRule
 	{
 		internal ResourceReaderHostInterfaceRule(IPreResource pre) : base(pre) { }
 
@@ -380,7 +381,7 @@ namespace LSNr.ReaderRules
 		}
 	}
 
-	sealed class ResourceReaderScriptClassRule : ResourceReaderBodyRule
+	internal sealed class ResourceReaderScriptClassRule : ResourceReaderBodyRule
 	{
 		internal ResourceReaderScriptClassRule(IPreResource pre) : base(pre) { }
 
@@ -441,7 +442,7 @@ namespace LSNr.ReaderRules
 		}
 	}
 
-	sealed class ResourceReaderConversationRule : ResourceReaderBodyRule
+	internal sealed class ResourceReaderConversationRule : ResourceReaderBodyRule
 	{
 		public ResourceReaderConversationRule(IPreResource p) : base(p) { }
 

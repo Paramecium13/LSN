@@ -6,6 +6,7 @@ using System.Linq;
 using LSNr;
 using MoreLinq;
 using LSNr.CodeGeneration;
+using LsnCore;
 
 namespace LsnCore.Statements
 {

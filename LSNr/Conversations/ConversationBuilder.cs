@@ -13,13 +13,13 @@ using LSNr.Optimization;
 using LSNr.ReaderRules;
 using LSNr.Statements;
 
-namespace LSNr.Converations
+namespace LSNr.Conversations
 {
 	internal sealed class ConversationBuilder : IConversation, IPreFunction
 	{
 		internal static readonly IReadOnlyList<IStatementRule> _StatementRules = new IStatementRule[] {
 			new LetStatementRule(),
-			new ReasignmentStatementRule(),
+			new ReassignmentStatementRule(),
 			new BinExprReassignStatementRule("+=", BinaryOperation.Sum),
 			new BinExprReassignStatementRule("-=", BinaryOperation.Difference),
 			new BinExprReassignStatementRule("*=", BinaryOperation.Product),
@@ -70,7 +70,7 @@ namespace LSNr.Converations
 		public ISlice<Token> StartTokens { get; set; }
 		private readonly List<IConversationVariable> PostStartConvVars = new List<IConversationVariable>();
 
-		private IProcedure Function;
+		private ICompileTimeProcedure Function;
 
 		public IScope CurrentScope { get; set; }
 

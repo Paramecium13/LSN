@@ -15,6 +15,9 @@ namespace LsnCore.Runtime.Types
 		Instruction[] Code { set; }
 	}
 
+	/// <summary>
+	/// A runtime procedure.
+	/// </summary>
 	public interface IProcedure
 	{
 

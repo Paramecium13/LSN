@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LsnCore.Runtime.Types;
+using LsnCore.Runtime.Values;
 
 namespace LsnCore
 {
@@ -100,14 +102,14 @@ namespace LsnCore
 			switch (path)
 			{
 				case "Math":
-					return LsnMath ?? (LsnMath = LoadMath());
+					return LsnMath ??= LoadMath();
 				case "Random":
-					return LsnRandom ?? (LsnRandom = LoadRandom());
+					return LsnRandom ??= LoadRandom();
 				case "Regex":
 				case "RegEx":
 					throw new NotImplementedException();
 				case "Read":
-					return LsnRead ?? (LsnRead = LoadRead());
+					return LsnRead ??= LoadRead();
 				default:
 					throw new ApplicationException("Standard file not found.");
 			}
@@ -123,11 +125,11 @@ namespace LsnCore
 			switch (path)
 			{
 				case "Math":
-					return LsnMath ?? (LsnMath = LoadMath());
+					return LsnMath ??= LoadMath();
 				case "Random":
-					return LsnRandom ?? (LsnRandom = LoadRandom());
+					return LsnRandom ??= LoadRandom();
 				case "Read":
-					return LsnRead ?? (LsnRead = LoadRead());
+					return LsnRead ??= LoadRead();
 				case "Regex":
 				case "RegEx":
 					throw new NotImplementedException();
@@ -198,7 +200,7 @@ namespace LsnCore
 				CreateMathFunctions();
 			}
 			#endif
-			var functions = new []
+			var functions = new Function[]
 			{
 			#if LSNR
 				Sqrt,Sin,Cos,Tan,Hypot,ASin,ACos,ATan,
@@ -327,7 +329,7 @@ namespace LsnCore
 					}),
 #endif
 			};
-			return new LsnResourceThing(new TypeId[0] /*{ LsnType.int_.Id, LsnType.double_.Id }*/)
+			return new LsnResourceThing(Array.Empty<TypeId>() /*{ LsnType.int_.Id, LsnType.double_.Id }*/)
 			{
 				HostInterfaces = new Dictionary<string, HostInterfaceType>(),
 				StructTypes = new Dictionary<string, StructType>(),
@@ -415,7 +417,7 @@ namespace LsnCore
 				#endif
 			};
 
-			return new LsnResourceThing(new TypeId[0])
+			return new LsnResourceThing(Array.Empty<TypeId>())
 			{
 				Functions = functions.ToDictionary(f => f.Name),
 				GameValues = new Dictionary<string, GameValue>(),

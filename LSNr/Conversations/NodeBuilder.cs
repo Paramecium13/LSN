@@ -12,7 +12,7 @@ using LsnCore.Utilities;
 using LSNr.ControlStructures;
 using LSNr.Statements;
 
-namespace LSNr.Converations
+namespace LSNr.Conversations
 {
 	internal sealed class NodeBuilder : INode, IPreFunction
 	{

@@ -11,7 +11,7 @@ using LSNr.CodeGeneration;
 using LSNr.Statements;
 using Syroot.BinaryData;
 
-namespace LSNr.Converations
+namespace LSNr.Conversations
 {
 	internal class ConversationReturnStatementRule : IStatementRule
 	{

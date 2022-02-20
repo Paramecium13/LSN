@@ -34,6 +34,11 @@ namespace LSNr
 		/// <exception cref="NotImplementedException"></exception>
 		public ushort GetLocalProcedureIndex(Function function) => throw new NotImplementedException();
 
+		/// <summary>
+		/// Get the index of <paramref name="type"/>, which may or may not be defined locally.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
 		public short GetTypeIndex(TypeId type)
 		{
 			if (TryGetLocalTypeIndex(type, out var index))

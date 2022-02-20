@@ -7,6 +7,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using LsnCore.Runtime.Types;
+using LsnCore.Runtime.Values;
 
 namespace LsnCore.Interpretation
 {
@@ -115,9 +117,9 @@ namespace LsnCore.Interpretation
 			return res;
 		}
 
-		short TmpIndex;
+		private short TmpIndex;
 
-		void Eval(Instruction instr)
+		private void Eval(Instruction instr)
 		{
 #pragma warning disable S1764 // Identical expressions should not be used on both sides of a binary operator
 			var opCode = instr.OpCode;
@@ -141,7 +143,7 @@ namespace LsnCore.Interpretation
 				#region Arithmetic
 				case OpCode.Add:     Push(LsnValue.DoubleSum(Pop(), Pop()));      break;
 				case OpCode.Sub:     Push(PopF64() - PopF64());                   break;
-							 //case OpCode.Mul_I32: Push(LsnValue.IntProduct(Pop(), Pop()));     break;
+				//case OpCode.Mul_I32: Push(LsnValue.IntProduct(Pop(), Pop()));     break;
 				case OpCode.Mul:     Push(PopF64() * PopF64());                   break;
 				case OpCode.Div_I32: Push(PopI32()/PopI32());                     break;
 				case OpCode.Div_F64: Push(PopF64() / PopF64());                   break;
@@ -184,6 +186,7 @@ namespace LsnCore.Interpretation
 				#endregion
 				#region Compare
 #pragma warning disable S1764 // Identical expressions should not be used on both sides of a binary operator
+				// ReSharper disable EqualExpressionComparison
 				case OpCode.Eq_I32:			Push(PopI32() == PopI32());								break;
 				case OpCode.Eq_F64:			Push(Math.Abs(PopF64() - PopF64()) < double.Epsilon);	break;
 				case OpCode.Eq_Str:			Push(PopString() == PopString());						break;
@@ -205,6 +208,7 @@ namespace LsnCore.Interpretation
 				#region Logic
 				case OpCode.And:	Push(PopBool() && PopBool());	break;
 				case OpCode.Or:		Push(PopBool() || PopBool());	break;
+				// ReSharper restore EqualExpressionComparison
 				case OpCode.Not:	Push(!PopBool());				break;
 				#endregion
 				//case OpCode.Conv_I32_F64:break;
@@ -485,8 +489,8 @@ namespace LsnCore.Interpretation
 						var scriptClass = Environment.GetUsedType(instr.Data) as ScriptClass;
 						var scrObj = new ScriptObject(new LsnValue[scriptClass.Fields.Count], scriptClass, scriptClass.DefaultStateId, (IHostInterface) Pop().Value, false);
 						//Push(scrObj);
-						var cstor = scriptClass.Constructor;
-						EnterFunction(((IProcedureB)cstor).Info);
+						var constructor = scriptClass.Constructor;
+						EnterFunction(((IProcedureB)constructor).Info); // ToDo: Fix...
 						// Done after entering the procedure so that it is in the constructor's stack
 						Stack.SetVariable(0, new LsnValue(scrObj));
 						break;

@@ -56,12 +56,12 @@ namespace LSNr
 					return;
 				}
 
-				/*if (Variable.Type == LsnType.Bool_)
+				if (Variable.Type == LsnType.Bool_)
 				{
-					Code = OpCode.LoadConst_I32_short;
-					_data = value.BoolValueSimple ? (ushort)0 : (ushort)1;
+					Code = value.BoolValueSimple ? OpCode.LoadConst_True : OpCode.LoadConst_False;
+					_data = 0;
 					return;
-				}*/
+				}
 
 				if (Variable.Type == LsnType.int_)
 				{

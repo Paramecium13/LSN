@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSNr.Converations
+namespace LSNr.Conversations
 {
 	internal interface INode : ITypeContainer
 	{

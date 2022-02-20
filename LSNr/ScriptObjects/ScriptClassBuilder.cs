@@ -13,6 +13,57 @@ using System.Threading.Tasks;
 
 namespace LSNr.ScriptObjects
 {
+
+	public sealed class CompileTimeScriptClassState
+	{
+		//public readonly string Name;
+		public readonly int Id;
+
+		private readonly IReadOnlyDictionary<string, CompileTimeScriptClassMethod> ScriptObjectMethods;
+
+		// Events
+		public readonly IReadOnlyList<string> EventsListenedTo;
+
+		private readonly IReadOnlyDictionary<string, CompileTimeEventListener> EventListeners;
+
+		public CompileTimeScriptClassState(int id, IReadOnlyDictionary<string, CompileTimeScriptClassMethod> methods, IReadOnlyDictionary<string, CompileTimeEventListener>  eventListeners)
+		{
+			Id = id; ScriptObjectMethods = methods; EventListeners = eventListeners;
+			EventsListenedTo = EventListeners.Keys.ToList();
+		}
+
+		public bool HasMethod(string name) => ScriptObjectMethods.ContainsKey(name);
+
+		public CompileTimeScriptClassMethod GetMethod(string name) => ScriptObjectMethods[name];
+
+		public bool HasEventListener(string name) => EventListeners.ContainsKey(name);
+
+		public CompileTimeEventListener GetEventListener(string name) => EventListeners[name];
+
+	}
+
+	public sealed class CompileTimeEventListener : ICompileTimeProcedure
+	{
+		public readonly EventDefinition Definition;
+
+		public string ResourceFilePath { get; }
+
+		public int StackSize { get; set; }
+		
+		public readonly int Priority;
+
+		public CompileTimeEventListener (EventDefinition definition, string resourceFilePath, int priority=0)
+		{
+			Definition = definition; ResourceFilePath = resourceFilePath; Priority = priority;
+		}
+
+		public Statement[] Code { get; set; }
+		public Instruction[] Instructions { get; set; }
+		public IReadOnlyList<Parameter> Parameters { get; }
+		public TypeId ReturnType { get; }
+		public string Name { get; }
+	}
+
 	public sealed class ScriptClassBuilder : IPreScriptClass
 	{
 		readonly IPreResource Resource;
@@ -35,9 +86,9 @@ namespace LSNr.ScriptObjects
 		public Function GetFunction(string name) => Resource.GetFunction(name);
 
 		readonly List<Field> Fields = new List<Field>();
-		readonly List<ScriptClassMethod> AbstractMethods = new List<ScriptClassMethod>();
-		readonly List<ScriptClassMethod> NonAbstractMethods = new List<ScriptClassMethod>();
-		readonly List<EventListener> EventListeners = new List<EventListener>();
+		readonly List<CompileTimeScriptClassMethod> AbstractMethods = new();
+		readonly List<CompileTimeScriptClassMethod> NonAbstractMethods = new();
+		readonly List<CompileTimeEventListener> EventListeners = new();
 		readonly Dictionary<string, ScriptClassState> States = new Dictionary<string, ScriptClassState>();
 		int? First;
 		ScriptClassConstructor Constructor;
@@ -95,27 +146,27 @@ namespace LSNr.ScriptObjects
 		/// <inheritdoc/>
 		public void RegisterAbstractMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters)
 		{
-			AbstractMethods.Add(new ScriptClassMethod(Id, returnType, parameters, Path, true, true, name));
+			AbstractMethods.Add(new CompileTimeScriptClassMethod(Id, returnType, parameters, Path, true, true, name));
 		}
 
 		/// <inheritdoc/>
-		public ScriptClassMethod RegisterMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters, bool isVirtual)
+		public CompileTimeScriptClassMethod RegisterMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters, bool isVirtual)
 		{
 			if (NonAbstractMethods.Any(x => x.Name == name) || AbstractMethods.Any(x => x.Name == name))
 				throw new ApplicationException("...");
-			var m = new ScriptClassMethod(Id, returnType, parameters, Path, isVirtual, false, name);
+			var m = new CompileTimeScriptClassMethod(Id, returnType, parameters, Path, isVirtual, false, name);
 			NonAbstractMethods.Add(m);
 			return m;
 		}
 
-		public IProcedure CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
+		public ICompileTimeProcedure CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
 			=> RegisterMethod(name, retType, args, isVirtual);
 
-		public EventListener RegisterEventListener(string name, IReadOnlyList<Parameter> parameters)
+		public CompileTimeEventListener RegisterEventListener(string name, IReadOnlyList<Parameter> parameters)
 		{
 			if (EventListeners.Any(l => l.Definition.Name == name))
 				throw new ApplicationException();
-			var e = new EventListener(new EventDefinition(name, parameters), Path);
+			var e = new CompileTimeEventListener(new EventDefinition(name, parameters), Path);
 			EventListeners.Add(e);
 			return e;
 		}

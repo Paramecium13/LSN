@@ -3,6 +3,7 @@ using LsnCore.Types;
 using LsnCore.Utilities;
 using System;
 using System.Collections.Generic;
+using LsnCore.Runtime;
 
 namespace LSNr.ReaderRules
 {
@@ -124,7 +125,7 @@ namespace LSNr.ReaderRules
 		readonly ISlice<Token> ReturnType;
 		readonly ISlice<Token> Body;
 
-		LsnFunction Function;
+		LsnCore.LsnFunction Function;
 
 		public FunctionBuilder(ISlice<Token> args, ISlice<Token> ret, ISlice<Token> body, string name)
 		{ Args = args; ReturnType = ret; Body = body; Name = name; }
@@ -134,7 +135,7 @@ namespace LSNr.ReaderRules
 			TypeId ret = null;
 			if (ReturnType != null)
 				ret = resource.ParseTypeId(ReturnType, 0, out _);
-			Function = new LsnFunction(resource.ParseParameters(Args),ret, Name, resource.Path);
+			Function = new LsnCore.LsnFunction(resource.ParseParameters(Args),ret, Name, resource.Path);
 			resource.RegisterFunction(Function);
 		}
 

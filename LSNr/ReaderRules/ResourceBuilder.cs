@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
+using LsnCore.Runtime.Types;
 using LsnCore.Types;
 using LsnCore.Utilities;
 using LSNr.ControlStructures;
@@ -15,33 +16,42 @@ namespace LSNr.ReaderRules
 {
 	internal class ResourceBuilder : IPreResource, IPreScript
 	{
-		private readonly List<string> Usings = new List<string>();
+		private readonly List<string> Usings = new();
 
 		private readonly Dictionary<string, LsnType>			LoadedTypes				= LsnType.GetBaseTypes().ToDictionary(t => t.Name);
 		private readonly Dictionary<string, GenericType>		LoadedGenerics			= LsnType.GetBaseGenerics().ToDictionary(t => t.Name);
-		private readonly Dictionary<string, Function>			LoadedFunctions			= new Dictionary<string, Function>();
-		private readonly Dictionary<string, GameValue>			LoadedGameValues		= new Dictionary<string, GameValue>();
-		private readonly Dictionary<string, HostInterfaceType>	LoadedHostInterfaces	= new Dictionary<string, HostInterfaceType>();
-		private readonly Dictionary<string, ScriptClass>		LoadedScriptClasses		= new Dictionary<string, ScriptClass>();
+		private readonly Dictionary<string, Function>			LoadedFunctions			= new();
+		private readonly Dictionary<string, GameValue>			LoadedGameValues		= new();
+		private readonly Dictionary<string, HostInterfaceType>	LoadedHostInterfaces	= new();
+		private readonly Dictionary<string, ScriptClass>		LoadedScriptClasses		= new();
 
-		private readonly List<TypeId> UsedGenerics = new List<TypeId>();
+		private readonly List<TypeId> UsedGenerics = new();
 
-		private readonly Dictionary<string, TypeId> MyTypes = new Dictionary<string, TypeId>();
+		private readonly Dictionary<string, TypeId> MyTypes = new();
 
-		private readonly Dictionary<string, Function>			MyFunctions				= new Dictionary<string, Function>();
-		private readonly List<StructType>						GeneratedStructTypes	= new List<StructType>();
-		private readonly List<RecordType>						GeneratedRecordTypes	= new List<RecordType>();
-		private readonly List<HandleType>						GeneratedHandleTypes	= new List<HandleType>();
-		private readonly Dictionary<string, ScriptClass>		GeneratedScriptClasses	= new Dictionary<string, ScriptClass>();
-		private readonly Dictionary<string, HostInterfaceType>	GeneratedHostInterfaces	= new Dictionary<string, HostInterfaceType>();
+		private readonly Dictionary<string, Function>			MyFunctions				= new();
+		private readonly List<StructType>						GeneratedStructTypes	= new();
+		private readonly List<RecordType>						GeneratedRecordTypes	= new();
+		private readonly List<HandleType>						GeneratedHandleTypes	= new();
+		private readonly Dictionary<string, ScriptClass>		GeneratedScriptClasses	= new();
+		private readonly Dictionary<string, HostInterfaceType>	GeneratedHostInterfaces	= new();
 
 		private readonly string PurePath;
+		
+		/// <summary>
+		/// The path to the source file.
+		/// </summary>
 		public string Path { get; private set; }
+		
+		/// <inheritdoc/>
 		public IPreScript Script => this;
 
+		/// <inheritdoc/>
 		public IScope CurrentScope { get => throw new InvalidOperationException(); set => throw new InvalidOperationException(); }
+		
 		public bool Valid { get; set; } = true;
 
+		/// <inheritdoc/>
 		public IReadOnlyList<IStatementRule> StatementRules
 			=> throw new InvalidOperationException();
 
@@ -52,10 +62,18 @@ namespace LSNr.ReaderRules
 			Path = path; PurePath = new string(path.Skip(4).Take(Path.Length - 8).ToArray());
 		}
 
+		/// <summary>
+		/// The first ParseSignatures event.
+		/// </summary>
 		public event Action<IPreResource> ParseSignaturesA;
+		
+		/// <summary>
+		/// The second ParseSignatures event.
+		/// </summary>
 		public event Action<IPreResource> ParseSignaturesB;
 
 		public event Action<IPreResource> ParseProcBodies;
+
 		/// <summary>
 		/// Called after all type names have been registered.
 		/// </summary>
@@ -76,14 +94,11 @@ namespace LSNr.ReaderRules
 			return GenerateResource();
 		}
 
-		public void RegisterUsing(string file)
-		{
-			//Usings.Add(file);
-			Use(file);
-		}
-		#region Load
+		/// <inheritdoc/>
+		public void RegisterUsing(string file) => Use(file);
 
-		private readonly HashSet<string> LoadedResources = new HashSet<string>();
+		#region Load
+		private readonly HashSet<string> LoadedResources = new();
 		protected void Use(string path)
 		{
 			if (LoadedResources.Contains(path)) return;
@@ -170,16 +185,14 @@ namespace LSNr.ReaderRules
 			foreach (var func in type.Methods.Values)
 				LoadFunctionParamAndReturnTypes(func.Signature);
 
-			var fType = type as IHasFieldsType;
-			var hType = type as HostInterfaceType;
-			if (fType != null)
+			if (type is IHasFieldsType fType)
 			{
 				foreach (var field in fType.FieldsB)
 					LoadType(GetType(field.Type.Name));
 				// ScriptObject: Load host, methods, properties
 			}
 			// HostInterface: Load method defs (FunctionDefinition), event defs.
-			else if (hType != null)
+			else if (type is HostInterfaceType hType)
 			{
 				foreach (var method in hType.MethodDefinitions.Values)
 					LoadFunctionParamAndReturnTypes(method);
@@ -190,14 +203,17 @@ namespace LSNr.ReaderRules
 		}
 		#endregion
 		#region Register
+		/// <inheritdoc/>
 		public void RegisterTypeId(TypeId id) { MyTypes.Add(id.Name, id); }
 
+		/// <inheritdoc/>
 		public void RegisterFunction(Function fn)
 		{
 			MyFunctions.Add(fn.Name, fn);
 		}
 
-		public IProcedure CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
+		/// <inheritdoc/>
+		public ICompileTimeProcedure CreateFunction(IReadOnlyList<Parameter> args, TypeId retType, string name, bool isVirtual = false)
 		{
 			if (isVirtual)
 				throw new InvalidOperationException();
@@ -215,6 +231,7 @@ namespace LSNr.ReaderRules
 
 		public Function GetFunction(string name) => MyFunctions.ContainsKey(name) ? MyFunctions[name] : LoadedFunctions[name];
 
+		/// <inheritdoc/>
 		public bool TypeExists(string name)
 		{
 			if (!name.Contains('`')) return LoadedTypes.ContainsKey(name) || MyTypes.ContainsKey(name);
@@ -223,16 +240,20 @@ namespace LSNr.ReaderRules
 			return false;
 		}
 
+		/// <inheritdoc/>
 		public bool GenericTypeExists(string name) => LoadedGenerics.ContainsKey(name);
 
+		/// <inheritdoc/>
 		public void GenericTypeUsed(TypeId typeId)
 		{
 			if (!UsedGenerics.Contains(typeId))
 				UsedGenerics.Add(typeId);
 		}
 
+		/// <inheritdoc/>
 		public GenericType GetGenericType(string name) => LoadedGenerics[name];
 
+		/// <inheritdoc/>
 		public LsnType GetType(string name) {
 			if (name == null)
 				throw new ApplicationException();
@@ -245,6 +266,7 @@ namespace LSNr.ReaderRules
 
 		}
 
+		/// <inheritdoc/>
 		public TypeId GetTypeId(string name)
 		{
 			try
@@ -269,7 +291,7 @@ namespace LSNr.ReaderRules
 
 		private TypeId[] GetTypeIds()
 		{
-			return new List<TypeId> { new TypeId("void") }
+			return new List<TypeId> { new("void") }
 				.Union(LoadedTypes.Values.Select(t => t.Id))
 				.Union(MyTypes.Values)
 				// I don't think I need these; they should already be in MyTypes.
@@ -282,7 +304,7 @@ namespace LSNr.ReaderRules
 				.ToArray();
 		}
 
-		private LsnResourceThing GenerateResource() => new LsnResourceThing(GetTypeIds())
+		private LsnResourceThing GenerateResource() => new(GetTypeIds())
 		{
 			Functions = MyFunctions,
 			GameValues = new Dictionary<string, GameValue>(),

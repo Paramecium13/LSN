@@ -22,7 +22,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\GlobalVariableValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\GlobalVariableValueWatched.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\HostInterfaceMethod.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnMath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\LsnObjectFile.cs" />

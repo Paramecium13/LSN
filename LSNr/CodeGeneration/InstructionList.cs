@@ -11,7 +11,7 @@ namespace LSNr.CodeGeneration
 	/// </summary>
 	public class InstructionList
 	{
-		private readonly List<PreInstruction> PreInstructions = new List<PreInstruction>();
+		private readonly List<PreInstruction> PreInstructions = new();
 
 		private InstructionLabel NextLabel { get; set; }
 

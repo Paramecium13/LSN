@@ -12,7 +12,7 @@ namespace LsnCore.Expressions
 	/// <summary>
 	/// A comparison expression
 	/// </summary>
-	class ComparisonExpression : BinaryExpressionBase
+	internal class ComparisonExpression : BinaryExpressionBase
 	{
 		/// <inheritdoc />
 		public ComparisonExpression(IExpression left, IExpression right, BinaryOperation operation) : base(
@@ -43,23 +43,99 @@ namespace LsnCore.Expressions
 									return LsnBoolValue.GetBoolValue(leftVal.BoolValue == rightValue.BoolValue);
 								case BinaryOperation.NotEqual:
 									return LsnBoolValue.GetBoolValue(leftVal.BoolValue != rightValue.BoolValue);
+								default: throw new InvalidOperationException();
 							}
-
+						case BinaryOperationArgsType.Int_Int:
+							switch (Operation)
+							{
+								case BinaryOperation.Equal:
+									return LsnBoolValue.GetBoolValue(leftVal.IntValue == rightValue.IntValue);
+								case BinaryOperation.NotEqual:
+									return LsnBoolValue.GetBoolValue(leftVal.IntValue != rightValue.IntValue);
+								case BinaryOperation.GreaterThan:
+									return LsnBoolValue.GetBoolValue(leftVal.IntValue > rightValue.IntValue);
+								case BinaryOperation.GreaterThanOrEqual:
+									return LsnBoolValue.GetBoolValue(leftVal.IntValue >= rightValue.IntValue);
+								case BinaryOperation.LessThan:
+									return LsnBoolValue.GetBoolValue(leftVal.IntValue < rightValue.IntValue);
+								case BinaryOperation.LessThanOrEqual:
+									return LsnBoolValue.GetBoolValue(leftVal.IntValue <= rightValue.IntValue);
+							}
 							break;
+						case BinaryOperationArgsType.Double_Int:
+							switch (Operation)
+							{
+								case BinaryOperation.Equal:
+									return LsnBoolValue.GetBoolValue(leftVal.DoubleValue == rightValue.IntValue);
+								case BinaryOperation.NotEqual:
+									return LsnBoolValue.GetBoolValue(leftVal.DoubleValue != rightValue.IntValue);
+								case BinaryOperation.GreaterThan:
+									return LsnBoolValue.GetBoolValue(leftVal.DoubleValue > rightValue.IntValue);
+								case BinaryOperation.GreaterThanOrEqual:
+									return LsnBoolValue.GetBoolValue(leftVal.DoubleValue >= rightValue.IntValue);
+								case BinaryOperation.LessThan:
+									return LsnBoolValue.GetBoolValue(leftVal.DoubleValue < rightValue.IntValue);
+								case BinaryOperation.LessThanOrEqual:
+									return LsnBoolValue.GetBoolValue(leftVal.DoubleValue <= rightValue.IntValue);
+							}
+							break;
+						case BinaryOperationArgsType.Int_Double:
+							switch (Operation)
+							{
+								case BinaryOperation.Equal:
+									return LsnBoolValue.GetBoolValue(leftVal.IntValue == rightValue.DoubleValue);
+								case BinaryOperation.NotEqual:
+									return LsnBoolValue.GetBoolValue(leftVal.IntValue != rightValue.DoubleValue);
+								case BinaryOperation.GreaterThan:
+									return LsnBoolValue.GetBoolValue(leftVal.IntValue > rightValue.DoubleValue);
+								case BinaryOperation.GreaterThanOrEqual:
+									return LsnBoolValue.GetBoolValue(leftVal.IntValue >= rightValue.DoubleValue);
+								case BinaryOperation.LessThan:
+									return LsnBoolValue.GetBoolValue(leftVal.IntValue < rightValue.DoubleValue);
+								case BinaryOperation.LessThanOrEqual:
+									return LsnBoolValue.GetBoolValue(leftVal.IntValue <= rightValue.DoubleValue);
+							}
+							break;
+						case BinaryOperationArgsType.Double_Double:
+							switch (Operation)
+							{
+								case BinaryOperation.Equal:
+									return LsnBoolValue.GetBoolValue(leftVal.DoubleValue == rightValue.DoubleValue);
+								case BinaryOperation.NotEqual:
+									return LsnBoolValue.GetBoolValue(leftVal.DoubleValue != rightValue.DoubleValue);
+								case BinaryOperation.GreaterThan:
+									return LsnBoolValue.GetBoolValue(leftVal.DoubleValue > rightValue.DoubleValue);
+								case BinaryOperation.GreaterThanOrEqual:
+									return LsnBoolValue.GetBoolValue(leftVal.DoubleValue >= rightValue.DoubleValue);
+								case BinaryOperation.LessThan:
+									return LsnBoolValue.GetBoolValue(leftVal.DoubleValue < rightValue.DoubleValue);
+								case BinaryOperation.LessThanOrEqual:
+									return LsnBoolValue.GetBoolValue(leftVal.DoubleValue <= rightValue.DoubleValue);
+							}
+							break;
+						case BinaryOperationArgsType.String_String:
+							switch (Operation)
+							{
+								case BinaryOperation.Equal:
+									return LsnBoolValue.GetBoolValue(((StringValue)leftVal.Value).Value == ((StringValue)rightValue.Value).Value);
+								case BinaryOperation.NotEqual:
+									return LsnBoolValue.GetBoolValue(((StringValue)leftVal.Value).Value != ((StringValue)rightValue.Value).Value);
+								default:
+									throw new InvalidOperationException();
+							}
 					}
 					throw new NotImplementedException();
 				}
-				else if(ArgumentTypes == BinaryOperationArgsType.Bool_Bool)
+
+				if (ArgumentTypes != BinaryOperationArgsType.Bool_Bool) return this;
+				switch (Operation)
 				{
-					switch (Operation)
-					{
-						case BinaryOperation.Equal:
-							return leftVal.BoolValue ? Right : new NotExpression(Right);
-						case BinaryOperation.NotEqual:
-							return leftVal.BoolValue ? new NotExpression(Right) : Right;
-						default:
-							throw new ArgumentOutOfRangeException();
-					}
+					case BinaryOperation.Equal:
+						return leftVal.BoolValue ? Right : new NotExpression(Right);
+					case BinaryOperation.NotEqual:
+						return leftVal.BoolValue ? new NotExpression(Right) : Right;
+					default:
+						throw new ArgumentOutOfRangeException();
 				}
 			}
 			else if (Right is LsnValue rightValue && ArgumentTypes == BinaryOperationArgsType.Bool_Bool)
@@ -183,7 +259,7 @@ namespace LsnCore.Expressions
 					throw new ArgumentOutOfRangeException();
 			}
 
-			throw new NotImplementedException();
+			throw new InvalidOperationException();
 		}
 	}
 }

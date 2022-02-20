@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LSNr.Converations
+namespace LSNr.Conversations
 {
 	interface IConversation : ITypeContainer
 	{
