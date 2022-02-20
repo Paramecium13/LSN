@@ -1,5 +1,4 @@
-﻿using LsnCore.Expressions;
-using LsnCore.Serialization;
+﻿using LsnCore.Serialization;
 using LsnCore.Values;
 using Syroot.BinaryData;
 using System;
@@ -8,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LsnCore.Types
+namespace LsnCore.Runtime.Types
 {
 	public sealed class ScriptClassState
 	{
@@ -36,7 +35,7 @@ namespace LsnCore.Types
 
 		public EventListener GetEventListener(string name) => EventListeners[name];
 
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		/*public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(Id);
 
@@ -70,6 +69,6 @@ namespace LsnCore.Types
 			}
 
 			return new ScriptClassState(id, methods, listeners);
-		}
+		}*/
 	}
 }

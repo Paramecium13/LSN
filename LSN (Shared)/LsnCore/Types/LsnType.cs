@@ -1,4 +1,7 @@
-﻿using LsnCore.Expressions;
+﻿
+#if LSNR
+using LsnCore.Expressions;
+#endif
 using LsnCore.Types;
 using System;
 using System.Collections.Generic;
@@ -76,7 +79,7 @@ namespace LsnCore
 				OptionGeneric.Instance
 			};
 
-		public virtual bool IsBounded { get { return false; } }
+		public virtual bool IsBounded => false;
 
 		public List<string> Aliases = new List<string>();
 
@@ -106,6 +109,11 @@ namespace LsnCore
 
 		public bool IsName(string name) => Name == name || Aliases.Contains(name);
 
+		/// <summary>
+		/// Returns <see langword="true"/> if a value of type <paramref name="type"/> can be assigned to a parameter/field/l-value of this type.
+		/// </summary>
+		/// <param name="type">The type.</param>
+		/// <returns></returns>
 		public virtual bool Subsumes(LsnType type)
 		{
 			if (this == double_ && type == int_) return true;

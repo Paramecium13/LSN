@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LSNr
 {
-	[System.Serializable]
+	[Serializable]
 	public abstract class LsnrException : Exception
 	{
 		/// <summary>
@@ -33,7 +33,7 @@ namespace LSNr
 	}
 
 	[Serializable]
-	class LsnrConstructException : LsnrException
+	internal class LsnrConstructException : LsnrException
 	{
 		public override string Message => base.Message + "\n\t" + InnerException.Message.Replace("\n", "\n\t");
 

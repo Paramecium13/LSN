@@ -1,4 +1,6 @@
-﻿using LsnCore.Runtime.Types;
+﻿using LsnCore.Expressions;
+using LsnCore.Statements;
+using LsnCore.Types;
 using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
@@ -7,7 +9,7 @@ using System.Linq;
 using System.Text;
 using LsnCore.Serialization;
 
-namespace LsnCore.Runtime
+namespace LsnCore
 {
 	/// <summary>
 	/// A function written in LSN.
@@ -17,7 +19,7 @@ namespace LsnCore.Runtime
 		/// <summary>
 		/// This should only be set from within LSNr, where function bodies are parsed.
 		/// </summary>
-		public Instruction[] Code { get; set; }
+		public Statement[] Code { get; set; }
 
 		public LsnFunction(IReadOnlyList<Parameter> parameters, TypeId returnType, string name, string resourceFilePath)
 			: base(new FunctionSignature(parameters, name, returnType))
@@ -25,7 +27,15 @@ namespace LsnCore.Runtime
 			ResourceFilePath = resourceFilePath;
 		}
 
-		/*public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+#if CORE
+		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
+		{
+			i.RunProcedure(this, args);
+			return i.ReturnValue;
+		}
+#endif
+
+		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			Signature.Serialize(writer, resourceSerializer);
 			writer.Write((ushort)StackSize);
@@ -38,16 +48,16 @@ namespace LsnCore.Runtime
 
 		public static LsnFunction Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
-			var signature = FunctionSignature.Read(reader, typeContainer);
+			var signiture = FunctionSignature.Read(reader, typeContainer);
 			var stackSize = reader.ReadUInt16();
 			var codeSize = reader.ReadInt32();
 
-			var fn = new LsnFunction(signature.Parameters.ToList(), signature.ReturnType, signature.Name, resourceFilePath)
+			var fn = new LsnFunction(signiture.Parameters.ToList(), signiture.ReturnType, signiture.Name, resourceFilePath)
 			{
 				StackSize = stackSize
 			};
 			resourceDeserializer.RegisterFunction(fn,reader.ReadBytes(codeSize));
 			return fn;
-		}*/
+		}
 	}
 }

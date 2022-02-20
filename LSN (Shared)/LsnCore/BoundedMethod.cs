@@ -27,19 +27,16 @@ namespace LsnCore
 			Bound = bound;
 		}
 #if CORE
-		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
-			=> Bound(args);
+		//public override LsnValue Eval(LsnValue[] args, IInterpreter i) => Bound(args);
 
 		/// <summary>
 		/// Evaluate the method.
 		/// </summary>
 		/// <param name="args">The method's arguments.</param>
 		/// <returns></returns>
-		public LsnValue Eval(LsnValue[] args)
-			=> Bound(args);
+		public LsnValue Eval(LsnValue[] args) => Bound(args);
 
-		public LsnValue Eval(Stack<LsnValue> evalStack)
-			=> throw new NotImplementedException();
+		public LsnValue Eval(Stack<LsnValue> evalStack) => throw new NotImplementedException();
 #endif
 	}
 }

@@ -28,18 +28,23 @@ namespace LSNr.LssParser
 			{
 				++j;
 				var t = tokens[j];
-				if (t.Value == "(")
+				switch (t.Value)
 				{
-					++balance;
-					ls.Add(t);
-				}
-				else if (t.Value == ")")
-				{
-					--balance;
-					if (balance != 0)
+					case "(":
+						++balance;
 						ls.Add(t);
+						break;
+					case ")":
+					{
+						--balance;
+						if (balance != 0)
+							ls.Add(t);
+						break;
+					}
+					default:
+						ls.Add(t);
+						break;
 				}
-				else ls.Add(t);
 			}
 
 			return (ExpressionParser.Parse(ls.ToArray(), script, substitutions), j + 1, 0);

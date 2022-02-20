@@ -1,10 +1,10 @@
-﻿using LsnCore.Expressions;
-using LsnCore.Types;
+﻿using LsnCore.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LsnCore.Runtime.Types;
 
 namespace LsnCore
 {
@@ -60,7 +60,7 @@ namespace LsnCore
 			Array.Clear(old,0,old.Length);
 		}
 
-		private struct FrameInfo
+		private readonly struct FrameInfo
 		{
 			internal readonly int NextStatement;
 			internal readonly int StackSize;

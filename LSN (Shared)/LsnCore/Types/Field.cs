@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LsnCore.Types
+namespace LsnCore
 {
-	public struct Field : IEquatable<Field>
+	public readonly struct Field : IEquatable<Field>
 	{
 		public readonly int Index;
 		public readonly string Name;

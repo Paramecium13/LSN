@@ -36,7 +36,7 @@ namespace LsnCore.Expressions
 		/// <inheritdoc/>
 		public override bool Equals(IExpression other)
 		{
-			if (!(other is CollectionValueAccessExpression e)) return false;
+			if (other is not CollectionValueAccessExpression e) return false;
 			return e.Collection == Collection && e.Index == Index;
 		}
 
@@ -47,7 +47,7 @@ namespace LsnCore.Expressions
 			var i = Index.Fold();
 			if (i == Index && c == Collection) return this;
 			IExpression expr;       // typeof(ICollectionValue).IsAssignableFrom(c.GetType())
-			if (i.IsReifyTimeConst() && c is LsnValue val && val.Value is ICollectionValue cl)
+			if (i.IsReifyTimeConst() && c is LsnValue {Value: ICollectionValue cl})
 			{
 				try
 				{
@@ -69,7 +69,7 @@ namespace LsnCore.Expressions
 			Collection.GetInstructions(instructions, subContext);
 			Index.GetInstructions(instructions, subContext);
 			instructions.AddInstruction(new SimplePreInstruction(OpCode.LoadElement, 0));
-			if (!(Type.Type is StructType structType)) return;
+			if (Type.Type is not StructType structType) return;
 			switch (context.Context)
 			{
 				case ExpressionContext.Store:

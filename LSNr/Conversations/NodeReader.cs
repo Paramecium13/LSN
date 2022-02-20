@@ -32,7 +32,7 @@ namespace LSNr.Converations
 
 		public NodeReader(INode node, ISlice<Token> tokens) : base(tokens)
 		{
-			StatementRules = new NodeStatementRule[0];
+			StatementRules = Array.Empty<NodeStatementRule>();
 			BodyRules = new NodeBodyRule[] { new BranchRule(node), new NodeStartRule(node) };
 		}
 

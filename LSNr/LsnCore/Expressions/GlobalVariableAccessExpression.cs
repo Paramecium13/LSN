@@ -28,8 +28,7 @@ namespace LsnCore.Expressions
 
 		public bool Equals(IExpression other)
 		{
-			var gl = other as GlobalVariableAccessExpression;
-			if (gl == null) return false;
+			if (other is not GlobalVariableAccessExpression gl) return false;
 			return gl.GlobalVarName == GlobalVarName;
 		}
 

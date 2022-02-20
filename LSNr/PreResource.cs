@@ -31,12 +31,12 @@ namespace LSNr
 						throw new LsnrParsingException(tokens.Last(), "Unexpected end to game value declaration", Path);
 					i++;
 					if (tokens[i].Type != TokenType.GameValue)
-						throw new LsnrParsingException(tokens[i], $"Improperly formated game value name '{tokens[i].Value}'. A game value name must start with '$'.", Path);
+						throw new LsnrParsingException(tokens[i], $"Improperly formatted game value name '{tokens[i].Value}'. A game value name must start with '$'.", Path);
 					var name = tokens[i].Value;
 					var typeTokens = new List<Token>();
 					i++;
 					if (tokens[i].Value != ":")
-						throw new LsnrParsingException(tokens[i], $"Improperly formated declaration of game value '{name}'. Expected ':', recieved '{tokens[i].Value}'.", Path);
+						throw new LsnrParsingException(tokens[i], $"Improperly formatted declaration of game value '{name}'. Expected ':', recieved '{tokens[i].Value}'.", Path);
 					i++;
 					while (tokens[i].Value != ";")
 					{

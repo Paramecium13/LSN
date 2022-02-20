@@ -4,10 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
+using LsnCore.Runtime.Types;
 using LsnCore.Types;
 using LsnCore.Utilities;
 using LSNr.Optimization;
 using LSNr.ReaderRules;
+using EventListener = LsnCore.Types.EventListener;
+using ScriptClassMethod = LsnCore.Types.ScriptClassMethod;
 
 namespace LSNr.ScriptObjects
 {
@@ -39,7 +42,7 @@ namespace LSNr.ScriptObjects
 			catch (LsnrException e)
 			{
 				pre.Valid = false;
-				//var st = this as PreState;
+				//var st = this as IPreState;
 				//var x = st != null ? $"state {st.StateName} of " : "";
 				Logging.Log($"method '{Method.Name}' in {/*x*/""}script class {pre.Id.Name}", e);
 			}
@@ -47,7 +50,7 @@ namespace LSNr.ScriptObjects
 			catch (Exception e)
 			{
 				pre.Valid = false;
-				//var st = this as PreState;
+				var st = pre as IPreState;
 				var x = "";//st != null ? $"state {st.StateName} of " : "";
 				Logging.Log($"method '{Method.Name}' in {x}script class {pre.Id.Name}", e, pre.Path);
 			}
@@ -135,7 +138,8 @@ namespace LSNr.ScriptObjects
 				pre.CurrentScope.Pop(parser.Components);
 
 				var components = Parser.Consolidate(parser.Components).Where(c => c != null).ToList();
-				Constructor.Code = new ComponentFlattener().Flatten(components);
+				var statements = new ComponentFlattener().Flatten(components);
+				Constructor.Code = null; //ToDo: Statement[] to Instruction[] 
 				Constructor.StackSize = (pre.CurrentScope as VariableTable)?.MaxSize + 1 /*For the 'self' arg.*/?? -1;
 			}
 			catch (LsnrException e)
@@ -147,7 +151,7 @@ namespace LSNr.ScriptObjects
 			catch (Exception e)
 			{
 				sc.Valid = false;
-				Logging.Log($"consructor for script class {sc.Id.Name}", e, sc.Path);
+				Logging.Log($"constructor for script class {sc.Id.Name}", e, sc.Path);
 			}
 #pragma warning restore CA1031 // Do not catch general exception types
 		}

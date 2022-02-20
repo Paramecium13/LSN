@@ -1,4 +1,4 @@
-﻿using LsnCore.Types;
+﻿/*using LsnCore.Types;
 using LsnCore.Values;
 using System;
 
@@ -69,13 +69,13 @@ namespace LsnCore
 		/// <param name="title">The title to display, null if no title should be displayed.</param>
 		void Say(string message, LsnValue graphic, string title);
 
-		//LsnValue GetGlobalVariable(string globalVarName/*, string fileName*/);
+		//LsnValue GetGlobalVariable(string globalVarName, string fileName);
 
-		//void SetGlobalVariable(LsnValue value, string globalVarName/*, string fileName*/);
+		//void SetGlobalVariable(LsnValue value, string globalVarName, string fileName);
 
-		//void WatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange);
+		//void WatchGlobalVariable(string globalVarName, string fileName, OnGlobalVariableValueChanged onChange);
 
-		//void UnwatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange);*/
+		//void UnwatchGlobalVariable(string globalVarName, string fileName, OnGlobalVariableValueChanged onChange);
 
 		/// <summary>
 		/// Register a choice for the player and the index of the instruction to jump to if the player selects that choice.
@@ -199,4 +199,4 @@ namespace LsnCore
 		public static double RngGetCappedNormal(this IInterpreter i, double mean, double standardDeviation, double cap)
 			=> mean + standardDeviation * i.RngGetCappedNormal(cap / standardDeviation);
 	}
-}
+}*/

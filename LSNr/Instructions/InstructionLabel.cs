@@ -55,7 +55,12 @@ namespace LSNr
 				return label;
 			}
 
-			public InstructionLabel CreateLabel() => new InstructionLabel($"L{Count++}");
+			public InstructionLabel CreateLabel()
+			{
+				var label = new InstructionLabel($"L{Count++}");
+				LabelsLookup.Add(label.Name, label);
+				return label;
+			}
 		}
 	}
 }

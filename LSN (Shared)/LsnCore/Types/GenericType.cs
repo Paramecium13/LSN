@@ -8,7 +8,7 @@ namespace LsnCore.Types
 	/// </summary>
 	public abstract class GenericType
 	{
-		protected readonly Dictionary<string, LsnType> Types = new Dictionary<string, LsnType>();
+		protected readonly Dictionary<string, LsnType> Types = new();
 
 		public abstract string Name { get; }
 

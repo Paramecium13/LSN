@@ -1,23 +1,24 @@
-﻿using LsnCore.Types;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LsnCore.Runtime.Types;
+using LsnCore.Values;
 
-namespace LsnCore.Values
+namespace LsnCore.Runtime.Values
 {
 	/// <summary>
-	/// Use this for events that do not interupt the normal game flow.
+	/// Use this for events that do not interrupt the normal game flow.
 	/// </summary>
 	public abstract class EventInstance : IEventInstance
 	{
-		public readonly EventDefinition Definition;
+		public readonly LsnCore.Types.EventDefinition Definition;
 		public readonly string Name;
 
 		private readonly List<ScriptObject> Subscribers = new List<ScriptObject>();
 
-		protected EventInstance(EventDefinition definition)
+		protected EventInstance(LsnCore.Types.EventDefinition definition)
 		{
 			Definition = definition; Name = definition.Name;
 		}
@@ -37,7 +38,7 @@ namespace LsnCore.Values
 		}
 
 
-		public Task Fire(LsnValue[] args)
+		/*public Task Fire(LsnValue[] args)
 		{
 			if (Subscribers.Count == 0)
 				return Task.CompletedTask;
@@ -58,7 +59,7 @@ namespace LsnCore.Values
 					Fire(subs[i].GetEventListener(Name), a);
 				})
 			);
-		}
+		}*/
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
 		protected abstract void Fire(EventListener eventListener, LsnValue[] args);

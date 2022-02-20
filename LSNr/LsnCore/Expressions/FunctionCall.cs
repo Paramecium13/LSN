@@ -47,7 +47,7 @@ namespace LsnCore.Expressions
 		/// <inheritdoc />
 		public override bool Equals(IExpression other)
 		{
-			if (!(other is FunctionCall e)) return false;
+			if (other is not FunctionCall e) return false;
 			return e.Fn == Fn && e.Args.SequenceEqual(Args);
 		}
 

@@ -55,14 +55,13 @@ namespace LSNr.LssParser
 				case TokenType.String:
 					return (new LsnValue(new StringValue(token.Value)), index + 1, 0);
 				case TokenType.Keyword:
-					switch (token.Value)
+					return token.Value switch
 					{
-						case "true"	: return (LsnBoolValue.GetBoolValue(true) , index + 1, 0);
-						case "false": return (LsnBoolValue.GetBoolValue(false), index + 1, 0);
-						case "none"	: return (LsnValue.Nil, index + 1, 0);
-						default:
-							throw new ApplicationException();
-					}
+						"true" => (LsnBoolValue.GetBoolValue(true), index + 1, 0),
+						"false" => (LsnBoolValue.GetBoolValue(false), index + 1, 0),
+						"none" => (LsnValue.Nil, index + 1, 0),
+						_ => throw new ApplicationException()
+					};
 				default:
 					throw new ApplicationException();
 			}

@@ -11,7 +11,7 @@ namespace LSNr
 	public interface IScope
 	{
 		/// <summary>
-		/// Creates a variable using the initial value expresion to determine the type.
+		/// Creates a variable using the initial value expression to determine the type.
 		/// </summary>
 		/// <param name="name">The name of the variable.</param>
 		/// <param name="mutable">Is the variable mutable?</param>

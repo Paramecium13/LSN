@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LsnCore.Types
+namespace LsnCore
 {
 	[Serializable]
 	public class TypeId : IEquatable<TypeId>

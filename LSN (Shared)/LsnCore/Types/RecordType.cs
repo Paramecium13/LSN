@@ -7,7 +7,7 @@ using System.Text;
 namespace LsnCore.Types
 {
 	/// <summary>
-	/// This type repressents a struct type, it has strongly typed members, which are LSN_Values,
+	/// This type represents a struct type, it has strongly typed members, which are LSN_Values,
 	/// that are accessed by name. It's instances are passed by value.
 	/// </summary>
 	public class RecordType : LsnType, IHasFieldsType

@@ -48,13 +48,12 @@ namespace LsnCore.Values
 
 		public LsnValue GetFieldValue(int index)
 		{
-			switch (index)
+			return index switch
 			{
-				case 0: return new LsnValue(Start);
-				case 1: return new LsnValue(End);
-				default:
-					throw new InvalidOperationException();
-			}
+				0 => new LsnValue(Start),
+				1 => new LsnValue(End),
+				_ => throw new InvalidOperationException()
+			};
 		}
 	}
 }

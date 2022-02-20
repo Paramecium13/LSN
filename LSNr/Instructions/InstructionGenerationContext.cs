@@ -6,6 +6,11 @@
 	public enum ExpressionContext
 	{
 		/// <summary>
+		/// The expression's result will be used in some internal method/function (e.g. the text for 'Register Choice')
+		/// </summary>
+		Internal,
+
+		/// <summary>
 		/// A sub expression. The value of this sub expression won't be stored.
 		/// </summary>
 		SubExpression,

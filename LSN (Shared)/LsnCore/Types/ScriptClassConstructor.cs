@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Serialization;
-using LsnCore.Statements;
 using LsnCore.Values;
 
-namespace LsnCore.Types
+namespace LsnCore.Runtime.Types
 {
 	public class ScriptClassConstructor: ICodeBlock, IProcedure
 	{
-		public Statement[] Code { get; set; }
+		public Instruction[] Code { get; set; }
+		
 		public int StackSize { get; set; }
 		public string ResourceFilePath { get; }
 		/// <summary>
@@ -25,19 +25,12 @@ namespace LsnCore.Types
 			ResourceFilePath = resourceFilePath; Parameters = parameters;
 		}
 
-		public ScriptClassConstructor(Statement[] code, int stackSize, string resourceFilePath, Parameter[] parameters)
+		public ScriptClassConstructor(Instruction[] code, int stackSize, string resourceFilePath, Parameter[] parameters)
 		{
 			Code = code; StackSize = stackSize; ResourceFilePath = resourceFilePath; Parameters = parameters;
 		}
 
-#if CORE
-		internal void Run(IInterpreter i, LsnValue[] args)
-		{
-			i.RunProcedure(this, args);
-		}
-#endif
-
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		/*public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)Parameters.Length);
 			for (int i = 0; i < Parameters.Length; i++)
@@ -66,6 +59,6 @@ namespace LsnCore.Types
 			};
 			resourceDeserializer.RegisterCodeBlock(constructor, reader.ReadBytes(codeSize));
 			return constructor;
-		}
+		}*/
 	}
 }

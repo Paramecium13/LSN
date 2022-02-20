@@ -66,7 +66,7 @@ namespace LSNr
 				if (Variable.Type == LsnType.int_)
 				{
 					var intVal = value.IntValue;
-					if (intVal >= short.MinValue && intVal <= short.MaxValue)
+					if (intVal is >= short.MinValue and <= short.MaxValue)
 					{
 						Code = OpCode.LoadConst_I32_short;
 						var sh = (short)intVal;

@@ -20,6 +20,13 @@ namespace LsnCore
 			=> self.Select(x => x.Equals(toReplace) ? replacement : x);
 
 		/// <summary>
+		/// Performs a logical AND on the <see cref="IEnumerable{T}"/> of booleans.
+		/// </summary>
+		/// <param name="self">The self.</param>
+		/// <returns></returns>
+		public static bool All(this IEnumerable<bool> self) => self.All(x => x);
+
+		/// <summary>
 		/// Converts a list of key-value pairs into a dictionary, no parameters needed.
 		/// </summary>
 		/// <typeparam name="TKey"></typeparam>

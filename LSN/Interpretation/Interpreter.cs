@@ -10,7 +10,7 @@ using LsnCore.Types;
 
 namespace LsnCore
 {
-	public abstract class Interpreter : IInterpreter
+	/*public abstract class Interpreter : IInterpreter
 	{
 		public IResourceManager ResourceManager { get; set; }
 
@@ -90,24 +90,24 @@ namespace LsnCore
 		/// <returns></returns>
 		public ScriptObject GetUniqueScriptObject(TypeId typeId) => ResourceManager.GetUniqueScriptObject(typeId.Type as ScriptClass);
 
-		//protected abstract GlobalVariableValue GetGlobalVariableValue(string globalVarName/*, string fileName*/);
+		//protected abstract GlobalVariableValue GetGlobalVariableValue(string globalVarName, string fileName);
 
-		//public LsnValue GetGlobalVariable(string globalVarName/*, string fileName*/)
-		//	=> GetGlobalVariableValue(globalVarName/*, filename*/).Value;
+		//public LsnValue GetGlobalVariable(string globalVarName, string fileName)
+		//	=> GetGlobalVariableValue(globalVarName, filename).Value;
 
-		//public void SetGlobalVariable(LsnValue value, string globalVarName/*, string fileName*/)
+		//public void SetGlobalVariable(LsnValue value, string globalVarName, string fileName)
 		//{
-		//	GetGlobalVariableValue(globalVarName/*, fileName*/).Value = value;
+		//	GetGlobalVariableValue(globalVarName, fileName).Value = value;
 		//}
 
-		//public virtual void WatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange)
+		//public virtual void WatchGlobalVariable(string globalVarName, string fileName, OnGlobalVariableValueChanged onChange)
 		//{
-		//	(GetGlobalVariableValue(globalVarName/*, fileName*/) as GlobalVariableValueWatched).OnValueChanged += onChange;
+		//	(GetGlobalVariableValue(globalVarName, fileName) as GlobalVariableValueWatched).OnValueChanged += onChange;
 		//}
 
-		//public virtual void UnwatchGlobalVariable(string globalVarName/*, string fileName*/, OnGlobalVariableValueChanged onChange)
+		//public virtual void UnwatchGlobalVariable(string globalVarName, string fileName, OnGlobalVariableValueChanged onChange)
 		//{
-		//	(GetGlobalVariableValue(globalVarName/*, fileName*/) as GlobalVariableValueWatched).OnValueChanged -= onChange;
+		//	(GetGlobalVariableValue(globalVarName, fileName) as GlobalVariableValueWatched).OnValueChanged -= onChange;
 		//}
 
 		/// <summary>
@@ -188,5 +188,5 @@ namespace LsnCore
 
 		public virtual double RngGetDouble()
 			=> Rng.NextDouble();
-	}
+	}*/
 }

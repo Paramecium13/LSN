@@ -47,7 +47,7 @@ namespace LSNr
 			else
 				_DependenciesFile = DependenciesFile.SetUp();
 			var changedFiles = GetChangedFiles();
-			var deps =  _DependenciesFile.RegirsterChangedFiles(changedFiles);
+			var deps =  _DependenciesFile.RegisterChangedFiles(changedFiles);
 			var tasks = new Dictionary<string, Task>();
 			foreach (var path in changedFiles.Union(deps).Where(s => !string.IsNullOrEmpty(s))) // deps may contain empty strings for some reason...
 				tasks[new string(path.Skip(4).Take(path.Length - 8).ToArray())] = Task.Run(() => Reify(path));
@@ -151,10 +151,9 @@ namespace LSNr
 				Console.ReadLine();
 				throw new ApplicationException();
 			}
-			using (var fs = File.Create(GetObjectPath(path)))
-			{
-				res.Serialize(fs);
-			}
+
+			using var fs = File.Create(GetObjectPath(path));
+			res.Serialize(fs);
 		}
 
 		internal static LsnResourceThing Load(string user, string used)
@@ -166,10 +165,8 @@ namespace LSNr
 			DependencyWaiter.WaitOn(user, used);
 			LsnResourceThing res = null;
 			var objPath = Program.GetObjectPath(used);
-			using (var fs = File.OpenRead(objPath))
-			{
-				res = LsnResourceThing.Read(fs, used, (x) => Load(user,x));
-			}
+			using var fs = File.OpenRead(objPath);
+			res = LsnResourceThing.Read(fs, used, (x) => Load(user,x));
 			return res;
 		}
 	}

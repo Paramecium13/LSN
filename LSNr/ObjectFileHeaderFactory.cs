@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LsnCore;
 using LsnCore.Interpretation;
 using LsnCore.Types;
 using LSNr.Utilities;
@@ -14,25 +15,31 @@ namespace LSNr
 	/// </summary>
 	public sealed class ObjectFileHeaderFactory
 	{
-		private readonly TableBuilder<double> DoubleConstTable = new TableBuilder<double>();
+		private readonly TableBuilder<double> DoubleConstTable = new();
 
-		private readonly TableBuilder<string> StringConstTable = new TableBuilder<string>();
+		private readonly TableBuilder<string> StringConstTable = new();
 
-		private readonly TableBuilder<string> ReferencedFilesTable = new TableBuilder<string>();
+		private readonly TableBuilder<string> ReferencedFilesTable = new();
 
 		/// <summary>
 		/// The identifier table
 		/// </summary>
-		private readonly TableBuilder<string> IdentifierTable = new TableBuilder<string>();
+		private readonly TableBuilder<string> IdentifierTable = new();
 
 		/// <summary>
 		/// The table of host interface method signatures.
 		/// </summary>
-		private readonly TableBuilder<SignatureStub> SignatureTable = new TableBuilder<SignatureStub>();
+		private readonly TableBuilder<SignatureStub> SignatureTable = new();
 
-		private readonly TableBuilder<TypeId> ReferencedTypeTable = new TableBuilder<TypeId>();
+		private readonly TableBuilder<TypeId> ReferencedTypeTable = new();
+
 
 		public string FilePath { get; }
+
+		public ObjectFileHeaderFactory(string filePath)
+		{
+			FilePath = filePath;
+		}
 
 		/// <summary>
 		/// Adds <paramref name="constant"/> to the constant table if it isn't already in the constant table.

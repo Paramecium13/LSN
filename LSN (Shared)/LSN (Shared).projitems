@@ -14,7 +14,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ILsnFileManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IResourceManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\BoundedMethod.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Component.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Debug\ProcedureLineInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\Function.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LsnCore\FunctionSignature.cs" />

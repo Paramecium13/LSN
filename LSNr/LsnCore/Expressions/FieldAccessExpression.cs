@@ -64,7 +64,7 @@ namespace LsnCore.Expressions
 			var subContext = context.WithContext(ExpressionContext.SubExpression);
 			Value.GetInstructions(instructions, subContext);
 			instructions.AddInstruction(new SimplePreInstruction(OpCode.LoadField, (ushort) Index));
-			if (!(Type.Type is StructType structType)) return;
+			if (Type.Type is not StructType structType) return;
 			switch (context.Context)
 			{
 				case ExpressionContext.Store:
@@ -84,7 +84,7 @@ namespace LsnCore.Expressions
 		/// <inheritdoc />
 		public override bool Equals(IExpression other)
 		{
-			if (!(other is FieldAccessExpression e)) return false;
+			if (other is not FieldAccessExpression e) return false;
 			return Index == e.Index && Value.Equals(e.Value);
 		}
 

@@ -38,20 +38,18 @@ namespace LsnCore.Expressions
 				switch (ArgumentTypes)
 				{
 					case BinaryOperationArgsType.String_String:
-						switch (Operation)
+						return Operation switch
 						{
-							case BinaryOperation.Sum:
-								return new LsnValue(new StringValue(((StringValue) leftValue.Value).Value + ((StringValue) rightValue.Value).Value));
-							case BinaryOperation.Difference:
-								throw new NotImplementedException("String subtraction is not currently supported");
-							case BinaryOperation.Quotient:
-								throw new NotImplementedException("String division is not currently supported");
-							case BinaryOperation.Modulus:
-								throw new NotImplementedException(
-									"String splitting via the '%' operator is not yet supported.");
-							default:
-								throw new ArgumentOutOfRangeException();
-						}
+							BinaryOperation.Sum => new LsnValue(new StringValue(((StringValue) leftValue.Value).Value +
+								((StringValue) rightValue.Value).Value)),
+							BinaryOperation.Difference => throw new NotImplementedException(
+								"String subtraction is not currently supported"),
+							BinaryOperation.Quotient => throw new NotImplementedException(
+								"String division is not currently supported"),
+							BinaryOperation.Modulus => throw new NotImplementedException(
+								"String splitting via the '%' operator is not yet supported."),
+							_ => throw new ArgumentOutOfRangeException()
+						};
 					case BinaryOperationArgsType.String_Int:
 						switch (Operation)
 						{

@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LsnCore.Types
+namespace LsnCore.Runtime.Types
 {
 	public sealed class ScriptClass : LsnType, IHasFieldsType
 	{
@@ -64,9 +64,7 @@ namespace LsnCore.Types
 
 			foreach (var method in ScriptObjectMethods.Values)
 			{
-				if (method.IsVirtual)
-					_Methods.Add(method.Name, method.ToVirtualMethod());
-				else _Methods.Add(method.Name, method);
+				_Methods.Add(method.Name, method.IsVirtual ? method.ToVirtualMethod() : method);
 				// Calculate properties...
 			}
 		}
@@ -121,26 +119,7 @@ namespace LsnCore.Types
 
 		public ScriptClassState GetState(int id) => _States[id];
 
-#if CORE
-		internal ScriptObject Construct(LsnValue[] arguments, IInterpreter i, IHostInterface host = null)
-		{
-			var fields = new LsnValue[FieldsB.Count];
-			if (Constructor != null)
-			{
-				var obj = new ScriptObject(fields, this, DefaultStateId, host);
-				var args = new LsnValue[arguments.Length + 1];
-				arguments.CopyTo(args, 1);
-				args[0] = new LsnValue(obj);
-				Constructor.Run(i, args);
-				return obj;
-			}
-			for (int j = 0; j < fields.Length; j++)
-				fields[j] = arguments[j];
-			return new ScriptObject(fields, this, DefaultStateId, host);
-		}
-#endif
-
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		/*public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(Name);
 			writer.Write(Unique);
@@ -148,9 +127,7 @@ namespace LsnCore.Types
 			writer.Write(Metadata ?? "");
 			writer.Write(DefaultStateId);
 
-			/*writer.Write((ushort)_Properties.Count);
-			foreach (var prop in _Properties)
-				prop.Write(writer);*/
+			//writer.Write((ushort)_Properties.Count);foreach (var prop in _Properties)prop.Write(writer);
 
 			writer.Write((ushort)Fields.Count);
 			var bv = new BitArray(Fields.Select(f => f.Mutable).ToArray());
@@ -190,10 +167,7 @@ namespace LsnCore.Types
 
 			var type = typeContainer.GetTypeId(name);
 
-			/*var nProperties = reader.ReadUInt16();
-			var props = new List<Property>(nProperties);
-			for (int i = 0; i < nProperties; i++)
-				props.Add(Property.Read(reader, typeContainer));*/
+			//var nProperties = reader.ReadUInt16();var props = new List<Property>(nProperties);for (int i = 0; i < nProperties; i++)props.Add(Property.Read(reader, typeContainer));
 
 			var nFields = reader.ReadUInt16();
 			var count = nFields / 8 + (nFields % 8 == 0 ? 0 : 1);
@@ -237,6 +211,6 @@ namespace LsnCore.Types
 				h = typeContainer.GetTypeId(hostInterfaceTypeName);
 			return new ScriptClass(type, h, fields, methods, listeners,
 				states, defaultStateId, unique, meta, constructor);
-		}
+		}*/
 	}
 }

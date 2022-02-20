@@ -65,12 +65,7 @@ namespace LSNr
 		public TypeId GetTypeId(string name)			=> Resource.GetTypeId(name);
 
 		public void GenericTypeUsed(TypeId typeId) 		=> Resource.GenericTypeUsed(typeId);
-
-		public SymbolType CheckSymbol(string name)
-		{
-			if (CurrentScope.VariableExists(name))
-				return SymbolType.Variable;
-			return Resource.CheckSymbol(name);
-		}
+		
+		public SymbolType CheckSymbol(string name)		=> CurrentScope.VariableExists(name) ? SymbolType.Variable : Resource.CheckSymbol(name);
 	}
 }

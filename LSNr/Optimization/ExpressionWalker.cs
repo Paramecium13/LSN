@@ -73,8 +73,8 @@ namespace LSNr.Optimization
 		protected virtual IExpression WalkFieldAccess(FieldAccessExpression f)
 		{
 			f.Value = Walk(f.Value);
-			if(f.Value is LsnValue?)
-				return ((IHasFieldsValue)((LsnValue)f.Value).Value).GetFieldValue(f.Index);
+			if(f.Value is LsnValue value)
+				return ((IHasFieldsValue)value.Value).GetFieldValue(f.Index);
 			return f;
 		}
 

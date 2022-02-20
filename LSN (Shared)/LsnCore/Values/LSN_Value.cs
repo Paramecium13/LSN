@@ -25,13 +25,6 @@ namespace LsnCore
 
 		public static bool IsPure => true;
 
-#if CORE
-		public LsnValue Eval(IInterpreter i)
-		{
-			return new LsnValue(this);//Clone() ?
-		}
-#endif
-
 		public static bool IsReifyTimeConst() => true;
 		public abstract void Serialize(BinaryDataWriter writer);
 	}

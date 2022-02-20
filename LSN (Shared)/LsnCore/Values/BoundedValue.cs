@@ -30,7 +30,7 @@ namespace LsnCore
 		public string Value { get; }
 		public bool BoolValue => true;
 
-		public static StringValue Empty { get; } = new StringValue("");
+		public static StringValue Empty { get; } = new("");
 
 		/// <summary>
 		/// Constructor
@@ -61,7 +61,7 @@ namespace LsnCore
 		public override string ToString() => Value;
 
 		public static explicit operator string(StringValue v) => v.Value;
-		public static explicit operator StringValue(string s) => new StringValue(s);
+		public static explicit operator StringValue(string s) => new(s);
 
 		/// <inheritdoc/>
 		public override bool Equals(object obj)
@@ -90,8 +90,8 @@ namespace LsnCore
 	/// </summary>
 	public static class LsnBoolValue
 	{
-		private static readonly LsnValue True = new LsnValue(true);
-		private static readonly LsnValue False = new LsnValue(false);
+		private static readonly LsnValue True = new(true);
+		private static readonly LsnValue False = new(false);
 		public static LsnValue GetBoolValue(bool val)
 			=> val? True : False;
 	}

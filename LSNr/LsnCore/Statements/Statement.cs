@@ -52,7 +52,6 @@ namespace LsnCore.Statements
 		/// <param name="instructionList">The instruction list.</param>
 		/// <param name="target">The label that this statement targets (if any).</param>
 		/// <param name="context">The context.</param>
-		protected abstract void GetInstructions(InstructionList instructionList, string target,
-			InstructionGenerationContext context);
+		protected abstract void GetInstructions(InstructionList instructionList, string target, InstructionGenerationContext context);
 	}
 }

@@ -23,8 +23,7 @@ namespace LSNr.LssParser
 			CreateExpression(int index, IReadOnlyList<Token> tokens, IPreScript script, IReadOnlyDictionary<Token, IExpression> substitutions)
 		{
 			var leftExpr = substitutions[tokens[index - 1]];
-			var colType = leftExpr.Type.Type as ICollectionType;
-			if (colType == null)
+			if (leftExpr.Type.Type is not ICollectionType colType)
 				throw new LsnrParsingException(tokens[index], $"{leftExpr.Type.Name} is not a collection type so it cannot be indexed.", script.Path);
 			var j = index;
 			var ls = new List<Token>();

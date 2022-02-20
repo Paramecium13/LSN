@@ -41,21 +41,26 @@ namespace LSNr
 			for(; i< Tokens.Count; i++)
 			{
 				var t = Tokens[i].Value;
-				if (t == "{")
+				switch (t)
 				{
-					ParseControl();
+					case "{":
+						ParseControl();
+						break;
+					case ";":
+					{
+						var comp = Create.State(TempTokens, Script);
+						if (comp != null)
+							Components.Add(comp);
+						else
+							Console.Write("");
+						TempCount = 0;
+						TempStart = i+1;
+						break;
+					}
+					default:
+						TempCount++;
+						break;
 				}
-				else if (t == ";")
-				{
-					var comp = Create.State(TempTokens, Script);
-					if (comp != null)
-						Components.Add(comp);
-					else
-						Console.Write("");
-					TempCount = 0;
-					TempStart = i+1;
-				}
-				else TempCount++;
 			}
 		}
 

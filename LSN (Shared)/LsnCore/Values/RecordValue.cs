@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using LsnCore.Expressions;
-using LsnCore.Types;
+using LsnCore.Runtime.Types;
 using System.Linq;
 using Syroot.BinaryData;
 
@@ -17,7 +16,7 @@ namespace LsnCore
 		private readonly TypeId Id;
 		public TypeId Type => Id;
 
-		public bool BoolValue { get{ return true; } }
+		public bool BoolValue => true;
 
 		public RecordValue(LsnValue[] values, TypeId id)
 		{

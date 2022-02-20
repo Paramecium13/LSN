@@ -99,7 +99,7 @@ namespace LsnCore
 		/// </summary>
 		/// <returns></returns>
 		public override LsnValue CreateDefaultValue()
-			=> new LsnValue(new ArrayInstance(this, new LsnValue[0]));
+			=> new LsnValue(new ArrayInstance(this, Array.Empty<LsnValue>()));
 	}
 
 	public class ArrayGeneric : GenericType

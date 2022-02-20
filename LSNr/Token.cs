@@ -84,7 +84,7 @@ namespace LSNr
 		public readonly double DoubleValue = double.NaN;
 
 		/// <summary>
-		/// The line number where the token occured.
+		/// The line number where the token occurred.
 		/// </summary>
 		public int LineNumber { get; }
 
@@ -131,7 +131,7 @@ namespace LSNr
 		/// <inheritdoc/>
 		public override bool Equals(object obj)
 		{
-			if (!(obj is Token o))
+			if (obj is not Token o)
 				return false;
 			return o.Value == Value;
 		}

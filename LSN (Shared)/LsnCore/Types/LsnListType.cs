@@ -67,7 +67,7 @@ namespace LsnCore
 
 		private LsnType _Generic;
 		public LsnType GenericType {
-			get => _Generic ?? (_Generic = GenericId.Type);
+			get => _Generic ??= GenericId.Type;
 			private set => _Generic = value;
 		}
 

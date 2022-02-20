@@ -58,7 +58,7 @@ namespace LsnCore
 		}
 		
 #if CORE
-		public abstract LsnValue Eval(LsnValue[] args, IInterpreter i);
+		//public abstract LsnValue Eval(LsnValue[] args, IInterpreter i);
 #endif
 	}
 

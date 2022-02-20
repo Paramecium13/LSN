@@ -37,8 +37,7 @@ namespace LsnCore.Expressions
 
 		public bool Equals(IExpression other)
 		{
-			var o = other as RangeExpression;
-			if (o == null) return false;
+			if (other is not RangeExpression o) return false;
 			return o.Start.Equals(Start) && o.End.Equals(End);
 		}
 

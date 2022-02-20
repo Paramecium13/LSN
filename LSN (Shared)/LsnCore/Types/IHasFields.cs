@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LsnCore.Types
+namespace LsnCore
 {
 	/// <summary>
 	/// A(n) LSN type that has fields.

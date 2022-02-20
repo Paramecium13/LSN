@@ -38,7 +38,7 @@ namespace LSNr.ControlStructures
 			var vName = head[2].Value;
 			var exprTokens = head.CreateSliceAt(4);
 			var expr = Create.Express(exprTokens, script);
-			if (!(expr.Type.Type is OptionType exprType))
+			if (expr.Type.Type is not OptionType exprType)
 				throw new LsnrParsingException(head[4], "The value of an if let structure must be of an option type.", script.Path);
 
 			script.PushScope();

@@ -5,8 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LsnCore;
+using LsnCore.Runtime.Types;
 using LsnCore.Types;
 using LsnCore.Utilities;
+using EventListener = LsnCore.Types.EventListener;
+using IProcedure = LsnCore.Types.IProcedure;
+using ScriptClassMethod = LsnCore.Types.ScriptClassMethod;
 
 namespace LSNr.ScriptObjects
 {

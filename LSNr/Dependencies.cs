@@ -36,14 +36,14 @@ namespace LSNr
 
 		internal void Write(string path)
 		{
-			using (var writer = new StreamWriter(File.Open(path, FileMode.Create)))
-				writer.Write(JsonConvert.SerializeObject(Dependencies, Formatting.Indented));
+			using var writer = new StreamWriter(File.Open(path, FileMode.Create));
+			writer.Write(JsonConvert.SerializeObject(Dependencies, Formatting.Indented));
 		}
 
 		internal IEnumerable<string> GetUsed(string user) => Dependencies[user].ToArray();
 
 		//  !!!!!!!!! Delete entries for changed files !!!!!!!
-		internal IReadOnlyList<string> RegirsterChangedFiles(IEnumerable<string> paths)
+		internal IReadOnlyList<string> RegisterChangedFiles(IEnumerable<string> paths)
 		{
 			var users = new List<string>();
 			foreach (var path in paths)

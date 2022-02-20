@@ -83,17 +83,12 @@ namespace LSNr.LssParser
 					}
 					break;
 				case TokenType.Keyword:
-					switch (str)
+					expr = str switch
 					{
-						case "host":
-							expr = new HostInterfaceAccessExpression(((PreScriptClassFunction)script).Parent.HostId);
-							break;
-						case "self":
-							expr = script.CurrentScope.GetVariable("self").AccessExpression;
-							break;
-						default:
-							throw new ApplicationException();
-					}
+						"host" => new HostInterfaceAccessExpression(((PreScriptClassFunction) script).Parent.HostId),
+						"self" => script.CurrentScope.GetVariable("self").AccessExpression,
+						_ => throw new ApplicationException()
+					};
 					break;
 				default:
 					throw new ApplicationException();

@@ -15,13 +15,12 @@ namespace LsnCore.Types
 
 		public int GetIndex(string name)
 		{
-			switch (name)
+			return name switch
 			{
-				case "Start": return 0;
-				case "End": return 1;
-				default:
-					throw new InvalidOperationException();
-			}
+				"Start" => 0,
+				"End" => 1,
+				_ => throw new InvalidOperationException()
+			};
 		}
 
 		private RangeType()

@@ -24,7 +24,7 @@ namespace LsnCore.Interpretation
 		/// Displays all the registered choices to the player
 		/// and returns the number associated with the chosen choice.
 		/// </summary>
-		/// <returns>The number assoiciated with the chosen choice</returns>
+		/// <returns>The number associated with the chosen choice</returns>
 		int DisplayChoices();
 
 		/// <summary>

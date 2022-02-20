@@ -1,11 +1,13 @@
-﻿using LsnCore.Serialization;
+﻿using LsnCore.Expressions;
+using LsnCore.Serialization;
+using LsnCore.Statements;
 using LsnCore.Values;
 using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LsnCore.Runtime.Types
+namespace LsnCore.Types
 {
 	public class ScriptClassMethod : Method, ICodeBlock, IProcedure
 	{
@@ -13,7 +15,7 @@ namespace LsnCore.Runtime.Types
 
 		public readonly bool IsAbstract;
 
-		public Instruction[] Code { get; set; } // Assigned in LSNr.
+		public Statement[] Code { get; set; } // Assigned in LSNr.
 
 		public ScriptClassMethod(TypeId type, TypeId returnType, IReadOnlyList<Parameter> parameters, string resourceFilePath,
 			bool isVirtual, bool isAbstract, string name)
@@ -27,8 +29,16 @@ namespace LsnCore.Runtime.Types
 			if (IsAbstract && !IsVirtual) throw new ArgumentException();
 		}
 
+#if CORE
+		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
+		{
+			i.RunProcedure(this, args);
+			return i.ReturnValue;
+		}
+#endif
+
 		//enum Flags : byte { none = 0, IsVirtual = 1, IsAbstract = 2 }
-		
+
 		/*public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
 		{
 			Signature.Serialize(writer, resourceSerializer);
@@ -76,7 +86,7 @@ namespace LsnCore.Runtime.Types
 
 	public class ScriptClassVirtualMethod : Method, IProcedure
 	{
-		public Instruction[] Code { get; set; } // Assigned in LSNr.
+		public Statement[] Code { get; set; } // Assigned in LSNr.
 
 		internal ScriptClassVirtualMethod(TypeId type, TypeId returnType, IReadOnlyList<Parameter> parameters, string resourceFilePath, string name)
 			: base(type, returnType, name, parameters)
@@ -85,8 +95,9 @@ namespace LsnCore.Runtime.Types
 				throw new ApplicationException("");
 			ResourceFilePath = resourceFilePath;
 		}
-
-		//public override LsnValue Eval(LsnValue[] args, IInterpreter i) => (args[0].Value as ScriptObject).GetMethod(Name).Eval(args, i);
-
+#if CORE
+		public override LsnValue Eval(LsnValue[] args, IInterpreter i)
+			=> (args[0].Value as ScriptObject).GetMethod(Name).Eval(args, i);
+#endif
 	}
 }

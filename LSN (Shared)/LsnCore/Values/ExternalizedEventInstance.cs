@@ -1,33 +1,34 @@
-﻿using LsnCore.Types;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LsnCore.Runtime.Types;
+using LsnCore.Values;
 
-namespace LsnCore.Values
+namespace LsnCore.Runtime.Values
 {
 	/// <summary>
-	/// Use this for events that interupt the normal game flow.
+	/// Use this for events that interrupt the normal game flow.
 	/// </summary>
 	public class ExternalizedEventInstance: IEventInstance
 	{
 
 		private readonly Action<EventListener, LsnValue[]> RegisterEventForExecution;
 
-		public readonly EventDefinition Definition;
+		public readonly LsnCore.Types.EventDefinition Definition;
 		public readonly string Name;
 
 		private readonly List<ScriptObject> _Subscribers = new List<ScriptObject>();
 
-		protected IReadOnlyList<ScriptObject> Subscribers => _Subscribers;
+		//protected IReadOnlyList<ScriptObject> Subscribers => _Subscribers;
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="def"></param>
-		/// <param name="firingFunction">The funtion that is called when an event should be executed.</param>
-		public ExternalizedEventInstance(EventDefinition def, Action<EventListener, LsnValue[]> firingFunction)
+		/// <param name="firingFunction">The function that is called when an event should be executed.</param>
+		public ExternalizedEventInstance(LsnCore.Types.EventDefinition def, Action<EventListener, LsnValue[]> firingFunction)
 		{
 			Definition = def; Name = def.Name; RegisterEventForExecution = firingFunction;
 		}
@@ -50,7 +51,7 @@ namespace LsnCore.Values
 		/// <param name="args"></param>
 		/// <remarks>Don't pass a null args or an args of the wrong size or format. This will not waste timing checking that args is correct.</remarks>
 		/// <returns>A completed task.</returns>
-		public virtual Task Fire(LsnValue[] args)
+		/*public virtual Task Fire(LsnValue[] args)
 		{
 			ScriptObject[] subs;
 			lock (_Subscribers)
@@ -70,7 +71,7 @@ namespace LsnCore.Values
 			}
 
 			return Task.CompletedTask;
-		}
+		}*/
 
 	}
 }

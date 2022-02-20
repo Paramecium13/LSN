@@ -51,15 +51,12 @@ namespace LsnCore.Expressions
 		public IExpression Fold()
 		{
 			Value = Value.Fold();
-			switch (Value)
+			return Value switch
 			{
-				case LsnValue c:
-					return LsnBoolValue.GetBoolValue(!c.BoolValue);
-				case NotExpression n:
-					return n.Value;
-				default:
-					return this;
-			}
+				LsnValue c => LsnBoolValue.GetBoolValue(!c.BoolValue),
+				NotExpression n => n.Value,
+				_ => this
+			};
 		}
 
 		/// <inheritdoc />

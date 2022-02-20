@@ -45,7 +45,6 @@ namespace LSNr.LssParser
 
 				var a = new List<IExpression>(method.Parameters.Count) {args[0]};
 				a.AddRange(argTokens.Select(ar => ExpressionParser.Parse(ar, script, substitutions)));
-				// ToDo: Check type and number!!!
 				args = a.ToArray();
 			}
 			return (method.CreateMethodCall(args), nextIndex, 0);

@@ -37,6 +37,7 @@ namespace LSNr.Utilities
 
 			index = Table.Count;
 			Table.Add(value);
+			IndexLookup.Add(value, index);
 			return index;
 		}
 

@@ -12,10 +12,10 @@ namespace LsnCore.Types
 		public readonly string Name;
 		public readonly IReadOnlyList<Parameter> Parameters;
 
-		public EventDefinition(string name, IReadOnlyList<Parameter> paramaters)
+		public EventDefinition(string name, IReadOnlyList<Parameter> parameters)
 		{
-			if (paramaters.Any(p => !p.DefaultValue.IsNull)) throw new ArgumentException("Event parameters cannot have default values.", "parameters");
-			Parameters = paramaters.ToList();
+			if (parameters.Any(p => !p.DefaultValue.IsNull)) throw new ArgumentException("Event parameters cannot have default values.", nameof(parameters));
+			Parameters = parameters.ToList();
 			Name = name;
 		}
 
