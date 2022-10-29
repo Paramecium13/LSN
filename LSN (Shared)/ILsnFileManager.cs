@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LsnCore.Interpretation;
 
 namespace LsnCore
 {
@@ -10,7 +11,7 @@ namespace LsnCore
 	// Implementation should use caching.
 	public interface ILsnFileManager
 	{
-		LsnResourceThing LoadResourse(string name);
+		LsnObjectFile LoadResourse(string name);
 	}
 
 }

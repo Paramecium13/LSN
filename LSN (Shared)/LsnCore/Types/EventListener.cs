@@ -44,7 +44,7 @@ namespace LsnCore.Runtime.Types
 			Definition = definition; ResourceFilePath = resourceFilePath; Priority = priority;
 		}
 
-		/*public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		/*public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			Definition.Serialize(writer, resourceSerializer);
 			writer.Write((ushort)StackSize);
@@ -55,7 +55,7 @@ namespace LsnCore.Runtime.Types
 			offset.Satisfy((int)writer.Position - (int)offset.Position -4);
 		}*/
 
-		public static EventListener Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath, ResourceDeserializer resourceDeserializer)
+		public static EventListener Read(BinaryStream reader, ITypeIdContainer typeContainer, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
 			throw new NotImplementedException();
 			/*var def = EventDefinition.Read(reader, typeContainer);

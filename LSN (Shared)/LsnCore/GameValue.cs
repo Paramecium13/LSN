@@ -19,13 +19,13 @@ namespace LsnCore
 			Type = type; Name = name;
 		}
 
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			resourceSerializer.WriteTypeId(Type, writer);
 			writer.Write(new string(Name.Skip(1).ToArray()));
 		}
 
-		public static GameValue Read(BinaryDataReader reader, ResourceDeserializer resourceDeserializer)
+		public static GameValue Read(BinaryStream reader, ResourceDeserializer resourceDeserializer)
 		{
 			var type = resourceDeserializer.LoadTypeId(reader);
 			var name = "$" + reader.ReadString();

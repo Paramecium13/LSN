@@ -63,7 +63,7 @@ namespace LsnCore.Expressions
 				if (Arguments[i] == oldExpr) Arguments[i] = newExpr;
 		}
 
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.HostInterfaceMethodCall);
 			writer.Write(Name);

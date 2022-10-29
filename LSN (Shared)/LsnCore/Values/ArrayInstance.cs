@@ -66,7 +66,7 @@ namespace LsnCore.Values
 
 		public int GetLength() => Size;
 
-		public override void Serialize(BinaryDataWriter writer)
+		public override void Serialize(BinaryStream writer)
 		{
 			writer.Write((byte)ConstantCode.Vector);
 			writer.Write(Type.Name);
@@ -75,7 +75,7 @@ namespace LsnCore.Values
 				Values[i].Serialize(writer);
 		}
 
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.TabledConstant);
 			writer.Write(resourceSerializer.TableConstant(this));
@@ -100,7 +100,7 @@ namespace LsnCore.Values
 		}
 
 		/// <inheritdoc />
-		public override void Serialize(BinaryDataWriter writer)
+		public override void Serialize(BinaryStream writer)
 		{
 			throw new NotImplementedException();
 		}

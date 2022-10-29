@@ -34,7 +34,7 @@ namespace LsnCore.Expressions
 		public virtual bool Equals(IExpression other) => this == other;
 		
 		/// <inheritdoc/>
-		public abstract void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer);
+		public abstract void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer);
 
 		/// <inheritdoc/>
 		public abstract IEnumerator<IExpression> GetEnumerator();

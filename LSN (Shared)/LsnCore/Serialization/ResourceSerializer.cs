@@ -92,14 +92,14 @@ namespace LsnCore
 			return (ushort)(ConstantTable.Count - 1);
 		}
 
-		internal void WriteConstantTable(BinaryDataWriter writer)
+		internal void WriteConstantTable(BinaryStream writer)
 		{
 			writer.Write((ushort)ConstantTable.Count);
 			for (int i = 0; i < ConstantTable.Count; i++)
 				ConstantTable[i].Serialize(writer);
 		}
 
-		internal void WriteTypeId(TypeId typeId, BinaryDataWriter writer)
+		internal void WriteTypeId(TypeId typeId, BinaryStream writer)
 		{
 			var i = (ushort)Array.IndexOf(TypeIds, typeId);
 			writer.Write(i);

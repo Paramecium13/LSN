@@ -45,7 +45,7 @@ namespace LsnCore.Statements
 			instructionList.AddInstruction(new SetVariablePreInstruction(Variable));
 		}
 
-		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		internal override void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{}
 	}
 }

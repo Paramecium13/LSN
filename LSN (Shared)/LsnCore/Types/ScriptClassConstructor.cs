@@ -30,7 +30,7 @@ namespace LsnCore.Runtime.Types
 			Code = code; StackSize = stackSize; ResourceFilePath = resourceFilePath; Parameters = parameters;
 		}
 
-		/*public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		/*public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)Parameters.Length);
 			for (int i = 0; i < Parameters.Length; i++)
@@ -44,7 +44,7 @@ namespace LsnCore.Runtime.Types
 			offset.Satisfy((int)writer.Position - (int)offset.Position - 4);
 		}
 
-		public static ScriptClassConstructor Read(BinaryDataReader reader, string resourceFilePath, ResourceDeserializer resourceDeserializer)
+		public static ScriptClassConstructor Read(BinaryStream reader, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
 			var nParams = reader.ReadByte();
 			var parameters = new Parameter[nParams];

@@ -36,7 +36,7 @@ namespace LsnCore.Types
 			return true;
 		}
 
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(Name);
 			writer.Write((ushort)Parameters.Count);
@@ -44,7 +44,7 @@ namespace LsnCore.Types
 				param.Serialize(writer, resourceSerializer);
 		}
 
-		public static EventDefinition Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
+		public static EventDefinition Read(BinaryStream reader, ITypeIdContainer typeContainer)
 		{
 			var name = reader.ReadString();
 			var nParams = reader.ReadUInt16();

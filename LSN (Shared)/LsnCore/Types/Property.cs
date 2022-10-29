@@ -25,14 +25,14 @@ namespace LsnCore
 		//public Property(string name, TypeId type, string metadata) : this(name, type, LsnValue.Nil, metadata) { }
 		//public Property(string name, TypeId type) : this(name, type, LsnValue.Nil, null) { }
 
-		public void Write(BinaryDataWriter writer)
+		public void Write(BinaryStream writer)
 		{
 			writer.Write(Name);
 			writer.Write(Type.Name);
 			writer.Write(Metadata??"");
 		}
 
-		public static Property Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
+		public static Property Read(BinaryStream reader, ITypeIdContainer typeContainer)
 		{
 			var name = reader.ReadString();
 			var typeName = reader.ReadString();

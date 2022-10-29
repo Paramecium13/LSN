@@ -22,7 +22,7 @@ namespace LsnCore
 
 		public override ILsnValue Clone() => this;
 
-		public override void Serialize(BinaryDataWriter writer)
+		public override void Serialize(BinaryStream writer)
 		{
 			throw new NotImplementedException();
 		}

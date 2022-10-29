@@ -35,7 +35,7 @@ namespace LsnCore.Runtime.Types
 
 		public EventListener GetEventListener(string name) => EventListeners[name];
 
-		/*public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		/*public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(Id);
 
@@ -48,7 +48,7 @@ namespace LsnCore.Runtime.Types
 				listener.Serialize(writer, resourceSerializer);
 		}
 
-		public static ScriptClassState Read(BinaryDataReader reader, ITypeIdContainer typeContainer, TypeId type, string resourceFilePath, ResourceDeserializer resourceDeserializer)
+		public static ScriptClassState Read(BinaryStream reader, ITypeIdContainer typeContainer, TypeId type, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
 			var id = reader.ReadInt32();
 

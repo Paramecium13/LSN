@@ -51,7 +51,7 @@ namespace LsnCore.Expressions
 		public override bool IsReifyTimeConst()
 			=> Contents.IsReifyTimeConst();
 
-		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public override void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			Contents.Serialize(writer, resourceSerializer);
 		}

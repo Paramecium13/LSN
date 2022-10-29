@@ -37,7 +37,7 @@ namespace LsnCore
 			return new RecordValue(Fields.Select(f=>f.Clone()).ToArray());
 		}
 
-		public void Serialize(BinaryDataWriter writer)
+		public void Serialize(BinaryStream writer)
 		{
 			writer.Write((byte)ConstantCode.Record);
 			writer.Write((ushort)Fields.Length);
@@ -45,7 +45,7 @@ namespace LsnCore
 				Fields[i].Serialize(writer);
 		}
 
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.TabledConstant);
 			writer.Write(resourceSerializer.TableConstant(this));

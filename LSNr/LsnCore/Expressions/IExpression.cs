@@ -44,6 +44,6 @@ namespace LsnCore.Expressions
 		/// </summary>
 		/// <param name="writer">The writer.</param>
 		/// <param name="resourceSerializer">The resource serializer.</param>
-		void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer);
+		void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer);
 	}
 }

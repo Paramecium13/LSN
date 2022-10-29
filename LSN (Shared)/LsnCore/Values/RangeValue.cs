@@ -37,7 +37,7 @@ namespace LsnCore.Values
 
 		public ILsnValue Clone() => this;
 
-		public void Serialize(BinaryDataWriter writer)
+		public void Serialize(BinaryStream writer)
 		{
 			writer.Write((byte)ConstantCode.Range);
 			writer.Write(Start);

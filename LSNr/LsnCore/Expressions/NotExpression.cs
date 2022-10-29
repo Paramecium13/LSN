@@ -72,7 +72,7 @@ namespace LsnCore.Expressions
 				Value.Replace(oldExpr, newExpr);
 		}
 
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.NotExpression);
 			Value.Serialize(writer, resourceSerializer);

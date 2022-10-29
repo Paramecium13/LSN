@@ -71,14 +71,14 @@ namespace LsnCore
 
 		/// <inheritdoc/>
 		public override int GetHashCode() => Value.GetHashCode();
-		
-		public void Serialize(BinaryDataWriter writer)
+
+		public void Serialize(BinaryStream writer)
 		{
 			writer.Write((byte)ConstantCode.String);
 			writer.Write(Value);
 		}
 
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.TabledConstant);
 			writer.Write(resourceSerializer.TableConstant(this));

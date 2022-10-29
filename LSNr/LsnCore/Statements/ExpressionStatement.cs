@@ -46,7 +46,7 @@ namespace LsnCore.Statements
 		}
 
 		/// <inheritdoc />
-		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		internal override void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(StatementCode.EvaluateExpression);
 			Expression.Serialize(writer, resourceSerializer);

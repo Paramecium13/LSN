@@ -26,6 +26,6 @@ namespace LsnCore
 		public static bool IsPure => true;
 
 		public static bool IsReifyTimeConst() => true;
-		public abstract void Serialize(BinaryDataWriter writer);
+		public abstract void Serialize(BinaryStream writer);
 	}
 }

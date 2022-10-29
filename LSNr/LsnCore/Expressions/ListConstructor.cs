@@ -55,7 +55,7 @@ namespace LsnCore.Expressions
 		{}
 
 		/// <inheritdoc />
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.ListConstructor);
 			resourceSerializer.WriteTypeId(GenericTypeId, writer);

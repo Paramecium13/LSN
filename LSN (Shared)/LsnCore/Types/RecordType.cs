@@ -51,7 +51,7 @@ namespace LsnCore.Types
 		public TypeId GetFieldType(int index) => _FieldsB[index].Type;
 
 		// ToDo: Make this use ResourceSerializer
-		public void Serialize(BinaryDataWriter writer)
+		public void Serialize(BinaryStream writer)
 		{
 			writer.Write(Name);
 			writer.Write((ushort)FieldCount);
@@ -63,7 +63,7 @@ namespace LsnCore.Types
 			}
 		}
 
-		public static RecordType Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
+		public static RecordType Read(BinaryStream reader, ITypeIdContainer typeContainer)
 		{
 			var name = reader.ReadString();
 			var nFields = reader.ReadUInt16();

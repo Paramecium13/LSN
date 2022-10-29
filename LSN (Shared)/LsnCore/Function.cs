@@ -149,7 +149,7 @@ namespace LsnCore
 		/// </summary>
 		/// <param name="writer">The writer.</param>
 		/// <param name="resourceSerializer">The resource serializer.</param>
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(Name);
 			resourceSerializer.WriteTypeId(Type, writer);
@@ -163,7 +163,7 @@ namespace LsnCore
 		/// <param name="reader">The reader.</param>
 		/// <param name="typeContainer">The type container.</param>
 		/// <returns></returns>
-		public static Parameter Read(ushort index, BinaryDataReader reader, ITypeIdContainer typeContainer)
+		public static Parameter Read(ushort index, BinaryStream reader, ITypeIdContainer typeContainer)
 		{
 			var name = reader.ReadString();
 			var typeId = typeContainer.GetTypeId(reader.ReadUInt16());
@@ -180,7 +180,7 @@ namespace LsnCore
 		/// <param name="reader">The reader.</param>
 		/// <param name="resourceDeserializer">The resource deserializer.</param>
 		/// <returns></returns>
-		public static Parameter Read(ushort index, BinaryDataReader reader, ResourceDeserializer resourceDeserializer)
+		public static Parameter Read(ushort index, BinaryStream reader, ResourceDeserializer resourceDeserializer)
 		{
 			var name = reader.ReadString();
 			var typeId = resourceDeserializer.LoadTypeId(reader);

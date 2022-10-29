@@ -74,7 +74,7 @@ namespace LsnCore
 		/// </summary>
 		/// <param name="writer">The writer.</param>
 		/// <param name="resourceSerializer">The resource serializer.</param>
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(Name);
 			writer.Write(ReturnType?.Name ?? "");
@@ -89,7 +89,7 @@ namespace LsnCore
 		/// <param name="reader">The reader.</param>
 		/// <param name="typeContainer">The type container.</param>
 		/// <returns></returns>
-		public static FunctionSignature Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
+		public static FunctionSignature Read(BinaryStream reader, ITypeIdContainer typeContainer)
 		{
 			var name = reader.ReadString();
 			var retTName = reader.ReadString();

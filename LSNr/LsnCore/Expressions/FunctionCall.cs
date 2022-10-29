@@ -51,7 +51,7 @@ namespace LsnCore.Expressions
 			return e.Fn == Fn && e.Args.SequenceEqual(Args);
 		}
 
-		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public override void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.FunctionCall);
 			writer.Write(Fn.Name);

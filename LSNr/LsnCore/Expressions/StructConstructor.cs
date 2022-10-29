@@ -60,7 +60,7 @@ namespace LsnCore.Expressions
 		public override bool IsReifyTimeConst() => false;
 
 		/// <inheritdoc />
-		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public override void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.StructConstructor);
 

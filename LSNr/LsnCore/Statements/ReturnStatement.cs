@@ -49,7 +49,7 @@ namespace LsnCore.Statements
 		}
 
 		/// <inheritdoc />
-		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		internal override void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			if(Value == null)
 				writer.Write(StatementCode.Return);

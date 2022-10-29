@@ -119,7 +119,7 @@ namespace LsnCore.Runtime.Types
 
 		public ScriptClassState GetState(int id) => _States[id];
 
-		/*public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		/*public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(Name);
 			writer.Write(Unique);
@@ -157,7 +157,7 @@ namespace LsnCore.Runtime.Types
 			Constructor?.Serialize(writer, resourceSerializer);
 		}
 
-		public static ScriptClass Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath, ResourceDeserializer resourceDeserializer)
+		public static ScriptClass Read(BinaryStream reader, ITypeIdContainer typeContainer, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
 			var name = reader.ReadString();
 			var unique = reader.ReadBoolean();

@@ -194,14 +194,6 @@ namespace LsnCore
 			Id = NullType.Instance.Id;
 #endif
 		}
-#if CORE
-		/// <summary>
-		/// ...
-		/// </summary>
-		/// <param name="i"></param>
-		/// <returns></returns>
-		public LsnValue Eval(IInterpreter i) => this;
-#endif
 
 #if LSNR
 
@@ -254,7 +246,7 @@ namespace LsnCore
 		public LsnValue Clone() => Data == Data ? this : new LsnValue(Value.Clone());
 
 
-		internal void Serialize(BinaryDataWriter writer)
+		internal void Serialize(BinaryStream writer)
 		{
 			if (Value == null)
 			{
@@ -264,7 +256,7 @@ namespace LsnCore
 			else Value.Serialize(writer);
 		}
 
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			if (Value == null)
 			{

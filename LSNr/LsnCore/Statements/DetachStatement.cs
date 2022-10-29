@@ -15,7 +15,7 @@ namespace LsnCore.Statements
 	{
 		public override void Replace(IExpression oldExpr, IExpression newExpr){}
 
-		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		internal override void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(StatementCode.Detach);
 		}

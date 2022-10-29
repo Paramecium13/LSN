@@ -158,7 +158,7 @@ namespace LsnCore.Expressions
 		public override bool IsPure => Left.IsPure && Right.IsPure;
 
 		/// <inheritdoc />
-		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public override void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			throw new NotImplementedException();
 		}

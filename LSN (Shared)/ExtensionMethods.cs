@@ -10,7 +10,7 @@ namespace LsnCore
 {
 	public static class ExtensionMethods
 	{
-		internal static void Write(this BinaryDataWriter self, StatementCode code)
+		internal static void Write(this BinaryStream self, StatementCode code)
 		{
 			self.Write((ushort)code);
 		}

@@ -1,9 +1,11 @@
 ﻿using LsnCore.Types;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Syroot.BinaryData;
+using System.Linq;
 
 namespace LsnCore.Interpretation
 {
@@ -59,18 +61,56 @@ namespace LsnCore.Interpretation
 	internal struct UsedTypeDefinition
 	{
 		public readonly string Name;
-		public readonly ushort[] Generics;
+		//public readonly ushort[] Generics;
 		public readonly ushort IndexOfContainingFile;
-		public byte TypeOfType;
+		//public byte TypeOfType;
 
-		public UsedTypeDefinition(string name, ushort[] generics, ushort indexOfContainingFile, byte typeOfType)
+		public UsedTypeDefinition(string name, 
+			//ushort[] generics, 
+			ushort indexOfContainingFile
+			//, byte typeOfType
+			)
 		{
 			Name = name;
-			Generics = generics;
+			//Generics = generics;
 			IndexOfContainingFile = indexOfContainingFile;
-			TypeOfType = typeOfType;
+			//TypeOfType = typeOfType;
 		}
 	}
+
+	internal readonly struct UsedTypesCollection : IReadOnlyList<UsedTypeDefinition>
+	{
+		private readonly string[] Names;
+		private readonly ushort[] IndexesOfContainingFiles;
+
+		public int Count => Names.Length;
+
+		public UsedTypeDefinition this[int index] => new UsedTypeDefinition(Names[index], IndexesOfContainingFiles[index]);
+
+		public UsedTypesCollection(string[] names, ushort[] indexesOfContainingFiles)
+		{
+			if (indexesOfContainingFiles.Length != names.Length)
+			{
+				throw new ArgumentException();
+			}
+			Names = names;
+			IndexesOfContainingFiles = indexesOfContainingFiles;
+		}
+
+		public IEnumerator<UsedTypeDefinition> GetEnumerator()
+		{
+			for (var i = 0; i < Count; i++)
+			{
+				yield return this[i];
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+	}
+
 	public readonly struct ProcedureDefinition
 	{
 		public readonly string Name;
@@ -205,6 +245,19 @@ namespace LsnCore.Interpretation
 		EventHandler,
 	}
 
+	public sealed class LsnObjectFileHeader
+	{
+		public static LsnObjectFileHeader Read()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Write()
+		{
+			throw new NotImplementedException();
+		}
+	}
+
 	/// <summary>
 	/// 
 	/// </summary>
@@ -214,6 +267,11 @@ namespace LsnCore.Interpretation
 		/// The constant table
 		/// </summary>
 		private readonly ConstTableStruct ConstTable;
+
+		/// <summary>
+		/// The files referenced by this file.
+		/// </summary>
+		private readonly LsnObjectFile[] ReferencedFiles;
 
 		/// <summary>
 		/// The referenced types
@@ -249,11 +307,6 @@ namespace LsnCore.Interpretation
 		/// The procedures contained in this file.
 		/// </summary>
 		private readonly ProcedureInfo[] ContainedProcedures;
-
-		/// <summary>
-		/// The files referenced by this file.
-		/// </summary>
-		private readonly LsnObjectFile[] ReferencedFiles;
 
 		public LsnObjectFile(string filePath, double[] doubles, string[] strings, TypeId[] referencedTypes,
 			TypeId[] definedTypes, string[] identifierStrings,
@@ -316,12 +369,31 @@ namespace LsnCore.Interpretation
 			internal double GetDouble(ushort index) => ConstDoubles[index];
 			internal StringValue GetString(ushort index) => ConstStrings[index];
 
-			internal void Write(BinaryDataWriter writer)
+			internal void Write(BinaryStream writer)
 			{
-				throw new NotImplementedException();
+				writer.Write((ushort)ConstDoubles.Length);
+				writer.Write(ConstDoubles);
+				writer.Write((ushort)ConstStrings.Length);
+				writer.Write(ConstStrings.Select(s => s.Value));
+			}
+
+			internal static ConstTableStruct Read(BinaryStream stream)
+			{
+				var constDoublesLength = stream.ReadUInt16();
+				var constDoubles = stream.ReadDoubles(constDoublesLength);
+				var constStringsLength = stream.ReadUInt16();
+
+				var constStrings = stream.ReadStrings(constStringsLength);
+
+				var lsnStrings = new StringValue[constStringsLength];
+				for (int i = 0; i < constStringsLength; i++)
+				{
+					lsnStrings[i] = new(constStrings[i]);
+				}
+
+				return new(constDoubles, constStrings);
 			}
 		}
-
 
 		/// <summary>
 		/// Gets a string that is the name of something

@@ -62,7 +62,7 @@ namespace LsnCore.Types
 #endif
 		}
 
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			resourceSerializer.WriteTypeId(Id, writer);
 			writer.Write((ushort)ParentTypes.Count);
@@ -70,7 +70,7 @@ namespace LsnCore.Types
 				resourceSerializer.WriteTypeId(parent, writer);
 		}
 
-		public static HandleType Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
+		public static HandleType Read(BinaryStream reader, ITypeIdContainer typeContainer)
 		{
 			var id = typeContainer.GetTypeId(reader.ReadUInt16());
 			var nParents = reader.ReadUInt16();

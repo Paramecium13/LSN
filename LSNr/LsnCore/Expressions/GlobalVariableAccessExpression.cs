@@ -48,7 +48,7 @@ namespace LsnCore.Expressions
 
 		public void Replace(IExpression oldExpr, IExpression newExpr){}
 
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			throw new NotImplementedException();
 		}

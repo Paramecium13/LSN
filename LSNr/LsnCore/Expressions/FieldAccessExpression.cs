@@ -89,7 +89,7 @@ namespace LsnCore.Expressions
 		}
 
 		/// <inheritdoc />
-		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public override void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.FieldAccess);
 			writer.Write((ushort)Index);

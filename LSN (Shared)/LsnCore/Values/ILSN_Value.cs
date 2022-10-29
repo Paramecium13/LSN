@@ -10,6 +10,6 @@ namespace LsnCore
 
 		ILsnValue Clone();
 		//int GetSize();
-		void Serialize(BinaryDataWriter writer);
+		void Serialize(BinaryStream writer);
 	}
 }

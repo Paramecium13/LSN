@@ -141,14 +141,14 @@ namespace LsnCore.Values
 
 			// Subscribe to new state's event subscriptions (if valid). Run new state Start method.
 			if (Host == null) return;
-			
+
 			foreach (var subscription in newSubscriptions)
 				Host.SubscribeToEvent(subscription, this,CurrentState.GetEventListener(subscription).Priority);
-			
+
 		}
 
 		// Serialization?
-		public void Serialize(BinaryDataWriter writer)
+		public void Serialize(BinaryStream writer)
 		{
 			writer.Write((byte)ConstantCode.ScriptObject);
 			if (ScriptClass.Unique)
@@ -204,7 +204,7 @@ namespace LsnCore.Values
 			}
 		}
 
-		public void SerializeScriptObject(BinaryDataWriter writer, bool writeHostId)
+		public void SerializeScriptObject(BinaryStream writer, bool writeHostId)
 		{
 			if (writeHostId)
 			{

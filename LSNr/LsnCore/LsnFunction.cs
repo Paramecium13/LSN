@@ -53,7 +53,7 @@ namespace LsnCore
 		}
 #endif
 
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			Signature.Serialize(writer, resourceSerializer);
 			writer.Write((ushort)StackSize);
@@ -64,7 +64,7 @@ namespace LsnCore
 			offset.Satisfy((int)writer.Position - (int)offset.Position -4);
 		}
 
-		public static LsnFunction Read(BinaryDataReader reader, ITypeIdContainer typeContainer, string resourceFilePath, ResourceDeserializer resourceDeserializer)
+		public static LsnFunction Read(BinaryStream reader, ITypeIdContainer typeContainer, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
 			var signature = FunctionSignature.Read(reader, typeContainer);
 			var stackSize = reader.ReadUInt16();

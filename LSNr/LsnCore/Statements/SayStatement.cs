@@ -47,7 +47,7 @@ namespace LsnCore.Statements
 			if (_Title.Equals (oldExpr)) _Title = newExpr;
 		}
 
-		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		internal override void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(StatementCode.Say);
 			Message.Serialize(writer, resourceSerializer);

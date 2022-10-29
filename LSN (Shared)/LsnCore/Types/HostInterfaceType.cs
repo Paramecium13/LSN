@@ -63,7 +63,7 @@ namespace LsnCore.Types
 			throw new ArgumentException($"No event named {name} exists.", nameof(name));
 		}
 
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(Name);
 
@@ -77,7 +77,7 @@ namespace LsnCore.Types
 		}
 
 
-		public static HostInterfaceType Read(BinaryDataReader reader, ITypeIdContainer typeContainer)
+		public static HostInterfaceType Read(BinaryStream reader, ITypeIdContainer typeContainer)
 		{
 			var name = reader.ReadString();
 

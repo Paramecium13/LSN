@@ -31,9 +31,7 @@ namespace LsnCore
 			_Type = t;
 		}
 
-		public override bool Equals(object obj)	
-			=> Equals(obj as TypeId);
-		
+		public override bool Equals(object obj) => Equals(obj as TypeId);
 
 		public override int GetHashCode()
 			=> Name.GetHashCode();

@@ -55,7 +55,7 @@ namespace LsnCore.Statements
 			if (Id.Equals(oldExpr)) Id = newExpr;
 		}
 
-		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		internal override void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(StatementCode.GiveItem);
 			Amount.Serialize(writer, resourceSerializer);
@@ -97,7 +97,7 @@ namespace LsnCore.Statements
 			if (Receiver.Equals(oldExpr)) Receiver = newExpr;
 		}
 
-		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		internal override void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write(StatementCode.GiveGold);
 			Amount.Serialize(writer, resourceSerializer);

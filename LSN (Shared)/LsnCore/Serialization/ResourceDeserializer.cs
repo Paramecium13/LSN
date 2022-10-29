@@ -34,7 +34,7 @@ namespace LsnCore.Serialization
 			Types.Add("string", LsnType.string_);
 		}
 
-		internal TypeId[] LoadTypeIds(BinaryDataReader reader)
+		internal TypeId[] LoadTypeIds(BinaryStream reader)
 		{
 			var nTypes = reader.ReadUInt16();
 			TypeIds = new TypeId[nTypes];
@@ -83,7 +83,7 @@ namespace LsnCore.Serialization
 		/// </summary>
 		/// <param name="reader"></param>
 		/// <returns></returns>
-		internal TypeId LoadTypeId(BinaryDataReader reader)
+		internal TypeId LoadTypeId(BinaryStream reader)
 			=> TypeIds[reader.ReadUInt16()];
 
 		internal void ResolveCodeBlocks()
@@ -91,7 +91,7 @@ namespace LsnCore.Serialization
 			throw new NotImplementedException();
 		}
 
-		internal void ReadConstantTable(BinaryDataReader reader)
+		internal void ReadConstantTable(BinaryStream reader)
 		{
 			var nConstants = reader.ReadUInt16();
 			ConstantTable = new ILsnValue[nConstants];
@@ -99,7 +99,7 @@ namespace LsnCore.Serialization
 				ConstantTable[i] = ReadConstant(reader);
 		}
 
-		private static ILsnValue ReadConstant(BinaryDataReader reader)
+		private static ILsnValue ReadConstant(BinaryStream reader)
 		{
 			switch ((ConstantCode)reader.ReadByte())
 			{
@@ -149,7 +149,7 @@ namespace LsnCore.Serialization
 					Types.Add(type.Name, type);
 		}
 
-		public static LsnValue ReadValue(BinaryDataReader reader)
+		public static LsnValue ReadValue(BinaryStream reader)
 		{
 			switch ((ConstantCode)reader.ReadByte())
 			{
@@ -181,7 +181,7 @@ namespace LsnCore.Serialization
 			}
 		}
 
-		public static LsnValue ReadValue(BinaryDataReader reader, IResourceManager resourceManager)
+		public static LsnValue ReadValue(BinaryStream reader, IResourceManager resourceManager)
 		{
 			switch ((ConstantCode)reader.ReadByte())
 			{
@@ -249,7 +249,7 @@ namespace LsnCore.Serialization
 			}
 		}
 
-		public static ScriptObject ReadScriptObjectReference(BinaryDataReader reader, IResourceManager resourceManager)
+		public static ScriptObject ReadScriptObjectReference(BinaryStream reader, IResourceManager resourceManager)
 		{
 			if (reader.ReadBoolean())
 			{
@@ -298,7 +298,7 @@ namespace LsnCore.Serialization
 			throw new ApplicationException();
 		}
 
-		public static ScriptObject ReadScriptObject(BinaryDataReader reader, IResourceManager resourceManager, IHostInterface host)
+		public static ScriptObject ReadScriptObject(BinaryStream reader, IResourceManager resourceManager, IHostInterface host)
 		{
 			var typeName = reader.ReadString();
 			var currentState = reader.ReadInt32();
@@ -310,7 +310,7 @@ namespace LsnCore.Serialization
 			return new ScriptObject(fields, type, currentState, host);
 		}
 
-		public static ScriptObject ReadScriptObject(BinaryDataReader reader, IResourceManager resourceManager, bool canHaveHost)
+		public static ScriptObject ReadScriptObject(BinaryStream reader, IResourceManager resourceManager, bool canHaveHost)
 		{
 			if (!canHaveHost) return ReadScriptObject(reader, resourceManager, null);
 			IHostInterface host = null;

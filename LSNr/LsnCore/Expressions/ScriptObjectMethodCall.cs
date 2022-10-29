@@ -42,7 +42,7 @@ namespace LsnCore.Expressions
 
 		public override bool IsReifyTimeConst() => false;
 
-		public override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public override void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.ScriptObjectMethodCall);
 			writer.Write(Name);

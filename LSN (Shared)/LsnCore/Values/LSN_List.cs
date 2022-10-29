@@ -109,7 +109,7 @@ namespace LsnCore.Values
 			Values[index] = value;
 		}
 
-		public override void Serialize(BinaryDataWriter writer)
+		public override void Serialize(BinaryStream writer)
 		{
 			writer.Write((byte)ConstantCode.List);
 			writer.Write(Type.Name);

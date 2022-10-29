@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LsnCore.Runtime.Types;
 using LsnCore.Runtime.Values;
+using LsnCore.Interpretation;
 
 namespace LsnCore
 {
@@ -36,7 +37,7 @@ namespace LsnCore
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
-		LsnResourceThing GetResource(string path);
+		LsnObjectFile GetResource(string path);
 
 		LsnValue[] LoadValues(string id);
 

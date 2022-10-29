@@ -32,7 +32,7 @@ namespace LsnCore.Types
 
 		//enum Flags : byte { none = 0, IsVirtual = 1, IsAbstract = 2 }
 		
-		/*public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		/*public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			Signature.Serialize(writer, resourceSerializer);
 			byte b = 0;
@@ -52,7 +52,7 @@ namespace LsnCore.Types
 			offset.Satisfy((int)writer.Position - (int)offset.Position -4);
 		}
 
-		internal static ScriptClassMethod Read(BinaryDataReader reader, ITypeIdContainer typeContainer, TypeId type, string resourceFilePath, ResourceDeserializer resourceDeserializer)
+		internal static ScriptClassMethod Read(BinaryStream reader, ITypeIdContainer typeContainer, TypeId type, string resourceFilePath, ResourceDeserializer resourceDeserializer)
 		{
 			var signature = FunctionSignature.Read(reader, typeContainer);
 			var b = reader.ReadByte();

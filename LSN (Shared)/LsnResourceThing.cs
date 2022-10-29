@@ -174,7 +174,7 @@ namespace LsnCore
 
 		public void Serialize(Stream stream)
 		{
-			using (var writer = new BinaryDataWriter(stream, new UTF8Encoding(false),true))
+			using (var writer = new BinaryStream(stream, new UTF8Encoding(false),true))
 			{
 				// Header
 				writer.Write(0x5f3759df); // Signature.
@@ -204,7 +204,7 @@ namespace LsnCore
 			}
 		}
 
-		private void WriteGameValues(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		private void WriteGameValues(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((ushort)(GameValues?.Count ?? 0));
 			if (GameValues == null) return;
@@ -216,7 +216,7 @@ namespace LsnCore
 		{
 			using (var stream = new MemoryStream())
 			{
-				using (var writer = new BinaryDataWriter(stream, new UTF8Encoding(false), true))
+				using (var writer = new BinaryStream(stream, new UTF8Encoding(false), true))
 				{
 					writer.Write((ushort)StructTypes.Count);
 					foreach (var type in StructTypes.Values)
@@ -250,7 +250,7 @@ namespace LsnCore
 		{
 			using (var stream = new MemoryStream())
 			{
-				using (var writer = new BinaryDataWriter(stream, new UTF8Encoding(false), true))
+				using (var writer = new BinaryStream(stream, new UTF8Encoding(false), true))
 				{
 					var fns = Functions.Values.Where(fn => fn is LsnFunction).ToList();
 					writer.Write((ushort)fns.Count);
@@ -269,7 +269,7 @@ namespace LsnCore
 		{
 			LsnResourceThing res;
 			var resourceDeserializer = new Serialization.ResourceDeserializer();
-			using (var reader = new BinaryDataReader(stream, new UTF8Encoding(false),true))
+			using (var reader = new BinaryStream(stream, new UTF8Encoding(false),true))
 			{
 				// Header
 				var sig = reader.ReadInt32();

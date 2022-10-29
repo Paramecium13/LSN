@@ -23,7 +23,7 @@ namespace LsnCore.Statements
 		/// </summary>
 		/// <param name="writer">The writer.</param>
 		/// <param name="resourceSerializer">The resource serializer.</param>
-		internal abstract void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer);
+		internal abstract void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer);
 
 		/// <inheritdoc/>
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

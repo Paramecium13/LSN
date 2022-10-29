@@ -128,7 +128,7 @@ namespace LsnCore.Statements
 			if (Y.Equals(oldExpr)) Y = newExpr;
 		}
 
-		internal override void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		internal override void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			throw new NotImplementedException();
 		}

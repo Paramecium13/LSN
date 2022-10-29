@@ -58,7 +58,7 @@ namespace LsnCore.Expressions
 																		// a script object method.
 
 		/// <inheritdoc/>
-		public void Serialize(BinaryDataWriter writer, ResourceSerializer resourceSerializer)
+		public void Serialize(BinaryStream writer, ResourceSerializer resourceSerializer)
 		{
 			writer.Write((byte)ExpressionCode.HostInterfaceAccess);
 		}
