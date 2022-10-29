@@ -42,7 +42,7 @@ namespace LSNr.ScriptObjects
 		
 		CompileTimeEventListener RegisterEventListener(string name, IReadOnlyList<Parameter> parameters);
 		
-		ScriptClassConstructor RegisterConstructor(IReadOnlyList<Parameter> parameters);
+		CompileTimeScriptClassConstructor RegisterConstructor(IReadOnlyList<Parameter> parameters);
 
 		event Action<IPreScriptClass> ParsingProcBodies;
 		event Action<IPreScriptClass> ParsingSignaturesB;

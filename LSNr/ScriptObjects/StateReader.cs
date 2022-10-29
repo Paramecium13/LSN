@@ -12,8 +12,8 @@ namespace LSNr.ScriptObjects
 {
 	public interface IPreState : IBasePreScriptClass
 	{
-		ScriptClassMethod RegisterMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters);
-		EventListener RegisterEventListener(string name, IReadOnlyList<Parameter> parameters);
+		CompileTimeScriptClassMethod RegisterMethod(string name, TypeId returnType, IReadOnlyList<Parameter> parameters);
+		CompileTimeEventListener RegisterEventListener(string name, IReadOnlyList<Parameter> parameters);
 
 		event Action<IPreState> ParsingProcBodies;
 		event Action<IPreState> ParsingSignaturesB;

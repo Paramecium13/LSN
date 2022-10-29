@@ -1,5 +1,5 @@
 ﻿using LsnCore;
-using LsnCore.Expressions;
+
 using LsnCore.Types;
 using Syroot.BinaryData;
 using System;
@@ -156,7 +156,7 @@ namespace LsnCore
 	/// <summary>
 	/// Contains functions, structs, constants, and macros/inlines.
 	/// </summary>
-	public class LsnResourceThing : LsnScriptBase
+	/*public class LsnResourceThing : LsnScriptBase
 	{
 		private LsnEnvironment Environment;
 
@@ -382,5 +382,5 @@ namespace LsnCore
 			resourceDeserializer.ResolveCodeBlocks();
 			return res;
 		}
-	}
+	}*/
 }

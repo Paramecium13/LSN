@@ -1,5 +1,6 @@
 ﻿using LsnCore;
 using LsnCore.Expressions;
+using LsnCore.Runtime.Types;
 using LsnCore.Statements;
 using LsnCore.Types;
 using LsnCore.Utilities;
@@ -13,7 +14,40 @@ using System.Threading.Tasks;
 
 namespace LSNr.ScriptObjects
 {
+	public class CompileTimeScriptClassConstructor : ICompileTimeProcedure
+	{
+		public Statement[] Code { get; set; }
+		
+		public Instruction[] Instructions { get; set; }
+		/// <summary>
+		/// Will always have a 'self' parameter.
+		/// </summary>
+		public IReadOnlyList<Parameter> Parameters { get; }
+		
+		public TypeId ScriptClass { get; }
 
+		public TypeId ReturnType => ScriptClass;
+
+		public string Name => $"{ScriptClass.Name}.cstor";
+		
+		public int StackSize { get; set; }
+		
+		public string ResourceFilePath { get; }
+
+		public CompileTimeScriptClassConstructor(TypeId scriptClass, string resourceFilePath, IReadOnlyList<Parameter> parameters)
+		{
+			ScriptClass = scriptClass; ResourceFilePath = resourceFilePath; Parameters = parameters;
+		}
+
+		public CompileTimeScriptClassConstructor(Statement[] code, int stackSize, string resourceFilePath, Parameter[] parameters)
+		{
+			Code = code;
+			StackSize = stackSize;
+			ResourceFilePath = resourceFilePath;
+			Parameters = parameters;
+		}
+
+	}
 	public sealed class CompileTimeScriptClassState
 	{
 		//public readonly string Name;
@@ -89,9 +123,9 @@ namespace LSNr.ScriptObjects
 		readonly List<CompileTimeScriptClassMethod> AbstractMethods = new();
 		readonly List<CompileTimeScriptClassMethod> NonAbstractMethods = new();
 		readonly List<CompileTimeEventListener> EventListeners = new();
-		readonly Dictionary<string, ScriptClassState> States = new Dictionary<string, ScriptClassState>();
+		readonly Dictionary<string, CompileTimeScriptClassState> States = new();
 		int? First;
-		ScriptClassConstructor Constructor;
+		CompileTimeScriptClassConstructor Constructor;
 
 		public event Action<IPreScriptClass> ParsingProcBodies;
 		public event Action<IPreScriptClass> ParsingSignaturesB;
@@ -171,20 +205,20 @@ namespace LSNr.ScriptObjects
 			return e;
 		}
 
-		public ScriptClassConstructor RegisterConstructor(IReadOnlyList<Parameter> parameters)
+		public CompileTimeScriptClassConstructor RegisterConstructor(IReadOnlyList<Parameter> parameters)
 		{
 			if (Constructor != null) return null;
-			var c = new ScriptClassConstructor(Path, parameters.ToArray());
+			var c = new CompileTimeScriptClassConstructor(Id, Path, parameters.ToArray());
 			Constructor = c;
 			return c;
 		}
 
-		public ScriptClassState RegisterState(string name, bool auto, IReadOnlyList<ScriptClassMethod> methods, IReadOnlyList<EventListener> eventListeners)
+		public CompileTimeScriptClassState RegisterState(string name, bool auto, IReadOnlyList<CompileTimeScriptClassMethod> methods, IReadOnlyList<CompileTimeEventListener> eventListeners)
 		{
 			if (States.ContainsKey(name))
 				throw new ApplicationException("...");
 			var mdict = methods.ToDictionary(m => m.Name);
-			var st = new ScriptClassState(States.Count, mdict, eventListeners.ToDictionary(e => e.Definition.Name));
+			var st = new CompileTimeScriptClassState(States.Count, mdict, eventListeners.ToDictionary(e => e.Definition.Name));
 			if (auto)
 			{
 				if (First != null)
@@ -249,7 +283,7 @@ namespace LSNr.ScriptObjects
 				vars[i + 1] = new Variable(parameters[i + 1]);
 				code[i] = new FieldAssignmentStatement(self, i, vars[i + 1].AccessExpression);
 			}
-			Constructor = new ScriptClassConstructor(code, Fields.Count + 1, Path, parameters);
+			Constructor = new CompileTimeScriptClassConstructor(code, Fields.Count + 1, Path, parameters);
 		}
 
 		private void ValidateConstructor()

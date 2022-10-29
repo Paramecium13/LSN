@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LsnCore.Runtime.Types;
+using LsnCore.Runtime.Values;
 
 namespace LsnCore.Serialization
 {
@@ -123,11 +125,11 @@ namespace LsnCore.Serialization
 			}
 		}
 
-		internal void RegisterFunction(LsnFunction fn, byte[] code)
+		/*internal void RegisterFunction(LsnFunction fn, byte[] code)
 		{
 			Functions.Add(fn.Name, fn);
 			RegisterCodeBlock(fn, code);
-		}
+		}*/
 
 		internal void RegisterCodeBlock(ICodeBlock codeBlock, byte[] code)
 		{

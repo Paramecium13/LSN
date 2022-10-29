@@ -3,9 +3,74 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Syroot.BinaryData;
 
 namespace LsnCore.Interpretation
 {
+	/*
+	 * File Structure Proposal
+	 *	Header:
+	 *		Info about this file...
+	 *	Data Section (May be shared by multiple files to save space...?):
+	 *		Constant Pools:
+	 *			LONG (8 bytes) Pool [Indexed]:
+	 *				...
+	 *			String Pool [Indexed]:
+	 *				...
+	 *	Link Section
+	 *		Usings Segment [Indexed?]:
+	 *			Name
+	 *		Used Types Segment [Indexed]: {NOTE: When an instruction references a type, a negative index implies it is a locally defined type, listed in Defined Type Ids
+	 *			Index of containing file + 1 (0 is system)
+	 *			Name
+	 *			Type of type [enum...]
+	 *			Number of generics
+	 *			generics[number of generics]:
+	 *				index of generic parameter in used types segment.
+	 *			...
+	 *			{During loading, the values in this are resolved to TypeIds}
+	 *		Id Strings segment [Indexed]:
+	 *			...
+	 *	Info Section
+	 *		Defined Type Ids [Indexed]
+	 *			Name of type
+	 *		Non-Local Procedure Stubs:
+	 *			Index of Type in used types segment ???
+	 *			Name
+	 *		Exported Types Segment:
+	 *			Index of entry in used types segment...?
+	 *			...
+	 *		Procedures Segment:
+	 *			Index of name in id strings segment
+	 *			stack size
+	 *			number of parameters
+	 *			parameters:
+	 *				Name
+	 *				Index of type [Type Index: A negative value indicates it is a locally defined type]
+	 *				Usage info bit-flags?
+	 *			index of return type
+	 *			offset of first instruction in code segment
+	 *			attributes:
+	 *				???
+	 *		Local Types Segment?:
+	 *			...
+	 *	Code Section
+	 */
+	internal struct UsedTypeDefinition
+	{
+		public readonly string Name;
+		public readonly ushort[] Generics;
+		public readonly ushort IndexOfContainingFile;
+		public byte TypeOfType;
+
+		public UsedTypeDefinition(string name, ushort[] generics, ushort indexOfContainingFile, byte typeOfType)
+		{
+			Name = name;
+			Generics = generics;
+			IndexOfContainingFile = indexOfContainingFile;
+			TypeOfType = typeOfType;
+		}
+	}
 	public readonly struct ProcedureDefinition
 	{
 		public readonly string Name;
@@ -190,6 +255,25 @@ namespace LsnCore.Interpretation
 		/// </summary>
 		private readonly LsnObjectFile[] ReferencedFiles;
 
+		public LsnObjectFile(string filePath, double[] doubles, string[] strings, TypeId[] referencedTypes,
+			TypeId[] definedTypes, string[] identifierStrings,
+			IReadOnlyDictionary<string, ushort> definedTypesIndexLookup, SignatureStub[] signatureStubs,
+			IReadOnlyDictionary<string, int> procedureIndexLookup, ProcedureInfo[] containedProcedures,
+			LsnObjectFile[] referencedFiles, Instruction[] code)
+		{
+			FilePath = filePath;
+			ConstTable = new(doubles, strings);
+			ReferencedTypes = referencedTypes;
+			DefinedTypes = definedTypes;
+			IdentifierStrings = identifierStrings;
+			DefinedTypesIndexLookup = definedTypesIndexLookup;
+			SignatureStubs = signatureStubs;
+			ProcedureIndexLookup = procedureIndexLookup;
+			ContainedProcedures = containedProcedures;
+			ReferencedFiles = referencedFiles;
+			Code = code;
+		}
+
 		/// <summary>
 		/// Gets the path to this file, relative to the LSN-Environment-Root, excluding any file extension.
 		/// </summary>
@@ -223,14 +307,19 @@ namespace LsnCore.Interpretation
 			{
 				ConstDoubles = doubles;
 				ConstStrings = new StringValue[strings.Length];
-				for (int i = 0; i < strings.Length; i++)
+				for (var i = 0; i < strings.Length; i++)
 				{
-					ConstStrings[i] = new StringValue(strings[i]);
+					ConstStrings[i] = new(strings[i]);
 				}
 			}
 
 			internal double GetDouble(ushort index) => ConstDoubles[index];
 			internal StringValue GetString(ushort index) => ConstStrings[index];
+
+			internal void Write(BinaryDataWriter writer)
+			{
+				throw new NotImplementedException();
+			}
 		}
 
 
@@ -252,7 +341,7 @@ namespace LsnCore.Interpretation
 		/// Gets a type used by code in this file. A negative value of <paramref name="index"/> indicates it is a locally defined type.
 		/// </summary>
 		internal LsnType GetUsedType(short index) => GetUsedTypeId(index).Type;
-		
+
 		/// <summary>
 		/// Gets a type contained in this file.
 		/// </summary>
