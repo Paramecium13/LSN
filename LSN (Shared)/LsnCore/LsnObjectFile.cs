@@ -156,11 +156,14 @@ namespace LsnCore.Interpretation
 		/// </summary>
 		public readonly ushort NumberOfParameters;
 
+		// When compiling, file is null
 		public ProcedureInfo(int offset, ushort stackSize, ushort numberOfParameters, LsnObjectFile file)
 		{
 			CodeOffset = offset; StackSize = stackSize;
 			NumberOfParameters = numberOfParameters; File = file;
 		}
+
+		// ToDo: Serialize
 	}
 
 	/// <summary>
