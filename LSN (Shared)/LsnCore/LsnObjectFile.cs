@@ -164,13 +164,13 @@ namespace LsnCore.Interpretation
 	}
 
 	/// <summary>
-	/// Contains the information that the Virtual Machine needs to call a host interface method.
+	/// Contains the information that the Virtual Machine needs to call a host interface method. Stored in the calling file.
 	/// </summary>
 	/// <remarks>
 	/// If/when the VM transitions to using Handles for methods, types, & stuff, this will contain
 	/// the method's handle in place of its name.
 	/// </remarks>
-	public readonly struct SignatureStub : IEquatable<SignatureStub>
+	public readonly struct HostInterfaceSignatureStub : IEquatable<HostInterfaceSignatureStub>
 	{
 		/// <summary>
 		/// The name of the host interface type this method was defined in.
@@ -189,22 +189,22 @@ namespace LsnCore.Interpretation
 		public readonly int NumberOfParameters;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="SignatureStub"/> struct.
+		/// Initializes a new instance of the <see cref="HostInterfaceSignatureStub"/> struct.
 		/// </summary>
 		/// <param name="identifier">The identifier of the method.</param>
 		/// <param name="numberOfParameters">The number of parameters the method takes, including 'self'.</param>
 		/// <param name="hostInterfaceName"> The name of the host interface this method belongs to. </param>
-		public SignatureStub(string identifier, int numberOfParameters, string hostInterfaceName)
+		public HostInterfaceSignatureStub(string identifier, int numberOfParameters, string hostInterfaceName)
 		{
 			Identifier = identifier;
 			NumberOfParameters = numberOfParameters;
 			HostInterfaceName = hostInterfaceName;
 		}
 
-		/// <summary>Initializes a new instance of the <see cref="SignatureStub" /> struct.</summary>
+		/// <summary>Initializes a new instance of the <see cref="HostInterfaceSignatureStub" /> struct.</summary>
 		/// <param name="signature">The function signature to base this stub on.</param>
 		/// <param name="hostInterfaceName"> The name of the host interface this method belongs to. </param>
-		public SignatureStub(FunctionSignature signature, string hostInterfaceName) : this(signature.Name, signature.Parameters.Count, hostInterfaceName)
+		public HostInterfaceSignatureStub(FunctionSignature signature, string hostInterfaceName) : this(signature.Name, signature.Parameters.Count, hostInterfaceName)
 		{}
 
 		/// <inheritdoc />
@@ -212,7 +212,7 @@ namespace LsnCore.Interpretation
 		/// Does not take into account <see cref="NumberOfParameters"/>.
 		/// A host interface cannot have two different methods with the same identifier.
 		/// </remarks>
-		public bool Equals(SignatureStub other)
+		public bool Equals(HostInterfaceSignatureStub other)
 		{
 			return HostInterfaceName == other.HostInterfaceName && Identifier == other.Identifier;
 		}
@@ -224,7 +224,7 @@ namespace LsnCore.Interpretation
 		/// </remarks>
 		public override bool Equals(object obj)
 		{
-			return obj is SignatureStub other && Equals(other);
+			return obj is HostInterfaceSignatureStub other && Equals(other);
 		}
 
 		/// <inheritdoc />
@@ -296,13 +296,17 @@ namespace LsnCore.Interpretation
 		/// <summary>
 		/// The signature stubs of host interface methods called by code in this file.
 		/// </summary>
-		private readonly SignatureStub[] SignatureStubs;
+		private readonly HostInterfaceSignatureStub[] SignatureStubs;
 
 		/// <summary>
 		/// A lookup of procedure indexes in <see cref="ContainedProcedures"/> by procedure name.
 		/// </summary>
 		private readonly IReadOnlyDictionary<string, int> ProcedureIndexLookup;
 
+		// ToDo: Defined types (local and exported stored separately)
+
+
+		// ToDo Separate into local vs exported.
 		/// <summary>
 		/// The procedures contained in this file.
 		/// </summary>
@@ -310,7 +314,7 @@ namespace LsnCore.Interpretation
 
 		public LsnObjectFile(string filePath, double[] doubles, string[] strings, TypeId[] referencedTypes,
 			TypeId[] definedTypes, string[] identifierStrings,
-			IReadOnlyDictionary<string, ushort> definedTypesIndexLookup, SignatureStub[] signatureStubs,
+			IReadOnlyDictionary<string, ushort> definedTypesIndexLookup, HostInterfaceSignatureStub[] signatureStubs,
 			IReadOnlyDictionary<string, int> procedureIndexLookup, ProcedureInfo[] containedProcedures,
 			LsnObjectFile[] referencedFiles, Instruction[] code)
 		{
@@ -402,7 +406,7 @@ namespace LsnCore.Interpretation
 		/// <returns></returns>
 		internal string GetIdentifierString(ushort index) => IdentifierStrings[index];
 
-		internal SignatureStub GetSignatureStub(ushort index) => SignatureStubs[index];
+		internal HostInterfaceSignatureStub GetSignatureStub(ushort index) => SignatureStubs[index];
 
 		/// <summary>
 		/// Gets the id of a type used by code in this file. A negative value of <paramref name="index"/> indicates it is a locally defined type.
@@ -429,5 +433,4 @@ namespace LsnCore.Interpretation
 
 		internal LsnObjectFile GetFile(ushort index) => ReferencedFiles[index];
 	}
-
 }

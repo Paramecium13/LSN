@@ -254,13 +254,12 @@ namespace LSNr
 			HostInterfaceName = methodSignature.Parameters[0].Type.Name;
 		}
 
-		/// <param name="resolutionContext"></param>
 		/// <inheritdoc/>
 		public override void Resolve(InstructionResolutionContext resolutionContext)
 		{
 			base.Resolve(resolutionContext);
 			_Data = resolutionContext.FileHeaderFactory.AddHostInterfaceMethodSignature(
-				new LsnCore.Interpretation.SignatureStub(MethodSignature, HostInterfaceName));
+				new(MethodSignature, HostInterfaceName));
 		}
 	}
 

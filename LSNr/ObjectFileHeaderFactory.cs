@@ -29,7 +29,7 @@ namespace LSNr
 		/// <summary>
 		/// The table of host interface method signatures.
 		/// </summary>
-		private readonly TableBuilder<SignatureStub> SignatureTable = new();
+		private readonly TableBuilder<HostInterfaceSignatureStub> SignatureTable = new();
 
 		private readonly TableBuilder<TypeId> ReferencedTypeTable = new();
 
@@ -69,12 +69,12 @@ namespace LSNr
 
 		/// <summary>
 		/// Adds the host interface method signature to the signature table if it isn't already present.
-		/// Returns the index of <paramref name="signatureStub"/> in the signature table.
+		/// Returns the index of <paramref name="hostInterfaceSignatureStub"/> in the signature table.
 		/// </summary>
-		/// <param name="signatureStub">The signature stub.</param>
-		/// <returns> The index of <paramref name="signatureStub"/> in the signature table. </returns>
-		public ushort AddHostInterfaceMethodSignature(SignatureStub signatureStub) =>
-			checked((ushort) SignatureTable.Add(signatureStub));
+		/// <param name="hostInterfaceSignatureStub">The signature stub.</param>
+		/// <returns> The index of <paramref name="hostInterfaceSignatureStub"/> in the signature table. </returns>
+		public ushort AddHostInterfaceMethodSignature(HostInterfaceSignatureStub hostInterfaceSignatureStub) =>
+			checked((ushort) SignatureTable.Add(hostInterfaceSignatureStub));
 
 		/// <summary>
 		/// Adds a referenced type.
